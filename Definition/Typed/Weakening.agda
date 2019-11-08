@@ -5,6 +5,7 @@ module Definition.Typed.Weakening where
 open import Definition.Untyped as U hiding (wk)
 open import Definition.Untyped.Properties
 open import Definition.Typed
+open import Tools.Nat using (Nat)
 
 import Tools.PropositionalEquality as PE
 
@@ -59,6 +60,7 @@ mutual
   wk ρ ⊢Δ (Uⱼ ⊢Γ) = Uⱼ ⊢Δ
   wk ρ ⊢Δ (Πⱼ F ▹ G) = let ρF = wk ρ ⊢Δ F
                        in  Πⱼ ρF ▹ (wk (lift ρ) (⊢Δ ∙ ρF) G)
+  wk ρ ⊢Δ (Boxⱼ A) = Boxⱼ (wk ρ ⊢Δ A)
   wk ρ ⊢Δ (univ A) = univ (wkTerm ρ ⊢Δ A)
 
   wkTerm : ∀ {Γ Δ A t r ρ} → ρ ∷ Δ ⊆ Γ →
@@ -69,6 +71,7 @@ mutual
   wkTerm ρ ⊢Δ (Emptyⱼ ⊢Γ) = Emptyⱼ ⊢Δ
   wkTerm ρ ⊢Δ (Πⱼ F ▹ G) = let ρF = wkTerm ρ ⊢Δ F
                           in  Πⱼ ρF ▹ (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G)
+  wkTerm ρ ⊢Δ (Boxⱼ A) = Boxⱼ (wkTerm ρ ⊢Δ A)
   wkTerm ρ ⊢Δ (var ⊢Γ x) = var ⊢Δ (wkIndex ρ ⊢Δ x)
   wkTerm ρ ⊢Δ (lamⱼ F t) = let ρF = wk ρ ⊢Δ F
                           in lamⱼ ρF (wkTerm (lift ρ) (⊢Δ ∙ ρF) t)
@@ -87,6 +90,14 @@ mutual
                       (wkTerm [ρ] ⊢Δ ⊢n))
   wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Emptyrecⱼ {A = A} {e = e} ⊢A ⊢e) =
     (Emptyrecⱼ (wk [ρ] ⊢Δ ⊢A) (wkTerm [ρ] ⊢Δ ⊢e))
+  wkTerm ρ ⊢Δ (boxⱼ x) = boxⱼ (wkTerm ρ ⊢Δ x)
+  wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Boxrecⱼ {A = A} {P = P} {f = f} ⊢A ⊢P ⊢f ⊢x) =
+    let ⊢A' = wk [ρ] ⊢Δ ⊢A
+        ⊢P' = wk (lift [ρ]) (⊢Δ ∙ Boxⱼ (wk [ρ] ⊢Δ ⊢A)) ⊢P
+        ⊢f' = wkTerm [ρ] ⊢Δ ⊢f
+        ⊢f'' = (PE.subst (λ x → _ ⊢ _ ∷ Π _ ^ _ ▹ x ^ _) (wk-β↑ P) ⊢f')
+    in PE.subst (λ x → _ ⊢ Boxrec _ _ _ _ ∷ x ^ _) (PE.sym (wk-β P))
+       (Boxrecⱼ ⊢A' ⊢P' ⊢f'' (wkTerm [ρ] ⊢Δ ⊢x))
   wkTerm ρ ⊢Δ (conv t A≡B) = conv (wkTerm ρ ⊢Δ t) (wkEq ρ ⊢Δ A≡B)
 
   wkEq : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
@@ -100,6 +111,7 @@ mutual
   wkEq ρ ⊢Δ (Π-cong F F≡H G≡E) = let ρF = wk ρ ⊢Δ F
                                  in  Π-cong ρF (wkEq ρ ⊢Δ F≡H)
                                                (wkEq (lift ρ) (⊢Δ ∙ ρF) G≡E)
+  wkEq ρ ⊢Δ (Box-cong A≡B) = Box-cong (wkEq ρ ⊢Δ A≡B)
 
   wkEqTerm : ∀ {Γ Δ A t u r ρ} → ρ ∷ Δ ⊆ Γ →
            let ρA = U.wk ρ A
@@ -114,6 +126,7 @@ mutual
     let ρF = wk ρ ⊢Δ F
     in  Π-cong ρF (wkEqTerm ρ ⊢Δ F≡H)
                   (wkEqTerm (lift ρ) (⊢Δ ∙ ρF) G≡E)
+  wkEqTerm ρ ⊢Δ (Box-cong A≡B) = Box-cong (wkEqTerm ρ ⊢Δ A≡B)
   wkEqTerm ρ ⊢Δ (app-cong {G = G} f≡g a≡b) =
     PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
              (PE.sym (wk-β G))
@@ -173,64 +186,94 @@ mutual
                                   A≡A' e≡e') =
     (Emptyrec-cong (wkEq [ρ] ⊢Δ A≡A')
       (wkEqTerm [ρ] ⊢Δ e≡e'))
+  wkEqTerm [ρ] ⊢Δ (box-cong x≡y) = box-cong (wkEqTerm [ρ] ⊢Δ x≡y)
+  wkEqTerm [ρ] ⊢Δ (Boxrec-cong {P = P} ⊢A A≡A' P≡P' f≡f' x≡x') =
+    let ⊢ρA = wk [ρ] ⊢Δ ⊢A
+        ρA≡ρA' = wkEq [ρ] ⊢Δ A≡A'
+        ρP≡ρP' = wkEq (lift [ρ]) (⊢Δ ∙ Boxⱼ ⊢ρA) P≡P'
+        ρf≡ρf' = wkEqTerm [ρ] ⊢Δ f≡f'
+        ρf≡ρf'' = (PE.subst (λ x → _ ⊢ _ ≡ _ ∷ Π _ ^ _ ▹ x ^ _) (wk-β↑ P) ρf≡ρf')
+        res = Boxrec-cong ⊢ρA ρA≡ρA' ρP≡ρP' ρf≡ρf'' (wkEqTerm [ρ] ⊢Δ x≡x')
+    in PE.subst (λ T → _ ⊢ Boxrec _ _ _ _ ≡ _ ∷ T ^ _) (PE.sym (wk-β P)) res
+  wkEqTerm [ρ] ⊢Δ (Boxrec-box {P = P} ⊢A ⊢P ⊢f ⊢x) =
+    let ⊢ρA = wk [ρ] ⊢Δ ⊢A
+        ⊢ρP = wk (lift [ρ]) (⊢Δ ∙ Boxⱼ ⊢ρA) ⊢P
+        ⊢f' = wkTerm [ρ] ⊢Δ ⊢f
+        ⊢f'' = (PE.subst (λ x → _ ⊢ _ ∷ Π _ ^ _ ▹ x ^ _) (wk-β↑ P) ⊢f')
+        res = Boxrec-box ⊢ρA ⊢ρP ⊢f'' (wkTerm [ρ] ⊢Δ ⊢x)
+    in PE.subst (λ x → _ ⊢ Boxrec _ _ _ _ ≡ _ ∷ x ^ _) (PE.sym (wk-β P)) res
   wkEqTerm [ρ] ⊢Δ (proof-irrelevance t u) = proof-irrelevance (wkTerm [ρ] ⊢Δ t) (wkTerm [ρ] ⊢Δ u)
 
-mutual
-  wkRed : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
-           let ρA = U.wk ρ A
-               ρB = U.wk ρ B
-           in ⊢ Δ → Γ ⊢ A ⇒ B ^ r → Δ ⊢ ρA ⇒ ρB ^ r
-  wkRed ρ ⊢Δ (univ A⇒B) = univ (wkRedTerm ρ ⊢Δ A⇒B)
-
-  wkRedTerm : ∀ {Γ Δ A t u r ρ} → ρ ∷ Δ ⊆ Γ →
-           let ρA = U.wk ρ A
-               ρt = U.wk ρ t
-               ρu = U.wk ρ u
-           in ⊢ Δ → Γ ⊢ t ⇒ u ∷ A ^ r → Δ ⊢ ρt ⇒ ρu ∷ ρA ^ r
-  wkRedTerm ρ ⊢Δ (conv t⇒u A≡B) = conv (wkRedTerm ρ ⊢Δ t⇒u) (wkEq ρ ⊢Δ A≡B)
-  wkRedTerm ρ ⊢Δ (app-subst {B = B} t⇒u a) =
-    PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β B))
-             (app-subst (wkRedTerm ρ ⊢Δ t⇒u) (wkTerm ρ ⊢Δ a))
-  wkRedTerm ρ ⊢Δ (β-red {A} {B} {a} {t} ⊢A ⊢t ⊢a) =
-    let ⊢ρA = wk ρ ⊢Δ ⊢A
-    in  PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β B))
-                 (PE.subst (λ x → _ ⊢ U.wk _ ((lam _ ▹ t) ∘ a) ⇒ x ∷ _ ^ _)
-                           (PE.sym (wk-β t))
-                           (β-red ⊢ρA (wkTerm (lift ρ) (⊢Δ ∙ ⊢ρA) ⊢t)
-                                      (wkTerm ρ ⊢Δ ⊢a)))
-  wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-subst {s = s} {F = F} {rF} ⊢F ⊢z ⊢s n⇒n′) =
-    PE.subst (λ x → _ ⊢ natrec _ _ _ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β F))
-             (natrec-subst (wk (lift [ρ]) (⊢Δ ∙ ℕⱼ ⊢Δ) ⊢F)
-                           (PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (wk-β F)
-                                     (wkTerm [ρ] ⊢Δ ⊢z))
-                           (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ rF)
-                                     (wk-β-natrec _ F rF)
-                                     (wkTerm [ρ] ⊢Δ ⊢s))
-                           (wkRedTerm [ρ] ⊢Δ n⇒n′))
-  wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-zero {s = s} {F = F} {rF} ⊢F ⊢z ⊢s) =
-    PE.subst (λ x → _ ⊢ natrec (U.wk (lift ρ) F) _ _ _ ⇒ _ ∷ x ^ _)
-             (PE.sym (wk-β F))
-             (natrec-zero (wk (lift [ρ]) (⊢Δ ∙ ℕⱼ ⊢Δ) ⊢F)
-                          (PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
-                                    (wk-β F)
-                                    (wkTerm [ρ] ⊢Δ ⊢z))
-                          (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ rF)
-                                    (wk-β-natrec ρ F rF)
-                                    (wkTerm [ρ] ⊢Δ ⊢s)))
-  wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-suc {s = s} {F = F} {rF} ⊢n ⊢F ⊢z ⊢s) =
-    PE.subst (λ x → _ ⊢ natrec _ _ _ _ ⇒ _ ∘ natrec _ _ _ _ ∷ x ^ _)
-             (PE.sym (wk-β F))
-             (natrec-suc (wkTerm [ρ] ⊢Δ ⊢n)
-                         (wk (lift [ρ]) (⊢Δ ∙ ℕⱼ ⊢Δ) ⊢F)
-                         (PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
-                                   (wk-β F)
+wkRedTerm : ∀ {Γ Δ A t u r ρ} → ρ ∷ Δ ⊆ Γ →
+         let ρA = U.wk ρ A
+             ρt = U.wk ρ t
+             ρu = U.wk ρ u
+         in ⊢ Δ → Γ ⊢ t ⇒ u ∷ A ^ r → Δ ⊢ ρt ⇒ ρu ∷ ρA ^ r
+wkRedTerm ρ ⊢Δ (conv t⇒u A≡B) = conv (wkRedTerm ρ ⊢Δ t⇒u) (wkEq ρ ⊢Δ A≡B)
+wkRedTerm ρ ⊢Δ (app-subst {B = B} t⇒u a) =
+  PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β B))
+           (app-subst (wkRedTerm ρ ⊢Δ t⇒u) (wkTerm ρ ⊢Δ a))
+wkRedTerm ρ ⊢Δ (β-red {A} {B} {a} {t} ⊢A ⊢t ⊢a) =
+  let ⊢ρA = wk ρ ⊢Δ ⊢A
+  in  PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β B))
+               (PE.subst (λ x → _ ⊢ U.wk _ ((lam _ ▹ t) ∘ a) ⇒ x ∷ _ ^ _)
+                         (PE.sym (wk-β t))
+                         (β-red ⊢ρA (wkTerm (lift ρ) (⊢Δ ∙ ⊢ρA) ⊢t)
+                                    (wkTerm ρ ⊢Δ ⊢a)))
+wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-subst {s = s} {F = F} {rF} ⊢F ⊢z ⊢s n⇒n′) =
+  PE.subst (λ x → _ ⊢ natrec _ _ _ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β F))
+           (natrec-subst (wk (lift [ρ]) (⊢Δ ∙ ℕⱼ ⊢Δ) ⊢F)
+                         (PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (wk-β F)
                                    (wkTerm [ρ] ⊢Δ ⊢z))
                          (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ rF)
-                                   (wk-β-natrec ρ F rF)
-                                   (wkTerm [ρ] ⊢Δ ⊢s)))
-  wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Emptyrec-subst {A = A} ⊢A n⇒n′) =
-    (Emptyrec-subst (wk [ρ] ⊢Δ ⊢A)
-                    (wkRedTerm [ρ] ⊢Δ n⇒n′))
+                                   (wk-β-natrec _ F rF)
+                                   (wkTerm [ρ] ⊢Δ ⊢s))
+                         (wkRedTerm [ρ] ⊢Δ n⇒n′))
+wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-zero {s = s} {F = F} {rF} ⊢F ⊢z ⊢s) =
+  PE.subst (λ x → _ ⊢ natrec (U.wk (lift ρ) F) _ _ _ ⇒ _ ∷ x ^ _)
+           (PE.sym (wk-β F))
+           (natrec-zero (wk (lift [ρ]) (⊢Δ ∙ ℕⱼ ⊢Δ) ⊢F)
+                        (PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
+                                  (wk-β F)
+                                  (wkTerm [ρ] ⊢Δ ⊢z))
+                        (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ rF)
+                                  (wk-β-natrec ρ F rF)
+                                  (wkTerm [ρ] ⊢Δ ⊢s)))
+wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-suc {s = s} {F = F} {rF} ⊢n ⊢F ⊢z ⊢s) =
+  PE.subst (λ x → _ ⊢ natrec _ _ _ _ ⇒ _ ∘ natrec _ _ _ _ ∷ x ^ _)
+           (PE.sym (wk-β F))
+           (natrec-suc (wkTerm [ρ] ⊢Δ ⊢n)
+                       (wk (lift [ρ]) (⊢Δ ∙ ℕⱼ ⊢Δ) ⊢F)
+                       (PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
+                                 (wk-β F)
+                                 (wkTerm [ρ] ⊢Δ ⊢z))
+                       (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ rF)
+                                 (wk-β-natrec ρ F rF)
+                                 (wkTerm [ρ] ⊢Δ ⊢s)))
+wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Emptyrec-subst {A = A} ⊢A n⇒n′) =
+  (Emptyrec-subst (wk [ρ] ⊢Δ ⊢A)
+                  (wkRedTerm [ρ] ⊢Δ n⇒n′))
+wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Boxrec-subst {P = P} ⊢A ⊢P ⊢f x⇒x') =
+  let ⊢ρA = wk [ρ] ⊢Δ ⊢A
+      ⊢ρP = wk (lift [ρ]) (⊢Δ ∙ Boxⱼ ⊢ρA) ⊢P
+      ⊢f' = wkTerm [ρ] ⊢Δ ⊢f
+      ⊢f'' = (PE.subst (λ x → _ ⊢ _ ∷ Π _ ^ _ ▹ x ^ _) (wk-β↑ P) ⊢f')
+      res = Boxrec-subst ⊢ρA ⊢ρP ⊢f'' (wkRedTerm [ρ] ⊢Δ x⇒x')
+  in PE.subst (λ x → _ ⊢ Boxrec _ _ _ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β P)) res
+wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Boxrec-box {P = P} ⊢A ⊢P ⊢f ⊢x) =
+  let ⊢ρA = wk [ρ] ⊢Δ ⊢A
+      ⊢ρP = wk (lift [ρ]) (⊢Δ ∙ Boxⱼ ⊢ρA) ⊢P
+      ⊢f' = wkTerm [ρ] ⊢Δ ⊢f
+      ⊢f'' = (PE.subst (λ x → _ ⊢ _ ∷ Π _ ^ _ ▹ x ^ _) (wk-β↑ P) ⊢f')
+      res = Boxrec-box ⊢ρA ⊢ρP ⊢f'' (wkTerm [ρ] ⊢Δ ⊢x)
+  in PE.subst (λ x → _ ⊢ Boxrec _ _ _ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β P)) res
+
+wkRed : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
+         let ρA = U.wk ρ A
+             ρB = U.wk ρ B
+         in ⊢ Δ → Γ ⊢ A ⇒ B ^ r → Δ ⊢ ρA ⇒ ρB ^ r
+wkRed ρ ⊢Δ (univ A⇒B) = univ (wkRedTerm ρ ⊢Δ A⇒B)
+
 
 wkRed* : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
            let ρA = U.wk ρ A

@@ -48,6 +48,9 @@ data Kind : Set where
   Natreckind : Kind
   Emptykind : Kind
   Emptyreckind : Kind
+  Boxkind : Kind
+  boxkind : Kind
+  Boxreckind : Kind
 
 data Term : Set where
   var : (x : Nat) → Term
@@ -97,8 +100,18 @@ natrec A t u v = gen Natreckind (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u �
 Empty : Term
 Empty = gen Emptykind []
 
-Emptyrec : (A e : Term) -> Term
+Emptyrec : (A e : Term) → Term
 Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
+
+Box : Term → Term
+Box A = gen Boxkind (⟦ 0 , A ⟧ ∷ [])
+
+box : Term → Term
+box x = gen boxkind (⟦ 0 , x ⟧ ∷ [])
+
+-- Boxrec : forall A (P:Box A → Type), (forall x, P (box x)) → forall x, P x
+Boxrec : Term → Term → Term → Term → Term
+Boxrec A P f x = gen Boxreckind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , f ⟧ ∷ ⟦ 0 , x ⟧ ∷ [])
 
 -- Injectivity of term constructors w.r.t. propositional equality.
 
@@ -126,7 +139,8 @@ data Neutral : Term → Set where
   var     : ∀ n                     → Neutral (var n)
   ∘ₙ      : ∀ {k u}     → Neutral k → Neutral (k ∘ u)
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
-  Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
+  Emptyrecₙ : ∀ {A e} → Neutral e → Neutral (Emptyrec A e)
+  Boxrecₙ : ∀ {A P f e} → Neutral e → Neutral (Boxrec A P f e)
 
 
 -- Weak head normal forms (whnfs).
@@ -140,11 +154,13 @@ data Whnf : Term → Set where
   Πₙ    : ∀ {A r B} → Whnf (Π A ^ r ▹ B)
   ℕₙ    : Whnf ℕ
   Emptyₙ : Whnf Empty
+  Boxₙ : ∀ {A} → Whnf (Box A)
 
   -- Introductions are whnfs.
   lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
   zeroₙ : Whnf zero
   sucₙ  : ∀ {t} → Whnf (suc t)
+  boxₙ : ∀ {x} → Whnf (box x)
 
   -- Neutrals are whnfs.
   ne   : ∀ {n} → Neutral n → Whnf n
@@ -309,6 +325,7 @@ wkNeutral ρ (var n)    = var (wkVar ρ n)
 wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
 wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
 wkNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkNeutral ρ e)
+wkNeutral ρ (Boxrecₙ x) = Boxrecₙ (wkNeutral ρ x)
 
 -- Weakening can be applied to our whnf views.
 
@@ -336,6 +353,8 @@ wkWhnf ρ lamₙ    = lamₙ
 wkWhnf ρ zeroₙ   = zeroₙ
 wkWhnf ρ sucₙ    = sucₙ
 wkWhnf ρ (ne x) = ne (wkNeutral ρ x)
+wkWhnf ρ Boxₙ = Boxₙ
+wkWhnf ρ boxₙ = boxₙ
 
 -- Non-dependent version of Π.
 

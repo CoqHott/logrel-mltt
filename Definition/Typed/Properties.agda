@@ -24,6 +24,9 @@ wfTerm (zeroⱼ ⊢Γ) = ⊢Γ
 wfTerm (sucⱼ n) = wfTerm n
 wfTerm (natrecⱼ F z s n) = wfTerm z
 wfTerm (Emptyrecⱼ A e) = wfTerm e
+wfTerm (Boxⱼ x) = wfTerm x
+wfTerm (boxⱼ x) = wfTerm x
+wfTerm (Boxrecⱼ x x₁ x₂ x₃) = wfTerm x₃
 wfTerm (conv t A≡B) = wfTerm t
 
 wf : ∀ {Γ A r} → Γ ⊢ A ^ r → ⊢ Γ
@@ -31,6 +34,7 @@ wf (ℕⱼ ⊢Γ) = ⊢Γ
 wf (Emptyⱼ ⊢Γ) = ⊢Γ
 wf (Uⱼ ⊢Γ) = ⊢Γ
 wf (Πⱼ F ▹ G) = wf F
+wf (Boxⱼ A) = wf A
 wf (univ A) = wfTerm A
 
 wfEqTerm : ∀ {Γ A t u r} → Γ ⊢ t ≡ u ∷ A ^ r → ⊢ Γ
@@ -39,14 +43,18 @@ wfEqTerm (sym t≡u) = wfEqTerm t≡u
 wfEqTerm (trans t≡u u≡r) = wfEqTerm t≡u
 wfEqTerm (conv t≡u A≡B) = wfEqTerm t≡u
 wfEqTerm (Π-cong F F≡H G≡E) = wfEqTerm F≡H
+wfEqTerm (Box-cong A≡B) = wfEqTerm A≡B
 wfEqTerm (app-cong f≡g a≡b) = wfEqTerm f≡g
 wfEqTerm (β-red F t a) = wfTerm a
 wfEqTerm (η-eq F f g f0≡g0) = wfTerm f
 wfEqTerm (suc-cong n) = wfEqTerm n
+wfEqTerm (box-cong n) = wfEqTerm n
 wfEqTerm (natrec-cong F≡F′ z≡z′ s≡s′ n≡n′) = wfEqTerm z≡z′
 wfEqTerm (natrec-zero F z s) = wfTerm z
 wfEqTerm (natrec-suc n F z s) = wfTerm n
 wfEqTerm (Emptyrec-cong A≡A' e≡e') = wfEqTerm e≡e'
+wfEqTerm (Boxrec-cong ⊢A A≡A' P≡P' f≡f' x≡x') = wfEqTerm x≡x'
+wfEqTerm (Boxrec-box A P f x) = wfTerm x
 wfEqTerm (proof-irrelevance t u) = wfTerm t
 
 wfEq : ∀ {Γ A B r} → Γ ⊢ A ≡ B ^ r → ⊢ Γ
@@ -55,6 +63,7 @@ wfEq (refl A) = wf A
 wfEq (sym A≡B) = wfEq A≡B
 wfEq (trans A≡B B≡C) = wfEq A≡B
 wfEq (Π-cong F F≡H G≡E) = wfEq F≡H
+wfEq (Box-cong A≡B) = wfEq A≡B
 
 
 -- Reduction is a subset of conversion
@@ -66,6 +75,9 @@ subsetTerm (natrec-zero F z s) = natrec-zero F z s
 subsetTerm (natrec-suc n F z s) = natrec-suc n F z s
 subsetTerm (Emptyrec-subst A n⇒n′) =
   Emptyrec-cong (refl A) (subsetTerm n⇒n′)
+subsetTerm (Boxrec-subst A P f x⇒x') =
+  Boxrec-cong A (refl A) (refl P) (refl f) (subsetTerm x⇒x')
+subsetTerm (Boxrec-box A P f x) = Boxrec-box A P f x
 subsetTerm (app-subst t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
 subsetTerm (β-red A t a) = β-red A t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
@@ -92,6 +104,8 @@ redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ F z s (redFirstTerm n⇒n
 redFirstTerm (natrec-zero F z s) = natrecⱼ F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
 redFirstTerm (Emptyrec-subst A n⇒n′) = Emptyrecⱼ A (redFirstTerm n⇒n′)
+redFirstTerm (Boxrec-subst A P f x⇒x') = Boxrecⱼ A P f (redFirstTerm x⇒x')
+redFirstTerm (Boxrec-box A P f x) = Boxrecⱼ A P f (boxⱼ x)
 
 redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 redFirst (univ A⇒B) = univ (redFirstTerm A⇒B)
@@ -114,8 +128,10 @@ noNe (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe ⊢t neT
 noNe (conv ⊢t x) (∘ₙ neT) = noNe ⊢t (∘ₙ neT)
 noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
 noNe (Emptyrecⱼ A ⊢e) (Emptyrecₙ neT) = noNe ⊢e neT
+noNe (Boxrecⱼ A P f x) (Boxrecₙ neX) = noNe x neX
 noNe (conv ⊢t x) (natrecₙ neT) = noNe ⊢t (natrecₙ neT)
 noNe (conv ⊢t x) (Emptyrecₙ neT) = noNe ⊢t (Emptyrecₙ neT)
+noNe (conv ⊢t x) (Boxrecₙ neX) = noNe ⊢t (Boxrecₙ neX)
 
 -- Neutrals do not weak head reduce
 
@@ -127,6 +143,8 @@ neRedTerm (natrec-subst x x₁ x₂ d) (natrecₙ n₁) = neRedTerm d n₁
 neRedTerm (natrec-zero x x₁ x₂) (natrecₙ ())
 neRedTerm (natrec-suc x x₁ x₂ x₃) (natrecₙ ())
 neRedTerm (Emptyrec-subst x d) (Emptyrecₙ n₁) = neRedTerm d n₁
+neRedTerm (Boxrec-subst A P f x⇒x') (Boxrecₙ n) = neRedTerm x⇒x' n
+neRedTerm (Boxrec-box A P f x) (Boxrecₙ ())
 
 neRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (N : Neutral A) → ⊥
 neRed (univ x) N = neRedTerm x N
@@ -141,6 +159,8 @@ whnfRedTerm (natrec-subst x x₁ x₂ d) (ne (natrecₙ x₃)) = neRedTerm d x�
 whnfRedTerm (natrec-zero x x₁ x₂) (ne (natrecₙ ()))
 whnfRedTerm (natrec-suc x x₁ x₂ x₃) (ne (natrecₙ ()))
 whnfRedTerm (Emptyrec-subst x d) (ne (Emptyrecₙ x₂)) = neRedTerm d x₂
+whnfRedTerm (Boxrec-subst A P f x) (ne (Boxrecₙ n)) = neRedTerm x n
+whnfRedTerm (Boxrec-box A P f x) (ne (Boxrecₙ ()))
 
 whnfRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (w : Whnf A) → ⊥
 whnfRed (univ x) w = whnfRedTerm x w
@@ -149,10 +169,12 @@ whnfRed*Term : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒* u ∷ A ^ r) (w : Whnf t) →
 whnfRed*Term (id x) Uₙ = PE.refl
 whnfRed*Term (id x) Πₙ = PE.refl
 whnfRed*Term (id x) ℕₙ = PE.refl
+whnfRed*Term (id x) Boxₙ = PE.refl
 whnfRed*Term (id x) Emptyₙ = PE.refl
 whnfRed*Term (id x) lamₙ = PE.refl
 whnfRed*Term (id x) zeroₙ = PE.refl
 whnfRed*Term (id x) sucₙ = PE.refl
+whnfRed*Term (id x) boxₙ = PE.refl
 whnfRed*Term (id x) (ne x₁) = PE.refl
 whnfRed*Term (conv x x₁ ⇨ d) w = ⊥-elim (whnfRedTerm x w)
 whnfRed*Term (x ⇨ d) (ne x₁) = ⊥-elim (neRedTerm x x₁)
@@ -178,6 +200,10 @@ whrDetTerm (natrec-zero x x₁ x₂) (natrec-zero x₃ x₄ x₅) = PE.refl
 whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-subst x₄ x₅ x₆ d′) = ⊥-elim (whnfRedTerm d′ sucₙ)
 whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-suc x₄ x₅ x₆ x₇) = PE.refl
 whrDetTerm (Emptyrec-subst x d) (Emptyrec-subst x₂ d′) rewrite whrDetTerm d d′ = PE.refl
+whrDetTerm (Boxrec-subst A P f x) (Boxrec-subst A' P' f' x') rewrite whrDetTerm x x' = PE.refl
+whrDetTerm (Boxrec-box A P f x) (Boxrec-box A' P' f' x') = PE.refl
+whrDetTerm (Boxrec-subst A P f x) (Boxrec-box A' P' f' x') = ⊥-elim (whnfRedTerm x boxₙ)
+whrDetTerm (Boxrec-box A P f x) (Boxrec-subst A' P' f' x') = ⊥-elim (whnfRedTerm x' boxₙ)
 
 whrDet : ∀{Γ A B B′ r r'} (d : Γ ⊢ A ⇒ B ^ r) (d′ : Γ ⊢ A ⇒ B′ ^ r') → B PE.≡ B′
 whrDet (univ x) (univ x₁) = whrDetTerm x x₁

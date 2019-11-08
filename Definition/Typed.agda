@@ -35,6 +35,9 @@ mutual
          → Γ     ⊢ F ^ rF
          → Γ ∙ F ^ rF ⊢ G ^ rG
          → Γ     ⊢ Π F ^ rF ▹ G ^ rG
+    Boxⱼ : ∀ {A}
+         → Γ ⊢ A ^ %
+         → Γ ⊢ Box A ^ !
     univ : ∀ {A r}
          → Γ ⊢ A ∷ (Univ r) ^ !
          → Γ ⊢ A ^ r
@@ -47,6 +50,9 @@ mutual
            → Γ     ⊢ F ∷ (Univ rF) ^ !
            → Γ ∙ F ^ rF ⊢ G ∷ (Univ rG) ^ !
            → Γ     ⊢ Π F ^ rF ▹ G ∷ (Univ rG) ^ !
+    Boxⱼ : ∀ {A}
+         → Γ ⊢ A ∷ SProp ^ !
+         → Γ ⊢ Box A ∷ U ^ !
     var    : ∀ {A r x}
            → ⊢ Γ
            → x ∷ A ^ r ∈ Γ
@@ -64,6 +70,9 @@ mutual
     sucⱼ    : ∀ {n}
            → Γ ⊢ n ∷ ℕ ^ !
            → Γ ⊢ suc n ∷ ℕ ^ !
+    boxⱼ : ∀ {A x}
+         → Γ ⊢ x ∷ A ^ %
+         → Γ ⊢ box x ∷ Box A ^ !
     natrecⱼ : ∀ {G rG s z n}
            → Γ ∙ ℕ ^ ! ⊢ G ^ rG
            → Γ       ⊢ z ∷ G [ zero ] ^ rG
@@ -72,6 +81,12 @@ mutual
            → Γ       ⊢ natrec G z s n ∷ G [ n ] ^ rG
     Emptyrecⱼ : ∀ {A rA e}
            → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty ^ % -> Γ ⊢ Emptyrec A e ∷ A ^ rA
+    Boxrecⱼ : ∀ {A rP P f x}
+            → Γ ⊢ A ^ %
+            → Γ ∙ Box A ^ ! ⊢ P ^ rP
+            → Γ ⊢ f ∷ Π A ^ % ▹ (P [ box (var Nat.zero) ]↑) ^ rP
+            → Γ ⊢ x ∷ Box A ^ !
+            → Γ ⊢ Boxrec A P f x ∷ P [ x ] ^ rP
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
@@ -97,6 +112,9 @@ mutual
            → Γ     ⊢ F ≡ H ^ rF
            → Γ ∙ F ^ rF ⊢ G ≡ E ^ rG
            → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ^ rG
+    Box-cong : ∀ {A B}
+             → Γ ⊢ A ≡ B ^ %
+             → Γ ⊢ Box A ≡ Box B ^ !
 
   -- Term equality
   data _⊢_≡_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → Set where
@@ -119,6 +137,9 @@ mutual
                 → Γ     ⊢ F ≡ H       ∷ (Univ rF) ^ !
                 → Γ ∙ F ^ rF ⊢ G ≡ E       ∷ (Univ rG) ^ !
                 → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ∷ (Univ rG) ^ !
+    Box-cong : ∀ {A B}
+             → Γ ⊢ A ≡ B ∷ SProp ^ !
+             → Γ ⊢ Box A ≡ Box B ∷ U ^ !
     app-cong    : ∀ {a b f g F G rF rG}
                 → Γ ⊢ f ≡ g ∷ Π F ^ rF ▹ G ^ rG
                 → Γ ⊢ a ≡ b ∷ F ^ rF
@@ -137,6 +158,10 @@ mutual
     suc-cong    : ∀ {m n}
                 → Γ ⊢ m ≡ n ∷ ℕ ^ !
                 → Γ ⊢ suc m ≡ suc n ∷ ℕ ^ !
+    box-cong : ∀ {A x y}
+             -- could be ⊢ x and ⊢ y since irrelevance but I think this will be more uniform
+             → Γ ⊢ x ≡ y ∷ A ^ %
+             → Γ ⊢ box x ≡ box y ∷ Box A ^ !
     natrec-cong : ∀ {z z′ s s′ n n′ F F′ rF}
                 → Γ ∙ ℕ ^ ! ⊢ F ≡ F′ ^ rF
                 → Γ     ⊢ z ≡ z′ ∷ F [ zero ] ^ rF
@@ -159,6 +184,19 @@ mutual
                 → Γ ⊢ A ≡ A' ^ r
                 → Γ ⊢ e ≡ e' ∷ Empty ^ %
                 → Γ ⊢ Emptyrec A e ≡ Emptyrec A' e' ∷ A ^ r
+    Boxrec-cong : ∀ {rP A A' P P' f f' x x'}
+                → Γ ⊢ A ^ % -- needed eg in wk
+                → Γ ⊢ A ≡ A' ^ %
+                → Γ ∙ Box A ^ ! ⊢ P ≡ P' ^ rP
+                → Γ ⊢ f ≡ f' ∷ Π A ^ % ▹ (P [ box (var Nat.zero) ]↑) ^ rP
+                → Γ ⊢ x ≡ x' ∷ Box A ^ !
+                → Γ ⊢ Boxrec A P f x ≡ Boxrec A' P' f' x' ∷ P [ x ] ^ rP
+    Boxrec-box : ∀ {rP A P f x}
+               → Γ ⊢ A ^ %
+               → Γ ∙ Box A ^ ! ⊢ P ^ rP
+               → Γ ⊢ f ∷ Π A ^ % ▹ (P [ box (var Nat.zero) ]↑) ^ rP
+               → Γ ⊢ x ∷ A ^ %
+               → Γ ⊢ Boxrec A P f (box x) ≡ f ∘ x ∷ P [ box x ] ^ rP
     proof-irrelevance : ∀ {t u A}
                       → Γ ⊢ t ∷ A ^ %
                       → Γ ⊢ u ∷ A ^ %
@@ -197,6 +235,18 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ rF ▹▹ F [ suc (var Nat.zero) ]↑) ^ rF
                → Γ     ⊢ natrec F z s (suc n) ⇒ (s ∘ n) ∘ (natrec F z s n)
                        ∷ F [ suc n ] ^ rF
+  Boxrec-subst : ∀ {rP A P f x x'}
+               → Γ ⊢ A ^ %
+               → Γ ∙ Box A ^ ! ⊢ P ^ rP
+               → Γ ⊢ f ∷ Π A ^ % ▹ (P [ box (var Nat.zero) ]↑) ^ rP
+               → Γ ⊢ x ⇒ x' ∷ Box A ^ !
+               → Γ ⊢ Boxrec A P f x ⇒ Boxrec A P f x' ∷ P [ x ] ^ rP
+  Boxrec-box : ∀ {rP A P f x}
+               → Γ ⊢ A ^ %
+               → Γ ∙ Box A ^ ! ⊢ P ^ rP
+               → Γ ⊢ f ∷ Π A ^ % ▹ (P [ box (var Nat.zero) ]↑) ^ rP
+               → Γ ⊢ x ∷ A ^ %
+             → Γ ⊢ Boxrec A P f (box x) ⇒ f ∘ x ∷ P [ box x ] ^ rP
   Emptyrec-subst : ∀ {n n′ A r}
                → Γ ⊢ A ^ r
                → Γ     ⊢ n ⇒ n′ ∷ Empty ^ %
