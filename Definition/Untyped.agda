@@ -78,8 +78,8 @@ pattern Univ r = gen (Ukind r) []
 -- var    : (x : Nat)        → Term  -- Variable (de Bruijn index).
 -- var = var
 
-lam    : (t : Term)       → Term  -- Function abstraction (binder).
-lam t = gen Lamkind (⟦ 1 , t ⟧ ∷ [])
+lam_▹_    : Term → Term → Term  -- Function abstraction (binder).
+lam A ▹ t = gen Lamkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , t ⟧ ∷ [])
 
 _∘_    : (t u : Term)     → Term  -- Application.
 t ∘ u = gen Appkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
@@ -142,7 +142,7 @@ data Whnf : Term → Set where
   Emptyₙ : Whnf Empty
 
   -- Introductions are whnfs.
-  lamₙ  : ∀ {t} → Whnf (lam t)
+  lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
   zeroₙ : Whnf zero
   sucₙ  : ∀ {t} → Whnf (suc t)
 
@@ -219,7 +219,7 @@ data Type : Term → Set where
 -- A whnf of type Π A B is either lam t or neutral.
 
 data Function : Term → Set where
-  lamₙ : ∀{t} → Function (lam t)
+  lamₙ : ∀{A t} → Function (lam A ▹ t)
   ne : ∀{n} → Neutral n → Function n
 
 -- These views classify only whnfs.

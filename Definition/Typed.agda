@@ -54,7 +54,7 @@ mutual
     lamⱼ    : ∀ {F rF G rG t}
            → Γ     ⊢ F ^ rF
            → Γ ∙ F ^ rF ⊢ t ∷ G ^ rG
-           → Γ     ⊢ lam t ∷ Π F ^ rF ▹ G ^ rG
+           → Γ     ⊢ lam F ▹ t ∷ Π F ^ rF ▹ G ^ rG
     _∘ⱼ_    : ∀ {g a F rF G rG}
            → Γ ⊢     g ∷ Π F ^ rF ▹ G ^ rG
            → Γ ⊢     a ∷ F ^ rF
@@ -127,7 +127,7 @@ mutual
                 → Γ     ⊢ F ^ rF
                 → Γ ∙ F ^ rF ⊢ t ∷ G ^ rG
                 → Γ     ⊢ a ∷ F ^ rF
-                → Γ     ⊢ (lam t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ rG
+                → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ rG
     η-eq        : ∀ {f g F rF G rG}
                 → Γ     ⊢ F ^ rF
                 → Γ     ⊢ f ∷ Π F ^ rF ▹ G ^ rG
@@ -178,7 +178,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                → Γ     ⊢ A ^ rA
                → Γ ∙ A ^ rA ⊢ t ∷ B ^ rB
                → Γ     ⊢ a ∷ A ^ rA
-               → Γ     ⊢ (lam t) ∘ a ⇒ t [ a ] ∷ B [ a ] ^ rB
+               → Γ     ⊢ (lam A ▹ t) ∘ a ⇒ t [ a ] ∷ B [ a ] ^ rB
   natrec-subst : ∀ {z s n n′ F rF}
                → Γ ∙ ℕ ^ ! ⊢ F ^ rF
                → Γ     ⊢ z ∷ F [ zero ] ^ rF

@@ -31,7 +31,7 @@ lamᵛ : ∀ {F G rF rG t Γ l}
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
        ([G] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ rG / [Γ] ∙ [F])
        ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ t ∷ G ^ rG / [Γ] ∙ [F] / [G])
-     → Γ ⊩ᵛ⟨ l ⟩ lam t ∷ Π F ^ rF ▹ G ^ rG / [Γ] / Πᵛ {F} {G} [Γ] [F] [G]
+     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ∷ Π F ^ rF ▹ G ^ rG / [Γ] / Πᵛ {F} {G} [Γ] [F] [G]
 lamᵛ {F} {G} {rF} {rG} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
@@ -39,7 +39,7 @@ lamᵛ {F} {G} {rF} {rG} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ
       _ , Πᵣ rF′ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
         extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
       lamt : ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-           → Δ ⊩⟨ l ⟩ subst σ (lam t) ∷ subst σ (Π F ^ rF ▹ G) ^ rG / proj₁ ([ΠFG] ⊢Δ [σ])
+           → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t) ∷ subst σ (Π F ^ rF ▹ G) ^ rG / proj₁ ([ΠFG] ⊢Δ [σ])
       lamt {Δ} {σ} ⊢Δ [σ] =
         let [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
             [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -60,7 +60,9 @@ lamᵛ {F} {G} {rF} {rG} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ
                                                      (var (⊢Δ ∙ ⊢F) here))
             _ , Πᵣ rF′ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
               extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
-        in  Πₜ (lam (subst (liftSubst σ) t)) (idRedTerm:*: (lamⱼ ⊢F ⊢t)) lamₙ
+        in  Πₜ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
+               (idRedTerm:*: (lamⱼ ⊢F ⊢t))
+               lamₙ
                (≅-η-eq ⊢F (lamⱼ ⊢F ⊢t) (lamⱼ ⊢F ⊢t) lamₙ lamₙ
                        (escapeTermEq [σG]
                          (reflEqTerm [σG]
@@ -162,8 +164,8 @@ lamᵛ {F} {G} {rF} {rG} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ
                               (~-var (var (⊢Δ ∙ ⊢F) here))
              σlamt∘a≡σ′lamt∘a : ∀ {ρ Δ₁ a} → ([ρ] : ρ ∷ Δ₁ ⊆ Δ) (⊢Δ₁ : ⊢ Δ₁)
                  → ([a] : Δ₁ ⊩⟨ l ⟩ a ∷ U.wk ρ (subst σ F) ^ rF / [F]′ [ρ] ⊢Δ₁)
-                 → Δ₁ ⊩⟨ l ⟩ U.wk ρ (subst σ (lam t)) ∘ a
-                           ≡ U.wk ρ (subst σ′ (lam t)) ∘ a
+                 → Δ₁ ⊩⟨ l ⟩ U.wk ρ (subst σ (lam F ▹ t)) ∘ a
+                           ≡ U.wk ρ (subst σ′ (lam F ▹ t)) ∘ a
                            ∷ U.wk (lift ρ) (subst (liftSubst σ) G) [ a ]
                             ^ rG
                            / [G]′ [ρ] ⊢Δ₁ [a]
@@ -255,7 +257,8 @@ lamᵛ {F} {G} {rF} {rG} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ
                 in  transEqTerm G[a] [σlamt∘a≡σt[a]]
                                 (transEqTerm G[a] [σt[a]≡σ′t[a]]
                                              [σ′t[a]≡σ′lamt∘a])
-         in  Πₜ₌ (lam (subst (liftSubst σ) t)) (lam (subst (liftSubst σ′) t))
+         in  Πₜ₌ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
+                 (lam (subst (repeat liftSubst σ′ 0) F) ▹ (subst (liftSubst σ′) t))
                  (idRedTerm:*: (lamⱼ ⊢F ⊢t))
                  (idRedTerm:*: (conv (lamⱼ ⊢F′ ⊢t′)
                                      (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))

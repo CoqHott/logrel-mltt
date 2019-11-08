@@ -79,10 +79,10 @@ inversion-app (conv d x) = let a , b , c , d , e , f = inversion-app d
                            in  a , b , c , d , e , trans (sym x) f
 
 -- Inversion of lambda.
-inversion-lam : ∀ {t A r Γ} → Γ ⊢ lam t ∷ A ^ r →
-  ∃₂ λ F rF → ∃ λ G → Γ ⊢ F ^ rF
+inversion-lam : ∀ {t F A r Γ} → Γ ⊢ lam F ▹ t ∷ A ^ r →
+  ∃ λ rF → ∃ λ G → Γ ⊢ F ^ rF
   × (Γ ∙ F ^ rF ⊢ t ∷ G ^ r
   × Γ ⊢ A ≡ Π F ^ rF ▹ G ^ r)
-inversion-lam (lamⱼ x x₁) = _ , _ , _ , x , x₁ , refl (Πⱼ x ▹ (syntacticTerm x₁))
-inversion-lam (conv x x₁) = let a , b , c , d , e , f = inversion-lam x
-                            in  a , b , c , d , e , trans (sym x₁) f
+inversion-lam (lamⱼ x x₁) = _ , _ , x , x₁ , refl (Πⱼ x ▹ (syntacticTerm x₁))
+inversion-lam (conv x x₁) = let a , b , c , d , e = inversion-lam x
+                            in  a , b , c , d , trans (sym x₁) e

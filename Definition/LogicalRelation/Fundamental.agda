@@ -307,7 +307,7 @@ mutual
         [G[a]] = substS {F} {G} {a} [Γ]₂ [F]₁ [G]′ [a]
         [b[a]] = substSTerm {F} {G} {a} {b} [Γ]₂ [F]₁ [G]′ [b]′ [a]
         [lam] , [eq] =
-          redSubstTermᵛ {G [ a ]} {(lam b) ∘ a} {b [ a ]} [Γ]₂
+          redSubstTermᵛ {G [ a ]} {(lam F ▹ b) ∘ a} {b [ a ]} [Γ]₂
             (λ {Δ} {σ} ⊢Δ [σ] →
                let [liftσ] = liftSubstS {F = F} [Γ]₂ ⊢Δ [F]₁ [σ]
                    ⊢σF = escape (proj₁ ([F]₁ ⊢Δ [σ]))
@@ -315,7 +315,7 @@ mutual
                                        (proj₁ ([b]′ (⊢Δ ∙ ⊢σF) [liftσ]))
                    ⊢σa = escapeTerm (proj₁ ([F]₁ ⊢Δ [σ]))
                                        (proj₁ ([a] ⊢Δ [σ]))
-               in  PE.subst₂ (λ x y → _ ⊢ (lam (subst (liftSubst σ) b))
+               in  PE.subst₂ (λ x y → _ ⊢ (lam (subst σ F) ▹ (subst (liftSubst σ) b))
                                           ∘ (subst σ a) ⇒ x ∷ y ^ _)
                              (PE.sym (singleSubstLift b a))
                              (PE.sym (singleSubstLift G a))

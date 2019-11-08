@@ -122,7 +122,7 @@ mutual
     let ρF = wk ρ ⊢Δ F
     in  PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
                  (PE.sym (wk-β G))
-                 (PE.subst (λ x → _ ⊢ U.wk _ ((lam t) ∘ a) ≡ x ∷ _ ^ _)
+                 (PE.subst (λ x → _ ⊢ U.wk _ ((lam _ ▹ t) ∘ a) ≡ x ∷ _ ^ _)
                            (PE.sym (wk-β t))
                            (β-red ρF (wkTerm (lift ρ) (⊢Δ ∙ ρF) ⊢t)
                                      (wkTerm ρ ⊢Δ ⊢a)))
@@ -194,7 +194,7 @@ mutual
   wkRedTerm ρ ⊢Δ (β-red {A} {B} {a} {t} ⊢A ⊢t ⊢a) =
     let ⊢ρA = wk ρ ⊢Δ ⊢A
     in  PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β B))
-                 (PE.subst (λ x → _ ⊢ U.wk _ ((lam t) ∘ a) ⇒ x ∷ _ ^ _)
+                 (PE.subst (λ x → _ ⊢ U.wk _ ((lam _ ▹ t) ∘ a) ⇒ x ∷ _ ^ _)
                            (PE.sym (wk-β t))
                            (β-red ⊢ρA (wkTerm (lift ρ) (⊢Δ ∙ ⊢ρA) ⊢t)
                                       (wkTerm ρ ⊢Δ ⊢a)))
