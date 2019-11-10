@@ -2,6 +2,7 @@
 
 module Definition.Typed.EqualityRelation where
 
+open import Tools.Nat using (Nat)
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Weakening using (_∷_⊆_)
@@ -122,6 +123,14 @@ record EqRelSet : Set₁ where
               → Γ ∙ F ^ rF ⊢ G ≅ E ∷ (Univ rG) ^ !
               → Γ ⊢ Π F ^ rF ▹ G ≅ Π H ^ rF ▹ E ∷ (Univ rG) ^ !
 
+    ≅-Box-cong : ∀ {Γ A B}
+               → Γ ⊢ A ≅ B ^ %
+               → Γ ⊢ Box A ≅ Box B ^ !
+
+    ≅ₜ-Box-cong : ∀ {Γ A B}
+                → Γ ⊢ A ≅ B ∷ SProp ^ !
+                → Γ ⊢ Box A ≅ Box B ∷ U ^ !
+
     -- Zero reflexivity
     ≅ₜ-zerorefl : ∀ {Γ} → ⊢ Γ → Γ ⊢ zero ≅ zero ∷ ℕ ^ !
 
@@ -161,6 +170,16 @@ record EqRelSet : Set₁ where
              → Γ     ⊢ n ~ n′ ∷ Empty ^ %
              → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ rF
 
+    -- box
+    ≅-box-cong : ∀ {Γ A x y} → Γ ⊢ x ≅ y ∷ A ^ % → Γ ⊢ box x ≅ box y ∷ Box A ^ !
+
+    ~-Boxrec : ∀ {Γ rP A A' P P' f f' x x'}
+             → Γ ⊢ A ^ %
+             → Γ ⊢ A ≅ A' ^ %
+             → Γ ∙ Box A ^ ! ⊢ P ≅ P' ^ rP
+             → Γ ⊢ f ≅ f' ∷ Π A ^ % ▹ (P [ box (var Nat.zero) ]↑) ^ rP
+             → Γ ⊢ x ~ x' ∷ Box A ^ !
+             → Γ ⊢ Boxrec A P f x ~ Boxrec A' P' f' x' ∷ P [ x ] ^ rP
 
     ~-irrelevance : ∀ {n n′ A Γ} → Γ ⊢ n ∷ A ^ % → Γ ⊢ n′ ∷ A ^ %
                   → Γ ⊢ n ~ n ∷ A ^ %

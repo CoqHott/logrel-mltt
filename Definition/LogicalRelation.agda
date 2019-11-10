@@ -305,6 +305,40 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
           → Δ ⊩¹ U.wk ρ f ∘ a ≡ U.wk ρ g ∘ a ∷ U.wk (lift ρ) G [ a ] ^ r / [G] [ρ] ⊢Δ [a])
     -- Issue: Same as above.
 
+    record _⊩¹Box_ (Γ : Con Term) (A : Term) : Set where
+      inductive
+      constructor Boxᵣ
+      field
+        P : Term
+        D : Γ ⊢ A :⇒*: Box P ^ !
+        [P] : Γ ⊩¹ P ^ %
+
+    record _⊩¹Box_≡_/_ (Γ : Con Term) (A B : Term) ([A] : Γ ⊩¹Box A) : Set where
+      inductive
+      constructor Box₌
+      open _⊩¹Box_ [A]
+      field
+        P′ : Term
+        D′ :  Γ ⊢ B :⇒*: Box P′ ^ !
+        [P≡P′] : Γ ⊩¹ P ≡ P′ ^ % / [P]
+
+    record _⊩¹Box_∷_/_ (Γ : Con Term) (t : Term) (A : Term) ([A] : Γ ⊩¹Box A) : Set where
+      inductive
+      constructor Boxₜ
+--      open _⊩¹Box_ [A]
+      field
+        n : Term
+--        Dn : Γ ⊢ t :⇒*: box n ∷ Box P ^ !
+--        [n≡n] : Γ ⊢ n ≅ n ∷ Box P ^ !
+        prop : Boxedin Γ n A [A]
+
+    Boxedin : (Γ : Con Term) → Term → (A : Term) → Γ ⊩¹Box A → Set
+    Boxedin Γ n A (Boxᵣ P D [P]) = Γ ⊩¹ n ∷ P ^ % / [P]
+
+    record _⊩¹Box_≡_∷_/_ (Γ : Con Term) (t u : Term) (A : Term) ([A] : Γ ⊩¹Box A) : Set where
+      inductive
+      constructor Boxₜ₌
+
 
     -- Logical relation definition
 
@@ -314,6 +348,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       Emptyᵣ : ∀ {A} → Γ ⊩Empty A → Γ ⊩¹ A ^ %
       ne  : ∀ {A r} → Γ ⊩ne A ^ r → Γ ⊩¹ A ^ r
       Πᵣ  : ∀ {A r} → Γ ⊩¹Π A ^ r → Γ ⊩¹ A ^ r
+      Boxᵣ : ∀ {A} → Γ ⊩¹Box A → Γ ⊩¹ A ^ !
       emb : ∀ {A r l′} (l< : l′ < l) (let open LogRelKit (rec l<))
             ([A] : Γ ⊩ A ^ r) → Γ ⊩¹ A ^ r
 
@@ -323,6 +358,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     Γ ⊩¹ A ≡ B ^ .% / Emptyᵣ D = Γ ⊩Empty A ≡ B
     Γ ⊩¹ A ≡ B ^ r / ne neA = Γ ⊩ne A ≡ B ^ r / neA
     Γ ⊩¹ A ≡ B ^ r / Πᵣ ΠA = Γ ⊩¹Π A ≡ B ^ r / ΠA
+    Γ ⊩¹ A ≡ B ^ .! / Boxᵣ BoxA = Γ ⊩¹Box A ≡ B / BoxA
     Γ ⊩¹ A ≡ B ^ r / emb l< [A] = Γ ⊩ A ≡ B ^ r / [A]
       where open LogRelKit (rec l<)
 
@@ -332,6 +368,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     Γ ⊩¹ t ∷ A ^ .% / Emptyᵣ D = Γ ⊩Empty t ∷Empty
     Γ ⊩¹ t ∷ A ^ r / ne neA = Γ ⊩ne t ∷ A ^ r / neA
     Γ ⊩¹ f ∷ A ^ r / Πᵣ ΠA  = Γ ⊩¹Π f ∷ A ^ r / ΠA
+    Γ ⊩¹ t ∷ A ^ .! / Boxᵣ BoxA  = Γ ⊩¹Box t ∷ A / BoxA
     Γ ⊩¹ t ∷ A ^ r / emb l< [A] = Γ ⊩ t ∷ A ^ r / [A]
       where open LogRelKit (rec l<)
 
@@ -341,6 +378,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     Γ ⊩¹ t ≡ u ∷ A ^ .% / Emptyᵣ D = Γ ⊩Empty t ≡ u ∷Empty
     Γ ⊩¹ t ≡ u ∷ A ^ r / ne neA = Γ ⊩ne t ≡ u ∷ A ^ r / neA
     Γ ⊩¹ t ≡ u ∷ A ^ r / Πᵣ ΠA = Γ ⊩¹Π t ≡ u ∷ A ^ r / ΠA
+    Γ ⊩¹ t ≡ u ∷ A ^ .! / Boxᵣ BoxA = Γ ⊩¹Box t ≡ u ∷ A / BoxA
     Γ ⊩¹ t ≡ u ∷ A ^ r / emb l< [A] = Γ ⊩ t ≡ u ∷ A ^ r / [A]
       where open LogRelKit (rec l<)
 
