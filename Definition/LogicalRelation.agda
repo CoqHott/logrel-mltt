@@ -322,22 +322,31 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
         D′ :  Γ ⊢ B :⇒*: Box P′ ^ !
         [P≡P′] : Γ ⊩¹ P ≡ P′ ^ % / [P]
 
-    record _⊩¹Box_∷_/_ (Γ : Con Term) (t : Term) (A : Term) ([A] : Γ ⊩¹Box A) : Set where
-      inductive
-      constructor Boxₜ
---      open _⊩¹Box_ [A]
-      field
-        n : Term
---        Dn : Γ ⊢ t :⇒*: box n ∷ Box P ^ !
---        [n≡n] : Γ ⊢ n ≅ n ∷ Box P ^ !
-        prop : Boxedin Γ n A [A]
+    _⊩¹Box_∷_/_ : ∀ (Γ : Con Term) (t : Term) (A : Term) ([A] : Γ ⊩¹Box A) → Set
+    Γ ⊩¹Box t ∷ A / [A] =
+      let open _⊩¹Box_ [A] in
+      ∃ λ n →
+        Γ ⊢ t :⇒*: box n ∷ Box P ^ !
+      × Γ ⊢ n ≅ n ∷ Box P ^ !
+      × Boxedin Γ n A [A]
 
+    -- for some reason we need to use thebox instead of box
     Boxedin : (Γ : Con Term) → Term → (A : Term) → Γ ⊩¹Box A → Set
-    Boxedin Γ n A (Boxᵣ P D [P]) = Γ ⊩¹ n ∷ P ^ % / [P]
+    Boxedin Γ (thebox n) A (Boxᵣ P _ [P]) = Γ ⊩¹ n ∷ P ^ % / [P]
+    Boxedin Γ n A _ = Γ ⊩neNf n ∷ A ^ !
 
-    record _⊩¹Box_≡_∷_/_ (Γ : Con Term) (t u : Term) (A : Term) ([A] : Γ ⊩¹Box A) : Set where
-      inductive
-      constructor Boxₜ₌
+    _⊩¹Box_≡_∷_/_ : ∀ (Γ : Con Term) (t u : Term) (A : Term) ([A] : Γ ⊩¹Box A) → Set
+    Γ ⊩¹Box t ≡ u ∷ A / [A] =
+      let open _⊩¹Box_ [A] in
+      ∃₂ λ a b →
+        Γ ⊢ t :⇒*: a ∷ A ^ !
+      × Γ ⊢ u :⇒*: b ∷ A ^ !
+      × Γ ⊢ a ≅ b ∷ A ^ !
+      × Boxedin₌ Γ a b A [A]
+
+    Boxedin₌ : (Γ : Con Term) → Term → Term → (A : Term) → Γ ⊩¹Box A → Set
+    Boxedin₌ Γ (thebox a) (thebox b) A (Boxᵣ P _ [P]) = Γ ⊩¹ a ≡ b ∷ P ^ % / [P]
+    Boxedin₌ Γ a b A _ = Γ ⊩neNf a ≡ b ∷ A ^ !
 
 
     -- Logical relation definition

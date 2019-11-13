@@ -109,6 +109,8 @@ Box A = gen Boxkind (⟦ 0 , A ⟧ ∷ [])
 box : Term → Term
 box x = gen boxkind (⟦ 0 , x ⟧ ∷ [])
 
+pattern thebox n = gen boxkind (⟦ 0 , n ⟧ ∷ [])
+
 -- Boxrec : forall A (P:Box A → Type), (forall x, P (box x)) → forall x, P x
 Boxrec : Term → Term → Term → Term → Term
 Boxrec A P f x = gen Boxreckind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , f ⟧ ∷ ⟦ 0 , x ⟧ ∷ [])
@@ -222,6 +224,10 @@ data Natural : Term → Set where
   zeroₙ :                     Natural zero
   sucₙ  : ∀ {t}             → Natural (suc t)
   ne    : ∀ {n} → Neutral n → Natural n
+
+data Boxlike : Term → Set where
+  boxₙ : ∀ {x} → Boxlike (box x)
+  ne : ∀ {n} → Neutral n → Boxlike n
 
 -- A (small) type in whnf is either Π A B, ℕ, or neutral.
 -- Large types could also be U.
