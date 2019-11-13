@@ -10,6 +10,7 @@ open import Definition.Typed
 open import Definition.Typed.Weakening
 
 open import Tools.Product
+open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
 
@@ -326,27 +327,28 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     Γ ⊩¹Box t ∷ A / [A] =
       let open _⊩¹Box_ [A] in
       ∃ λ n →
-        Γ ⊢ t :⇒*: box n ∷ Box P ^ !
+        Γ ⊢ t :⇒*: n ∷ Box P ^ !
       × Γ ⊢ n ≅ n ∷ Box P ^ !
-      × Boxedin Γ n A [A]
+      × ∃ λ isbox → Boxedin Γ n isbox A [A]
 
     -- for some reason we need to use thebox instead of box
-    Boxedin : (Γ : Con Term) → Term → (A : Term) → Γ ⊩¹Box A → Set
-    Boxedin Γ (thebox n) A (Boxᵣ P _ [P]) = Γ ⊩¹ n ∷ P ^ % / [P]
-    Boxedin Γ n A _ = Γ ⊩neNf n ∷ A ^ !
+    Boxedin : (Γ : Con Term) → (n : Term) → Boxlike n → (A : Term) → Γ ⊩¹Box A → Set
+    Boxedin Γ _ (boxₙ {x}) A (Boxᵣ P _ [P]) = Γ ⊩¹ x ∷ P ^ % / [P]
+    Boxedin Γ n (ne _) A _ = Γ ⊢ n ~ n ∷ A ^ !
 
     _⊩¹Box_≡_∷_/_ : ∀ (Γ : Con Term) (t u : Term) (A : Term) ([A] : Γ ⊩¹Box A) → Set
     Γ ⊩¹Box t ≡ u ∷ A / [A] =
       let open _⊩¹Box_ [A] in
       ∃₂ λ a b →
-        Γ ⊢ t :⇒*: a ∷ A ^ !
-      × Γ ⊢ u :⇒*: b ∷ A ^ !
-      × Γ ⊢ a ≅ b ∷ A ^ !
-      × Boxedin₌ Γ a b A [A]
+        Γ ⊢ t :⇒*: a ∷ Box P ^ !
+      × Γ ⊢ u :⇒*: b ∷ Box P ^ !
+      × Γ ⊢ a ≅ b ∷ Box P ^ !
+      × ∃₂ λ boxa boxb → Boxedin₌ Γ a b boxa boxb A [A]
 
-    Boxedin₌ : (Γ : Con Term) → Term → Term → (A : Term) → Γ ⊩¹Box A → Set
-    Boxedin₌ Γ (thebox a) (thebox b) A (Boxᵣ P _ [P]) = Γ ⊩¹ a ≡ b ∷ P ^ % / [P]
-    Boxedin₌ Γ a b A _ = Γ ⊩neNf a ≡ b ∷ A ^ !
+    Boxedin₌ : (Γ : Con Term) → (a b : Term) → Boxlike a → Boxlike b → (A : Term) → Γ ⊩¹Box A → Set
+    Boxedin₌ Γ _ _ (boxₙ {x = a}) (boxₙ {x = b}) A (Boxᵣ P _ [P]) = Γ ⊩¹ a ≡ b ∷ P ^ % / [P]
+    Boxedin₌ Γ a b (ne _) (ne _) A _ = Γ ⊢ a ~ b ∷ A ^ !
+    Boxedin₌ _ _ _ _ _ _ _ = ⊥
 
 
     -- Logical relation definition
@@ -395,15 +397,19 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     kit = Kit _⊩¹U _⊩¹Π_^_
               _⊩¹_^_ _⊩¹_≡_^_/_ _⊩¹_∷_^_/_ _⊩¹_≡_∷_^_/_
 
-open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ; emb; Uₜ; Uₜ₌; Π₌)
+open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ; emb; Uₜ; Uₜ₌; Π₌; Boxᵣ; Box₌)
 
 -- Patterns for the non-records of Π
 pattern Πₜ a b c d e f = a , b , c , d , e , f
 pattern Πₜ₌ a b c d e f g h i j = a , b , c , d , e , f , g , h , i , j
 
+pattern Boxₜ a b c d e = a , b , c , d , e
+pattern Boxₜ₌ a b c d e f g h = a , b , c , d , e , f , g , h
+
 pattern Uᵣ′ r a b c = Uᵣ {r = r} (Uᵣ a b c)
 pattern ne′ a b c d = ne (ne a b c d)
 pattern Πᵣ′  a b c d e f g h i j = Πᵣ (Πᵣ a b c d e f g h i j)
+pattern Boxᵣ′ a b c = Boxᵣ (Boxᵣ a b c)
 
 logRelRec : ∀ l {l′} → l′ < l → LogRelKit
 logRelRec ⁰ = λ ()

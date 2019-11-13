@@ -8,6 +8,7 @@ open EqRelSet {{...}}
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Weakening
+open import Definition.Typed.RedSteps
 open import Definition.Typed.Properties
 open import Definition.LogicalRelation
 
@@ -22,6 +23,7 @@ escape (ℕᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (Emptyᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) = ⊢A
 escape (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
+escape (Boxᵣ′ P [ ⊢A , ⊢B , D ] [P]) = ⊢A
 escape (emb 0<1 A) = escape A
 
 -- Reducible type equality respect the equality relation.
@@ -36,6 +38,8 @@ escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
 escapeEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ Πₙ Πₙ A≡B
+escapeEq (Boxᵣ′ P [ ⊢A , ⊢B , D ] [P]) (Box₌ P′ D′ A≡B) =
+  ≅-red D (red D′) Boxₙ Boxₙ (≅-Box-cong (escapeEq [P] A≡B))
 escapeEq (emb 0<1 A) A≡B = escapeEq A A≡B
 
 -- Reducible terms are well-formed.
@@ -51,6 +55,8 @@ escapeTerm (ne′ K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] nf) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                (f , [ ⊢t , ⊢u , d ] , funcF , f≡f , [f] , [f]₁) =
+  conv ⊢t (sym (subset* (red D)))
+escapeTerm (Boxᵣ′ P D [P]) (Boxₜ x [ ⊢t , ⊢boxx , d₁ ] a≡a isbox boxed) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (emb 0<1 A) t = escapeTerm A t
 
@@ -75,4 +81,6 @@ escapeTermEq (ne′ K D neK K≡K)
 escapeTermEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
+escapeTermEq (Boxᵣ′ P [ ⊢A , ⊢B , D ] [P]) (Boxₜ₌ a b Dt Du a≡b boxa boxb boxed) =
+  ≅ₜ-red D (redₜ Dt) (redₜ Du) Boxₙ (boxWhnf boxa) (boxWhnf boxb) a≡b
 escapeTermEq (emb 0<1 A) t≡u = escapeTermEq A t≡u

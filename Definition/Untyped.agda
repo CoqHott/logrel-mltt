@@ -262,6 +262,10 @@ functionWhnf : ∀ {f} → Function f → Whnf f
 functionWhnf lamₙ = lamₙ
 functionWhnf (ne x) = ne x
 
+boxWhnf : ∀ {x} → Boxlike x → Whnf x
+boxWhnf boxₙ = boxₙ
+boxWhnf (ne x) = ne x
+
 ------------------------------------------------------------------------
 -- Weakening
 

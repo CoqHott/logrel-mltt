@@ -23,6 +23,7 @@ reflEq (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
   Π₌ _ _ D A≡A
      (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
      (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
+reflEq (Boxᵣ′ P D [P]) = Box₌ _ D (reflEq [P])
 reflEq (emb 0<1 [A]) = reflEq [A]
 
 reflNatural-prop : ∀ {Γ n}
@@ -58,4 +59,8 @@ reflEqTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f�
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm ([F] ρ ⊢Δ) [a]))
+reflEqTerm (Boxᵣ′ P D [P]) (Boxₜ _ Dt a≡a boxₙ boxed) =
+  Boxₜ₌ _ _ Dt Dt a≡a boxₙ boxₙ (reflEqTerm [P] boxed)
+reflEqTerm (Boxᵣ′ P D [P]) (Boxₜ a Dt a≡a (ne aNe) boxed) =
+  Boxₜ₌ a a Dt Dt a≡a (ne aNe) (ne aNe) boxed
 reflEqTerm (emb 0<1 [A]) t = reflEqTerm [A] t
