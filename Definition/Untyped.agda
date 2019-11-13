@@ -182,6 +182,9 @@ U≢Empty ()
 U≢Π : ∀ {r r' F G} → Univ r PE.≢ Π F ^ r' ▹ G
 U≢Π ()
 
+U≢Box : ∀ {r A} → Univ r PE.≢ Box A
+U≢Box ()
+
 U≢ne : ∀ {r K} → Neutral K → Univ r PE.≢ K
 U≢ne () PE.refl
 
@@ -194,6 +197,12 @@ U≢ne () PE.refl
 Empty≢ℕ : Empty PE.≢ ℕ
 Empty≢ℕ ()
 
+ℕ≢Box : ∀ {A} → ℕ PE.≢ Box A
+ℕ≢Box ()
+
+Empty≢Box : ∀ {A} → Empty PE.≢ Box A
+Empty≢Box ()
+
 ℕ≢ne : ∀ {K} → Neutral K → ℕ PE.≢ K
 ℕ≢ne () PE.refl
 
@@ -205,6 +214,12 @@ Empty≢Π ()
 
 Π≢ne : ∀ {F r G K} → Neutral K → Π F ^ r ▹ G PE.≢ K
 Π≢ne () PE.refl
+
+Box≢ne : ∀ {k A} → Neutral k → Box A PE.≢ k
+Box≢ne () PE.refl
+
+Box≢Π : ∀ {A F r G} → Box A PE.≢ Π F ^ r ▹ G
+Box≢Π ()
 
 zero≢suc : ∀ {n} → zero PE.≢ suc n
 zero≢suc ()
