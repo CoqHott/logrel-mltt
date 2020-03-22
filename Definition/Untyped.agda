@@ -5,7 +5,9 @@
 module Definition.Untyped where
 
 open import Tools.Nat
+open import Tools.Bool using (Bool)
 open import Tools.Product
+open import Tools.Empty
 open import Tools.List
 import Tools.PropositionalEquality as PE
 
@@ -122,35 +124,35 @@ Univ-PE-injectivity PE.refl = PE.refl
 -- A term is neutral if it has a variable in head position.
 -- The variable blocks reduction of such terms.
 
-data Neutral : Term → Set where
-  var     : ∀ n                     → Neutral (var n)
-  ∘ₙ      : ∀ {k u}     → Neutral k → Neutral (k ∘ u)
-  natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
-  Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
+mutual 
+  data Neutral : Term → Set where
+    var     : ∀ n                     → Neutral (var n)
+    ∘ₙ      : ∀ {k u}     →  Nf u → Neutral k → Neutral (k ∘ u)
+    natrecₙ : ∀ {C c g k} →  Nf C →  Nf c →  Nf g → Neutral k → Neutral (natrec C c g k)
+    Emptyrecₙ : ∀ {A e} -> Nf A → Neutral e -> Neutral (Emptyrec A e)
+  
 
+  -- Weak head normal forms (whnfs).
+  
+  -- These are the (lazy) values of our language.
 
--- Weak head normal forms (whnfs).
+  data Nf : Term → Set where
+  
+       -- Type constructors are whnfs.
+       Uₙ    : ∀ {r} → Nf (Univ r)
+       Πₙ    : ∀ {A r B} → Nf A → Nf B → Nf (Π A ^ r ▹ B)
+       ℕₙ    : Nf ℕ
+       Emptyₙ : Nf Empty
 
--- These are the (lazy) values of our language.
+       -- Introductions are whnfs.
+       lamₙ  : ∀ {A t} → Nf (lam A ▹ t)
+       zeroₙ : Nf zero
+       sucₙ  : ∀ {t} → Nf t → Nf (suc t)
 
-data Whnf : Term → Set where
+       -- Neutrals are whnfs.
+       ne   : ∀ {n} → Neutral n → Nf n
 
-  -- Type constructors are whnfs.
-  Uₙ    : ∀ {r} → Whnf (Univ r)
-  Πₙ    : ∀ {A r B} → Whnf (Π A ^ r ▹ B)
-  ℕₙ    : Whnf ℕ
-  Emptyₙ : Whnf Empty
-
-  -- Introductions are whnfs.
-  lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
-  zeroₙ : Whnf zero
-  sucₙ  : ∀ {t} → Whnf (suc t)
-
-  -- Neutrals are whnfs.
-  ne   : ∀ {n} → Neutral n → Whnf n
-
-
--- Whnf inequalities.
+-- Nf inequalities.
 
 -- Different whnfs are trivially distinguished by propositional equality.
 -- (The following statements are sometimes called "no-confusion theorems".)
@@ -204,14 +206,14 @@ suc≢ne () PE.refl
 
 data Natural : Term → Set where
   zeroₙ :                     Natural zero
-  sucₙ  : ∀ {t}             → Natural (suc t)
+  sucₙ  : ∀ {t}             → Natural t → Natural (suc t)
   ne    : ∀ {n} → Neutral n → Natural n
 
 -- A (small) type in whnf is either Π A B, ℕ, or neutral.
 -- Large types could also be U.
 
 data Type : Term → Set where
-  Πₙ : ∀ {A r B} → Type (Π A ^ r ▹ B)
+  Πₙ : ∀ {A r B} → Type A → Nf B → Type (Π A ^ r ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
   ne : ∀{n} → Neutral n → Type n
@@ -223,22 +225,22 @@ data Function : Term → Set where
   ne : ∀{n} → Neutral n → Function n
 
 -- These views classify only whnfs.
--- Natural, Type, and Function are a subsets of Whnf.
+-- Natural, Type, and Function are a subsets of Nf.
 
-naturalWhnf : ∀ {n} → Natural n → Whnf n
-naturalWhnf sucₙ = sucₙ
-naturalWhnf zeroₙ = zeroₙ
-naturalWhnf (ne x) = ne x
+naturalNf : ∀ {n} → Natural n → Nf n
+naturalNf (sucₙ x) = sucₙ (naturalNf x)
+naturalNf zeroₙ = zeroₙ
+naturalNf (ne x) = ne x
 
-typeWhnf : ∀ {A} → Type A → Whnf A
-typeWhnf Πₙ = Πₙ
-typeWhnf ℕₙ = ℕₙ
-typeWhnf Emptyₙ = Emptyₙ
-typeWhnf (ne x) = ne x
+typeNf : ∀ {A} → Type A → Nf A
+typeNf (Πₙ A B) = Πₙ (typeNf A) B
+typeNf ℕₙ = ℕₙ
+typeNf Emptyₙ = Emptyₙ
+typeNf (ne x) = ne x
 
-functionWhnf : ∀ {f} → Function f → Whnf f
-functionWhnf lamₙ = lamₙ
-functionWhnf (ne x) = ne x
+functionNf : ∀ {f} → Function f → Nf f
+functionNf lamₙ = lamₙ
+functionNf (ne x) = ne x
 
 ------------------------------------------------------------------------
 -- Weakening
@@ -304,21 +306,32 @@ wk1 = wk (step id)
 
 -- Weakening of a neutral term.
 
-wkNeutral : ∀ {t} ρ → Neutral t → Neutral (wk ρ t)
-wkNeutral ρ (var n)    = var (wkVar ρ n)
-wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
-wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
-wkNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkNeutral ρ e)
+mutual 
+  wkNeutral : ∀ {t} ρ → Neutral t → Neutral (wk ρ t)
+  wkNeutral ρ (var n)    = var (wkVar ρ n)
+  wkNeutral ρ (∘ₙ k n)    = ∘ₙ (wkNf ρ k) (wkNeutral ρ n)
+  wkNeutral ρ (natrecₙ C c g n) = natrecₙ (wkNf (lift ρ) C)  (wkNf ρ c) (wkNf ρ g) (wkNeutral ρ n)
+  wkNeutral ρ (Emptyrecₙ n e) = Emptyrecₙ (wkNf ρ n) (wkNeutral ρ e)
+
+  wkNf : ∀ {t} ρ → Nf t → Nf (wk ρ t)
+  wkNf ρ Uₙ       = Uₙ
+  wkNf ρ (Πₙ A B) = Πₙ (wkNf ρ A) (wkNf (lift ρ) B)
+  wkNf ρ ℕₙ       = ℕₙ
+  wkNf ρ Emptyₙ   = Emptyₙ
+  wkNf ρ lamₙ     = lamₙ
+  wkNf ρ zeroₙ    = zeroₙ
+  wkNf ρ (sucₙ n)    = sucₙ (wkNf ρ n)
+  wkNf ρ (ne x) = ne (wkNeutral ρ x)
 
 -- Weakening can be applied to our whnf views.
 
 wkNatural : ∀ {t} ρ → Natural t → Natural (wk ρ t)
-wkNatural ρ sucₙ    = sucₙ
+wkNatural ρ (sucₙ n)    = sucₙ (wkNatural ρ n)
 wkNatural ρ zeroₙ   = zeroₙ
 wkNatural ρ (ne x) = ne (wkNeutral ρ x)
 
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
-wkType ρ Πₙ      = Πₙ
+wkType ρ (Πₙ A B) = Πₙ (wkType ρ A) (wkNf (lift ρ) B)
 wkType ρ ℕₙ      = ℕₙ
 wkType ρ Emptyₙ  = Emptyₙ
 wkType ρ (ne x) = ne (wkNeutral ρ x)
@@ -326,16 +339,6 @@ wkType ρ (ne x) = ne (wkNeutral ρ x)
 wkFunction : ∀ {t} ρ → Function t → Function (wk ρ t)
 wkFunction ρ lamₙ    = lamₙ
 wkFunction ρ (ne x) = ne (wkNeutral ρ x)
-
-wkWhnf : ∀ {t} ρ → Whnf t → Whnf (wk ρ t)
-wkWhnf ρ Uₙ      = Uₙ
-wkWhnf ρ Πₙ      = Πₙ
-wkWhnf ρ ℕₙ      = ℕₙ
-wkWhnf ρ Emptyₙ  = Emptyₙ
-wkWhnf ρ lamₙ    = lamₙ
-wkWhnf ρ zeroₙ   = zeroₙ
-wkWhnf ρ sucₙ    = sucₙ
-wkWhnf ρ (ne x) = ne (wkNeutral ρ x)
 
 -- Non-dependent version of Π.
 
@@ -479,3 +482,28 @@ t [ s ] = subst (sgSubst s) t
 
 _[_]↑ : (t : Term) (s : Term) → Term
 t [ s ]↑ = subst (consSubst (wk1Subst idSubst) s) t
+
+isS : Term -> Bool
+isS (gen Suckind (⟦ 0 , _ ⟧ ∷ [])) = Bool.true
+isS _ = Bool.false
+
+isVar : Term -> Bool
+isVar (var _) = Bool.true
+isVar _ = Bool.false
+
+-- Becoming a successor is only possible when wk a variable
+
+wk_suc : ∀ {ρ} → (t : Term) → isS t PE.≡ Bool.false → isVar t PE.≡ Bool.false → isS (wk ρ t) PE.≡ Bool.false
+wk_suc (gen (Ukind r) c) e e' = PE.refl
+wk_suc (gen (Pikind r) c) e e' = PE.refl
+wk_suc (gen Natkind c) e e' = PE.refl
+wk_suc (gen Lamkind c) e e' = PE.refl
+wk_suc (gen Appkind c) e e' = PE.refl
+wk_suc (gen Zerokind c) e e' = PE.refl
+wk_suc (gen Suckind []) e e' = PE.refl
+wk_suc (gen Suckind (⟦ 0 , t ⟧ ∷ x ∷ c)) e e' = PE.refl
+wk_suc (gen Suckind (⟦ 1+ x , t ⟧ ∷ [])) e e' = PE.refl
+wk_suc (gen Suckind (⟦ 1+ x , t ⟧ ∷ x₁ ∷ c)) e e' = PE.refl
+wk_suc (gen Natreckind c) e e' = PE.refl
+wk_suc (gen Emptykind c) e e' = PE.refl
+wk_suc (gen Emptyreckind c) e e' = PE.refl
