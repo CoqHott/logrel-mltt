@@ -6,6 +6,8 @@ open import Definition.Untyped
 
 open import Tools.Nat using (Nat)
 open import Tools.Product
+open import Tools.Bool using (Bool)
+import Tools.PropositionalEquality as PE
 
 
 infixl 30 _∙_
@@ -184,6 +186,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                → Γ     ⊢ z ∷ F [ zero ] ^ rF
                → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ rF ▹▹ F [ suc (var Nat.zero) ]↑) ^ rF
                → Γ     ⊢ n ⇒ n′ ∷ ℕ ^ !
+               → isS n PE.≡ Bool.false
                → Γ     ⊢ natrec F z s n ⇒ natrec F z s n′ ∷ F [ n ] ^ rF
   natrec-zero  : ∀ {z s F rF}
                → Γ ∙ ℕ ^ ! ⊢ F ^ rF
@@ -230,11 +233,11 @@ data _⊢_⇒*_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
 
 -- Type reduction to whnf
 _⊢_↘_^_ : (Γ : Con Term) → Term → Term → Relevance → Set
-Γ ⊢ A ↘ B ^ r = Γ ⊢ A ⇒* B ^ r × Whnf B
+Γ ⊢ A ↘ B ^ r = Γ ⊢ A ⇒* B ^ r × Nf B
 
 -- Term reduction to whnf
 _⊢_↘_∷_^_ : (Γ : Con Term) → Term → Term → Term → Relevance → Set
-Γ ⊢ t ↘ u ∷ A ^ r = Γ ⊢ t ⇒* u ∷ A ^ r × Whnf u
+Γ ⊢ t ↘ u ∷ A ^ r = Γ ⊢ t ⇒* u ∷ A ^ r × Nf u
 
 -- Type eqaulity with well-formed types
 _⊢_:≡:_^_ : (Γ : Con Term) → Term → Term → Relevance → Set
