@@ -285,3 +285,12 @@ data _⊢ˢ_≡_∷_ (Δ : Con Term) (σ σ′ : Subst) : (Γ : Con Term) → Se
 
 -- Note that we cannot use the well-formed substitutions.
 -- For that, we need to prove the fundamental theorem for substitutions.
+
+reduce_not_var : ∀ {Γ n n′ A r} → Γ ⊢ n ⇒ n′ ∷ A ^ r → isVar n PE.≡ Bool.false
+reduce_not_var (conv e x) = reduce_not_var e
+reduce_not_var (app-subst e x) = PE.refl
+reduce_not_var (β-red x x₁ x₂) = PE.refl
+reduce_not_var (natrec-subst x₁ x₂ e x₃ e') = PE.refl 
+reduce_not_var (natrec-zero x x₁ x₂) = PE.refl
+reduce_not_var (natrec-suc x x₁ x₂ x₃) = PE.refl
+reduce_not_var (Emptyrec-subst x e) = PE.refl 
