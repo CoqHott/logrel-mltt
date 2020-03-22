@@ -198,7 +198,7 @@ mutual
                            (PE.sym (wk-β t))
                            (β-red ⊢ρA (wkTerm (lift ρ) (⊢Δ ∙ ⊢ρA) ⊢t)
                                       (wkTerm ρ ⊢Δ ⊢a)))
-  wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-subst {s = s} {F = F} {rF} ⊢F ⊢z ⊢s n⇒n′) =
+  wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-subst {s = s} {n = n} {F = F} {rF} ⊢F ⊢z ⊢s n⇒n′ X) =
     PE.subst (λ x → _ ⊢ natrec _ _ _ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β F))
              (natrec-subst (wk (lift [ρ]) (⊢Δ ∙ ℕⱼ ⊢Δ) ⊢F)
                            (PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (wk-β F)
@@ -206,7 +206,7 @@ mutual
                            (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ rF)
                                      (wk-β-natrec _ F rF)
                                      (wkTerm [ρ] ⊢Δ ⊢s))
-                           (wkRedTerm [ρ] ⊢Δ n⇒n′))
+                           (wkRedTerm [ρ] ⊢Δ n⇒n′) (wk_suc n X (reduce_not_var n⇒n′)))
   wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-zero {s = s} {F = F} {rF} ⊢F ⊢z ⊢s) =
     PE.subst (λ x → _ ⊢ natrec (U.wk (lift ρ) F) _ _ _ ⇒ _ ∷ x ^ _)
              (PE.sym (wk-β F))

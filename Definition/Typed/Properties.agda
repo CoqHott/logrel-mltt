@@ -8,6 +8,7 @@ open import Definition.Typed
 open import Tools.Empty using (⊥; ⊥-elim)
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+open import Tools.Bool using (Bool)
 
 
 -- Escape context extraction
@@ -60,7 +61,7 @@ wfEq (Π-cong F F≡H G≡E) = wfEq F≡H
 -- Reduction is a subset of conversion
 
 subsetTerm : ∀ {Γ A t u r} → Γ ⊢ t ⇒ u ∷ A ^ r → Γ ⊢ t ≡ u ∷ A ^ r
-subsetTerm (natrec-subst F z s n⇒n′) =
+subsetTerm (natrec-subst F z s n⇒n′ e) =
   natrec-cong (refl F) (refl z) (refl s) (subsetTerm n⇒n′)
 subsetTerm (natrec-zero F z s) = natrec-zero F z s
 subsetTerm (natrec-suc n F z s) = natrec-suc n F z s
@@ -88,7 +89,7 @@ redFirstTerm : ∀ {Γ t u A r} → Γ ⊢ t ⇒ u ∷ A ^ r → Γ ⊢ t ∷ A 
 redFirstTerm (conv t⇒u A≡B) = conv (redFirstTerm t⇒u) A≡B
 redFirstTerm (app-subst t⇒u a) = (redFirstTerm t⇒u) ∘ⱼ a
 redFirstTerm (β-red A t a) = (lamⱼ A t) ∘ⱼ a
-redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ F z s (redFirstTerm n⇒n′)
+redFirstTerm (natrec-subst F z s n⇒n′ e) = natrecⱼ F z s (redFirstTerm n⇒n′)
 redFirstTerm (natrec-zero F z s) = natrecⱼ F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
 redFirstTerm (Emptyrec-subst A n⇒n′) = Emptyrecⱼ A (redFirstTerm n⇒n′)
@@ -110,54 +111,54 @@ redFirst* (A⇒A′ ⇨ A′⇒*B) = redFirst A⇒A′
 noNe : ∀ {t A r} → ε ⊢ t ∷ A ^ r → Neutral t → ⊥
 noNe (var x₁ ()) (var x)
 noNe (conv ⊢t x) (var n) = noNe ⊢t (var n)
-noNe (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe ⊢t neT
-noNe (conv ⊢t x) (∘ₙ neT) = noNe ⊢t (∘ₙ neT)
-noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
-noNe (Emptyrecⱼ A ⊢e) (Emptyrecₙ neT) = noNe ⊢e neT
-noNe (conv ⊢t x) (natrecₙ neT) = noNe ⊢t (natrecₙ neT)
-noNe (conv ⊢t x) (Emptyrecₙ neT) = noNe ⊢t (Emptyrecₙ neT)
+noNe (⊢t ∘ⱼ ⊢t₁) (∘ₙ n neT) = noNe ⊢t neT
+noNe (conv ⊢t x) (∘ₙ n neT) = noNe ⊢t (∘ₙ n neT)
+noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ C c p neT) = noNe ⊢t₂ neT
+noNe (Emptyrecⱼ A ⊢e) (Emptyrecₙ x neT) = noNe ⊢e neT
+noNe (conv ⊢t x) (natrecₙ C c p neT) = noNe ⊢t (natrecₙ C c p neT)
+noNe (conv ⊢t x) (Emptyrecₙ A neT) = noNe ⊢t (Emptyrecₙ A neT)
 
 -- Neutrals do not weak head reduce
 
 neRedTerm : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (n : Neutral t) → ⊥
 neRedTerm (conv d x) n = neRedTerm d n
-neRedTerm (app-subst d x) (∘ₙ n) = neRedTerm d n
-neRedTerm (β-red x x₁ x₂) (∘ₙ ())
-neRedTerm (natrec-subst x x₁ x₂ d) (natrecₙ n₁) = neRedTerm d n₁
-neRedTerm (natrec-zero x x₁ x₂) (natrecₙ ())
-neRedTerm (natrec-suc x x₁ x₂ x₃) (natrecₙ ())
-neRedTerm (Emptyrec-subst x d) (Emptyrecₙ n₁) = neRedTerm d n₁
+neRedTerm (app-subst d x) (∘ₙ A n) = neRedTerm d n
+neRedTerm (β-red x x₁ x₂) (∘ₙ A ())
+neRedTerm (natrec-subst x x₁ x₂ d e) (natrecₙ C c p n₁) = neRedTerm d n₁
+neRedTerm (natrec-zero x x₁ x₂) (natrecₙ C c p ())
+neRedTerm (natrec-suc x x₁ x₂ x₃) (natrecₙ C c p ())
+neRedTerm (Emptyrec-subst x d) (Emptyrecₙ A n₁) = neRedTerm d n₁
 
 neRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (N : Neutral A) → ⊥
 neRed (univ x) N = neRedTerm x N
 
--- Whnfs do not weak head reduce
+-- Nfs do not weak head reduce
 
-whnfRedTerm : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (w : Whnf t) → ⊥
+whnfRedTerm : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (w : Nf t) → ⊥
 whnfRedTerm (conv d x) w = whnfRedTerm d w
-whnfRedTerm (app-subst d x) (ne (∘ₙ x₁)) = neRedTerm d x₁
-whnfRedTerm (β-red x x₁ x₂) (ne (∘ₙ ()))
-whnfRedTerm (natrec-subst x x₁ x₂ d) (ne (natrecₙ x₃)) = neRedTerm d x₃
-whnfRedTerm (natrec-zero x x₁ x₂) (ne (natrecₙ ()))
-whnfRedTerm (natrec-suc x x₁ x₂ x₃) (ne (natrecₙ ()))
-whnfRedTerm (Emptyrec-subst x d) (ne (Emptyrecₙ x₂)) = neRedTerm d x₂
+whnfRedTerm (app-subst d x) (ne (∘ₙ n x₁)) = neRedTerm d x₁
+whnfRedTerm (β-red x x₁ x₂) (ne (∘ₙ n ()))
+whnfRedTerm (natrec-subst x x₁ x₂ d e) (ne (natrecₙ C c p x₃)) = neRedTerm d x₃
+whnfRedTerm (natrec-zero x x₁ x₂) (ne (natrecₙ C c p ()))
+whnfRedTerm (natrec-suc x x₁ x₂ x₃) (ne (natrecₙ C c p ()))
+whnfRedTerm (Emptyrec-subst x d) (ne (Emptyrecₙ A x₂)) = neRedTerm d x₂
 
-whnfRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (w : Whnf A) → ⊥
+whnfRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (w : Nf A) → ⊥
 whnfRed (univ x) w = whnfRedTerm x w
 
-whnfRed*Term : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒* u ∷ A ^ r) (w : Whnf t) → t PE.≡ u
+whnfRed*Term : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒* u ∷ A ^ r) (w : Nf t) → t PE.≡ u
 whnfRed*Term (id x) Uₙ = PE.refl
-whnfRed*Term (id x) Πₙ = PE.refl
+whnfRed*Term (id x) (Πₙ A B) = PE.refl
 whnfRed*Term (id x) ℕₙ = PE.refl
 whnfRed*Term (id x) Emptyₙ = PE.refl
 whnfRed*Term (id x) lamₙ = PE.refl
 whnfRed*Term (id x) zeroₙ = PE.refl
-whnfRed*Term (id x) sucₙ = PE.refl
+whnfRed*Term (id x) (sucₙ n) = PE.refl
 whnfRed*Term (id x) (ne x₁) = PE.refl
 whnfRed*Term (conv x x₁ ⇨ d) w = ⊥-elim (whnfRedTerm x w)
 whnfRed*Term (x ⇨ d) (ne x₁) = ⊥-elim (neRedTerm x x₁)
 
-whnfRed* : ∀ {Γ A B r} (d : Γ ⊢ A ⇒* B ^ r) (w : Whnf A) → A PE.≡ B
+whnfRed* : ∀ {Γ A B r} (d : Γ ⊢ A ⇒* B ^ r) (w : Nf A) → A PE.≡ B
 whnfRed* (id x) w = PE.refl
 whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 
@@ -170,12 +171,12 @@ whrDetTerm (app-subst d x) (app-subst d′ x₁) rewrite whrDetTerm d d′ = PE.
 whrDetTerm (app-subst d x) (β-red x₁ x₂ x₃) = ⊥-elim (whnfRedTerm d lamₙ)
 whrDetTerm (β-red x x₁ x₂) (app-subst d x₃) = ⊥-elim (whnfRedTerm d lamₙ)
 whrDetTerm (β-red x x₁ x₂) (β-red x₃ x₄ x₅) = PE.refl
-whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-subst x₃ x₄ x₅ d′) rewrite whrDetTerm d d′ = PE.refl
-whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-zero x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d zeroₙ)
-whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-suc x₃ x₄ x₅ x₆) = ⊥-elim (whnfRedTerm d sucₙ)
-whrDetTerm (natrec-zero x x₁ x₂) (natrec-subst x₃ x₄ x₅ d′) = ⊥-elim (whnfRedTerm d′ zeroₙ)
+whrDetTerm (natrec-subst x x₁ x₂ d e) (natrec-subst x₃ x₄ x₅ d′ e′) rewrite whrDetTerm d d′ = PE.refl
+whrDetTerm (natrec-subst x x₁ x₂ d e) (natrec-zero x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d zeroₙ)
+whrDetTerm (natrec-subst x x₁ x₂ d e) (natrec-suc x₃ x₄ x₅ x₆) = ⊥-elim (Tools.Bool.true_not_false e)
+whrDetTerm (natrec-zero x x₁ x₂) (natrec-subst x₃ x₄ x₅ d′ e′) = ⊥-elim (whnfRedTerm d′ zeroₙ)
 whrDetTerm (natrec-zero x x₁ x₂) (natrec-zero x₃ x₄ x₅) = PE.refl
-whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-subst x₄ x₅ x₆ d′) = ⊥-elim (whnfRedTerm d′ sucₙ)
+whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-subst x₄ x₅ x₆ d′ e′) = ⊥-elim (Tools.Bool.true_not_false e′)
 whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-suc x₄ x₅ x₆ x₇) = PE.refl
 whrDetTerm (Emptyrec-subst x d) (Emptyrec-subst x₂ d′) rewrite whrDetTerm d d′ = PE.refl
 
@@ -241,7 +242,7 @@ redU*Term′ : ∀ {A B U′ Γ r r'} → U′ PE.≡ (Univ r) → Γ ⊢ A ⇒ 
 redU*Term′ U′≡U (conv A⇒U x) = redU*Term′ U′≡U A⇒U
 redU*Term′ () (app-subst A⇒U x)
 redU*Term′ U′≡U (β-red x x₁ x₂) = UnotInA[t] U′≡U x₂ x₁
-redU*Term′ () (natrec-subst x x₁ x₂ A⇒U)
+redU*Term′ () (natrec-subst x x₁ x₂ A⇒U e)
 redU*Term′ U′≡U (natrec-zero x x₁ x₂) rewrite U′≡U = UnotInA x₁
 redU*Term′ () (natrec-suc x x₁ x₂ x₃)
 redU*Term′ () (Emptyrec-subst x A⇒U)

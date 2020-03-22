@@ -82,8 +82,8 @@ record EqRelSet : Set₁ where
     ≅-red : ∀ {A A′ B B′ r Γ}
           → Γ ⊢ A ⇒* A′ ^ r
           → Γ ⊢ B ⇒* B′ ^ r
-          → Whnf A′
-          → Whnf B′
+          → Nf A′
+          → Nf B′
           → Γ ⊢ A′ ≅ B′ ^ r
           → Γ ⊢ A  ≅ B ^ r
 
@@ -91,9 +91,9 @@ record EqRelSet : Set₁ where
            → Γ ⊢ A ⇒* B ^ r
            → Γ ⊢ a ⇒* a′ ∷ B ^ r
            → Γ ⊢ b ⇒* b′ ∷ B ^ r
-           → Whnf B
-           → Whnf a′
-           → Whnf b′
+           → Nf B
+           → Nf a′
+           → Nf b′
            → Γ ⊢ a′ ≅ b′ ∷ B ^ r
            → Γ ⊢ a  ≅ b  ∷ A ^ r
 
