@@ -11,8 +11,8 @@ open import Definition.Typed.Properties
 reduction : ∀ {A A′ B B′ r Γ}
           → Γ ⊢ A ⇒* A′ ^ r
           → Γ ⊢ B ⇒* B′ ^ r
-          → Nf A′
-          → Nf B′
+          → whNf A′
+          → whNf B′
           → Γ ⊢ A′ ≡ B′ ^ r
           → Γ ⊢ A ≡ B ^ r
 reduction D D′ whnfA′ whnfB′ A′≡B′ =
@@ -21,8 +21,8 @@ reduction D D′ whnfA′ whnfB′ A′≡B′ =
 reduction′ : ∀ {A A′ B B′ r Γ}
           → Γ ⊢ A ⇒* A′ ^ r
           → Γ ⊢ B ⇒* B′ ^ r
-          → Nf A′
-          → Nf B′
+          → whNf A′
+          → whNf B′
           → Γ ⊢ A ≡ B ^ r
           → Γ ⊢ A′ ≡ B′ ^ r
 reduction′ D D′ whnfA′ whnfB′ A≡B =
@@ -33,9 +33,9 @@ reductionₜ : ∀ {a a′ b b′ A B r Γ}
            → Γ ⊢ A ⇒* B ^ r
            → Γ ⊢ a ⇒* a′ ∷ B ^ r
            → Γ ⊢ b ⇒* b′ ∷ B ^ r
-           → Nf B
-           → Nf a′
-           → Nf b′
+           → whNf B
+           → whNf a′
+           → whNf b′
            → Γ ⊢ a′ ≡ b′ ∷ B ^ r
            → Γ ⊢ a ≡ b ∷ A ^ r
 reductionₜ D d d′ whnfB whnfA′ whnfB′ a′≡b′ =
@@ -47,9 +47,9 @@ reductionₜ′ : ∀ {a a′ b b′ A B r Γ}
            → Γ ⊢ A ⇒* B ^ r
            → Γ ⊢ a ⇒* a′ ∷ B ^ r
            → Γ ⊢ b ⇒* b′ ∷ B ^ r
-           → Nf B
-           → Nf a′
-           → Nf b′
+           → whNf B
+           → whNf a′
+           → whNf b′
            → Γ ⊢ a ≡ b ∷ A ^ r
            → Γ ⊢ a′ ≡ b′ ∷ B ^ r
 reductionₜ′ D d d′ whnfB whnfA′ whnfB′ a≡b =

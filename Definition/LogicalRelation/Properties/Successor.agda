@@ -24,7 +24,7 @@ sucTerm′ (noemb D) (ℕₜ n [ ⊢t , ⊢u , d ] n≡n prop) =
   let natN = natural prop
   in  ℕₜ _ [ sucⱼ ⊢t , sucⱼ ⊢t , id (sucⱼ ⊢t) ]
          (≅-suc-cong (≅ₜ-red (red D) d d ℕₙ
-                             (naturalWhnf natN) (naturalWhnf natN) n≡n))
+                             (naturalwhNf natN) (naturalwhNf natN) n≡n))
          (sucᵣ (ℕₜ n [ ⊢t , ⊢u , d ] n≡n prop))
 sucTerm′ (emb 0<1 x) [n] = sucTerm′ x [n]
 
@@ -47,7 +47,7 @@ sucEqTerm′ (noemb D) (ℕₜ₌ k k′ [ ⊢t , ⊢u , d ]
                               [ ⊢t₁ , ⊢u₁ , d₁ ] t≡u prop) =
   let natK , natK′ = split prop
   in  ℕₜ₌ _ _ (idRedTerm:*: (sucⱼ ⊢t)) (idRedTerm:*: (sucⱼ ⊢t₁))
-        (≅-suc-cong (≅ₜ-red (red D) d d₁ ℕₙ (naturalWhnf natK) (naturalWhnf natK′) t≡u))
+        (≅-suc-cong (≅ₜ-red (red D) d d₁ ℕₙ (naturalwhNf natK) (naturalwhNf natK′) t≡u))
         (sucᵣ (ℕₜ₌ k k′ [ ⊢t , ⊢u , d ] [ ⊢t₁ , ⊢u₁ , d₁ ] t≡u prop))
 sucEqTerm′ (emb 0<1 x) [n≡n′] = sucEqTerm′ x [n≡n′]
 

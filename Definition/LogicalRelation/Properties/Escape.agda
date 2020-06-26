@@ -59,11 +59,11 @@ escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
 escapeTermEq (Uᵣ′ r' l′ l< ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
-  ≅ₜ-red (id (Uⱼ ⊢Γ)) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
+  ≅ₜ-red (id (Uⱼ ⊢Γ)) (redₜ d) (redₜ d′) Uₙ (typewhNf typeA) (typewhNf typeB) A≡B
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) ℕₙ
-             (naturalWhnf natK) (naturalWhnf natK′) k≡k′
+             (naturalwhNf natK) (naturalwhNf natK′) k≡k′
 escapeTermEq (Emptyᵣ D) (Emptyₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = esplit prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) Emptyₙ
@@ -74,5 +74,5 @@ escapeTermEq (ne′ K D neK K≡K)
          (~-to-≅ₜ t≡u)
 escapeTermEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
-  ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
+  ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionwhNf funcF) (functionwhNf funcG) f≡g
 escapeTermEq (emb 0<1 A) t≡u = escapeTermEq A t≡u

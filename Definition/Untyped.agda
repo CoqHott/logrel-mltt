@@ -4,6 +4,7 @@
 
 module Definition.Untyped where
 
+open import Tools.Sum using (_⊎_; inj₁; inj₂)
 open import Tools.Nat
 open import Tools.Bool using (Bool)
 open import Tools.Product
@@ -132,29 +133,73 @@ mutual
     Emptyrecₙ : ∀ {A e} -> Nf A → Neutral e -> Neutral (Emptyrec A e)
   
 
-  -- Weak head normal forms (whnfs).
+  -- Weak head normal forms (nfs).
   
   -- These are the (lazy) values of our language.
 
   data Nf : Term → Set where
   
-       -- Type constructors are whnfs.
+       -- Type constructors are nfs.
        Uₙ    : ∀ {r} → Nf (Univ r)
        Πₙ    : ∀ {A r B} → Nf A → Nf B → Nf (Π A ^ r ▹ B)
        ℕₙ    : Nf ℕ
        Emptyₙ : Nf Empty
 
-       -- Introductions are whnfs.
+       -- Introductions are nfs.
        lamₙ  : ∀ {A t} → Nf (lam A ▹ t)
        zeroₙ : Nf zero
        sucₙ  : ∀ {t} → Nf t → Nf (suc t)
 
-       -- Neutrals are whnfs.
+       -- Neutrals are nfs.
        ne   : ∀ {n} → Neutral n → Nf n
+
+data whNeutral : Term → Set where
+  var     : ∀ n                        → whNeutral (var n)
+  ∘ₙ      : ∀ {k u}     → whNeutral k → whNeutral (k ∘ u)
+  natrecₙ : ∀ {C c g k} → Nf C → whNeutral k → whNeutral (natrec C c g k)
+  Emptyrecₙ : ∀ {A e} → whNeutral e    → whNeutral (Emptyrec A e)
+  
+
+  -- Weak head normal forms (nfs).
+  
+  -- These are the (lazy) values of our language.
+
+data whNf : Term → Set where
+
+  -- Type constructors are nfs.
+  Uₙ    : ∀ {r} → whNf (Univ r)
+  Πₙ    : ∀ {A r B} → whNf (Π A ^ r ▹ B)
+  ℕₙ    : whNf ℕ
+  Emptyₙ : whNf Empty
+
+  -- Introductions are nfs.
+  lamₙ  : ∀ {A t} → whNf (lam A ▹ t)
+  zeroₙ : whNf zero
+  sucₙ  : ∀ {t} → whNf (suc t)
+
+  -- whNeutrals are nfs.
+  ne   : ∀ {n} → whNeutral n → whNf n
+
+
+NeutralwhNeutral :  ∀ {t} → Neutral t → whNeutral t
+NeutralwhNeutral (var n) = var n
+NeutralwhNeutral (∘ₙ x X) = ∘ₙ (NeutralwhNeutral X)
+NeutralwhNeutral (natrecₙ x x₁ x₂ X) = natrecₙ x (NeutralwhNeutral X)
+NeutralwhNeutral (Emptyrecₙ x X) = Emptyrecₙ (NeutralwhNeutral X)
+
+NfwhNf :  ∀ {t} → Nf t → whNf t
+NfwhNf Uₙ = Uₙ
+NfwhNf (Πₙ X X₁) = Πₙ
+NfwhNf ℕₙ = ℕₙ
+NfwhNf Emptyₙ = Emptyₙ
+NfwhNf lamₙ = lamₙ
+NfwhNf zeroₙ = zeroₙ
+NfwhNf (sucₙ X) = sucₙ
+NfwhNf (ne x) = ne (NeutralwhNeutral x)
 
 -- Nf inequalities.
 
--- Different whnfs are trivially distinguished by propositional equality.
+-- Different nfs are trivially distinguished by propositional equality.
 -- (The following statements are sometimes called "no-confusion theorems".)
 
 U≢ℕ : ∀ {r} → Univ r PE.≢ ℕ
@@ -166,7 +211,7 @@ U≢Empty ()
 U≢Π : ∀ {r r' F G} → Univ r PE.≢ Π F ^ r' ▹ G
 U≢Π ()
 
-U≢ne : ∀ {r K} → Neutral K → Univ r PE.≢ K
+U≢ne : ∀ {r K} → whNeutral K → Univ r PE.≢ K
 U≢ne () PE.refl
 
 ℕ≢Π : ∀ {F r G} → ℕ PE.≢ Π F ^ r ▹ G
@@ -178,70 +223,86 @@ U≢ne () PE.refl
 Empty≢ℕ : Empty PE.≢ ℕ
 Empty≢ℕ ()
 
-ℕ≢ne : ∀ {K} → Neutral K → ℕ PE.≢ K
+ℕ≢ne : ∀ {K} → whNeutral K → ℕ PE.≢ K
 ℕ≢ne () PE.refl
 
-Empty≢ne : ∀ {K} → Neutral K → Empty PE.≢ K
+Empty≢ne : ∀ {K} → whNeutral K → Empty PE.≢ K
 Empty≢ne () PE.refl
 
 Empty≢Π : ∀ {F r G} → Empty PE.≢ Π F ^ r ▹ G
 Empty≢Π ()
 
-Π≢ne : ∀ {F r G K} → Neutral K → Π F ^ r ▹ G PE.≢ K
+Π≢ne : ∀ {F r G K} → whNeutral K → Π F ^ r ▹ G PE.≢ K
 Π≢ne () PE.refl
 
 zero≢suc : ∀ {n} → zero PE.≢ suc n
 zero≢suc ()
 
-zero≢ne : ∀ {k} → Neutral k → zero PE.≢ k
+zero≢ne : ∀ {k} → whNeutral k → zero PE.≢ k
 zero≢ne () PE.refl
 
-suc≢ne : ∀ {n k} → Neutral k → suc n PE.≢ k
+suc≢ne : ∀ {n k} → whNeutral k → suc n PE.≢ k
 suc≢ne () PE.refl
 
 
--- Several views on whnfs (note: not recursive).
+-- Several views on nfs (note: not recursive).
 
--- A whnf of type ℕ is either zero, suc t, or neutral.
+-- A nf of type ℕ is either zero, suc t, or neutral.
 
 data Natural : Term → Set where
   zeroₙ :                     Natural zero
-  sucₙ  : ∀ {t}             → Natural t → Natural (suc t)
-  ne    : ∀ {n} → Neutral n → Natural n
+  sucₙ  : ∀ {t}             → Natural (suc t)
+  ne    : ∀ {n} → whNeutral n → Natural n
 
--- A (small) type in whnf is either Π A B, ℕ, or neutral.
+-- A (small) type in nf is either Π A B, ℕ, or neutral.
 -- Large types could also be U.
 
 data Type : Term → Set where
-  Πₙ : ∀ {A r B} → Type A → Nf B → Type (Π A ^ r ▹ B)
+  Πₙ : ∀ {A r B} → Type (Π A ^ r ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
-  ne : ∀{n} → Neutral n → Type n
+  ne : ∀{n} → whNeutral n → Type n
 
--- A whnf of type Π A B is either lam t or neutral.
+-- A nf of type Π A B is either lam t or neutral.
 
 data Function : Term → Set where
   lamₙ : ∀{A t} → Function (lam A ▹ t)
-  ne : ∀{n} → Neutral n → Function n
+  ne : ∀{n} → whNeutral n → Function n
 
--- These views classify only whnfs.
+-- These views classify only nfs.
 -- Natural, Type, and Function are a subsets of Nf.
 
-naturalNf : ∀ {n} → Natural n → Nf n
-naturalNf (sucₙ x) = sucₙ (naturalNf x)
-naturalNf zeroₙ = zeroₙ
-naturalNf (ne x) = ne x
+-- naturalNf : ∀ {n} → Natural n → Nf n
+-- naturalNf (sucₙ) = sucₙ (naturalNf x)
+-- naturalNf zeroₙ = zeroₙ
+-- naturalNf (ne x) = ne x
 
-typeNf : ∀ {A} → Type A → Nf A
-typeNf (Πₙ A B) = Πₙ (typeNf A) B
-typeNf ℕₙ = ℕₙ
-typeNf Emptyₙ = Emptyₙ
-typeNf (ne x) = ne x
+-- typeNf : ∀ {A} → Type A → Nf A
+-- typeNf (Πₙ A B) = Πₙ (typeNf A) B
+-- typeNf ℕₙ = ℕₙ
+-- typeNf Emptyₙ = Emptyₙ
+-- typeNf (ne x) = ne x
 
-functionNf : ∀ {f} → Function f → Nf f
-functionNf lamₙ = lamₙ
-functionNf (ne x) = ne x
+-- functionNf : ∀ {f} → Function f → Nf f
+-- functionNf lamₙ = lamₙ
+-- functionNf (ne x) = ne x
 
+-- Natural, Type, and Function are a subsets of Nf.
+
+naturalwhNf : ∀ {n} → Natural n → whNf n
+naturalwhNf (sucₙ) = sucₙ
+naturalwhNf zeroₙ = zeroₙ
+naturalwhNf (ne x) = ne x
+
+typewhNf : ∀ {A} → Type A → whNf A
+typewhNf Πₙ = Πₙ
+typewhNf ℕₙ = ℕₙ
+typewhNf Emptyₙ = Emptyₙ
+typewhNf (ne x) = ne x
+
+functionwhNf : ∀ {f} → Function f → whNf f
+functionwhNf lamₙ = lamₙ
+functionwhNf (ne x) = ne x
 ------------------------------------------------------------------------
 -- Weakening
 
@@ -323,22 +384,40 @@ mutual
   wkNf ρ (sucₙ n)    = sucₙ (wkNf ρ n)
   wkNf ρ (ne x) = ne (wkNeutral ρ x)
 
--- Weakening can be applied to our whnf views.
+mutual 
+  wkwhNeutral : ∀ {t} ρ → whNeutral t → whNeutral (wk ρ t)
+  wkwhNeutral ρ (var n)    = var (wkVar ρ n)
+  wkwhNeutral ρ (∘ₙ n)    = ∘ₙ (wkwhNeutral ρ n )
+  wkwhNeutral ρ (natrecₙ C n) = natrecₙ (wkNf (lift ρ) C) (wkwhNeutral ρ n)
+  wkwhNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkwhNeutral ρ e)
+
+  wkwhNf : ∀ {t} ρ → whNf t → whNf (wk ρ t)
+  wkwhNf ρ Uₙ       = Uₙ
+  wkwhNf ρ Πₙ = Πₙ
+  wkwhNf ρ ℕₙ       = ℕₙ
+  wkwhNf ρ Emptyₙ   = Emptyₙ
+  wkwhNf ρ lamₙ     = lamₙ
+  wkwhNf ρ zeroₙ    = zeroₙ
+  wkwhNf ρ sucₙ    = sucₙ
+  wkwhNf ρ (ne x) = ne (wkwhNeutral ρ x)
+
+
+-- Weakening can be applied to our nf views.
 
 wkNatural : ∀ {t} ρ → Natural t → Natural (wk ρ t)
-wkNatural ρ (sucₙ n)    = sucₙ (wkNatural ρ n)
+wkNatural ρ (sucₙ)    = sucₙ -- (wkNatural ρ n)
 wkNatural ρ zeroₙ   = zeroₙ
-wkNatural ρ (ne x) = ne (wkNeutral ρ x)
+wkNatural ρ (ne x) = ne (wkwhNeutral ρ x)
 
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
-wkType ρ (Πₙ A B) = Πₙ (wkType ρ A) (wkNf (lift ρ) B)
+wkType ρ Πₙ = Πₙ -- (wkType ρ A) (wkNf (lift ρ) B)
 wkType ρ ℕₙ      = ℕₙ
 wkType ρ Emptyₙ  = Emptyₙ
-wkType ρ (ne x) = ne (wkNeutral ρ x)
+wkType ρ (ne x) = ne (wkwhNeutral ρ x)
 
 wkFunction : ∀ {t} ρ → Function t → Function (wk ρ t)
 wkFunction ρ lamₙ    = lamₙ
-wkFunction ρ (ne x) = ne (wkNeutral ρ x)
+wkFunction ρ (ne x) = ne (wkwhNeutral ρ x)
 
 -- Non-dependent version of Π.
 
@@ -487,6 +566,23 @@ isS : Term -> Bool
 isS (gen Suckind (⟦ 0 , _ ⟧ ∷ [])) = Bool.true
 isS _ = Bool.false
 
+isS-decidable : ∀ n → (isS n PE.≡ Bool.false) ⊎ (∃ (λ m → n PE.≡ suc m))
+isS-decidable (var x) = inj₁ PE.refl
+isS-decidable (gen (Ukind x) c) = inj₁ PE.refl
+isS-decidable (gen (Pikind x) c) = inj₁ PE.refl
+isS-decidable (gen Natkind c) = inj₁ PE.refl
+isS-decidable (gen Lamkind c) = inj₁ PE.refl
+isS-decidable (gen Appkind c) = inj₁ PE.refl
+isS-decidable (gen Zerokind c) = inj₁ PE.refl
+isS-decidable (gen Suckind List.[]) = inj₁ PE.refl
+isS-decidable (gen Suckind (⟦ Nat.zero , t ⟧ List.∷ List.[])) = inj₂ (t , PE.refl)
+isS-decidable (gen Suckind (⟦ Nat.zero , t ⟧ List.∷ x List.∷ c)) = inj₁ PE.refl 
+isS-decidable (gen Suckind (⟦ Nat.suc l , t ⟧ List.∷ List.[])) = inj₁ PE.refl
+isS-decidable (gen Suckind (⟦ Nat.suc l , t ⟧ List.∷ x List.∷ c)) = inj₁ PE.refl
+isS-decidable (gen Natreckind c) = inj₁ PE.refl
+isS-decidable (gen Emptykind c) = inj₁ PE.refl
+isS-decidable (gen Emptyreckind c) = inj₁ PE.refl
+
 isVar : Term -> Bool
 isVar (var _) = Bool.true
 isVar _ = Bool.false
@@ -507,3 +603,4 @@ wk_suc (gen Suckind (⟦ 1+ x , t ⟧ ∷ x₁ ∷ c)) e e' = PE.refl
 wk_suc (gen Natreckind c) e e' = PE.refl
 wk_suc (gen Emptykind c) e e' = PE.refl
 wk_suc (gen Emptyreckind c) e e' = PE.refl
+

@@ -21,7 +21,7 @@ import Tools.PropositionalEquality as PE
 
 
 -- Neutral reflexive types are reducible.
-neu : ∀ {l Γ A r} (neA : Neutral A)
+neu : ∀ {l Γ A r} (neA : whNeutral A)
     → Γ ⊢ A ^ r
     → Γ ⊢ A ~ A ∷ Univ r ^ !
     → Γ ⊩⟨ l ⟩ A ^ r
@@ -29,8 +29,8 @@ neu neA A A~A = ne′ _ (idRed:*: A) neA A~A
 
   -- Helper function for reducible neutral equality of a specific type of derivation.
 neuEq′ : ∀ {l Γ A B r} ([A] : Γ ⊩⟨ l ⟩ne A ^ r)
-         (neA : Neutral A)
-         (neB : Neutral B)
+         (neA : whNeutral A)
+         (neB : whNeutral B)
        → Γ ⊢ A ^ r → Γ ⊢ B ^ r
        → Γ ⊢ A ~ B ∷ Univ r ^ !
        → Γ ⊩⟨ l ⟩ A ≡ B ^ r / ne-intr [A]
@@ -41,8 +41,8 @@ neuEq′ (emb 0<1 x) neB A:≡:B = neuEq′ x neB A:≡:B
 
 -- Neutrally equal types are of reducible equality.
 neuEq : ∀ {l Γ A B r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
-        (neA : Neutral A)
-        (neB : Neutral B)
+        (neA : whNeutral A)
+        (neB : whNeutral B)
       → Γ ⊢ A ^ r → Γ ⊢ B ^ r
       → Γ ⊢ A ~ B ∷ Univ r ^ !
       → Γ ⊩⟨ l ⟩ A ≡ B ^ r / [A]
@@ -53,7 +53,7 @@ neuEq [A] neA neB A B A~B =
 
 mutual
   -- Neutral reflexive terms are reducible.
-  neuTerm : ∀ {l Γ A r n} ([A] : Γ ⊩⟨ l ⟩ A ^ r) (neN : Neutral n)
+  neuTerm : ∀ {l Γ A r n} ([A] : Γ ⊩⟨ l ⟩ A ^ r) (neN : whNeutral n)
           → Γ ⊢ n ∷ A ^ r
           → Γ ⊢ n ~ n ∷ A ^ r
           → Γ ⊩⟨ l ⟩ n ∷ A ^ r / [A]
@@ -86,8 +86,8 @@ mutual
                   b = escapeTerm ([F] [ρ] ⊢Δ) [b]
                   a≡b = escapeTermEq ([F] [ρ] ⊢Δ) [a≡b]
                   ρn = conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG
-                  neN∘a = ∘ₙ (wkNeutral ρ neN)
-                  neN∘b = ∘ₙ (wkNeutral ρ neN)
+                  neN∘a = ∘ₙ (wkwhNeutral ρ neN)
+                  neN∘b = ∘ₙ (wkwhNeutral ρ neN)
               in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∘a neN∘b
                             (ρn ∘ⱼ a)
                             (conv (ρn ∘ⱼ b) (≅-eq G[a]≡G[b]))
@@ -96,14 +96,14 @@ mutual
               let ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   a≡a = escapeTermEq ([F] [ρ] ⊢Δ) (reflEqTerm ([F] [ρ] ⊢Δ) [a])
-              in  neuTerm ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkNeutral ρ neN))
+              in  neuTerm ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkwhNeutral ρ neN))
                           (conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG ∘ⱼ a)
                           (~-app (~-wk [ρ] ⊢Δ (~-conv n~n A≡ΠFG)) a≡a))
   neuTerm (emb 0<1 x) neN n = neuTerm x neN n
 
   -- Neutrally equal terms are of reducible equality.
   neuEqTerm : ∀ {l Γ A n n′ r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
-              (neN : Neutral n) (neN′ : Neutral n′)
+              (neN : whNeutral n) (neN′ : whNeutral n′)
             → Γ ⊢ n  ∷ A ^ r
             → Γ ⊢ n′ ∷ A ^ r
             → Γ ⊢ n ~ n′ ∷ A ^ r
@@ -146,8 +146,8 @@ mutual
                    a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                    a≡a = escapeTermEq ([F] [ρ] ⊢Δ)
                                           (reflEqTerm ([F] [ρ] ⊢Δ) [a])
-                   neN∙a   = ∘ₙ (wkNeutral ρ neN)
-                   neN′∙a′ = ∘ₙ (wkNeutral ρ neN′)
+                   neN∙a   = ∘ₙ (wkwhNeutral ρ neN)
+                   neN′∙a′ = ∘ₙ (wkwhNeutral ρ neN′)
                in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∙a neN′∙a′
                              (conv ρn  ρA≡ρΠFG ∘ⱼ a)
                              (conv ρn′ ρA≡ρΠFG ∘ⱼ a)

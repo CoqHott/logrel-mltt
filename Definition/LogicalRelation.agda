@@ -26,7 +26,7 @@ record _⊩ne_^_ (Γ : Con Term) (A : Term) (r : Relevance) : Set where
   field
     K   : Term
     D   : Γ ⊢ A :⇒*: K ^ r
-    neK : Neutral K
+    neK : whNeutral K
     K≡K : Γ ⊢ K ~ K ∷ (Univ r) ^ !
 
 -- Neutral type equality
@@ -36,7 +36,7 @@ record _⊩ne_≡_^_/_ (Γ : Con Term) (A B : Term) (r : Relevance) ([A] : Γ �
   field
     M   : Term
     D′  : Γ ⊢ B :⇒*: M ^ r
-    neM : Neutral M
+    neM : whNeutral M
     K≡M : Γ ⊢ K ~ M ∷ (Univ r) ^ !
 
 -- Neutral term in WHNF
@@ -44,7 +44,7 @@ record _⊩neNf_∷_^_ (Γ : Con Term) (k A : Term) (r : Relevance) : Set where
   inductive
   constructor neNfₜ
   field
-    neK  : Neutral k
+    neK  : whNeutral k
     ⊢k   : Γ ⊢ k ∷ A ^ r
     k≡k  : Γ ⊢ k ~ k ∷ A ^ r
 
@@ -63,8 +63,8 @@ record _⊩neNf_≡_∷_^_ (Γ : Con Term) (k m A : Term) (r : Relevance) : Set 
   inductive
   constructor neNfₜ₌
   field
-    neK  : Neutral k
-    neM  : Neutral m
+    neK  : whNeutral k
+    neM  : whNeutral m
     k≡m  : Γ ⊢ k ~ m ∷ A ^ r
 
 -- Neutral term equality
@@ -115,7 +115,7 @@ mutual
 
 -- Natural extraction from term WHNF property
 natural : ∀ {Γ n} → Natural-prop Γ n → Natural n
-natural (sucᵣ x) = sucₙ
+natural (sucᵣ (ℕₜ n d n≡n prop)) = sucₙ 
 natural zeroᵣ = zeroₙ
 natural (ne (neNfₜ neK ⊢k k≡k)) = ne neK
 
@@ -153,10 +153,10 @@ data _⊩Empty_≡_∷Empty (Γ : Con Term) (t u : Term) : Set where
     (k≡k′ : Γ ⊢ k ≅ k′ ∷ Empty ^ %)
       (prop : [Empty]-prop Γ k k′) → Γ ⊩Empty t ≡ u ∷Empty
 
-empty : ∀ {Γ n} → Empty-prop Γ n → Neutral n
+empty : ∀ {Γ n} → Empty-prop Γ n → whNeutral n
 empty (ne (neNfₜ neK _ _)) = neK
 
-esplit : ∀ {Γ a b} → [Empty]-prop Γ a b → Neutral a × Neutral b
+esplit : ∀ {Γ a b} → [Empty]-prop Γ a b → whNeutral a × whNeutral b
 esplit (ne (neNfₜ₌ neK neM k≡m)) = neK , neM
 
 -- Type levels

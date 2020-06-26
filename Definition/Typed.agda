@@ -233,11 +233,11 @@ data _⊢_⇒*_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
 
 -- Type reduction to whnf
 _⊢_↘_^_ : (Γ : Con Term) → Term → Term → Relevance → Set
-Γ ⊢ A ↘ B ^ r = Γ ⊢ A ⇒* B ^ r × Nf B
+Γ ⊢ A ↘ B ^ r = Γ ⊢ A ⇒* B ^ r × whNf B
 
 -- Term reduction to whnf
 _⊢_↘_∷_^_ : (Γ : Con Term) → Term → Term → Term → Relevance → Set
-Γ ⊢ t ↘ u ∷ A ^ r = Γ ⊢ t ⇒* u ∷ A ^ r × Nf u
+Γ ⊢ t ↘ u ∷ A ^ r = Γ ⊢ t ⇒* u ∷ A ^ r × whNf u
 
 -- Type eqaulity with well-formed types
 _⊢_:≡:_^_ : (Γ : Con Term) → Term → Term → Relevance → Set
@@ -294,3 +294,12 @@ reduce_not_var (natrec-subst x₁ x₂ e x₃ e') = PE.refl
 reduce_not_var (natrec-zero x x₁ x₂) = PE.refl
 reduce_not_var (natrec-suc x x₁ x₂ x₃) = PE.refl
 reduce_not_var (Emptyrec-subst x e) = PE.refl 
+
+suc_not_reduce : ∀ {Γ A n n′} → Γ ⊢ suc n ⇒ n′ ∷ A ^ ! → suc n PE.≡ n′
+suc_not_reduce (conv x x₁) =  suc_not_reduce x
+
+suc_not_reduce* : ∀ {Γ A Sn n n′} → Sn PE.≡ suc n → Γ ⊢ Sn ⇒* n′ ∷ A ^ ! → Sn PE.≡ n′
+suc_not_reduce* e (id x) = PE.refl
+suc_not_reduce* {Γ} {A} {Sn} {n} {n′} e (_⇨_ {A} {t} {t′} {u} {r} x X ) =
+  let et' = suc_not_reduce (PE.subst ( ( λ X → Γ ⊢ X ⇒ t′ ∷ A ^ ! )) e x)
+  in PE.trans (PE.trans e et') (suc_not_reduce* (PE.sym et') X) 

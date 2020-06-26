@@ -21,12 +21,12 @@ import Tools.PropositionalEquality as PE
 wkTermNe : ∀ {ρ Γ Δ k A rA} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
          → Γ ⊩neNf k ∷ A ^ rA → Δ ⊩neNf U.wk ρ k ∷ U.wk ρ A ^ rA
 wkTermNe {ρ} [ρ] ⊢Δ (neNfₜ neK ⊢k k≡k) =
-  neNfₜ (wkNeutral ρ neK) (T.wkTerm [ρ] ⊢Δ ⊢k) (~-wk [ρ] ⊢Δ k≡k)
+  neNfₜ (wkwhNeutral ρ neK) (T.wkTerm [ρ] ⊢Δ ⊢k) (~-wk [ρ] ⊢Δ k≡k)
 
 wkEqTermNe : ∀ {ρ Γ Δ k k′ A rA} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
            → Γ ⊩neNf k ≡ k′ ∷ A ^ rA → Δ ⊩neNf U.wk ρ k ≡ U.wk ρ k′ ∷ U.wk ρ A ^ rA
 wkEqTermNe {ρ} [ρ] ⊢Δ (neNfₜ₌ neK neM k≡m) =
-  neNfₜ₌ (wkNeutral ρ neK) (wkNeutral ρ neM) (~-wk [ρ] ⊢Δ k≡m)
+  neNfₜ₌ (wkwhNeutral ρ neK) (wkwhNeutral ρ neM) (~-wk [ρ] ⊢Δ k≡m)
 
 -- Weakening of reducible natural numbers
 
@@ -90,7 +90,7 @@ wk ρ ⊢Δ (Uᵣ′ r l′ l< ⊢Γ) = Uᵣ′ r l′ l< ⊢Δ
 wk ρ ⊢Δ (ℕᵣ D) = ℕᵣ (wkRed:*: ρ ⊢Δ D)
 wk ρ ⊢Δ (Emptyᵣ D) = Emptyᵣ (wkRed:*: ρ ⊢Δ D)
 wk {ρ} [ρ] ⊢Δ (ne′ K D neK K≡K) =
-  ne′ (U.wk ρ K) (wkRed:*: [ρ] ⊢Δ D) (wkNeutral ρ neK) (~-wk [ρ] ⊢Δ K≡K)
+  ne′ (U.wk ρ K) (wkRed:*: [ρ] ⊢Δ D) (wkwhNeutral ρ neK) (~-wk [ρ] ⊢Δ K≡K)
 wk {ρ} {Γ} {Δ} {A} {rA} {l} [ρ] ⊢Δ (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
   let ⊢ρF = T.wk [ρ] ⊢Δ ⊢F
       [F]′ : ∀ {ρ ρ′ E} ([ρ] : ρ ∷ E ⊆ Δ) ([ρ′] : ρ′ ∷ Δ ⊆ Γ) (⊢E : ⊢ E)
@@ -140,7 +140,7 @@ wkEq ρ ⊢Δ (ℕᵣ D) A≡B = wkRed* ρ ⊢Δ A≡B
 wkEq ρ ⊢Δ (Emptyᵣ D) A≡B = wkRed* ρ ⊢Δ A≡B
 wkEq {ρ} [ρ] ⊢Δ (ne′ _ _ _ _) (ne₌ M D′ neM K≡M) =
   ne₌ (U.wk ρ M) (wkRed:*: [ρ] ⊢Δ D′)
-      (wkNeutral ρ neM) (~-wk [ρ] ⊢Δ K≡M)
+      (wkwhNeutral ρ neM) (~-wk [ρ] ⊢Δ K≡M)
 wkEq {ρ} [ρ] ⊢Δ (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                 (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   Π₌ (U.wk ρ F′) (U.wk (lift ρ) G′) (T.wkRed* [ρ] ⊢Δ D′) (≅-wk [ρ] ⊢Δ A≡B)

@@ -104,7 +104,7 @@ Empty-elim′ D (emb 0<1 x) | emb () x₂
 Empty-elim : ∀ {Γ l} → Γ ⊩⟨ l ⟩ Empty ^ % → Γ ⊩⟨ l ⟩Empty Empty
 Empty-elim [Empty] = Empty-elim′ (id (escape [Empty])) [Empty]
 
-ne-elim′ : ∀ {A Γ l r r' K} → Γ ⊢ A ⇒* K ^ r → Neutral K → Γ ⊩⟨ l ⟩ A ^ r' → Γ ⊩⟨ l ⟩ne A ^ r'
+ne-elim′ : ∀ {A Γ l r r' K} → Γ ⊢ A ⇒* K ^ r → whNeutral K → Γ ⊩⟨ l ⟩ A ^ r' → Γ ⊩⟨ l ⟩ne A ^ r'
 ne-elim′ D neK (Uᵣ′ _ l′ l< ⊢Γ) =
   ⊥-elim (U≢ne neK (whrDet* (id (Uⱼ ⊢Γ) , Uₙ) (D , ne neK)))
 ne-elim′ D neK (ℕᵣ D′) = ⊥-elim (ℕ≢ne neK (whrDet* (red D′ , ℕₙ) (D , ne neK)))
@@ -116,7 +116,7 @@ ne-elim′ D neK (emb 0<1 x) with ne-elim′ D neK x
 ne-elim′ D neK (emb 0<1 x) | noemb x₁ = emb 0<1 (noemb x₁)
 ne-elim′ D neK (emb 0<1 x) | emb () x₂
 
-ne-elim : ∀ {Γ l r K} → Neutral K  → Γ ⊩⟨ l ⟩ K ^ r → Γ ⊩⟨ l ⟩ne K ^ r
+ne-elim : ∀ {Γ l r K} → whNeutral K  → Γ ⊩⟨ l ⟩ K ^ r → Γ ⊩⟨ l ⟩ne K ^ r
 ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K]
 
 Π-elim′ : ∀ {A Γ F G rF r r' l} → Γ ⊢ A ⇒* Π F ^ rF ▹ G ^ r → Γ ⊩⟨ l ⟩ A ^ r' → Γ ⊩⟨ l ⟩Π A ^ r'

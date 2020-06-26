@@ -74,8 +74,8 @@ app-congTerm′ {F′} {G′} {t = t} {t′ = t′} {Γ = Γ} {rF = rF} {rG = rG
               [a] [a′] [a≡a′] =
   let ΠFG≡ΠF′G′ = whnfRed* (red D) Πₙ
       F≡F′ , rF≡rF′ , G≡G′ = Π-PE-injectivity ΠFG≡ΠF′G′
-      f≡f′ = whrDet*Term (d , functionWhnf funcF) (d″ , functionWhnf funcF′)
-      g≡g′ = whrDet*Term (d′ , functionWhnf funcG) (d‴ , functionWhnf funcG′)
+      f≡f′ = whrDet*Term (d , functionwhNf funcF) (d″ , functionwhNf funcF′)
+      g≡g′ = whrDet*Term (d′ , functionwhNf funcG) (d‴ , functionwhNf funcG′)
       F≡wkidF′ = PE.trans F≡F′ (PE.sym (wk-id _))
       [ΠFG] = Πᵣ′ rF′ F G (PE.subst _ rF≡rF′ D) ⊢F ⊢G A≡A [F]₁ [G] G-ext
       t∘x≡wkidt∘x : {a b : Term} → wk id a ∘ b PE.≡ a ∘ b
