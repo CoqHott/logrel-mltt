@@ -163,6 +163,10 @@ data Neutral : Term → Set where
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
   Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
   Idₙ : ∀ {A t u} → Neutral A → Neutral (Id A t u)
+  Idℕ1ₙ : ∀ {t u} → Neutral t → Neutral (Id ℕ t u)
+  Idℕ2ₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ t u)
+  IdU1ₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
+  IdU2ₙ : ∀ {t u} → Neutral u → Neutral (Id U t u)
   transpₙ : ∀ {A P t s u e} → Neutral P → Neutral (transp A P t s u e)
 
 
@@ -348,6 +352,10 @@ wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
 wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
 wkNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkNeutral ρ e)
 wkNeutral ρ (Idₙ A) = Idₙ (wkNeutral ρ A)
+wkNeutral ρ (Idℕ1ₙ t) = Idℕ1ₙ (wkNeutral ρ t)
+wkNeutral ρ (Idℕ2ₙ t) = Idℕ2ₙ (wkNeutral ρ t)
+wkNeutral ρ (IdU1ₙ t) = IdU1ₙ (wkNeutral ρ t)
+wkNeutral ρ (IdU2ₙ t) = IdU2ₙ (wkNeutral ρ t)
 wkNeutral ρ (transpₙ P) = transpₙ (wkNeutral (lift ρ) P)
 
 -- Weakening can be applied to our whnf views.
