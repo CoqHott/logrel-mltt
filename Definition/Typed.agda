@@ -38,6 +38,11 @@ mutual
     univ : ∀ {A r}
          → Γ ⊢ A ∷ (Univ r) ^ !
          → Γ ⊢ A ^ r
+    Idⱼ : ∀ {A t u}
+          → Γ ⊢ A ^ ! -- Is this not implied by the next premises?
+          → Γ ⊢ t ∷ A ^ !
+          → Γ ⊢ u ∷ A ^ !
+          → Γ ⊢ (Id A t u) ^ %
 
   -- Well-formed term of a type
   data _⊢_∷_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
@@ -72,6 +77,29 @@ mutual
            → Γ       ⊢ natrec G z s n ∷ G [ n ] ^ rG
     Emptyrecⱼ : ∀ {A rA e}
            → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty ^ % -> Γ ⊢ Emptyrec A e ∷ A ^ rA
+    Idⱼ : ∀ {A t u}
+          → Γ ⊢ A ∷ U ^ !
+          → Γ ⊢ t ∷ A ^ !
+          → Γ ⊢ u ∷ A ^ !
+          → Γ ⊢ Id A t u ∷ SProp ^ !
+    Idreflⱼ : ∀ {A t}
+              → Γ ⊢ A ∷ U ^ !
+              → Γ ⊢ t ∷ A ^ !
+              → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ %
+    transpⱼ : ∀ {A P rP t s u e}
+              → Γ ⊢ A ∷ U ^ !
+              → Γ ∙ A ^ ! ⊢ P ∷ (Univ rP) ^ !
+              → Γ ⊢ t ∷ A ^ !
+              → Γ ⊢ s ∷ P [ t ] ^ rP
+              → Γ ⊢ u ∷ A ^ !
+              → Γ ⊢ e ∷ (Id A t u) ^ !
+              → Γ ⊢ transp A P t s u e ∷ P [ u ] ^ rP
+    transp_reflⱼ : ∀ {A P t s}
+                   → Γ ⊢ A ∷ U ^ !
+                   → Γ ∙ A ^ ! ⊢ P ∷ U ^ !
+                   → Γ ⊢ t ∷ A ^ !
+                   → Γ ⊢ s ∷ P [ t ] ^ !
+                   → Γ ⊢ transp_refl A P t s ∷ (Id (P [ t ]) s (transp A P t s t (Idrefl A t))) ^ %
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
