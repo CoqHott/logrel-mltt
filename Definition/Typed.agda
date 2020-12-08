@@ -35,6 +35,10 @@ mutual
          → Γ     ⊢ F ^ rF
          → Γ ∙ F ^ rF ⊢ G ^ rG
          → Γ     ⊢ Π F ^ rF ▹ G ^ rG
+    Σⱼ_▹_ : ∀ {F G} -- For now we want only irrelevant sigma
+            → Γ ⊢ F ^ %
+            → Γ ∙ F ^ % ⊢ G ^ %
+            → Γ ⊢ Σ F ▹ G ^ %
     univ : ∀ {A r}
          → Γ ⊢ A ∷ (Univ r) ^ !
          → Γ ⊢ A ^ r
@@ -52,6 +56,10 @@ mutual
            → Γ     ⊢ F ∷ (Univ rF) ^ !
            → Γ ∙ F ^ rF ⊢ G ∷ (Univ rG) ^ !
            → Γ     ⊢ Π F ^ rF ▹ G ∷ (Univ rG) ^ !
+    Σⱼ_▹_ : ∀ {F G}
+            → Γ ⊢ F ∷ SProp ^ !
+            → Γ ∙ F ^ % ⊢ G ∷ SProp ^ !
+            → Γ ⊢ Σ F ▹ G ∷ SProp ^ !
     var    : ∀ {A r x}
            → ⊢ Γ
            → x ∷ A ^ r ∈ Γ
@@ -64,6 +72,14 @@ mutual
            → Γ ⊢     g ∷ Π F ^ rF ▹ G ^ rG
            → Γ ⊢     a ∷ F ^ rF
            → Γ ⊢ g ∘ a ∷ G [ a ] ^ rG
+    ⦅_,_⦆ⱼ : ∀ {F G t u}
+             → Γ ⊢ t ∷ F ^ %
+             → Γ ⊢ u ∷ G [ t ] ^ %
+             → Γ ⊢ ⦅ t , u ⦆ ∷ Σ F ▹ G ^ %
+    sigmarecⱼ : ∀ {F G A rA t u}
+                → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ^ rA
+                → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ A [ ⦅ var 0 , var 1 ⦆ ] ^ rA
+                → Γ ⊢ sigmarec A t u ∷ A [ u ] ^ rA
     zeroⱼ   : ⊢ Γ
            → Γ ⊢ zero ∷ ℕ ^ !
     sucⱼ    : ∀ {n}
