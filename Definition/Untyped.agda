@@ -104,6 +104,12 @@ Empty = gen Emptykind []
 Emptyrec : (A e : Term) -> Term
 Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
+Unit : Term
+Unit = Π Empty ^ % ▹ Empty
+
+tt : Term
+tt = lam Empty ▹ (Emptyrec Empty (var 0))
+
 Id : (A t u : Term) → Term
 Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
