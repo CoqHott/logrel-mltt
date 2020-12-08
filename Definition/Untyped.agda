@@ -52,6 +52,9 @@ data Kind : Set where
   Idreflkind : Kind
   Transpkind : Kind
   Treflkind : Kind
+  Sigmakind : Kind
+  Pairkind : Kind
+  Sigmareckind : Kind
 
 data Term : Set where
   var : (x : Nat) → Term
@@ -75,6 +78,9 @@ pattern Univ r = gen (Ukind r) []
 Π_^_▹_   : Term → Relevance → Term → Term  -- Dependent function type (B is a binder).
 Π A ^ r ▹ B = gen (Pikind r) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
+Σ_▹_ : Term → Term → Term -- Dependent pairs
+Σ A ▹ B = gen Sigmakind (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
+
 ℕ      : Term                     -- Type of natural numbers.
 ℕ = gen Natkind []
 
@@ -87,6 +93,12 @@ lam A ▹ t = gen Lamkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , t ⟧ ∷ [])
 
 _∘_    : (t u : Term)     → Term  -- Application.
 t ∘ u = gen Appkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
+
+⦅_,_⦆ : Term → Term → Term -- Dependent pair formation
+⦅ t , u ⦆ = gen Pairkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
+
+sigmarec : (A t u : Term) → Term -- Dependent pair elimination
+sigmarec A t u = gen Sigmareckind (⟦ 1 , A ⟧ ∷ ⟦ 2 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
 -- Introduction and elimination of natural numbers.
 zero   : Term                     -- Natural number zero.
