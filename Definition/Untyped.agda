@@ -48,6 +48,10 @@ data Kind : Set where
   Natreckind : Kind
   Emptykind : Kind
   Emptyreckind : Kind
+  Idkind : Kind
+  Idreflkind : Kind
+  Transpkind : Kind
+  Treflkind : Kind
 
 data Term : Set where
   var : (x : Nat) → Term
@@ -100,6 +104,19 @@ Empty = gen Emptykind []
 Emptyrec : (A e : Term) -> Term
 Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
+Id : (A t u : Term) → Term
+Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
+
+Idrefl : (A t : Term) → Term
+Idrefl A t = gen Idreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
+
+transp : (A P t s u e : Term) → Term
+transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
+
+transp_refl : (A P t s : Term) → Term
+transp_refl A P t s = gen Treflkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ [])
+
+
 -- Injectivity of term constructors w.r.t. propositional equality.
 
 -- If  Π F G = Π H E  then  F = H  and  G = E.
@@ -127,6 +144,8 @@ data Neutral : Term → Set where
   ∘ₙ      : ∀ {k u}     → Neutral k → Neutral (k ∘ u)
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
   Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
+  Idₙ : ∀ {A t u} → Neutral A → Neutral (Id A t u)
+  transpₙ : ∀ {A P t s u e} → Neutral P → Neutral (transp A P t s u e)
 
 
 -- Weak head normal forms (whnfs).
@@ -140,6 +159,7 @@ data Whnf : Term → Set where
   Πₙ    : ∀ {A r B} → Whnf (Π A ^ r ▹ B)
   ℕₙ    : Whnf ℕ
   Emptyₙ : Whnf Empty
+  -- Id types never are whnfs, unless neutral
 
   -- Introductions are whnfs.
   lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
@@ -309,6 +329,8 @@ wkNeutral ρ (var n)    = var (wkVar ρ n)
 wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
 wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
 wkNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkNeutral ρ e)
+wkNeutral ρ (Idₙ A) = Idₙ (wkNeutral ρ A)
+wkNeutral ρ (transpₙ P) = transpₙ (wkNeutral (lift ρ) P)
 
 -- Weakening can be applied to our whnf views.
 
