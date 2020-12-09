@@ -77,7 +77,8 @@ mutual
              → Γ ⊢ ⦅ t , u ⦆ ∷ Σ F ▹ G ^ %
     sigmarecⱼ : ∀ {F G A rA t u}
                 → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ^ rA
-                → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ A [ ⦅ var 0 , var 1 ⦆ ] ^ rA
+                → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ wk1 (wk1 (A [ ⦅ var 0 , var 1 ⦆ ])) ^ rA
+                → Γ ⊢ u ∷ Σ F ▹ G ^ %
                 → Γ ⊢ sigmarec A t u ∷ A [ u ] ^ rA
     zeroⱼ   : ⊢ Γ
            → Γ ⊢ zero ∷ ℕ ^ !
@@ -236,6 +237,19 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ rF ▹▹ F [ suc (var Nat.zero) ]↑) ^ rF
                → Γ     ⊢ natrec F z s (suc n) ⇒ (s ∘ n) ∘ (natrec F z s n)
                        ∷ F [ suc n ] ^ rF
+  sigmarec-subst : ∀ {F G A rA t u u'}
+                  → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ^ rA
+                  → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ wk1 (wk1 (A [ ⦅ var 0 , var 1 ⦆ ])) ^ rA
+                  → Γ ⊢ u ⇒ u' ∷ Σ F ▹ G ^ %
+                  → Γ ⊢ sigmarec A t u ⇒ sigmarec A t u' ∷ A [ u ] ^ rA
+  sigmarec-pair : ∀ {F G A rA t u v}
+                  → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ^ rA
+                  → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ wk1 (wk1 (A [ ⦅ var 0 , var 1 ⦆ ])) ^ rA
+                  → Γ ⊢ u ∷ F ^ %
+                  → Γ ⊢ v ∷ G [ t ] ^ %
+                  → Γ ⊢ sigmarec A t ⦅ u , v ⦆
+                      ⇒ t [ v ] [ u ]
+                      ∷ A [ ⦅ u , v ⦆ ] ^ rA
   Emptyrec-subst : ∀ {n n′ A r}
                → Γ ⊢ A ^ r
                → Γ     ⊢ n ⇒ n′ ∷ Empty ^ %
@@ -330,6 +344,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
              → Γ ⊢ (Id SProp A B)
                    ⇒ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                    ∷ SProp ^ !
+--  trans-subst : ...
 
 -- Type reduction
 data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
