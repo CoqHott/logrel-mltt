@@ -264,22 +264,22 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
             → Γ ⊢ u ∷ A ^ !
             → Γ ⊢ A ⇒ A' ∷ U ^ !
             → Γ ⊢ Id A t u ⇒ Id A' t u ∷ SProp ^ !
-  Idℕ-subst1 : ∀ {m m' n}
+  Id-ℕ-subst1 : ∀ {m m' n}
             → Γ ⊢ m ∷ ℕ ^ !
             → Γ ⊢ n ∷ ℕ ^ !
             → Γ ⊢ m ⇒ m' ∷ ℕ ^ !
             → Γ ⊢ Id ℕ m n ⇒ Id ℕ m' n ∷ SProp ^ !
-  Idℕ-subst2 : ∀ {m n n'}
+  Id-ℕ-subst2 : ∀ {m n n'}
             → Γ ⊢ m ∷ ℕ ^ !
             → Γ ⊢ n ∷ ℕ ^ !
             → Γ ⊢ n ⇒ n' ∷ ℕ ^ !
             → Γ ⊢ Id ℕ m n ⇒ Id ℕ m n' ∷ SProp ^ !
-  IdU-subst1 : ∀ {A A' B}
+  Id-U-subst1 : ∀ {A A' B}
             → Γ ⊢ A ∷ U ^ !
             → Γ ⊢ B ∷ U ^ !
             → Γ ⊢ A ⇒ A' ∷ U ^ !
             → Γ ⊢ Id U A B ⇒ Id U A' B ∷ SProp ^ !
-  IdU-subst2 : ∀ {A B B'}
+  Id-U-subst2 : ∀ {A B B'}
             → Γ ⊢ A ∷ U ^ !
             → Γ ⊢ B ∷ U ^ !
             → Γ ⊢ B ⇒ B' ∷ U ^ !
@@ -359,8 +359,20 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
              → Γ ⊢ (Id SProp A B)
                    ⇒ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                    ∷ SProp ^ !
--- cast-subst : ...
-
+  cast-subst1 : ∀ {A A' B e t}
+                → Γ ⊢ A ∷ U ^ !
+                → Γ ⊢ B ∷ U ^ !
+                → Γ ⊢ e ∷ Id U A B ^ %
+                → Γ ⊢ t ∷ A ^ !
+                → Γ ⊢ A ⇒ A' ∷ U ^ !
+                → Γ ⊢ cast A B e t ⇒ cast A' B e t ∷ B ^ !
+  cast-subst2 : ∀ {A B B' e t}
+                → Γ ⊢ A ∷ U ^ !
+                → Γ ⊢ B ∷ U ^ !
+                → Γ ⊢ e ∷ Id U A B ^ %
+                → Γ ⊢ t ∷ A ^ !
+                → Γ ⊢ B ⇒ B' ∷ U ^ !
+                → Γ ⊢ cast A B e t ⇒ cast A B' e t ∷ B ^ !
   -- cast-Π : ∀ {A A' rA B B' e f}
   --          → Γ ⊢ A ∷ (Univ rA) ^ !
   --          → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
