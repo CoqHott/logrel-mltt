@@ -100,18 +100,16 @@ mutual
     Idreflⱼ : ∀ {A t}
               → Γ ⊢ t ∷ A ^ !
               → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ %
-    transpⱼ : ∀ {A P rP t s u e}
-              → Γ ∙ A ^ ! ⊢ P ∷ (Univ rP) ^ !
+    castⱼ : ∀ {A B e t}
+              → Γ ⊢ A ^ !
+              → Γ ⊢ B ^ !
+              → Γ ⊢ e ∷ (Id U A B) ^ %
               → Γ ⊢ t ∷ A ^ !
-              → Γ ⊢ s ∷ P [ t ] ^ rP
-              → Γ ⊢ u ∷ A ^ !
-              → Γ ⊢ e ∷ (Id A t u) ^ !
-              → Γ ⊢ transp A P t s u e ∷ P [ u ] ^ rP
-    transp_reflⱼ : ∀ {A P t s}
-                   → Γ ∙ A ^ ! ⊢ P ∷ U ^ !
+              → Γ ⊢ cast A B e t ∷ B ^ !
+    cast_reflⱼ : ∀ {A t}
+                   → Γ ⊢ A ^ !
                    → Γ ⊢ t ∷ A ^ !
-                   → Γ ⊢ s ∷ P [ t ] ^ !
-                   → Γ ⊢ transp_refl A P t s ∷ (Id (P [ t ]) s (transp A P t s t (Idrefl A t))) ^ %
+                   → Γ ⊢ cast_refl A t ∷ (Id A t (cast A A (Idrefl U A) t)) ^ %
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
@@ -305,7 +303,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                   ⇒ Σ (Id (Univ rA) A A') ▹
                       (Π (wk1 A) ^ rA ▹ Id U
                             (wk (lift (step id)) B)
-                            ((wk (lift (step id)) B') [ transp U (var 0) A (var 0) A' (var 1) ]))
+                            ((wk (lift (step id)) B') [ cast A A' (var 1) (var 0) ]))
                   ∷ SProp ^ !
   Id-U-ΠΠ%! : ∀ {A A' B B'}
               → Γ ⊢ A ∷ SProp ^ !
@@ -344,7 +342,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
              → Γ ⊢ (Id SProp A B)
                    ⇒ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                    ∷ SProp ^ !
---  trans-subst : ...
+--  cast-subst : ...
 
 -- Type reduction
 data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → Relevance → Set where

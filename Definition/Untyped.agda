@@ -50,8 +50,8 @@ data Kind : Set where
   Emptyreckind : Kind
   Idkind : Kind
   Idreflkind : Kind
-  Transpkind : Kind
-  Treflkind : Kind
+  Castkind : Kind
+  Castreflkind : Kind
   Sigmakind : Kind
   Pairkind : Kind
   Sigmareckind : Kind
@@ -128,11 +128,11 @@ Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 Idrefl : (A t : Term) → Term
 Idrefl A t = gen Idreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
-transp : (A P t s u e : Term) → Term
-transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
+cast : (A B e t : Term) → Term
+cast A B e t = gen Castkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
-transp_refl : (A P t s : Term) → Term
-transp_refl A P t s = gen Treflkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ [])
+cast_refl : (A t : Term) → Term
+cast_refl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
 
 -- Injectivity of term constructors w.r.t. propositional equality.
@@ -167,7 +167,7 @@ data Neutral : Term → Set where
   Idℕ2ₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ t u)
   IdU1ₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
   IdU2ₙ : ∀ {t u} → Neutral u → Neutral (Id U t u)
-  transpₙ : ∀ {A P t s u e} → Neutral P → Neutral (transp A P t s u e)
+--  transpₙ : ∀ {A P t s u e} → Neutral P → Neutral (transp A P t s u e)
 
 
 -- Weak head normal forms (whnfs).
@@ -356,7 +356,7 @@ wkNeutral ρ (Idℕ1ₙ t) = Idℕ1ₙ (wkNeutral ρ t)
 wkNeutral ρ (Idℕ2ₙ t) = Idℕ2ₙ (wkNeutral ρ t)
 wkNeutral ρ (IdU1ₙ t) = IdU1ₙ (wkNeutral ρ t)
 wkNeutral ρ (IdU2ₙ t) = IdU2ₙ (wkNeutral ρ t)
-wkNeutral ρ (transpₙ P) = transpₙ (wkNeutral (lift ρ) P)
+-- wkNeutral ρ (transpₙ P) = transpₙ (wkNeutral (lift ρ) P)
 
 -- Weakening can be applied to our whnf views.
 
