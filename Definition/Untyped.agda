@@ -50,6 +50,7 @@ data Kind : Set where
   Emptyreckind : Kind
   Idkind : Kind
   Idreflkind : Kind
+  Transpkind : Kind
   Castkind : Kind
   Castreflkind : Kind
   Sigmakind : Kind
@@ -128,6 +129,18 @@ Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 Idrefl : (A t : Term) → Term
 Idrefl A t = gen Idreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
+transp : (A P t s u e : Term) → Term
+transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
+
+-- ap : Term
+-- ap = ...
+
+-- Id_sym : Term
+-- Id_sym = ...
+
+-- Id_trans : Term
+-- Id_trans = ...
+
 cast : (A B e t : Term) → Term
 cast A B e t = gen Castkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
@@ -167,7 +180,8 @@ data Neutral : Term → Set where
   Idℕ2ₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ t u)
   IdU1ₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
   IdU2ₙ : ∀ {t u} → Neutral u → Neutral (Id U t u)
---  transpₙ : ∀ {A P t s u e} → Neutral P → Neutral (transp A P t s u e)
+  cast1ₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
+  cast2ₙ : ∀ {A B e t} → Neutral B → Neutral (cast A B e t)
 
 
 -- Weak head normal forms (whnfs).
@@ -356,7 +370,8 @@ wkNeutral ρ (Idℕ1ₙ t) = Idℕ1ₙ (wkNeutral ρ t)
 wkNeutral ρ (Idℕ2ₙ t) = Idℕ2ₙ (wkNeutral ρ t)
 wkNeutral ρ (IdU1ₙ t) = IdU1ₙ (wkNeutral ρ t)
 wkNeutral ρ (IdU2ₙ t) = IdU2ₙ (wkNeutral ρ t)
--- wkNeutral ρ (transpₙ P) = transpₙ (wkNeutral (lift ρ) P)
+wkNeutral ρ (cast1ₙ A) = cast1ₙ (wkNeutral ρ A)
+wkNeutral ρ (cast2ₙ A) = cast2ₙ (wkNeutral ρ A)
 
 -- Weakening can be applied to our whnf views.
 

@@ -100,16 +100,23 @@ mutual
     Idreflⱼ : ∀ {A t}
               → Γ ⊢ t ∷ A ^ !
               → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ %
-    castⱼ : ∀ {A B e t}
-              → Γ ⊢ A ^ !
-              → Γ ⊢ B ^ !
-              → Γ ⊢ e ∷ (Id U A B) ^ %
+    transpⱼ : ∀ {A P t s u e}
+              → Γ ∙ A ^ ! ⊢ P ^ %
               → Γ ⊢ t ∷ A ^ !
-              → Γ ⊢ cast A B e t ∷ B ^ !
+              → Γ ⊢ s ∷ P [ t ] ^ %
+              → Γ ⊢ u ∷ A ^ !
+              → Γ ⊢ e ∷ (Id A t u) ^ %
+              → Γ ⊢ transp A P t s u e ∷ P [ u ] ^ %
+    castⱼ : ∀ {A B e t}
+            → Γ ⊢ A ∷ U ^ !
+            → Γ ⊢ B ∷ U ^ !
+            → Γ ⊢ e ∷ (Id U A B) ^ %
+            → Γ ⊢ t ∷ A ^ !
+            → Γ ⊢ cast A B e t ∷ B ^ !
     cast_reflⱼ : ∀ {A t}
-                   → Γ ⊢ A ^ !
-                   → Γ ⊢ t ∷ A ^ !
-                   → Γ ⊢ cast_refl A t ∷ (Id A t (cast A A (Idrefl U A) t)) ^ %
+                 → Γ ⊢ A ^ !
+                 → Γ ⊢ t ∷ A ^ !
+                 → Γ ⊢ cast_refl A t ∷ (Id A t (cast A A (Idrefl U A) t)) ^ %
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
@@ -267,14 +274,14 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
             → Γ ⊢ u ∷ A ^ !
             → Γ ⊢ u ⇒ u' ∷ U ^ !
             → Γ ⊢ Id A t u ⇒ Id A t u' ∷ SProp ^ !
-  Id-Pi : ∀ {A rA B t u}
-          → Γ ⊢ A ∷ (Univ rA) ^ !
-          → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
-          → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
-          → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
-          → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
-                ⇒ Π A ^ rA ▹ (Id B (t ∘ (var 0)) (u ∘ (var 0)))
-                ∷ SProp ^ !
+  Id-Π : ∀ {A rA B t u}
+         → Γ ⊢ A ∷ (Univ rA) ^ !
+         → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+         → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
+         → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
+         → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
+               ⇒ Π A ^ rA ▹ (Id B (t ∘ (var 0)) (u ∘ (var 0)))
+               ∷ SProp ^ !
   Id-ℕ-00 : Γ ⊢ (Id ℕ zero zero)
                 ⇒ Unit
                 ∷ SProp ^ !
@@ -342,7 +349,24 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
              → Γ ⊢ (Id SProp A B)
                    ⇒ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                    ∷ SProp ^ !
---  cast-subst : ...
+-- cast-subst : ...
+
+  -- cast-Π : ∀ {A A' rA B B' e f}
+  --          → Γ ⊢ A ∷ (Univ rA) ^ !
+  --          → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+  --          → Γ ⊢ A' ∷ (Univ rA) ^ !
+  --          → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+  --          → Γ ⊢ e ∷ Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ %
+  --          → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
+  --          → Γ ⊢ (cast (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B') e f)
+  --                ⇒ (lam A' ▹ cast (B [ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0)))) ]) B' (not good) (f ∘ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0))))))
+  cast-ℕ : ∀ {e n}
+           → Γ ⊢ e ∷ Id U ℕ ℕ ^ %
+           → Γ ⊢ n ∷ ℕ ^ !
+           → Γ ⊢ cast ℕ ℕ e n
+               ⇒ n
+               ∷ ℕ ^ !
+
 
 -- Type reduction
 data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
