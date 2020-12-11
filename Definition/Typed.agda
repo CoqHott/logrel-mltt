@@ -259,21 +259,31 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                → Γ ⊢ A ^ r
                → Γ     ⊢ n ⇒ n′ ∷ Empty ^ %
                → Γ     ⊢ Emptyrec A n ⇒ Emptyrec A n′ ∷ A ^ r
-  Id-subst1 : ∀ {A A' t u}
+  Id-subst : ∀ {A A' t u}
             → Γ ⊢ t ∷ A ^ !
             → Γ ⊢ u ∷ A ^ !
             → Γ ⊢ A ⇒ A' ∷ U ^ !
             → Γ ⊢ Id A t u ⇒ Id A' t u ∷ SProp ^ !
-  Id-subst2 : ∀ {A t t' u}
-            → Γ ⊢ t ∷ A ^ !
-            → Γ ⊢ u ∷ A ^ !
-            → Γ ⊢ t ⇒ t' ∷ A ^ !
-            → Γ ⊢ Id A t u ⇒ Id A t' u ∷ SProp ^ !
-  Id-subst3 : ∀ {A t u u'}
-            → Γ ⊢ t ∷ A ^ !
-            → Γ ⊢ u ∷ A ^ !
-            → Γ ⊢ u ⇒ u' ∷ U ^ !
-            → Γ ⊢ Id A t u ⇒ Id A t u' ∷ SProp ^ !
+  Idℕ-subst1 : ∀ {m m' n}
+            → Γ ⊢ m ∷ ℕ ^ !
+            → Γ ⊢ n ∷ ℕ ^ !
+            → Γ ⊢ m ⇒ m' ∷ ℕ ^ !
+            → Γ ⊢ Id ℕ m n ⇒ Id ℕ m' n ∷ SProp ^ !
+  Idℕ-subst2 : ∀ {m n n'}
+            → Γ ⊢ m ∷ ℕ ^ !
+            → Γ ⊢ n ∷ ℕ ^ !
+            → Γ ⊢ n ⇒ n' ∷ ℕ ^ !
+            → Γ ⊢ Id ℕ m n ⇒ Id ℕ m n' ∷ SProp ^ !
+  IdU-subst1 : ∀ {A A' B}
+            → Γ ⊢ A ∷ U ^ !
+            → Γ ⊢ B ∷ U ^ !
+            → Γ ⊢ A ⇒ A' ∷ U ^ !
+            → Γ ⊢ Id U A B ⇒ Id U A' B ∷ SProp ^ !
+  IdU-subst2 : ∀ {A B B'}
+            → Γ ⊢ A ∷ U ^ !
+            → Γ ⊢ B ∷ U ^ !
+            → Γ ⊢ B ⇒ B' ∷ U ^ !
+            → Γ ⊢ Id U A B ⇒ Id U A B' ∷ SProp ^ !
   Id-Π : ∀ {A rA B t u}
          → Γ ⊢ A ∷ (Univ rA) ^ !
          → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
