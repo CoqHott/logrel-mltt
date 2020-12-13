@@ -382,12 +382,17 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
   --          → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
   --          → Γ ⊢ (cast (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B') e f)
   --                ⇒ (lam A' ▹ cast (B [ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0)))) ]) B' (not good) (f ∘ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0))))))
-  cast-ℕ : ∀ {e n}
-           → Γ ⊢ e ∷ Id U ℕ ℕ ^ %
-           → Γ ⊢ n ∷ ℕ ^ !
-           → Γ ⊢ cast ℕ ℕ e n
-               ⇒ n
-               ∷ ℕ ^ !
+  cast-ℕ-0 : ∀ {e}
+             → Γ ⊢ e ∷ Id U ℕ ℕ ^ %
+             → Γ ⊢ cast ℕ ℕ e zero
+                 ⇒ zero
+                 ∷ ℕ ^ !
+  cast-ℕ-S : ∀ {e n}
+             → Γ ⊢ e ∷ Id U ℕ ℕ ^ %
+             → Γ ⊢ n ∷ ℕ ^ !
+             → Γ ⊢ cast ℕ ℕ e (suc n)
+                 ⇒ suc (cast ℕ ℕ e n)
+                 ∷ ℕ ^ !
 
 
 -- Type reduction
