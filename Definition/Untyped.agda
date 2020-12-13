@@ -117,12 +117,6 @@ Empty = gen Emptykind []
 Emptyrec : (A e : Term) -> Term
 Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
-Unit : Term
-Unit = Π Empty ^ % ▹ Empty
-
-tt : Term
-tt = lam Empty ▹ (Emptyrec Empty (var 0))
-
 Id : (A t u : Term) → Term
 Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
@@ -131,15 +125,6 @@ Idrefl A t = gen Idreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
 transp : (A P t s u e : Term) → Term
 transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
-
--- ap : Term
--- ap = ...
-
--- Id_sym : Term
--- Id_sym = ...
-
--- Id_trans : Term
--- Id_trans = ...
 
 cast : (A B e t : Term) → Term
 cast A B e t = gen Castkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])

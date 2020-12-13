@@ -11,6 +11,27 @@ open import Tools.Product
 infixl 30 _∙_
 infix 30 Πⱼ_▹_
 
+-- Lemmas that are useful for reduction
+Unit : Term
+Unit = Π Empty ^ % ▹ Empty
+
+tt : Term
+tt = lam Empty ▹ (Emptyrec Empty (var 0))
+
+fst : (A B t : Term) → Term
+fst A B t = sigmarec (wk1 A) (var 1) t
+
+snd : (A B t : Term) → Term
+snd A B t = sigmarec (B [ fst A B (var 0) ]) (var 0) t
+
+ap : (A B f x y e : Term) → Term
+ap A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x)) ((wk1 f) ∘ (var 0))) x (Idrefl B (f ∘ x)) y e
+
+Id_sym : (A x y e : Term) → Term
+Id_sym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
+
+Id_trans : (A x y z e f : Term) → Term
+Id_trans A x y z e f = transp A (Id (wk1 A) (wk1 x) (var 0)) y e z f
 
 -- Well-typed variables
 data _∷_^_∈_ : (x : Nat) (A : Term) (r : Relevance) (Γ : Con Term) → Set where
@@ -381,7 +402,11 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
   --          → Γ ⊢ e ∷ Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ %
   --          → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
   --          → Γ ⊢ (cast (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B') e f)
-  --                ⇒ (lam A' ▹ cast (B [ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0)))) ]) B' (not good) (f ∘ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0))))))
+  --                ⇒ (lam A' ▹ cast (B [ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0)))) ])
+  --                                 B'
+  --                                 (snd e ())
+  --                                 (f ∘ (cast A' A (Id_sym (Univ rA) A A' (fst ∘ (var 0))))))
+  --                ∷ Π A' ^ rA ▹ B' ^ !
   cast-ℕ-0 : ∀ {e}
              → Γ ⊢ e ∷ Id U ℕ ℕ ^ %
              → Γ ⊢ cast ℕ ℕ e zero
