@@ -527,3 +527,6 @@ t [ s ] = subst (sgSubst s) t
 
 _[_]↑ : (t : Term) (s : Term) → Term
 t [ s ]↑ = subst (consSubst (wk1Subst idSubst) s) t
+
+_[_]↑↑ : (t : Term) (s : Term) → Term
+t [ s ]↑↑ = subst (consSubst (wk1Subst (wk1Subst idSubst)) s) t
