@@ -274,11 +274,6 @@ mutual
                       (Π (wk1 A') ^ rA ▹ Id U
                         ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk (lift (step id)) B'))
--- alternatively:
--- Σ (Id (Univ rA) A A') ▹
---   (Π (wk1 A) ^ rA ▹ Id U
---      (wk (lift (step id)) B)
---      ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
                   ∷ SProp ^ !
     Id-U-ℕℕ : Γ ⊢ (Id U ℕ ℕ)
                   ≡ Unit
@@ -320,6 +315,17 @@ mutual
                → Γ ⊢ cast ℕ ℕ e (suc n)
                    ≡ suc (cast ℕ ℕ e n)
                    ∷ ℕ ^ !
+    Id-U-ΠΠ-alternative : ∀ {A A' rA B B'}
+              → Γ ⊢ A ∷ (Univ rA) ^ !
+              → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+              → Γ ⊢ A' ∷ (Univ rA) ^ !
+              → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+              → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
+                    ≡ Σ (Id (Univ rA) A A') ▹
+                      (Π (wk1 A) ^ rA ▹ Id U
+                        (wk (lift (step id)) B)
+                        ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
+                  ∷ SProp ^ !
     -- Id-ℕ-S0 : ∀ {n}
     --           → Γ ⊢ n ∷ ℕ ^ !
     --           → Γ ⊢ (Id ℕ (suc n) zero)
@@ -358,68 +364,6 @@ mutual
     --           → Γ ⊢ (Id U ℕ (Π A ^ rA ▹ B))
     --                 ≡ Empty
     --                 ∷ SProp ^ !
-
-Unitⱼ : {Γ : Con Term}
-        → ⊢ Γ
-        → Γ ⊢ Unit ∷ SProp ^ !
-Unitⱼ {Γ} Γε = Πⱼ (Emptyⱼ Γε) ▹ Emptyⱼ (Γε ∙ Emptyⱼ Γε)
-
-ttⱼ : {Γ : Con Term}
-      → ⊢ Γ
-      → Γ ⊢ tt ∷ Unit ^ %
-ttⱼ {Γ} Γε = lamⱼ (Emptyⱼ Γε) (Emptyrecⱼ (Emptyⱼ (Γε ∙ Emptyⱼ Γε)) (var (Γε ∙ Emptyⱼ Γε) here))
-
--- fstⱼ : {Γ : Con Term} {A B t : Term}
---        → ⊢ Γ
---        → Γ ⊢ A ^ %
---        → Γ ∙ A ^ % ⊢ B ^ %
---        → Γ ⊢ t ∷ Σ A ▹ B ^ %
---        → Γ ⊢ fst A B t ∷ A ^ %
--- fstⱼ {Γ} {A} {B} {t} Γε Aε Bε tε
---   = PE.subst (λ (z : Term) → Γ ⊢ fst A B t ∷ z ^ %) (wk[] A t)
---     (sigmarecⱼ {!!}
---       (var (Γε ∙ Aε ∙ Bε)
---       (PE.subst (λ z → 1 ∷ z ^ % ∈ (Γ ∙ A ^ % ∙ B ^ %))
---         (PE.sym (wk[]↑↑ A ⦅ var 0 , var 1 ⦆))
---         (there here)))
---       tε)
---   where
---     wk[] : (A t : Term) → wk1 A [ t ] PE.≡ A
---     wk[] = {!!}
-
---     wk[]↑↑ : (A t : Term) → wk1 A [ t ]↑↑ PE.≡ wk1 (wk1 A)
---     wk[]↑↑ = {!!}
-
--- sndⱼ : {Γ : Con Term} {A B t : Term}
---        → ⊢ Γ
---        → Γ ⊢ A ^ %
---        → Γ ∙ A ^ % ⊢ B ^ %
---        → Γ ⊢ t ∷ Σ A ▹ B ^ %
---        → Γ ⊢ snd A B t ∷ (B [ fst A B t ]) ^ %
--- sndⱼ {Γ} {A} {B} {t} Γε Aε Bε tε
---   = PE.subst (λ (z : Term) → Γ ⊢ snd A B t ∷ z ^ %) ([]↑[] t)
---     (sigmarecⱼ {!!} {!!} tε)
---   where
---     []↑[] : (t : Term) → (B [ fst A B (var 0) ]↑) [ t ] PE.≡ B [ fst A B t ]
---     []↑[] = {!!}
-
--- apⱼ : {Γ : Con Term} {A B f x y e : Term}
---       → ⊢ Γ
---       → Γ ⊢ A ^ !
---       → Γ ⊢ B ^ !
---       → Γ ⊢ x ∷ A ^ !
---       → Γ ⊢ y ∷ A ^ !
---       → Γ ⊢ e ∷ Id A x y ^ %
---       → Γ ⊢ ap A B f x y e ∷ Id B (f ∘ x) (f ∘ y) ^ %
--- apⱼ {Γ} {A} {B} {f} {x} {y} {e} Γε Aε Bε xε yε eε =
---   {!!}
---   where
---     wk[] : (A t : Term) → wk1 A [ t ] PE.≡ A
---     wk[] = {!!}
-
---     aux : Γ ⊢ ap A B f x y e ∷ Id (wk1 B [ y ]) (wk1 (f ∘ x) [ y ]) (wk1 f [ y ] ∘ y) ^ %
---     aux = transpⱼ (Idⱼ ({!!} ∘ⱼ {!!}) {!? ∘ⱼ ?!}) xε {!!} yε eε
-
 
 -- Term reduction
 data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → Set where
@@ -523,11 +467,6 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                     (Π (wk1 A') ^ rA ▹ Id U
                       ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                       (wk (lift (step id)) B'))
--- alternatively:
--- Σ (Id (Univ rA) A A') ▹
---   (Π (wk1 A) ^ rA ▹ Id U
---      (wk (lift (step id)) B)
---      ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
                   ∷ SProp ^ !
   Id-U-ℕℕ : Γ ⊢ (Id U ℕ ℕ)
                 ⇒ Unit
@@ -577,6 +516,17 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
              → Γ ⊢ cast ℕ ℕ e (suc n)
                  ⇒ suc (cast ℕ ℕ e n)
                  ∷ ℕ ^ !
+  -- Id-U-ΠΠ-alternative : ∀ {A A' rA B B'}
+  --           → Γ ⊢ A ∷ (Univ rA) ^ !
+  --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+  --           → Γ ⊢ A' ∷ (Univ rA) ^ !
+  --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+  --           → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
+  --                 ⇒ Σ (Id (Univ rA) A A') ▹
+  --                   (Π (wk1 A) ^ rA ▹ Id U
+  --                     (wk (lift (step id)) B)
+  --                     ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
+  --               ∷ SProp ^ !
   -- Id-ℕ-S0 : ∀ {n}
   --           → Γ ⊢ n ∷ ℕ ^ !
   --           → Γ ⊢ (Id ℕ (suc n) zero)
@@ -615,7 +565,6 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
   --           → Γ ⊢ (Id U ℕ (Π A ^ rA ▹ B))
   --                 ⇒ Empty
   --                 ∷ SProp ^ !
-
 
 -- Type reduction
 data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
@@ -697,3 +646,67 @@ data _⊢ˢ_≡_∷_ (Δ : Con Term) (σ σ′ : Subst) : (Γ : Con Term) → Se
 
 -- Note that we cannot use the well-formed substitutions.
 -- For that, we need to prove the fundamental theorem for substitutions.
+
+
+-- Trying to type the reduction lemmas
+
+-- Unitⱼ : {Γ : Con Term}
+--         → ⊢ Γ
+--         → Γ ⊢ Unit ∷ SProp ^ !
+-- Unitⱼ {Γ} Γε = Πⱼ (Emptyⱼ Γε) ▹ Emptyⱼ (Γε ∙ Emptyⱼ Γε)
+
+-- ttⱼ : {Γ : Con Term}
+--       → ⊢ Γ
+--       → Γ ⊢ tt ∷ Unit ^ %
+-- ttⱼ {Γ} Γε = lamⱼ (Emptyⱼ Γε) (Emptyrecⱼ (Emptyⱼ (Γε ∙ Emptyⱼ Γε)) (var (Γε ∙ Emptyⱼ Γε) here))
+
+-- fstⱼ : {Γ : Con Term} {A B t : Term}
+--        → ⊢ Γ
+--        → Γ ⊢ A ^ %
+--        → Γ ∙ A ^ % ⊢ B ^ %
+--        → Γ ⊢ t ∷ Σ A ▹ B ^ %
+--        → Γ ⊢ fst A B t ∷ A ^ %
+-- fstⱼ {Γ} {A} {B} {t} Γε Aε Bε tε
+--   = PE.subst (λ (z : Term) → Γ ⊢ fst A B t ∷ z ^ %) (wk[] A t)
+--     (sigmarecⱼ {!!}
+--       (var (Γε ∙ Aε ∙ Bε)
+--       (PE.subst (λ z → 1 ∷ z ^ % ∈ (Γ ∙ A ^ % ∙ B ^ %))
+--         (PE.sym (wk[]↑↑ A ⦅ var 0 , var 1 ⦆))
+--         (there here)))
+--       tε)
+--   where
+--     wk[] : (A t : Term) → wk1 A [ t ] PE.≡ A
+--     wk[] = {!!}
+
+--     wk[]↑↑ : (A t : Term) → wk1 A [ t ]↑↑ PE.≡ wk1 (wk1 A)
+--     wk[]↑↑ = {!!}
+
+-- sndⱼ : {Γ : Con Term} {A B t : Term}
+--        → ⊢ Γ
+--        → Γ ⊢ A ^ %
+--        → Γ ∙ A ^ % ⊢ B ^ %
+--        → Γ ⊢ t ∷ Σ A ▹ B ^ %
+--        → Γ ⊢ snd A B t ∷ (B [ fst A B t ]) ^ %
+-- sndⱼ {Γ} {A} {B} {t} Γε Aε Bε tε
+--   = PE.subst (λ (z : Term) → Γ ⊢ snd A B t ∷ z ^ %) ([]↑[] t)
+--     (sigmarecⱼ {!!} {!!} tε)
+--   where
+--     []↑[] : (t : Term) → (B [ fst A B (var 0) ]↑) [ t ] PE.≡ B [ fst A B t ]
+--     []↑[] = {!!}
+
+-- apⱼ : {Γ : Con Term} {A B f x y e : Term}
+--       → ⊢ Γ
+--       → Γ ⊢ A ^ !
+--       → Γ ⊢ B ^ !
+--       → Γ ⊢ x ∷ A ^ !
+--       → Γ ⊢ y ∷ A ^ !
+--       → Γ ⊢ e ∷ Id A x y ^ %
+--       → Γ ⊢ ap A B f x y e ∷ Id B (f ∘ x) (f ∘ y) ^ %
+-- apⱼ {Γ} {A} {B} {f} {x} {y} {e} Γε Aε Bε xε yε eε =
+--   {!!}
+--   where
+--     wk[] : (A t : Term) → wk1 A [ t ] PE.≡ A
+--     wk[] = {!!}
+
+--     aux : Γ ⊢ ap A B f x y e ∷ Id (wk1 B [ y ]) (wk1 (f ∘ x) [ y ]) (wk1 f [ y ] ∘ y) ^ %
+--     aux = transpⱼ (Idⱼ ({!!} ∘ⱼ {!!}) {!? ∘ⱼ ?!}) xε {!!} yε eε
