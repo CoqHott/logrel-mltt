@@ -258,16 +258,6 @@ mutual
     Id-ℕ-00 : Γ ⊢ (Id ℕ zero zero)
                   ≡ Unit
                   ∷ SProp ^ !
-    Id-ℕ-S0 : ∀ {n}
-              → Γ ⊢ n ∷ ℕ ^ !
-              → Γ ⊢ (Id ℕ (suc n) zero)
-                    ≡ Empty
-                    ∷ SProp ^ !
-    Id-ℕ-0S : ∀ {n}
-              → Γ ⊢ n ∷ ℕ ^ !
-              → Γ ⊢ (Id ℕ zero (suc n))
-                    ≡ Empty
-                    ∷ SProp ^ !
     Id-ℕ-SS : ∀ {m n}
               → Γ ⊢ m ∷ ℕ ^ !
               → Γ ⊢ n ∷ ℕ ^ !
@@ -290,37 +280,9 @@ mutual
 --      (wk (lift (step id)) B)
 --      ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
                   ∷ SProp ^ !
-    Id-U-ΠΠ%! : ∀ {A A' B B'}
-                → Γ ⊢ A ∷ SProp ^ !
-                → Γ ∙ A ^ % ⊢ B ∷ U ^ !
-                → Γ ⊢ A' ∷ U ^ !
-                → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
-                → Γ ⊢ (Id U (Π A ^ % ▹ B) (Π A' ^ ! ▹ B'))
-                      ≡ Empty
-                      ∷ SProp ^ !
-    Id-U-ΠΠ!% : ∀ {A A' B B'}
-                → Γ ⊢ A ∷ SProp ^ !
-                → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
-                → Γ ⊢ A' ∷ U ^ !
-                → Γ ∙ A ^ % ⊢ B ∷ U ^ !
-                → Γ ⊢ (Id U (Π A ^ ! ▹ B) (Π A' ^ % ▹ B'))
-                      ≡ Empty
-                      ∷ SProp ^ !
     Id-U-ℕℕ : Γ ⊢ (Id U ℕ ℕ)
                   ≡ Unit
                   ∷ SProp ^ !
-    Id-U-Πℕ : ∀ {A rA B}
-              → Γ ⊢ A ∷ (Univ rA) ^ !
-              → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
-              → Γ ⊢ (Id U (Π A ^ rA ▹ B) ℕ)
-                    ≡ Empty
-                    ∷ SProp ^ !
-    Id-U-ℕΠ : ∀ {A rA B}
-              → Γ ⊢ A ∷ (Univ rA) ^ !
-              → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
-              → Γ ⊢ (Id U ℕ (Π A ^ rA ▹ B))
-                    ≡ Empty
-                    ∷ SProp ^ !
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ^ !
                → Γ ⊢ B ∷ SProp ^ !
@@ -358,6 +320,44 @@ mutual
                → Γ ⊢ cast ℕ ℕ e (suc n)
                    ≡ suc (cast ℕ ℕ e n)
                    ∷ ℕ ^ !
+    -- Id-ℕ-S0 : ∀ {n}
+    --           → Γ ⊢ n ∷ ℕ ^ !
+    --           → Γ ⊢ (Id ℕ (suc n) zero)
+    --                 ≡ Empty
+    --                 ∷ SProp ^ !
+    -- Id-ℕ-0S : ∀ {n}
+    --           → Γ ⊢ n ∷ ℕ ^ !
+    --           → Γ ⊢ (Id ℕ zero (suc n))
+    --                 ≡ Empty
+    --                 ∷ SProp ^ !
+    -- Id-U-ΠΠ%! : ∀ {A A' B B'}
+    --             → Γ ⊢ A ∷ SProp ^ !
+    --             → Γ ∙ A ^ % ⊢ B ∷ U ^ !
+    --             → Γ ⊢ A' ∷ U ^ !
+    --             → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
+    --             → Γ ⊢ (Id U (Π A ^ % ▹ B) (Π A' ^ ! ▹ B'))
+    --                   ≡ Empty
+    --                   ∷ SProp ^ !
+    -- Id-U-ΠΠ!% : ∀ {A A' B B'}
+    --             → Γ ⊢ A ∷ SProp ^ !
+    --             → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
+    --             → Γ ⊢ A' ∷ U ^ !
+    --             → Γ ∙ A ^ % ⊢ B ∷ U ^ !
+    --             → Γ ⊢ (Id U (Π A ^ ! ▹ B) (Π A' ^ % ▹ B'))
+    --                   ≡ Empty
+    --                   ∷ SProp ^ !
+    -- Id-U-Πℕ : ∀ {A rA B}
+    --           → Γ ⊢ A ∷ (Univ rA) ^ !
+    --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+    --           → Γ ⊢ (Id U (Π A ^ rA ▹ B) ℕ)
+    --                 ≡ Empty
+    --                 ∷ SProp ^ !
+    -- Id-U-ℕΠ : ∀ {A rA B}
+    --           → Γ ⊢ A ∷ (Univ rA) ^ !
+    --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+    --           → Γ ⊢ (Id U ℕ (Π A ^ rA ▹ B))
+    --                 ≡ Empty
+    --                 ∷ SProp ^ !
 
 Unitⱼ : {Γ : Con Term}
         → ⊢ Γ
@@ -507,16 +507,6 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
   Id-ℕ-00 : Γ ⊢ (Id ℕ zero zero)
                 ⇒ Unit
                 ∷ SProp ^ !
-  Id-ℕ-S0 : ∀ {n}
-            → Γ ⊢ n ∷ ℕ ^ !
-            → Γ ⊢ (Id ℕ (suc n) zero)
-                  ⇒ Empty
-                  ∷ SProp ^ !
-  Id-ℕ-0S : ∀ {n}
-            → Γ ⊢ n ∷ ℕ ^ !
-            → Γ ⊢ (Id ℕ zero (suc n))
-                  ⇒ Empty
-                  ∷ SProp ^ !
   Id-ℕ-SS : ∀ {m n}
             → Γ ⊢ m ∷ ℕ ^ !
             → Γ ⊢ n ∷ ℕ ^ !
@@ -539,37 +529,9 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
 --      (wk (lift (step id)) B)
 --      ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
                   ∷ SProp ^ !
-  Id-U-ΠΠ%! : ∀ {A A' B B'}
-              → Γ ⊢ A ∷ SProp ^ !
-              → Γ ∙ A ^ % ⊢ B ∷ U ^ !
-              → Γ ⊢ A' ∷ U ^ !
-              → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
-              → Γ ⊢ (Id U (Π A ^ % ▹ B) (Π A' ^ ! ▹ B'))
-                    ⇒ Empty
-                    ∷ SProp ^ !
-  Id-U-ΠΠ!% : ∀ {A A' B B'}
-              → Γ ⊢ A ∷ SProp ^ !
-              → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
-              → Γ ⊢ A' ∷ U ^ !
-              → Γ ∙ A ^ % ⊢ B ∷ U ^ !
-              → Γ ⊢ (Id U (Π A ^ ! ▹ B) (Π A' ^ % ▹ B'))
-                    ⇒ Empty
-                    ∷ SProp ^ !
   Id-U-ℕℕ : Γ ⊢ (Id U ℕ ℕ)
                 ⇒ Unit
                 ∷ SProp ^ !
-  Id-U-Πℕ : ∀ {A rA B}
-            → Γ ⊢ A ∷ (Univ rA) ^ !
-            → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
-            → Γ ⊢ (Id U (Π A ^ rA ▹ B) ℕ)
-                  ⇒ Empty
-                  ∷ SProp ^ !
-  Id-U-ℕΠ : ∀ {A rA B}
-            → Γ ⊢ A ∷ (Univ rA) ^ !
-            → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
-            → Γ ⊢ (Id U ℕ (Π A ^ rA ▹ B))
-                  ⇒ Empty
-                  ∷ SProp ^ !
   Id-SProp : ∀ {A B}
              → Γ ⊢ A ∷ SProp ^ !
              → Γ ⊢ B ∷ SProp ^ !
@@ -615,6 +577,44 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
              → Γ ⊢ cast ℕ ℕ e (suc n)
                  ⇒ suc (cast ℕ ℕ e n)
                  ∷ ℕ ^ !
+  -- Id-ℕ-S0 : ∀ {n}
+  --           → Γ ⊢ n ∷ ℕ ^ !
+  --           → Γ ⊢ (Id ℕ (suc n) zero)
+  --                 ⇒ Empty
+  --                 ∷ SProp ^ !
+  -- Id-ℕ-0S : ∀ {n}
+  --           → Γ ⊢ n ∷ ℕ ^ !
+  --           → Γ ⊢ (Id ℕ zero (suc n))
+  --                 ⇒ Empty
+  --                 ∷ SProp ^ !
+  -- Id-U-ΠΠ%! : ∀ {A A' B B'}
+  --             → Γ ⊢ A ∷ SProp ^ !
+  --             → Γ ∙ A ^ % ⊢ B ∷ U ^ !
+  --             → Γ ⊢ A' ∷ U ^ !
+  --             → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
+  --             → Γ ⊢ (Id U (Π A ^ % ▹ B) (Π A' ^ ! ▹ B'))
+  --                   ⇒ Empty
+  --                   ∷ SProp ^ !
+  -- Id-U-ΠΠ!% : ∀ {A A' B B'}
+  --             → Γ ⊢ A ∷ SProp ^ !
+  --             → Γ ∙ A ^ ! ⊢ B ∷ U ^ !
+  --             → Γ ⊢ A' ∷ U ^ !
+  --             → Γ ∙ A ^ % ⊢ B ∷ U ^ !
+  --             → Γ ⊢ (Id U (Π A ^ ! ▹ B) (Π A' ^ % ▹ B'))
+  --                   ⇒ Empty
+  --                   ∷ SProp ^ !
+  -- Id-U-Πℕ : ∀ {A rA B}
+  --           → Γ ⊢ A ∷ (Univ rA) ^ !
+  --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+  --           → Γ ⊢ (Id U (Π A ^ rA ▹ B) ℕ)
+  --                 ⇒ Empty
+  --                 ∷ SProp ^ !
+  -- Id-U-ℕΠ : ∀ {A rA B}
+  --           → Γ ⊢ A ∷ (Univ rA) ^ !
+  --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+  --           → Γ ⊢ (Id U ℕ (Π A ^ rA ▹ B))
+  --                 ⇒ Empty
+  --                 ∷ SProp ^ !
 
 
 -- Type reduction
