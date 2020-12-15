@@ -39,7 +39,9 @@ wf (ℕⱼ ⊢Γ) = ⊢Γ
 wf (Emptyⱼ ⊢Γ) = ⊢Γ
 wf (Uⱼ ⊢Γ) = ⊢Γ
 wf (Πⱼ F ▹ G) = wf F
+wf (Σⱼ F ▹ G) = wf F
 wf (univ A) = wfTerm A
+wf (Idⱼ t u) = wfTerm t
 
 wfEqTerm : ∀ {Γ A t u r} → Γ ⊢ t ≡ u ∷ A ^ r → ⊢ Γ
 wfEqTerm (refl t) = wfTerm t
