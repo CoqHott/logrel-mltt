@@ -167,7 +167,7 @@ data Neutral : Term → Set where
   IdU2ₙ : ∀ {t u} → Neutral u → Neutral (Id U t u)
   cast1ₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
   cast2ₙ : ∀ {A B e t} → Neutral B → Neutral (cast A B e t)
-
+  castℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
 
 -- Weak head normal forms (whnfs).
 
@@ -357,6 +357,7 @@ wkNeutral ρ (IdU1ₙ t) = IdU1ₙ (wkNeutral ρ t)
 wkNeutral ρ (IdU2ₙ t) = IdU2ₙ (wkNeutral ρ t)
 wkNeutral ρ (cast1ₙ A) = cast1ₙ (wkNeutral ρ A)
 wkNeutral ρ (cast2ₙ A) = cast2ₙ (wkNeutral ρ A)
+wkNeutral ρ (castℕₙ t) = castℕₙ (wkNeutral ρ t)
 
 -- Weakening can be applied to our whnf views.
 
