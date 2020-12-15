@@ -16,14 +16,22 @@ wfTerm : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → ⊢ Γ
 wfTerm (ℕⱼ ⊢Γ) = ⊢Γ
 wfTerm (Emptyⱼ ⊢Γ) = ⊢Γ
 wfTerm (Πⱼ F ▹ G) = wfTerm F
+wfTerm (Σⱼ F ▹ G) = wfTerm F
 wfTerm (var ⊢Γ x₁) = ⊢Γ
 wfTerm (lamⱼ F t) with wfTerm t
 wfTerm (lamⱼ F t) | ⊢Γ ∙ F′ = ⊢Γ
 wfTerm (g ∘ⱼ a) = wfTerm a
+wfTerm (⦅ t , u ⦆ⱼ) = wfTerm t
+wfTerm (sigmarecⱼ A t u) = wfTerm u
 wfTerm (zeroⱼ ⊢Γ) = ⊢Γ
 wfTerm (sucⱼ n) = wfTerm n
 wfTerm (natrecⱼ F z s n) = wfTerm z
 wfTerm (Emptyrecⱼ A e) = wfTerm e
+wfTerm (Idⱼ t u) = wfTerm t
+wfTerm (Idreflⱼ t) = wfTerm t
+wfTerm (transpⱼ P t s u e) = wfTerm t
+wfTerm (castⱼ A B e t) = wfTerm t
+wfTerm (cast_reflⱼ A t) = wfTerm t
 wfTerm (conv t A≡B) = wfTerm t
 
 wf : ∀ {Γ A r} → Γ ⊢ A ^ r → ⊢ Γ
