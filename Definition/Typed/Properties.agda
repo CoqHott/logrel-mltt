@@ -56,8 +56,21 @@ wfEqTerm (suc-cong n) = wfEqTerm n
 wfEqTerm (natrec-cong F≡F′ z≡z′ s≡s′ n≡n′) = wfEqTerm z≡z′
 wfEqTerm (natrec-zero F z s) = wfTerm z
 wfEqTerm (natrec-suc n F z s) = wfTerm n
+wfEqTerm (sigmarec-cong A t u) = wfEqTerm u
+wfEqTerm (sigmarec-pair A t u v) = wfTerm u
 wfEqTerm (Emptyrec-cong A≡A' e≡e') = wfEqTerm e≡e'
 wfEqTerm (proof-irrelevance t u) = wfTerm t
+wfEqTerm (Id-cong A t u) = wfEqTerm u
+wfEqTerm (Id-Π A B t u) = wfTerm t
+wfEqTerm (Id-ℕ-00 ⊢Γ) = ⊢Γ
+wfEqTerm (Id-ℕ-SS m n) = wfTerm n
+wfEqTerm (Id-U-ΠΠ A B A' B') = wfTerm A
+wfEqTerm (Id-U-ℕℕ ⊢Γ) = ⊢Γ
+wfEqTerm (Id-SProp A B) = wfTerm A
+wfEqTerm (cast-cong A B e t) = wfEqTerm t
+wfEqTerm (cast-Π A B A' B' e f) = wfTerm f
+wfEqTerm (cast-ℕ-0 e) = wfTerm e
+wfEqTerm (cast-ℕ-S e n) = wfTerm n
 
 wfEq : ∀ {Γ A B r} → Γ ⊢ A ≡ B ^ r → ⊢ Γ
 wfEq (univ A≡B) = wfEqTerm A≡B
@@ -74,11 +87,29 @@ subsetTerm (natrec-subst F z s n⇒n′) =
   natrec-cong (refl F) (refl z) (refl s) (subsetTerm n⇒n′)
 subsetTerm (natrec-zero F z s) = natrec-zero F z s
 subsetTerm (natrec-suc n F z s) = natrec-suc n F z s
+subsetTerm (sigmarec-subst A t u) = sigmarec-cong (refl A) (refl t) (subsetTerm u)
+subsetTerm (sigmarec-pair A t u v) = sigmarec-pair A t u v
 subsetTerm (Emptyrec-subst A n⇒n′) =
   Emptyrec-cong (refl A) (subsetTerm n⇒n′)
 subsetTerm (app-subst t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
 subsetTerm (β-red A t a) = β-red A t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
+subsetTerm (Id-subst t u A) = Id-cong (univ (subsetTerm A)) (refl t) (refl u)
+subsetTerm (Id-ℕ-subst1 m n) = Id-cong (refl (ℕⱼ (wfTerm n))) (subsetTerm m) (refl n)
+subsetTerm (Id-ℕ-subst2 m n) = Id-cong (refl (ℕⱼ (wfTerm m))) (refl m) (subsetTerm n)
+subsetTerm (Id-U-subst1 A B) = Id-cong (refl (Uⱼ (wfTerm B))) (subsetTerm A) (refl B)
+subsetTerm (Id-U-subst2 A B) = Id-cong (refl (Uⱼ (wfTerm A))) (refl A) (subsetTerm B)
+subsetTerm (Id-Π A B t u) = Id-Π A B t u
+subsetTerm (Id-ℕ-00 ⊢Γ) = Id-ℕ-00 ⊢Γ
+subsetTerm (Id-ℕ-SS m n) = Id-ℕ-SS m n
+subsetTerm (Id-U-ΠΠ A B A' B') = Id-U-ΠΠ A B A' B'
+subsetTerm (Id-U-ℕℕ ⊢Γ) = Id-U-ℕℕ ⊢Γ
+subsetTerm (Id-SProp A B) = Id-SProp A B
+subsetTerm (cast-subst1 A B e t) = cast-cong (subsetTerm A) (refl B) (refl e) (refl t)
+subsetTerm (cast-subst2 A B e t) = cast-cong (refl A) (subsetTerm B) (refl e) (refl t)
+subsetTerm (cast-Π A B A' B' e f) = cast-Π A B A' B' e f
+subsetTerm (cast-ℕ-0 e) = cast-ℕ-0 e
+subsetTerm (cast-ℕ-S e n) = cast-ℕ-S e n
 
 subset : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ≡ B ^ r
 subset (univ A⇒B) = univ (subsetTerm A⇒B)

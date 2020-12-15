@@ -163,6 +163,8 @@ mutual
            → Γ     ⊢ F ≡ H ^ rF
            → Γ ∙ F ^ rF ⊢ G ≡ E ^ rG
            → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ^ rG
+    -- I dont think we want Σ and Id conversion rules, as they are always in SProp
+    -- and can therefore be recovered from typed conversion
 
   -- Term equality
   data _⊢_≡_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → Set where
@@ -225,7 +227,7 @@ mutual
                   → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ≡ A' ^ rA
                   → Γ ∙ F ^ % ∙ G ^ % ⊢ t ≡ t' ∷ A [ ⦅ var 0 , var 1 ⦆ ]↑↑ ^ rA
                   → Γ ⊢ u ≡ u' ∷ Σ F ▹ G ^ %
-                  → Γ ⊢ sigmarec A' t' u' ≡ sigmarec A' t' u' ∷ A [ u ] ^ rA
+                  → Γ ⊢ sigmarec A t u ≡ sigmarec A' t' u' ∷ A [ u ] ^ rA
     sigmarec-pair : ∀ {F G A rA t u v}
                     → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ^ rA
                     → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ A [ ⦅ var 0 , var 1 ⦆ ]↑↑ ^ rA
@@ -243,13 +245,13 @@ mutual
                       → Γ ⊢ u ∷ A ^ %
                       → Γ ⊢ t ≡ u ∷ A ^ %
     Id-cong : ∀ {A A' t t' u u'}
-              → Γ ⊢ A ≡ A' ∷ U ^ !
+              → Γ ⊢ A ≡ A' ^ !
               → Γ ⊢ t ≡ t' ∷ A ^ !
               → Γ ⊢ u ≡ u' ∷ A ^ !
               → Γ ⊢ Id A t u ≡ Id A' t' u' ∷ SProp ^ !
     Id-Π : ∀ {A rA B t u}
            → Γ ⊢ A ∷ (Univ rA) ^ !
-           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+           → Γ ∙ A ^ rA ⊢ B ^ !
            → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
@@ -277,7 +279,7 @@ mutual
                         (wk (lift (step id)) B'))
                   ∷ SProp ^ !
     Id-U-ℕℕ : ⊢ Γ
-            → Γ ⊢ (Id U ℕ ℕ)
+            → Γ ⊢ Id U ℕ ℕ
                   ≡ Unit
                   ∷ SProp ^ !
     Id-SProp : ∀ {A B}
@@ -423,28 +425,24 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
             → Γ ⊢ A ⇒ A' ∷ U ^ !
             → Γ ⊢ Id A t u ⇒ Id A' t u ∷ SProp ^ !
   Id-ℕ-subst1 : ∀ {m m' n}
-            → Γ ⊢ m ∷ ℕ ^ !
-            → Γ ⊢ n ∷ ℕ ^ !
             → Γ ⊢ m ⇒ m' ∷ ℕ ^ !
+            → Γ ⊢ n ∷ ℕ ^ !
             → Γ ⊢ Id ℕ m n ⇒ Id ℕ m' n ∷ SProp ^ !
   Id-ℕ-subst2 : ∀ {m n n'}
             → Γ ⊢ m ∷ ℕ ^ !
-            → Γ ⊢ n ∷ ℕ ^ !
             → Γ ⊢ n ⇒ n' ∷ ℕ ^ !
             → Γ ⊢ Id ℕ m n ⇒ Id ℕ m n' ∷ SProp ^ !
   Id-U-subst1 : ∀ {A A' B}
-            → Γ ⊢ A ∷ U ^ !
-            → Γ ⊢ B ∷ U ^ !
             → Γ ⊢ A ⇒ A' ∷ U ^ !
+            → Γ ⊢ B ∷ U ^ !
             → Γ ⊢ Id U A B ⇒ Id U A' B ∷ SProp ^ !
   Id-U-subst2 : ∀ {A B B'}
             → Γ ⊢ A ∷ U ^ !
-            → Γ ⊢ B ∷ U ^ !
             → Γ ⊢ B ⇒ B' ∷ U ^ !
             → Γ ⊢ Id U A B ⇒ Id U A B' ∷ SProp ^ !
   Id-Π : ∀ {A rA B t u}
          → Γ ⊢ A ∷ (Univ rA) ^ !
-         → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+         → Γ ∙ A ^ rA ⊢ B ^ !
          → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
          → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
          → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
@@ -482,18 +480,16 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                    ⇒ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                    ∷ SProp ^ !
   cast-subst1 : ∀ {A A' B e t}
-                → Γ ⊢ A ∷ U ^ !
+                → Γ ⊢ A ⇒ A' ∷ U ^ !
                 → Γ ⊢ B ∷ U ^ !
                 → Γ ⊢ e ∷ Id U A B ^ %
                 → Γ ⊢ t ∷ A ^ !
-                → Γ ⊢ A ⇒ A' ∷ U ^ !
                 → Γ ⊢ cast A B e t ⇒ cast A' B e t ∷ B ^ !
   cast-subst2 : ∀ {A B B' e t}
                 → Γ ⊢ A ∷ U ^ !
-                → Γ ⊢ B ∷ U ^ !
+                → Γ ⊢ B ⇒ B' ∷ U ^ !
                 → Γ ⊢ e ∷ Id U A B ^ %
                 → Γ ⊢ t ∷ A ^ !
-                → Γ ⊢ B ⇒ B' ∷ U ^ !
                 → Γ ⊢ cast A B e t ⇒ cast A B' e t ∷ B ^ !
   cast-Π : ∀ {A A' rA B B' e f}
            → Γ ⊢ A ∷ (Univ rA) ^ !
