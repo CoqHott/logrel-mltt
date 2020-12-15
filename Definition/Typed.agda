@@ -255,7 +255,8 @@ mutual
            → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
                  ≡ Π A ^ rA ▹ (Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0)))
                  ∷ SProp ^ !
-    Id-ℕ-00 : Γ ⊢ (Id ℕ zero zero)
+    Id-ℕ-00 : ⊢ Γ
+           → Γ ⊢ (Id ℕ zero zero)
                   ≡ Unit
                   ∷ SProp ^ !
     Id-ℕ-SS : ∀ {m n}
@@ -268,14 +269,15 @@ mutual
               → Γ ⊢ A ∷ (Univ rA) ^ !
               → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
               → Γ ⊢ A' ∷ (Univ rA) ^ !
-              → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+              → Γ ∙ A' ^ rA ⊢ B' ∷ U ^ !
               → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
                     ≡ Σ (Id (Univ rA) A A') ▹
                       (Π (wk1 A') ^ rA ▹ Id U
                         ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk (lift (step id)) B'))
                   ∷ SProp ^ !
-    Id-U-ℕℕ : Γ ⊢ (Id U ℕ ℕ)
+    Id-U-ℕℕ : ⊢ Γ
+            → Γ ⊢ (Id U ℕ ℕ)
                   ≡ Unit
                   ∷ SProp ^ !
     Id-SProp : ∀ {A B}
@@ -315,17 +317,17 @@ mutual
                → Γ ⊢ cast ℕ ℕ e (suc n)
                    ≡ suc (cast ℕ ℕ e n)
                    ∷ ℕ ^ !
-    Id-U-ΠΠ-alternative : ∀ {A A' rA B B'}
-              → Γ ⊢ A ∷ (Univ rA) ^ !
-              → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
-              → Γ ⊢ A' ∷ (Univ rA) ^ !
-              → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
-              → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
-                    ≡ Σ (Id (Univ rA) A A') ▹
-                      (Π (wk1 A) ^ rA ▹ Id U
-                        (wk (lift (step id)) B)
-                        ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
-                  ∷ SProp ^ !
+    -- Id-U-ΠΠ-alternative : ∀ {A A' rA B B'}
+    --           → Γ ⊢ A ∷ (Univ rA) ^ !
+    --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+    --           → Γ ⊢ A' ∷ (Univ rA) ^ !
+    --           → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+    --           → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
+    --                 ≡ Σ (Id (Univ rA) A A') ▹
+    --                   (Π (wk1 A) ^ rA ▹ Id U
+    --                     (wk (lift (step id)) B)
+    --                     ((wk (lift (step id)) B') [ cast (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1) (var 0) ]↑))
+    --               ∷ SProp ^ !
     -- Id-ℕ-S0 : ∀ {n}
     --           → Γ ⊢ n ∷ ℕ ^ !
     --           → Γ ⊢ (Id ℕ (suc n) zero)
@@ -448,7 +450,8 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
          → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
                ⇒ Π A ^ rA ▹ (Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0)))
                ∷ SProp ^ !
-  Id-ℕ-00 : Γ ⊢ (Id ℕ zero zero)
+  Id-ℕ-00 : ⊢ Γ
+          → Γ ⊢ (Id ℕ zero zero)
                 ⇒ Unit
                 ∷ SProp ^ !
   Id-ℕ-SS : ∀ {m n}
@@ -461,14 +464,15 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
             → Γ ⊢ A ∷ (Univ rA) ^ !
             → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
             → Γ ⊢ A' ∷ (Univ rA) ^ !
-            → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+            → Γ ∙ A' ^ rA ⊢ B' ∷ U ^ !
             → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
                   ⇒ Σ (Id (Univ rA) A A') ▹
                     (Π (wk1 A') ^ rA ▹ Id U
                       ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                       (wk (lift (step id)) B'))
                   ∷ SProp ^ !
-  Id-U-ℕℕ : Γ ⊢ (Id U ℕ ℕ)
+  Id-U-ℕℕ : ⊢ Γ
+          → Γ ⊢ (Id U ℕ ℕ)
                 ⇒ Unit
                 ∷ SProp ^ !
   Id-SProp : ∀ {A B}
