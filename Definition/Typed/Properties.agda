@@ -95,18 +95,21 @@ subsetTerm (app-subst t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
 subsetTerm (β-red A t a) = β-red A t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
 subsetTerm (Id-subst A t u) = Id-cong (univ (subsetTerm A)) (refl t) (refl u)
-subsetTerm (Id-ℕ-subst1 m n) = Id-cong (refl (ℕⱼ (wfTerm n))) (subsetTerm m) (refl n)
-subsetTerm (Id-ℕ-subst2 m n) = Id-cong (refl (ℕⱼ (wfTerm m))) (refl m) (subsetTerm n)
-subsetTerm (Id-U-subst1 A B) = Id-cong (refl (Uⱼ (wfTerm B))) (subsetTerm A) (refl B)
-subsetTerm (Id-U-subst2 A B) = Id-cong (refl (Uⱼ (wfTerm A))) (refl A) (subsetTerm B)
+subsetTerm (Id-ℕ-subst m n) = Id-cong (refl (ℕⱼ (wfTerm n))) (subsetTerm m) (refl n)
+subsetTerm (Id-ℕ-0-subst n) = let ⊢Γ = wfEqTerm (subsetTerm n) in Id-cong (refl (ℕⱼ ⊢Γ)) (refl (zeroⱼ ⊢Γ)) (subsetTerm n)
+subsetTerm (Id-ℕ-S-subst m n) = Id-cong (refl (ℕⱼ (wfTerm m))) (refl (sucⱼ m)) (subsetTerm n)
+subsetTerm (Id-U-subst A B) = Id-cong (refl (Uⱼ (wfTerm B))) (subsetTerm A) (refl B)
+subsetTerm (Id-U-ℕ-subst B) = let ⊢Γ = wfEqTerm (subsetTerm B) in Id-cong (refl (Uⱼ ⊢Γ)) (refl (ℕⱼ ⊢Γ)) (subsetTerm B)
+subsetTerm (Id-U-Π-subst A P B) = Id-cong (refl (Uⱼ (wfTerm A))) (refl (Πⱼ A ▹ P)) (subsetTerm B)
 subsetTerm (Id-Π A B t u) = Id-Π A B t u
 subsetTerm (Id-ℕ-00 ⊢Γ) = Id-ℕ-00 ⊢Γ
 subsetTerm (Id-ℕ-SS m n) = Id-ℕ-SS m n
 subsetTerm (Id-U-ΠΠ A B A' B') = Id-U-ΠΠ A B A' B'
 subsetTerm (Id-U-ℕℕ ⊢Γ) = Id-U-ℕℕ ⊢Γ
 subsetTerm (Id-SProp A B) = Id-SProp A B
-subsetTerm (cast-subst1 A B e t) = cast-cong (subsetTerm A) (refl B) (refl e) (refl t)
-subsetTerm (cast-subst2 A B e t) = cast-cong (refl A) (subsetTerm B) (refl e) (refl t)
+subsetTerm (cast-subst A B e t) = cast-cong (subsetTerm A) (refl B) (refl e) (refl t)
+subsetTerm (cast-ℕ-subst B e t) = cast-cong (refl (ℕⱼ (wfTerm t))) (subsetTerm B) (refl e) (refl t)
+subsetTerm (cast-Π-subst A P B e t) = cast-cong (refl (Πⱼ A ▹ P)) (subsetTerm B) (refl e) (refl t)
 subsetTerm (cast-Π A B A' B' e f) = cast-Π A B A' B' e f
 subsetTerm (cast-ℕ-0 e) = cast-ℕ-0 e
 subsetTerm (cast-ℕ-S e n) = cast-ℕ-S e n
@@ -136,18 +139,21 @@ redFirstTerm (sigmarec-subst A t u) = sigmarecⱼ A t (redFirstTerm u)
 redFirstTerm (sigmarec-pair A t u v) = sigmarecⱼ A t ⦅ u , v ⦆ⱼ
 redFirstTerm (Emptyrec-subst A n⇒n′) = Emptyrecⱼ A (redFirstTerm n⇒n′)
 redFirstTerm (Id-subst A t u) = Idⱼ t u
-redFirstTerm (Id-ℕ-subst1 m n) = Idⱼ (redFirstTerm m) n
-redFirstTerm (Id-ℕ-subst2 m n) = Idⱼ m (redFirstTerm n)
-redFirstTerm (Id-U-subst1 A B) = Idⱼ (redFirstTerm A) B
-redFirstTerm (Id-U-subst2 A B) = Idⱼ A (redFirstTerm B)
+redFirstTerm (Id-ℕ-subst m n) = Idⱼ (redFirstTerm m) n
+redFirstTerm (Id-ℕ-0-subst n) = Idⱼ (zeroⱼ (wfEqTerm (subsetTerm n))) (redFirstTerm n)
+redFirstTerm (Id-ℕ-S-subst m n) = Idⱼ (sucⱼ m) (redFirstTerm n)
+redFirstTerm (Id-U-subst A B) = Idⱼ (redFirstTerm A) B
+redFirstTerm (Id-U-ℕ-subst B) = Idⱼ (ℕⱼ (wfEqTerm (subsetTerm B))) (redFirstTerm B)
+redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (Πⱼ A ▹ P) (redFirstTerm B)
 redFirstTerm (Id-Π A B t u) = Idⱼ t u
 redFirstTerm (Id-ℕ-00 ⊢Γ) = Idⱼ (zeroⱼ ⊢Γ) (zeroⱼ ⊢Γ)
 redFirstTerm (Id-ℕ-SS m n) = Idⱼ (sucⱼ m) (sucⱼ n)
 redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (Πⱼ A ▹ B) (Πⱼ A' ▹ B')
 redFirstTerm (Id-U-ℕℕ ⊢Γ) = Idⱼ (ℕⱼ ⊢Γ) (ℕⱼ ⊢Γ)
 redFirstTerm (Id-SProp A B) = Idⱼ A B
-redFirstTerm (cast-subst1 A B e t) = castⱼ (redFirstTerm A) B e t
-redFirstTerm (cast-subst2 A B e t) = castⱼ A (redFirstTerm B) e t
+redFirstTerm (cast-subst A B e t) = castⱼ (redFirstTerm A) B e t
+redFirstTerm (cast-ℕ-subst B e t) = castⱼ (ℕⱼ (wfTerm t)) (redFirstTerm B) e t
+redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ A ▹ P) (redFirstTerm B) e t
 redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ A ▹ B) (Πⱼ A' ▹ B') e f
 redFirstTerm (cast-ℕ-0 e) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (zeroⱼ (wfTerm e))
 redFirstTerm (cast-ℕ-S e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (sucⱼ n)
@@ -223,7 +229,8 @@ whnfRed* (id x) w = PE.refl
 whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 
 -- Whr is deterministic
-
+-- this is straight up false with our subst rules for Idℕ, IdU and cast
+-- Of course, we can reduce the second iff the first is a Whnf
 whrDetTerm : ∀{Γ t u A u′ A′ r r'} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (d′ : Γ ⊢ t ⇒ u′ ∷ A′ ^ r') → u PE.≡ u′
 whrDetTerm (conv d x) d′ = whrDetTerm d d′
 whrDetTerm d (conv d′ x₁) = whrDetTerm d d′
