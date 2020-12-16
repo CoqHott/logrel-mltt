@@ -187,6 +187,11 @@ mutual
                 → Γ     ⊢ F ≡ H       ∷ (Univ rF) ^ !
                 → Γ ∙ F ^ rF ⊢ G ≡ E       ∷ (Univ rG) ^ !
                 → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ∷ (Univ rG) ^ !
+    Σ-cong      : ∀ {E F G H}
+                → Γ     ⊢ F ^ %
+                → Γ     ⊢ F ≡ H       ∷ SProp ^ !
+                → Γ ∙ F ^ % ⊢ G ≡ E       ∷ SProp ^ !
+                → Γ     ⊢ Σ F ▹ G ≡ Σ H ▹ E ∷ SProp ^ !
     app-cong    : ∀ {a b f g F G rF rG}
                 → Γ ⊢ f ≡ g ∷ Π F ^ rF ▹ G ^ rG
                 → Γ ⊢ a ≡ b ∷ F ^ rF

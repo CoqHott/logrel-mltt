@@ -49,6 +49,7 @@ wfEqTerm (sym t≡u) = wfEqTerm t≡u
 wfEqTerm (trans t≡u u≡r) = wfEqTerm t≡u
 wfEqTerm (conv t≡u A≡B) = wfEqTerm t≡u
 wfEqTerm (Π-cong F F≡H G≡E) = wfEqTerm F≡H
+wfEqTerm (Σ-cong F F≡H G≡E) = wfEqTerm F≡H
 wfEqTerm (app-cong f≡g a≡b) = wfEqTerm f≡g
 wfEqTerm (β-red F t a) = wfTerm a
 wfEqTerm (η-eq F f g f0≡g0) = wfTerm f
