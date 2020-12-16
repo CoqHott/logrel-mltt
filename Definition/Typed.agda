@@ -232,7 +232,7 @@ mutual
                     → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ^ rA
                     → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ A [ ⦅ var 0 , var 1 ⦆ ]↑↑ ^ rA
                     → Γ ⊢ u ∷ F ^ %
-                    → Γ ⊢ v ∷ G [ t ] ^ %
+                    → Γ ⊢ v ∷ G [ u ] ^ %
                     → Γ ⊢ sigmarec A t ⦅ u , v ⦆
                         ≡ t [ v ] [ u ]
                         ∷ A [ ⦅ u , v ⦆ ] ^ rA
@@ -411,7 +411,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                   → Γ ∙ (Σ F ▹ G) ^ % ⊢ A ^ rA
                   → Γ ∙ F ^ % ∙ G ^ % ⊢ t ∷ A [ ⦅ var 0 , var 1 ⦆ ]↑↑ ^ rA
                   → Γ ⊢ u ∷ F ^ %
-                  → Γ ⊢ v ∷ G [ t ] ^ %
+                  → Γ ⊢ v ∷ G [ u ] ^ %
                   → Γ ⊢ sigmarec A t ⦅ u , v ⦆
                       ⇒ t [ v ] [ u ]
                       ∷ A [ ⦅ u , v ⦆ ] ^ rA
@@ -420,9 +420,9 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                → Γ     ⊢ n ⇒ n′ ∷ Empty ^ %
                → Γ     ⊢ Emptyrec A n ⇒ Emptyrec A n′ ∷ A ^ r
   Id-subst : ∀ {A A' t u}
+            → Γ ⊢ A ⇒ A' ∷ U ^ !
             → Γ ⊢ t ∷ A ^ !
             → Γ ⊢ u ∷ A ^ !
-            → Γ ⊢ A ⇒ A' ∷ U ^ !
             → Γ ⊢ Id A t u ⇒ Id A' t u ∷ SProp ^ !
   Id-ℕ-subst1 : ∀ {m m' n}
             → Γ ⊢ m ⇒ m' ∷ ℕ ^ !

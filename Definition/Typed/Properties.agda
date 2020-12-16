@@ -94,7 +94,7 @@ subsetTerm (Emptyrec-subst A n⇒n′) =
 subsetTerm (app-subst t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
 subsetTerm (β-red A t a) = β-red A t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
-subsetTerm (Id-subst t u A) = Id-cong (univ (subsetTerm A)) (refl t) (refl u)
+subsetTerm (Id-subst A t u) = Id-cong (univ (subsetTerm A)) (refl t) (refl u)
 subsetTerm (Id-ℕ-subst1 m n) = Id-cong (refl (ℕⱼ (wfTerm n))) (subsetTerm m) (refl n)
 subsetTerm (Id-ℕ-subst2 m n) = Id-cong (refl (ℕⱼ (wfTerm m))) (refl m) (subsetTerm n)
 subsetTerm (Id-U-subst1 A B) = Id-cong (refl (Uⱼ (wfTerm B))) (subsetTerm A) (refl B)
@@ -132,7 +132,25 @@ redFirstTerm (β-red A t a) = (lamⱼ A t) ∘ⱼ a
 redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ F z s (redFirstTerm n⇒n′)
 redFirstTerm (natrec-zero F z s) = natrecⱼ F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
+redFirstTerm (sigmarec-subst A t u) = sigmarecⱼ A t (redFirstTerm u)
+redFirstTerm (sigmarec-pair A t u v) = sigmarecⱼ A t ⦅ u , v ⦆ⱼ
 redFirstTerm (Emptyrec-subst A n⇒n′) = Emptyrecⱼ A (redFirstTerm n⇒n′)
+redFirstTerm (Id-subst A t u) = Idⱼ t u
+redFirstTerm (Id-ℕ-subst1 m n) = Idⱼ (redFirstTerm m) n
+redFirstTerm (Id-ℕ-subst2 m n) = Idⱼ m (redFirstTerm n)
+redFirstTerm (Id-U-subst1 A B) = Idⱼ (redFirstTerm A) B
+redFirstTerm (Id-U-subst2 A B) = Idⱼ A (redFirstTerm B)
+redFirstTerm (Id-Π A B t u) = Idⱼ t u
+redFirstTerm (Id-ℕ-00 ⊢Γ) = Idⱼ (zeroⱼ ⊢Γ) (zeroⱼ ⊢Γ)
+redFirstTerm (Id-ℕ-SS m n) = Idⱼ (sucⱼ m) (sucⱼ n)
+redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (Πⱼ A ▹ B) (Πⱼ A' ▹ B')
+redFirstTerm (Id-U-ℕℕ ⊢Γ) = Idⱼ (ℕⱼ ⊢Γ) (ℕⱼ ⊢Γ)
+redFirstTerm (Id-SProp A B) = Idⱼ A B
+redFirstTerm (cast-subst1 A B e t) = castⱼ (redFirstTerm A) B e t
+redFirstTerm (cast-subst2 A B e t) = castⱼ A (redFirstTerm B) e t
+redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ A ▹ B) (Πⱼ A' ▹ B') e f
+redFirstTerm (cast-ℕ-0 e) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (zeroⱼ (wfTerm e))
+redFirstTerm (cast-ℕ-S e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (sucⱼ n)
 
 redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 redFirst (univ A⇒B) = univ (redFirstTerm A⇒B)
@@ -157,6 +175,8 @@ noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
 noNe (Emptyrecⱼ A ⊢e) (Emptyrecₙ neT) = noNe ⊢e neT
 noNe (conv ⊢t x) (natrecₙ neT) = noNe ⊢t (natrecₙ neT)
 noNe (conv ⊢t x) (Emptyrecₙ neT) = noNe ⊢t (Emptyrecₙ neT)
+noNe (conv t x) (Idₙ neT) = noNe t (Idₙ neT)
+noNe (Idⱼ x y) (Idₙ neT) = noNe -- todo... we need mutual recursion here
 
 -- Neutrals do not weak head reduce
 
