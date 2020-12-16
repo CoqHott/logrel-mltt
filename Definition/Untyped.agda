@@ -161,13 +161,17 @@ data Neutral : Term → Set where
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
   Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
   Idₙ : ∀ {A t u} → Neutral A → Neutral (Id A t u)
-  Idℕ1ₙ : ∀ {t u} → Neutral t → Neutral (Id ℕ t u)
-  Idℕ2ₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ t u)
-  IdU1ₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
-  IdU2ₙ : ∀ {t u} → Neutral u → Neutral (Id U t u)
-  cast1ₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
-  cast2ₙ : ∀ {A B e t} → Neutral B → Neutral (cast A B e t)
-  castℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
+  Idℕₙ : ∀ {t u} → Neutral t → Neutral (Id ℕ t u)
+  Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ zero u)
+  IdℕSₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ (suc t) u)
+  IdUₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
+  IdUℕₙ : ∀ {u} → Neutral u → Neutral (Id U ℕ u)
+  IdUΠₙ : ∀ {A rA B u} → Neutral u → Neutral (Id U (Π A ^ rA ▹ B) u)
+  castₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
+  castℕₙ : ∀ {B e t} → Neutral B → Neutral (cast ℕ B e t)
+  castΠₙ : ∀ {A rA P B e t} → Neutral B → Neutral (cast (Π A ^ rA ▹ P) B e t)
+  castℕℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
+
 
 -- Weak head normal forms (whnfs).
 
@@ -178,6 +182,7 @@ data Whnf : Term → Set where
   -- Type constructors are whnfs.
   Uₙ    : ∀ {r} → Whnf (Univ r)
   Πₙ    : ∀ {A r B} → Whnf (Π A ^ r ▹ B)
+  Σₙ    : ∀ {A B} → Whnf (Σ A ▹ B)
   ℕₙ    : Whnf ℕ
   Emptyₙ : Whnf Empty
   -- Id types never are whnfs, unless neutral
@@ -351,13 +356,26 @@ wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
 wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
 wkNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkNeutral ρ e)
 wkNeutral ρ (Idₙ A) = Idₙ (wkNeutral ρ A)
-wkNeutral ρ (Idℕ1ₙ t) = Idℕ1ₙ (wkNeutral ρ t)
-wkNeutral ρ (Idℕ2ₙ t) = Idℕ2ₙ (wkNeutral ρ t)
-wkNeutral ρ (IdU1ₙ t) = IdU1ₙ (wkNeutral ρ t)
-wkNeutral ρ (IdU2ₙ t) = IdU2ₙ (wkNeutral ρ t)
-wkNeutral ρ (cast1ₙ A) = cast1ₙ (wkNeutral ρ A)
-wkNeutral ρ (cast2ₙ A) = cast2ₙ (wkNeutral ρ A)
-wkNeutral ρ (castℕₙ t) = castℕₙ (wkNeutral ρ t)
+wkNeutral ρ (Idℕₙ t) = Idℕₙ (wkNeutral ρ t)
+wkNeutral ρ (Idℕ0ₙ t) = Idℕ0ₙ (wkNeutral ρ t)
+wkNeutral ρ (IdℕSₙ t) = IdℕSₙ (wkNeutral ρ t)
+wkNeutral ρ (IdUₙ t) = IdUₙ (wkNeutral ρ t)
+wkNeutral ρ (IdUℕₙ t) = IdUℕₙ (wkNeutral ρ t)
+wkNeutral ρ (IdUΠₙ t) = IdUΠₙ (wkNeutral ρ t)
+wkNeutral ρ (castₙ A) = castₙ (wkNeutral ρ A)
+wkNeutral ρ (castℕₙ A) = castℕₙ (wkNeutral ρ A)
+wkNeutral ρ (castΠₙ A) = castΠₙ (wkNeutral ρ A)
+wkNeutral ρ (castℕℕₙ t) = castℕℕₙ (wkNeutral ρ t)
+
+-- Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 u)
+-- IdℕSₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 (suc u))
+-- IdUₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
+-- IdUℕₙ : ∀ {u} → Neutral u → Neutral (Id U ℕ u)
+-- IdUΠₙ : ∀ {A rA B u} → Neutral u → Neutral (Id U (Π A ^ rA ▹ B) u)
+-- castₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
+-- castℕₙ : ∀ {B e t} → Neutral B → Neutral (cast ℕ B e t)
+-- castΠₙ : ∀ {A rA P B e t} → Neutral B → Neutral (cast (Π A ^ rA ▹ P) B e t)
+-- castℕℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
 
 -- Weakening can be applied to our whnf views.
 
@@ -379,6 +397,7 @@ wkFunction ρ (ne x) = ne (wkNeutral ρ x)
 wkWhnf : ∀ {t} ρ → Whnf t → Whnf (wk ρ t)
 wkWhnf ρ Uₙ      = Uₙ
 wkWhnf ρ Πₙ      = Πₙ
+wkWhnf ρ Σₙ      = Σₙ
 wkWhnf ρ ℕₙ      = ℕₙ
 wkWhnf ρ Emptyₙ  = Emptyₙ
 wkWhnf ρ lamₙ    = lamₙ
