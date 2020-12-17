@@ -55,7 +55,8 @@ data Kind : Set where
   Castreflkind : Kind
   Sigmakind : Kind
   Pairkind : Kind
-  Sigmareckind : Kind
+  Fstkind : Kind
+  Sndkind : Kind
 
 data Term : Set where
   var : (x : Nat) → Term
@@ -98,8 +99,11 @@ t ∘ u = gen Appkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 ⦅_,_⦆ : Term → Term → Term -- Dependent pair formation
 ⦅ t , u ⦆ = gen Pairkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
-sigmarec : (A t u : Term) → Term -- Dependent pair elimination
-sigmarec A t u = gen Sigmareckind (⟦ 1 , A ⟧ ∷ ⟦ 2 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
+fst : (t : Term) → Term -- Dependent pair elimination
+fst t = gen Fstkind (⟦ 0 , t ⟧ ∷ [])
+
+snd : (t : Term) → Term -- Dependent pair elimination
+snd t = gen Sndkind (⟦ 0 , t ⟧ ∷ [])
 
 -- Introduction and elimination of natural numbers.
 zero   : Term                     -- Natural number zero.
