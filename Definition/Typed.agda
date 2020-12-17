@@ -64,6 +64,7 @@ mutual
          → Γ ⊢ A ∷ (Univ r) ^ !
          → Γ ⊢ A ^ r
     Idⱼ : ∀ {A t u}
+          → Γ ⊢ A ^ !
           → Γ ⊢ t ∷ A ^ !
           → Γ ⊢ u ∷ A ^ !
           → Γ ⊢ (Id A t u) ^ %
@@ -115,6 +116,7 @@ mutual
     Emptyrecⱼ : ∀ {A rA e}
            → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty ^ % -> Γ ⊢ Emptyrec A e ∷ A ^ rA
     Idⱼ : ∀ {A t u}
+          → Γ ⊢ A ^ !
           → Γ ⊢ t ∷ A ^ !
           → Γ ⊢ u ∷ A ^ !
           → Γ ⊢ Id A t u ∷ SProp ^ !

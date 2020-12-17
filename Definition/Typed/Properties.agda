@@ -27,7 +27,7 @@ wfTerm (zeroⱼ ⊢Γ) = ⊢Γ
 wfTerm (sucⱼ n) = wfTerm n
 wfTerm (natrecⱼ F z s n) = wfTerm z
 wfTerm (Emptyrecⱼ A e) = wfTerm e
-wfTerm (Idⱼ t u) = wfTerm t
+wfTerm (Idⱼ A t u) = wfTerm t
 wfTerm (Idreflⱼ t) = wfTerm t
 wfTerm (transpⱼ P t s u e) = wfTerm t
 wfTerm (castⱼ A B e t) = wfTerm t
@@ -41,7 +41,7 @@ wf (Uⱼ ⊢Γ) = ⊢Γ
 wf (Πⱼ F ▹ G) = wf F
 wf (Σⱼ F ▹ G) = wf F
 wf (univ A) = wfTerm A
-wf (Idⱼ t u) = wfTerm t
+wf (Idⱼ A t u) = wfTerm t
 
 wfEqTerm : ∀ {Γ A t u r} → Γ ⊢ t ≡ u ∷ A ^ r → ⊢ Γ
 wfEqTerm (refl t) = wfTerm t
@@ -139,19 +139,19 @@ redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
 redFirstTerm (sigmarec-subst A t u) = sigmarecⱼ A t (redFirstTerm u)
 redFirstTerm (sigmarec-pair A t u v) = sigmarecⱼ A t ⦅ u , v ⦆ⱼ
 redFirstTerm (Emptyrec-subst A n⇒n′) = Emptyrecⱼ A (redFirstTerm n⇒n′)
-redFirstTerm (Id-subst A t u) = Idⱼ t u
-redFirstTerm (Id-ℕ-subst m n) = Idⱼ (redFirstTerm m) n
-redFirstTerm (Id-ℕ-0-subst n) = Idⱼ (zeroⱼ (wfEqTerm (subsetTerm n))) (redFirstTerm n)
-redFirstTerm (Id-ℕ-S-subst m n) = Idⱼ (sucⱼ m) (redFirstTerm n)
-redFirstTerm (Id-U-subst A B) = Idⱼ (redFirstTerm A) B
-redFirstTerm (Id-U-ℕ-subst B) = Idⱼ (ℕⱼ (wfEqTerm (subsetTerm B))) (redFirstTerm B)
-redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (Πⱼ A ▹ P) (redFirstTerm B)
-redFirstTerm (Id-Π A B t u) = Idⱼ t u
-redFirstTerm (Id-ℕ-00 ⊢Γ) = Idⱼ (zeroⱼ ⊢Γ) (zeroⱼ ⊢Γ)
-redFirstTerm (Id-ℕ-SS m n) = Idⱼ (sucⱼ m) (sucⱼ n)
-redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (Πⱼ A ▹ B) (Πⱼ A' ▹ B')
-redFirstTerm (Id-U-ℕℕ ⊢Γ) = Idⱼ (ℕⱼ ⊢Γ) (ℕⱼ ⊢Γ)
-redFirstTerm (Id-SProp A B) = Idⱼ A B
+redFirstTerm (Id-subst A t u) = Idⱼ (univ (redFirstTerm A)) t u
+redFirstTerm (Id-ℕ-subst m n) = Idⱼ (ℕⱼ (wfTerm n)) (redFirstTerm m) n
+redFirstTerm (Id-ℕ-0-subst n) = Idⱼ (ℕⱼ (wfEqTerm (subsetTerm n))) (zeroⱼ (wfEqTerm (subsetTerm n))) (redFirstTerm n)
+redFirstTerm (Id-ℕ-S-subst m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (redFirstTerm n)
+redFirstTerm (Id-U-subst A B) = Idⱼ (Uⱼ (wfTerm B)) (redFirstTerm A) B
+redFirstTerm (Id-U-ℕ-subst B) = let ⊢Γ = (wfEqTerm (subsetTerm B)) in Idⱼ (Uⱼ ⊢Γ) (ℕⱼ ⊢Γ) (redFirstTerm B)
+redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (Uⱼ (wfTerm A)) (Πⱼ A ▹ P) (redFirstTerm B)
+redFirstTerm (Id-Π {rA = rA} A B t u) = Idⱼ (Πⱼ (univ A) ▹ B) t u
+redFirstTerm (Id-ℕ-00 ⊢Γ) = Idⱼ (ℕⱼ ⊢Γ) (zeroⱼ ⊢Γ) (zeroⱼ ⊢Γ)
+redFirstTerm (Id-ℕ-SS m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (sucⱼ n)
+redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (Uⱼ (wfTerm A)) (Πⱼ A ▹ B) (Πⱼ A' ▹ B')
+redFirstTerm (Id-U-ℕℕ ⊢Γ) = Idⱼ (Uⱼ ⊢Γ) (ℕⱼ ⊢Γ) (ℕⱼ ⊢Γ)
+redFirstTerm (Id-SProp A B) = Idⱼ (Uⱼ (wfTerm A)) A B
 redFirstTerm (cast-subst A B e t) = castⱼ (redFirstTerm A) B e t
 redFirstTerm (cast-ℕ-subst B e t) = castⱼ (ℕⱼ (wfTerm t)) (redFirstTerm B) e t
 redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ A ▹ P) (redFirstTerm B) e t
@@ -170,38 +170,95 @@ redFirst* : ∀ {Γ A B r} → Γ ⊢ A ⇒* B ^ r → Γ ⊢ A ^ r
 redFirst* (id A) = A
 redFirst* (A⇒A′ ⇨ A′⇒*B) = redFirst A⇒A′
 
+-- Neutral types are always small
+
+tyNe : ∀ {Γ t r} → Γ ⊢ t ^ r → Neutral t → Γ ⊢ t ∷ (Univ r) ^ !
+tyNe (univ x) tn = x
+tyNe (Idⱼ A x y) tn = Idⱼ A x y
 
 -- No neutral terms are well-formed in an empty context
 
 noNe : ∀ {t A r} → ε ⊢ t ∷ A ^ r → Neutral t → ⊥
-noNe (var x₁ ()) (var x)
-noNe (conv ⊢t x) (var n) = noNe ⊢t (var n)
-noNe (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe ⊢t neT
-noNe (conv ⊢t x) (∘ₙ neT) = noNe ⊢t (∘ₙ neT)
-noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
-noNe (Emptyrecⱼ A ⊢e) (Emptyrecₙ neT) = noNe ⊢e neT
-noNe (conv ⊢t x) (natrecₙ neT) = noNe ⊢t (natrecₙ neT)
-noNe (conv ⊢t x) (Emptyrecₙ neT) = noNe ⊢t (Emptyrecₙ neT)
-noNe (conv t x) (Idₙ neT) = noNe t (Idₙ neT)
-noNe (Idⱼ x y) (Idₙ neT) = noNe -- todo... we need mutual recursion here
+noNe (tj ∘ⱼ tj₁) (∘ₙ tn) = noNe tj tn
+noNe (natrecⱼ x tj tj₁ tj₂) (natrecₙ tn) = noNe tj₂ tn
+noNe (Emptyrecⱼ x tj) (Emptyrecₙ tn) = noNe tj tn
+noNe (Idⱼ A x y) (Idₙ An) = noNe (tyNe A An) An
+noNe (Idⱼ A x y) (Idℕₙ xn) = noNe x xn
+noNe (Idⱼ A x y) (Idℕ0ₙ yn) = noNe y yn
+noNe (Idⱼ A x y) (IdℕSₙ yn) = noNe y yn
+noNe (Idⱼ A x y) (IdUₙ xn) = noNe x xn
+noNe (Idⱼ A x y) (IdUℕₙ yn) = noNe y yn
+noNe (Idⱼ A x y) (IdUΠₙ yn) = noNe y yn
+noNe (castⱼ A B e x) (castₙ An) = noNe A An
+noNe (castⱼ A B e x) (castℕₙ Bn) = noNe B Bn
+noNe (castⱼ A B e x) (castΠₙ Bn) = noNe B Bn
+noNe (castⱼ A B e x) (castℕℕₙ xn) = noNe x xn
+noNe (conv tj x) tn = noNe tj tn
 
--- Neutrals do not weak head reduce
+
+-- -- Neutrals and Whnfs do not weak head reduce
 
 neRedTerm : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (n : Neutral t) → ⊥
-neRedTerm (conv d x) n = neRedTerm d n
-neRedTerm (app-subst d x) (∘ₙ n) = neRedTerm d n
+neRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (N : Neutral A) → ⊥
+whnfRedTerm : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (w : Whnf t) → ⊥
+
+neRedTerm (conv tr x) tn = neRedTerm tr tn
+neRedTerm (app-subst tr x) (∘ₙ tn) = neRedTerm tr tn
 neRedTerm (β-red x x₁ x₂) (∘ₙ ())
-neRedTerm (natrec-subst x x₁ x₂ d) (natrecₙ n₁) = neRedTerm d n₁
 neRedTerm (natrec-zero x x₁ x₂) (natrecₙ ())
 neRedTerm (natrec-suc x x₁ x₂ x₃) (natrecₙ ())
-neRedTerm (Emptyrec-subst x d) (Emptyrecₙ n₁) = neRedTerm d n₁
+neRedTerm (natrec-subst x x₁ x₂ tr) (natrecₙ tn) = neRedTerm tr tn
+neRedTerm (sigmarec-subst x x₁ tr) ()
+neRedTerm (sigmarec-pair x x₁ x₂ x₃) ()
+neRedTerm (Emptyrec-subst x tr) (Emptyrecₙ tn) = neRedTerm tr tn
+neRedTerm (Id-subst tr x y) (Idₙ tn) = neRedTerm tr tn
+neRedTerm (Id-ℕ-subst tr x) (Idℕₙ tn) = neRedTerm tr tn
+neRedTerm (Id-ℕ-0-subst tr) (Idℕ0ₙ tn) = neRedTerm tr tn
+neRedTerm (Id-ℕ-S-subst x tr) (IdℕSₙ tn) = neRedTerm tr tn
+neRedTerm (Id-U-subst tr x) (IdUₙ tn) = neRedTerm tr tn
+neRedTerm (Id-U-ℕ-subst tr) (IdUℕₙ tn) = neRedTerm tr tn
+neRedTerm (Id-U-Π-subst A B tr) (IdUΠₙ tn) = neRedTerm tr tn
+neRedTerm (Id-subst tr x y) (Idℕₙ tn) = whnfRedTerm tr ℕₙ
+neRedTerm (Id-subst tr x y) (Idℕ0ₙ tn) = whnfRedTerm tr ℕₙ
+neRedTerm (Id-subst tr x y) (IdℕSₙ tn) = whnfRedTerm tr ℕₙ
+neRedTerm (Id-subst tr x y) (IdUₙ tn) = whnfRedTerm tr Uₙ
+neRedTerm (Id-subst tr x y) (IdUℕₙ tn) = whnfRedTerm tr Uₙ
+neRedTerm (Id-subst tr x y) (IdUΠₙ tn) = whnfRedTerm tr Uₙ
+neRedTerm (Id-ℕ-subst tr x) (Idℕ0ₙ tn) = whnfRedTerm tr zeroₙ
+neRedTerm (Id-ℕ-subst tr x) (IdℕSₙ tn) = whnfRedTerm tr sucₙ
+neRedTerm (Id-U-subst tr x) (IdUℕₙ tn) = whnfRedTerm tr ℕₙ
+neRedTerm (Id-U-subst tr x) (IdUΠₙ tn) = whnfRedTerm tr Πₙ
+neRedTerm (Id-Π A B t u) (Idₙ ())
+neRedTerm (Id-ℕ-00 tr) (Idₙ ())
+neRedTerm (Id-ℕ-00 tr) (Idℕₙ ())
+neRedTerm (Id-ℕ-00 tr) (Idℕ0ₙ ())
+neRedTerm (Id-ℕ-SS x tr) (Idₙ ())
+neRedTerm (Id-ℕ-SS x tr) (Idℕₙ ())
+neRedTerm (Id-U-ΠΠ A B A' B') (Idₙ ())
+neRedTerm (Id-U-ΠΠ A B A' B') (IdUₙ ())
+neRedTerm (Id-U-ΠΠ A B A' B') (IdUΠₙ ())
+neRedTerm (Id-U-ℕℕ x) (Idₙ ())
+neRedTerm (Id-U-ℕℕ x) (IdUₙ ())
+neRedTerm (Id-U-ℕℕ x) (IdUℕₙ ())
+neRedTerm (Id-SProp A B) (Idₙ ())
+neRedTerm (cast-subst tr B e x) (castₙ tn) = neRedTerm tr tn
+neRedTerm (cast-ℕ-subst tr e x) (castℕₙ tn) = neRedTerm tr tn
+neRedTerm (cast-Π-subst A B tr e x) (castΠₙ tn) = neRedTerm tr tn
+neRedTerm (cast-subst tr x x₁ x₂) (castℕₙ tn) = whnfRedTerm tr ℕₙ
+neRedTerm (cast-subst tr x x₁ x₂) (castΠₙ tn) = whnfRedTerm tr Πₙ
+neRedTerm (cast-subst tr x x₁ x₂) (castℕℕₙ tn) = whnfRedTerm tr ℕₙ
+neRedTerm (cast-ℕ-subst tr x x₁) (castℕℕₙ tn) = whnfRedTerm tr ℕₙ
+neRedTerm (cast-Π A B A' B' e f) (castₙ ())
+neRedTerm (cast-Π A B A' B' e f) (castΠₙ ())
+neRedTerm (cast-ℕ-0 x) (castₙ ())
+neRedTerm (cast-ℕ-0 x) (castℕₙ ())
+neRedTerm (cast-ℕ-0 x) (castℕℕₙ ())
+neRedTerm (cast-ℕ-S x x₁) (castₙ ())
+neRedTerm (cast-ℕ-S x x₁) (castℕₙ ())
+neRedTerm (cast-ℕ-S x x₁) (castℕℕₙ ())
 
-neRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (N : Neutral A) → ⊥
 neRed (univ x) N = neRedTerm x N
 
--- Whnfs do not weak head reduce
-
-whnfRedTerm : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (w : Whnf t) → ⊥
 whnfRedTerm (conv d x) w = whnfRedTerm d w
 whnfRedTerm (app-subst d x) (ne (∘ₙ x₁)) = neRedTerm d x₁
 whnfRedTerm (β-red x x₁ x₂) (ne (∘ₙ ()))
@@ -209,6 +266,54 @@ whnfRedTerm (natrec-subst x x₁ x₂ d) (ne (natrecₙ x₃)) = neRedTerm d x�
 whnfRedTerm (natrec-zero x x₁ x₂) (ne (natrecₙ ()))
 whnfRedTerm (natrec-suc x x₁ x₂ x₃) (ne (natrecₙ ()))
 whnfRedTerm (Emptyrec-subst x d) (ne (Emptyrecₙ x₂)) = neRedTerm d x₂
+whnfRedTerm (sigmarec-subst x x₁ d) (ne ())
+whnfRedTerm (sigmarec-pair x x₁ x₂ d) (ne ())
+whnfRedTerm (Id-subst d x x₁) (ne (Idₙ x₂)) = neRedTerm d x₂
+whnfRedTerm (Id-subst d x x₁) (ne (Idℕₙ x₂)) = whnfRedTerm d ℕₙ
+whnfRedTerm (Id-subst d x x₁) (ne (Idℕ0ₙ x₂)) = whnfRedTerm d ℕₙ
+whnfRedTerm (Id-subst d x x₁) (ne (IdℕSₙ x₂)) = whnfRedTerm d ℕₙ
+whnfRedTerm (Id-subst d x x₁) (ne (IdUₙ x₂)) = whnfRedTerm d Uₙ
+whnfRedTerm (Id-subst d x x₁) (ne (IdUℕₙ x₂)) = whnfRedTerm d Uₙ
+whnfRedTerm (Id-subst d x x₁) (ne (IdUΠₙ x₂)) = whnfRedTerm d Uₙ
+whnfRedTerm (Id-ℕ-subst d x) (ne (Idℕₙ x₁)) = neRedTerm d x₁
+whnfRedTerm (Id-ℕ-subst d x) (ne (Idℕ0ₙ x₁)) = whnfRedTerm d zeroₙ
+whnfRedTerm (Id-ℕ-subst d x) (ne (IdℕSₙ x₁)) = whnfRedTerm d sucₙ
+whnfRedTerm (Id-ℕ-0-subst d) (ne (Idℕ0ₙ x)) = neRedTerm d x
+whnfRedTerm (Id-ℕ-S-subst x d) (ne (IdℕSₙ x₁)) = neRedTerm d x₁
+whnfRedTerm (Id-U-subst d x) (ne (IdUₙ x₁)) = neRedTerm d x₁
+whnfRedTerm (Id-U-subst d x) (ne (IdUℕₙ x₁)) = whnfRedTerm d ℕₙ
+whnfRedTerm (Id-U-subst d x) (ne (IdUΠₙ x₁)) = whnfRedTerm d Πₙ
+whnfRedTerm (Id-U-ℕ-subst d) (ne (IdUℕₙ x)) = neRedTerm d x
+whnfRedTerm (Id-U-Π-subst x x₁ d) (ne (IdUΠₙ x₂)) = neRedTerm d x₂
+whnfRedTerm (Id-Π x x₁ x₂ x₃) (ne (Idₙ ()))
+whnfRedTerm (Id-ℕ-00 x) (ne (Idₙ ()))
+whnfRedTerm (Id-ℕ-00 x) (ne (Idℕₙ ()))
+whnfRedTerm (Id-ℕ-00 x) (ne (Idℕ0ₙ ()))
+whnfRedTerm (Id-ℕ-SS x x₁) (ne (Idₙ ()))
+whnfRedTerm (Id-ℕ-SS x x₁) (ne (Idℕₙ ()))
+whnfRedTerm (Id-ℕ-SS x x₁) (ne (IdℕSₙ ()))
+whnfRedTerm (Id-U-ΠΠ x x₁ x₂ x₃) (ne (Idₙ ()))
+whnfRedTerm (Id-U-ΠΠ x x₁ x₂ x₃) (ne (IdUₙ ()))
+whnfRedTerm (Id-U-ΠΠ x x₁ x₂ x₃) (ne (IdUΠₙ ()))
+whnfRedTerm (Id-U-ℕℕ x) (ne (Idₙ ()))
+whnfRedTerm (Id-U-ℕℕ x) (ne (IdUₙ ()))
+whnfRedTerm (Id-U-ℕℕ x) (ne (IdUℕₙ ()))
+whnfRedTerm (Id-SProp x x₁) (ne (Idₙ ()))
+whnfRedTerm (cast-subst d x x₁ x₂) (ne (castₙ x₃)) = neRedTerm d x₃
+whnfRedTerm (cast-subst d x x₁ x₂) (ne (castℕₙ x₃)) = whnfRedTerm d ℕₙ
+whnfRedTerm (cast-subst d x x₁ x₂) (ne (castΠₙ x₃)) = whnfRedTerm d Πₙ
+whnfRedTerm (cast-subst d x x₁ x₂) (ne (castℕℕₙ x₃)) = whnfRedTerm d ℕₙ
+whnfRedTerm (cast-ℕ-subst d x x₁) (ne (castℕₙ x₂)) = neRedTerm d x₂
+whnfRedTerm (cast-ℕ-subst d x x₁) (ne (castℕℕₙ x₂)) = whnfRedTerm d ℕₙ
+whnfRedTerm (cast-Π-subst x x₁ d x₂ x₃) (ne (castΠₙ x₄)) = neRedTerm d x₄
+whnfRedTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (ne (castₙ ()))
+whnfRedTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (ne (castΠₙ ()))
+whnfRedTerm (cast-ℕ-0 x) (ne (castₙ ()))
+whnfRedTerm (cast-ℕ-0 x) (ne (castℕₙ ()))
+whnfRedTerm (cast-ℕ-0 x) (ne (castℕℕₙ ()))
+whnfRedTerm (cast-ℕ-S x x₁) (ne (castₙ ()))
+whnfRedTerm (cast-ℕ-S x x₁) (ne (castℕₙ ()))
+whnfRedTerm (cast-ℕ-S x x₁) (ne (castℕℕₙ ()))
 
 whnfRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (w : Whnf A) → ⊥
 whnfRed (univ x) w = whnfRedTerm x w
@@ -216,6 +321,7 @@ whnfRed (univ x) w = whnfRedTerm x w
 whnfRed*Term : ∀ {Γ t u A r} (d : Γ ⊢ t ⇒* u ∷ A ^ r) (w : Whnf t) → t PE.≡ u
 whnfRed*Term (id x) Uₙ = PE.refl
 whnfRed*Term (id x) Πₙ = PE.refl
+whnfRed*Term (id x) Σₙ = PE.refl
 whnfRed*Term (id x) ℕₙ = PE.refl
 whnfRed*Term (id x) Emptyₙ = PE.refl
 whnfRed*Term (id x) lamₙ = PE.refl
@@ -229,101 +335,101 @@ whnfRed* : ∀ {Γ A B r} (d : Γ ⊢ A ⇒* B ^ r) (w : Whnf A) → A PE.≡ B
 whnfRed* (id x) w = PE.refl
 whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 
--- Whr is deterministic
--- this is straight up false with our subst rules for Idℕ, IdU and cast
--- Of course, we can reduce the second iff the first is a Whnf
-whrDetTerm : ∀{Γ t u A u′ A′ r r'} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (d′ : Γ ⊢ t ⇒ u′ ∷ A′ ^ r') → u PE.≡ u′
-whrDetTerm (conv d x) d′ = whrDetTerm d d′
-whrDetTerm d (conv d′ x₁) = whrDetTerm d d′
-whrDetTerm (app-subst d x) (app-subst d′ x₁) rewrite whrDetTerm d d′ = PE.refl
-whrDetTerm (app-subst d x) (β-red x₁ x₂ x₃) = ⊥-elim (whnfRedTerm d lamₙ)
-whrDetTerm (β-red x x₁ x₂) (app-subst d x₃) = ⊥-elim (whnfRedTerm d lamₙ)
-whrDetTerm (β-red x x₁ x₂) (β-red x₃ x₄ x₅) = PE.refl
-whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-subst x₃ x₄ x₅ d′) rewrite whrDetTerm d d′ = PE.refl
-whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-zero x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d zeroₙ)
-whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-suc x₃ x₄ x₅ x₆) = ⊥-elim (whnfRedTerm d sucₙ)
-whrDetTerm (natrec-zero x x₁ x₂) (natrec-subst x₃ x₄ x₅ d′) = ⊥-elim (whnfRedTerm d′ zeroₙ)
-whrDetTerm (natrec-zero x x₁ x₂) (natrec-zero x₃ x₄ x₅) = PE.refl
-whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-subst x₄ x₅ x₆ d′) = ⊥-elim (whnfRedTerm d′ sucₙ)
-whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-suc x₄ x₅ x₆ x₇) = PE.refl
-whrDetTerm (Emptyrec-subst x d) (Emptyrec-subst x₂ d′) rewrite whrDetTerm d d′ = PE.refl
+-- -- Whr is deterministic
+-- -- this is straight up false with our subst rules for Idℕ, IdU and cast
+-- -- Of course, we can reduce the second iff the first is a Whnf
+-- whrDetTerm : ∀{Γ t u A u′ A′ r r'} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (d′ : Γ ⊢ t ⇒ u′ ∷ A′ ^ r') → u PE.≡ u′
+-- whrDetTerm (conv d x) d′ = whrDetTerm d d′
+-- whrDetTerm d (conv d′ x₁) = whrDetTerm d d′
+-- whrDetTerm (app-subst d x) (app-subst d′ x₁) rewrite whrDetTerm d d′ = PE.refl
+-- whrDetTerm (app-subst d x) (β-red x₁ x₂ x₃) = ⊥-elim (whnfRedTerm d lamₙ)
+-- whrDetTerm (β-red x x₁ x₂) (app-subst d x₃) = ⊥-elim (whnfRedTerm d lamₙ)
+-- whrDetTerm (β-red x x₁ x₂) (β-red x₃ x₄ x₅) = PE.refl
+-- whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-subst x₃ x₄ x₅ d′) rewrite whrDetTerm d d′ = PE.refl
+-- whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-zero x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d zeroₙ)
+-- whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-suc x₃ x₄ x₅ x₆) = ⊥-elim (whnfRedTerm d sucₙ)
+-- whrDetTerm (natrec-zero x x₁ x₂) (natrec-subst x₃ x₄ x₅ d′) = ⊥-elim (whnfRedTerm d′ zeroₙ)
+-- whrDetTerm (natrec-zero x x₁ x₂) (natrec-zero x₃ x₄ x₅) = PE.refl
+-- whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-subst x₄ x₅ x₆ d′) = ⊥-elim (whnfRedTerm d′ sucₙ)
+-- whrDetTerm (natrec-suc x x₁ x₂ x₃) (natrec-suc x₄ x₅ x₆ x₇) = PE.refl
+-- whrDetTerm (Emptyrec-subst x d) (Emptyrec-subst x₂ d′) rewrite whrDetTerm d d′ = PE.refl
 
-whrDet : ∀{Γ A B B′ r r'} (d : Γ ⊢ A ⇒ B ^ r) (d′ : Γ ⊢ A ⇒ B′ ^ r') → B PE.≡ B′
-whrDet (univ x) (univ x₁) = whrDetTerm x x₁
+-- whrDet : ∀{Γ A B B′ r r'} (d : Γ ⊢ A ⇒ B ^ r) (d′ : Γ ⊢ A ⇒ B′ ^ r') → B PE.≡ B′
+-- whrDet (univ x) (univ x₁) = whrDetTerm x x₁
 
-whrDet↘Term : ∀{Γ t u A u′ r r'} (d : Γ ⊢ t ↘ u ∷ A ^ r) (d′ : Γ ⊢ t ⇒* u′ ∷ A ^ r')
-  → Γ ⊢ u′ ⇒* u ∷ A ^ r
-whrDet↘Term (proj₁ , proj₂) (id x) = proj₁
-whrDet↘Term (id x , proj₂) (x₁ ⇨ d′) = ⊥-elim (whnfRedTerm x₁ proj₂)
-whrDet↘Term (x ⇨ proj₁ , proj₂) (x₁ ⇨ d′) =
-  whrDet↘Term (PE.subst (λ x₂ → _ ⊢ x₂ ↘ _ ∷ _ ^ _) (whrDetTerm x x₁) (proj₁ , proj₂)) d′
+-- whrDet↘Term : ∀{Γ t u A u′ r r'} (d : Γ ⊢ t ↘ u ∷ A ^ r) (d′ : Γ ⊢ t ⇒* u′ ∷ A ^ r')
+--   → Γ ⊢ u′ ⇒* u ∷ A ^ r
+-- whrDet↘Term (proj₁ , proj₂) (id x) = proj₁
+-- whrDet↘Term (id x , proj₂) (x₁ ⇨ d′) = ⊥-elim (whnfRedTerm x₁ proj₂)
+-- whrDet↘Term (x ⇨ proj₁ , proj₂) (x₁ ⇨ d′) =
+--   whrDet↘Term (PE.subst (λ x₂ → _ ⊢ x₂ ↘ _ ∷ _ ^ _) (whrDetTerm x x₁) (proj₁ , proj₂)) d′
 
-whrDet*Term : ∀{Γ t u A A' u′ r r'} (d : Γ ⊢ t ↘ u ∷ A ^ r) (d′ : Γ ⊢ t ↘ u′ ∷ A' ^ r') → u PE.≡ u′
-whrDet*Term (id x , proj₂) (id x₁ , proj₄) = PE.refl
-whrDet*Term (id x , proj₂) (x₁ ⇨ proj₃ , proj₄) = ⊥-elim (whnfRedTerm x₁ proj₂)
-whrDet*Term (x ⇨ proj₁ , proj₂) (id x₁ , proj₄) = ⊥-elim (whnfRedTerm x proj₄)
-whrDet*Term (x ⇨ proj₁ , proj₂) (x₁ ⇨ proj₃ , proj₄) =
-  whrDet*Term (proj₁ , proj₂) (PE.subst (λ x₂ → _ ⊢ x₂ ↘ _ ∷ _ ^ _)
-                                    (whrDetTerm x₁ x) (proj₃ , proj₄))
+-- whrDet*Term : ∀{Γ t u A A' u′ r r'} (d : Γ ⊢ t ↘ u ∷ A ^ r) (d′ : Γ ⊢ t ↘ u′ ∷ A' ^ r') → u PE.≡ u′
+-- whrDet*Term (id x , proj₂) (id x₁ , proj₄) = PE.refl
+-- whrDet*Term (id x , proj₂) (x₁ ⇨ proj₃ , proj₄) = ⊥-elim (whnfRedTerm x₁ proj₂)
+-- whrDet*Term (x ⇨ proj₁ , proj₂) (id x₁ , proj₄) = ⊥-elim (whnfRedTerm x proj₄)
+-- whrDet*Term (x ⇨ proj₁ , proj₂) (x₁ ⇨ proj₃ , proj₄) =
+--   whrDet*Term (proj₁ , proj₂) (PE.subst (λ x₂ → _ ⊢ x₂ ↘ _ ∷ _ ^ _)
+--                                     (whrDetTerm x₁ x) (proj₃ , proj₄))
 
-whrDet* : ∀{Γ A B B′ r r'} (d : Γ ⊢ A ↘ B ^ r) (d′ : Γ ⊢ A ↘ B′ ^ r') → B PE.≡ B′
-whrDet* (id x , proj₂) (id x₁ , proj₄) = PE.refl
-whrDet* (id x , proj₂) (x₁ ⇨ proj₃ , proj₄) = ⊥-elim (whnfRed x₁ proj₂)
-whrDet* (x ⇨ proj₁ , proj₂) (id x₁ , proj₄) = ⊥-elim (whnfRed x proj₄)
-whrDet* (A⇒A′ ⇨ A′⇒*B , whnfB) (A⇒A″ ⇨ A″⇒*B′ , whnfB′) =
-  whrDet* (A′⇒*B , whnfB) (PE.subst (λ x → _ ⊢ x ↘ _ ^ _)
-                                     (whrDet A⇒A″ A⇒A′)
-                                     (A″⇒*B′ , whnfB′))
+-- whrDet* : ∀{Γ A B B′ r r'} (d : Γ ⊢ A ↘ B ^ r) (d′ : Γ ⊢ A ↘ B′ ^ r') → B PE.≡ B′
+-- whrDet* (id x , proj₂) (id x₁ , proj₄) = PE.refl
+-- whrDet* (id x , proj₂) (x₁ ⇨ proj₃ , proj₄) = ⊥-elim (whnfRed x₁ proj₂)
+-- whrDet* (x ⇨ proj₁ , proj₂) (id x₁ , proj₄) = ⊥-elim (whnfRed x proj₄)
+-- whrDet* (A⇒A′ ⇨ A′⇒*B , whnfB) (A⇒A″ ⇨ A″⇒*B′ , whnfB′) =
+--   whrDet* (A′⇒*B , whnfB) (PE.subst (λ x → _ ⊢ x ↘ _ ^ _)
+--                                      (whrDet A⇒A″ A⇒A′)
+--                                      (A″⇒*B′ , whnfB′))
 
--- Identity of syntactic reduction
+-- -- Identity of syntactic reduction
 
-idRed:*: : ∀ {Γ A r} → Γ ⊢ A ^ r → Γ ⊢ A :⇒*: A ^ r
-idRed:*: A = [ A , A , id A ]
+-- idRed:*: : ∀ {Γ A r} → Γ ⊢ A ^ r → Γ ⊢ A :⇒*: A ^ r
+-- idRed:*: A = [ A , A , id A ]
 
-idRedTerm:*: : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → Γ ⊢ t :⇒*: t ∷ A ^ r
-idRedTerm:*: t = [ t , t , id t ]
+-- idRedTerm:*: : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → Γ ⊢ t :⇒*: t ∷ A ^ r
+-- idRedTerm:*: t = [ t , t , id t ]
 
--- U cannot be a term
+-- -- U cannot be a term
 
-UnotInA : ∀ {A Γ r r'} → Γ ⊢ (Univ r) ∷ A ^ r' → ⊥
-UnotInA (conv U∷U x) = UnotInA U∷U
+-- UnotInA : ∀ {A Γ r r'} → Γ ⊢ (Univ r) ∷ A ^ r' → ⊥
+-- UnotInA (conv U∷U x) = UnotInA U∷U
 
-UnotInA[t] : ∀ {A B t a Γ r r' r'' r'''}
-         → t [ a ] PE.≡ (Univ r)
-         → Γ ⊢ a ∷ A ^ r'
-         → Γ ∙ A ^ r'' ⊢ t ∷ B ^ r'''
-         → ⊥
-UnotInA[t] () x₁ (ℕⱼ x₂)
-UnotInA[t] () x₁ (Emptyⱼ x₂)
-UnotInA[t] () x₁ (Πⱼ x₂ ▹ x₃)
-UnotInA[t] x₁ x₂ (var x₃ here) rewrite x₁ = UnotInA x₂
-UnotInA[t] () x₂ (var x₃ (there x₄))
-UnotInA[t] () x₁ (lamⱼ x₂ x₃)
-UnotInA[t] () x₁ (x₂ ∘ⱼ x₃)
-UnotInA[t] () x₁ (zeroⱼ x₂)
-UnotInA[t] () x₁ (sucⱼ x₂)
-UnotInA[t] () x₁ (natrecⱼ x₂ x₃ x₄ x₅)
-UnotInA[t] () x₁ (Emptyrecⱼ x₂ x₃)
-UnotInA[t] x x₁ (conv x₂ x₃) = UnotInA[t] x x₁ x₂
+-- UnotInA[t] : ∀ {A B t a Γ r r' r'' r'''}
+--          → t [ a ] PE.≡ (Univ r)
+--          → Γ ⊢ a ∷ A ^ r'
+--          → Γ ∙ A ^ r'' ⊢ t ∷ B ^ r'''
+--          → ⊥
+-- UnotInA[t] () x₁ (ℕⱼ x₂)
+-- UnotInA[t] () x₁ (Emptyⱼ x₂)
+-- UnotInA[t] () x₁ (Πⱼ x₂ ▹ x₃)
+-- UnotInA[t] x₁ x₂ (var x₃ here) rewrite x₁ = UnotInA x₂
+-- UnotInA[t] () x₂ (var x₃ (there x₄))
+-- UnotInA[t] () x₁ (lamⱼ x₂ x₃)
+-- UnotInA[t] () x₁ (x₂ ∘ⱼ x₃)
+-- UnotInA[t] () x₁ (zeroⱼ x₂)
+-- UnotInA[t] () x₁ (sucⱼ x₂)
+-- UnotInA[t] () x₁ (natrecⱼ x₂ x₃ x₄ x₅)
+-- UnotInA[t] () x₁ (Emptyrecⱼ x₂ x₃)
+-- UnotInA[t] x x₁ (conv x₂ x₃) = UnotInA[t] x x₁ x₂
 
-redU*Term′ : ∀ {A B U′ Γ r r'} → U′ PE.≡ (Univ r) → Γ ⊢ A ⇒ U′ ∷ B ^ r' → ⊥
-redU*Term′ U′≡U (conv A⇒U x) = redU*Term′ U′≡U A⇒U
-redU*Term′ () (app-subst A⇒U x)
-redU*Term′ U′≡U (β-red x x₁ x₂) = UnotInA[t] U′≡U x₂ x₁
-redU*Term′ () (natrec-subst x x₁ x₂ A⇒U)
-redU*Term′ U′≡U (natrec-zero x x₁ x₂) rewrite U′≡U = UnotInA x₁
-redU*Term′ () (natrec-suc x x₁ x₂ x₃)
-redU*Term′ () (Emptyrec-subst x A⇒U)
+-- redU*Term′ : ∀ {A B U′ Γ r r'} → U′ PE.≡ (Univ r) → Γ ⊢ A ⇒ U′ ∷ B ^ r' → ⊥
+-- redU*Term′ U′≡U (conv A⇒U x) = redU*Term′ U′≡U A⇒U
+-- redU*Term′ () (app-subst A⇒U x)
+-- redU*Term′ U′≡U (β-red x x₁ x₂) = UnotInA[t] U′≡U x₂ x₁
+-- redU*Term′ () (natrec-subst x x₁ x₂ A⇒U)
+-- redU*Term′ U′≡U (natrec-zero x x₁ x₂) rewrite U′≡U = UnotInA x₁
+-- redU*Term′ () (natrec-suc x x₁ x₂ x₃)
+-- redU*Term′ () (Emptyrec-subst x A⇒U)
 
-redU*Term : ∀ {A B Γ r r'} → Γ ⊢ A ⇒* (Univ r) ∷ B ^ r' → ⊥
-redU*Term (id x) = UnotInA x
-redU*Term (x ⇨ A⇒*U) = redU*Term A⇒*U
+-- redU*Term : ∀ {A B Γ r r'} → Γ ⊢ A ⇒* (Univ r) ∷ B ^ r' → ⊥
+-- redU*Term (id x) = UnotInA x
+-- redU*Term (x ⇨ A⇒*U) = redU*Term A⇒*U
 
--- Nothing reduces to U
+-- -- Nothing reduces to U
 
-redU : ∀ {A Γ r r'} → Γ ⊢ A ⇒ (Univ r) ^ r' → ⊥
-redU (univ x) = redU*Term′ PE.refl x
+-- redU : ∀ {A Γ r r'} → Γ ⊢ A ⇒ (Univ r) ^ r' → ⊥
+-- redU (univ x) = redU*Term′ PE.refl x
 
-redU* : ∀ {A Γ r r'} → Γ ⊢ A ⇒* (Univ r) ^ r' → A PE.≡ (Univ r)
-redU* (id x) = PE.refl
-redU* (x ⇨ A⇒*U) rewrite redU* A⇒*U = ⊥-elim (redU x)
+-- redU* : ∀ {A Γ r r'} → Γ ⊢ A ⇒* (Univ r) ^ r' → A PE.≡ (Univ r)
+-- redU* (id x) = PE.refl
+-- redU* (x ⇨ A⇒*U) rewrite redU* A⇒*U = ⊥-elim (redU x)
