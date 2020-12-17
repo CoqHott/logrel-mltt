@@ -241,7 +241,7 @@ mutual
                     → Γ ⊢ u ∷ F ^ %
                     → Γ ⊢ v ∷ G [ u ] ^ %
                     → Γ ⊢ sigmarec A t ⦅ u , v ⦆
-                        ≡ t [ v ] [ u ]
+                        ≡ t [ wk1 v ] [ u ]
                         ∷ A [ ⦅ u , v ⦆ ] ^ rA
     Emptyrec-cong : ∀ {A A' e e' r}
                 → Γ ⊢ A ≡ A' ^ r
@@ -420,7 +420,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
                   → Γ ⊢ u ∷ F ^ %
                   → Γ ⊢ v ∷ G [ u ] ^ %
                   → Γ ⊢ sigmarec A t ⦅ u , v ⦆
-                      ⇒ t [ v ] [ u ]
+                      ⇒ t [ wk1 v ] [ u ]
                       ∷ A [ ⦅ u , v ⦆ ] ^ rA
   Emptyrec-subst : ∀ {n n′ A r}
                → Γ ⊢ A ^ r
