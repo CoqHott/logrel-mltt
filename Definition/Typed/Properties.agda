@@ -329,17 +329,27 @@ whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 
 -- Whr is deterministic
 
-whrDetTerm-aux1 : ∀{Γ t u F rF A A' rA B B' e f}
-  → (d : cast (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f PE.≡ t)
+-- somehow the cases (cast-Π, cast-Π) and (Id-U-ΠΠ, Id-U-ΠΠ) fail if
+-- I do not introduce a dummy relevance rA'. This is why I need the two
+-- auxiliary functions. What the hell Agda?
+whrDetTerm-aux1 : ∀{Γ t u F rF A A' rA rA' B B' e f}
+  → (d :  t PE.≡ cast (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B') e f)
   → (d′ : Γ ⊢ t ⇒ u ∷ F ^ rF)
   → (lam A' ▹ let a = cast (wk1 A') (wk1 A) (Id_sym (Univ rA) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in cast (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a)) PE.≡ u
-whrDetTerm-aux1 d (conv d' x) = {!!}
-whrDetTerm-aux1 d (cast-subst d' x x₁ x₂) = {!!}
-whrDetTerm-aux1 d (cast-Π-subst x x₁ d' x₂ x₃) = {!!}
-whrDetTerm-aux1 d (cast-Π x x₁ x₂ x₃ x₄ x₅) = {!PE.refl!}
--- whrDetTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (cast-subst d' x₆ x₇ x₈) = ⊥-elim (whnfRedTerm d' Πₙ)
--- whrDetTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (cast-Π-subst x₆ x₇ d' x₈ x₉) = ⊥-elim (whnfRedTerm d' Πₙ)
--- whrDetTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (cast-Π x₆ x₇ x₈ x₉ x₁₀ x₁₁) = PE.refl
+whrDetTerm-aux1 d (conv d' x) = whrDetTerm-aux1 d d'
+whrDetTerm-aux1 PE.refl (cast-subst d' x x₁ x₂) = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm-aux1 PE.refl (cast-Π-subst x x₁ d' x₂ x₃) = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm-aux1 PE.refl (cast-Π x x₁ x₂ x₃ x₄ x₅) = PE.refl
+
+whrDetTerm-aux2 : ∀{Γ t u F rF A rA B A' rA' B'}
+  → (d : t PE.≡ Id U (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B'))
+  → (d' : Γ ⊢ t ⇒ u ∷ F ^ rF)
+  → (Σ (Id (Univ rA) A A') ▹ (Π (wk1 A') ^ rA ▹ Id U ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B'))) PE.≡ u
+whrDetTerm-aux2 d (conv d' x) = whrDetTerm-aux2 d d'
+whrDetTerm-aux2 PE.refl (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
+whrDetTerm-aux2 PE.refl (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm-aux2 PE.refl (Id-U-Π-subst x x₁ d') = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm-aux2 PE.refl (Id-U-ΠΠ x x₁ x₂ x₃) = PE.refl
 
 whrDetTerm : ∀{Γ t u A u′ A′ r r'} (d : Γ ⊢ t ⇒ u ∷ A ^ r) (d′ : Γ ⊢ t ⇒ u′ ∷ A′ ^ r') → u PE.≡ u′
 whrDetTerm (conv d x) d' = whrDetTerm d d'
@@ -422,7 +432,7 @@ whrDetTerm (Id-ℕ-SS x x₁) (Id-subst d' x₂ x₃) = ⊥-elim (whnfRedTerm d'
 whrDetTerm (Id-ℕ-SS x x₁) (Id-ℕ-subst d' x₂) = ⊥-elim (whnfRedTerm d' sucₙ)
 whrDetTerm (Id-ℕ-SS x x₁) (Id-ℕ-S-subst x₂ d') = ⊥-elim (whnfRedTerm d' sucₙ)
 whrDetTerm (Id-ℕ-SS x x₁) (Id-ℕ-SS x₂ x₃) = PE.refl
-whrDetTerm (Id-U-ΠΠ x x₁ x₂ x₃) d' = {!!}
+whrDetTerm (Id-U-ΠΠ x x₁ x₂ x₃) d' = whrDetTerm-aux2 PE.refl d'
 whrDetTerm (Id-U-ℕℕ x) (conv d' x₁) = whrDetTerm (Id-U-ℕℕ x) d'
 whrDetTerm (Id-U-ℕℕ x) (Id-subst d' x₁ x₂) = ⊥-elim (whnfRedTerm d' Uₙ)
 whrDetTerm (Id-U-ℕℕ x) (Id-U-subst d' x₁) = ⊥-elim (whnfRedTerm d' ℕₙ)
