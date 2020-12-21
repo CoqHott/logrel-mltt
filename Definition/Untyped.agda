@@ -133,8 +133,8 @@ transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 ,
 cast : (A B e t : Term) → Term
 cast A B e t = gen Castkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
-cast_refl : (A t : Term) → Term
-cast_refl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
+castrefl : (A t : Term) → Term
+castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
 
 -- Injectivity of term constructors w.r.t. propositional equality.

@@ -33,7 +33,7 @@ wfTerm (Idⱼ A t u) = wfTerm t
 wfTerm (Idreflⱼ t) = wfTerm t
 wfTerm (transpⱼ A P t s u e) = wfTerm t
 wfTerm (castⱼ A B e t) = wfTerm t
-wfTerm (cast_reflⱼ A t) = wfTerm t
+wfTerm (castreflⱼ A t) = wfTerm t
 wfTerm (conv t A≡B) = wfTerm t
 
 wf : ∀ {Γ A r} → Γ ⊢ A ^ r → ⊢ Γ

@@ -136,10 +136,10 @@ mutual
             → Γ ⊢ e ∷ (Id U A B) ^ %
             → Γ ⊢ t ∷ A ^ !
             → Γ ⊢ cast A B e t ∷ B ^ !
-    cast_reflⱼ : ∀ {A t}
+    castreflⱼ : ∀ {A t}
                  → Γ ⊢ A ^ !
                  → Γ ⊢ t ∷ A ^ !
-                 → Γ ⊢ cast_refl A t ∷ (Id A t (cast A A (Idrefl U A) t)) ^ %
+                 → Γ ⊢ castrefl A t ∷ (Id A t (cast A A (Idrefl U A) t)) ^ %
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
