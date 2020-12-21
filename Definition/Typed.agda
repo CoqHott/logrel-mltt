@@ -123,6 +123,7 @@ mutual
               → Γ ⊢ t ∷ A ^ !
               → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ %
     transpⱼ : ∀ {A P t s u e}
+              → Γ ⊢ A ^ !
               → Γ ∙ A ^ ! ⊢ P ^ %
               → Γ ⊢ t ∷ A ^ !
               → Γ ⊢ s ∷ P [ t ] ^ %
