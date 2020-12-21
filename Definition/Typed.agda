@@ -137,7 +137,7 @@ mutual
             → Γ ⊢ t ∷ A ^ !
             → Γ ⊢ cast A B e t ∷ B ^ !
     castreflⱼ : ∀ {A t}
-                 → Γ ⊢ A ^ !
+                 → Γ ⊢ A ∷ U ^ !
                  → Γ ⊢ t ∷ A ^ !
                  → Γ ⊢ castrefl A t ∷ (Id A t (cast A A (Idrefl U A) t)) ^ %
     conv   : ∀ {t A B r}
