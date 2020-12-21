@@ -59,7 +59,10 @@ mutual
   wk ρ ⊢Δ (Uⱼ ⊢Γ) = Uⱼ ⊢Δ
   wk ρ ⊢Δ (Πⱼ F ▹ G) = let ρF = wk ρ ⊢Δ F
                        in  Πⱼ ρF ▹ (wk (lift ρ) (⊢Δ ∙ ρF) G)
+  wk ρ ⊢Δ (Σⱼ F ▹ G) = let ρF = wk ρ ⊢Δ F
+                       in Σⱼ ρF ▹ (wk (lift ρ) (⊢Δ ∙ ρF) G)
   wk ρ ⊢Δ (univ A) = univ (wkTerm ρ ⊢Δ A)
+  wk ρ ⊢Δ (Idⱼ A t u) = Idⱼ (wk ρ ⊢Δ A) (wkTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ u)
 
   wkTerm : ∀ {Γ Δ A t r ρ} → ρ ∷ Δ ⊆ Γ →
          let ρA = U.wk ρ A
@@ -69,12 +72,22 @@ mutual
   wkTerm ρ ⊢Δ (Emptyⱼ ⊢Γ) = Emptyⱼ ⊢Δ
   wkTerm ρ ⊢Δ (Πⱼ F ▹ G) = let ρF = wkTerm ρ ⊢Δ F
                           in  Πⱼ ρF ▹ (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G)
+  wkTerm ρ ⊢Δ (Σⱼ F ▹ G) = let ρF = wkTerm ρ ⊢Δ F
+                          in  Σⱼ ρF ▹ (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G)
   wkTerm ρ ⊢Δ (var ⊢Γ x) = var ⊢Δ (wkIndex ρ ⊢Δ x)
   wkTerm ρ ⊢Δ (lamⱼ F t) = let ρF = wk ρ ⊢Δ F
                           in lamⱼ ρF (wkTerm (lift ρ) (⊢Δ ∙ ρF) t)
   wkTerm ρ ⊢Δ (_∘ⱼ_ {G = G} g a) = PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
                                            (PE.sym (wk-β G))
                                            (wkTerm ρ ⊢Δ g ∘ⱼ wkTerm ρ ⊢Δ a)
+  wkTerm ρ ⊢Δ (⦅_,_⦆ⱼ {F = F} {G = G} t u)
+    = ⦅ wkTerm ρ ⊢Δ t ,  PE.subst (λ X → _ ⊢ _ ∷ X ^ %) (wk-β G) (wkTerm ρ ⊢Δ u) ⦆ⱼ
+  wkTerm ρ ⊢Δ (fstⱼ F G t) = let ρF = wkTerm ρ ⊢Δ F in
+    let ρG = (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G) in
+    fstⱼ ρF ρG (wkTerm ρ ⊢Δ t)
+  wkTerm ρ ⊢Δ (sndⱼ {G = G} F Gⱼ t) = let ρF = wkTerm ρ ⊢Δ F in
+    let ρG = (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) Gⱼ) in
+    PE.subst (λ X → _ ⊢ _ ∷ X ^ %) (PE.sym (wk-β G)) (sndⱼ ρF ρG (wkTerm ρ ⊢Δ t))
   wkTerm ρ ⊢Δ (zeroⱼ ⊢Γ) = zeroⱼ ⊢Δ
   wkTerm ρ ⊢Δ (sucⱼ n) = sucⱼ (wkTerm ρ ⊢Δ n)
   wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrecⱼ {G = G} {rG = rG} {s = s} ⊢G ⊢z ⊢s ⊢n) =
@@ -87,6 +100,21 @@ mutual
                       (wkTerm [ρ] ⊢Δ ⊢n))
   wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Emptyrecⱼ {A = A} {e = e} ⊢A ⊢e) =
     (Emptyrecⱼ (wk [ρ] ⊢Δ ⊢A) (wkTerm [ρ] ⊢Δ ⊢e))
+  wkTerm ρ ⊢Δ (Idⱼ A t u) = Idⱼ (wk ρ ⊢Δ A) (wkTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ u)
+  wkTerm ρ ⊢Δ (Idreflⱼ t) = Idreflⱼ (wkTerm ρ ⊢Δ t)
+  wkTerm ρ ⊢Δ (transpⱼ {P = P} A Pⱼ t s u e) =
+    let ρA = wk ρ ⊢Δ A in
+    let ρP = wk (lift ρ) (⊢Δ ∙ ρA) Pⱼ in
+    let ρt = wkTerm ρ ⊢Δ t in
+    let ρs = PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (wk-β P) (wkTerm ρ ⊢Δ s) in
+    let ρu = wkTerm ρ ⊢Δ u in
+    let ρe = wkTerm ρ ⊢Δ e in
+    PE.subst (λ x → _ ⊢ transp _ _ _ _ _ _ ∷ x ^ _) (PE.sym (wk-β P))
+      (transpⱼ ρA ρP ρt ρs ρu ρe)
+  wkTerm ρ ⊢Δ (castⱼ A B e t) =
+    castⱼ (wkTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
+  wkTerm ρ ⊢Δ (castreflⱼ A t) =
+    castreflⱼ (wkTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ t)
   wkTerm ρ ⊢Δ (conv t A≡B) = conv (wkTerm ρ ⊢Δ t) (wkEq ρ ⊢Δ A≡B)
 
   wkEq : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
