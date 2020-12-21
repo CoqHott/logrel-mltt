@@ -142,7 +142,7 @@ redFirstTerm (Id-ℕ-S-subst m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (redFir
 redFirstTerm (Id-U-subst A B) = Idⱼ (Uⱼ (wfTerm B)) (redFirstTerm A) B
 redFirstTerm (Id-U-ℕ-subst B) = let ⊢Γ = (wfEqTerm (subsetTerm B)) in Idⱼ (Uⱼ ⊢Γ) (ℕⱼ ⊢Γ) (redFirstTerm B)
 redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (Uⱼ (wfTerm A)) (Πⱼ A ▹ P) (redFirstTerm B)
-redFirstTerm (Id-Π {rA = rA} A B t u) = Idⱼ (Πⱼ (univ A) ▹ B) t u
+redFirstTerm (Id-Π {rA = rA} A B t u) = Idⱼ (Πⱼ A ▹ B) t u
 redFirstTerm (Id-ℕ-00 ⊢Γ) = Idⱼ (ℕⱼ ⊢Γ) (zeroⱼ ⊢Γ) (zeroⱼ ⊢Γ)
 redFirstTerm (Id-ℕ-SS m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (sucⱼ n)
 redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (Uⱼ (wfTerm A)) (Πⱼ A ▹ B) (Πⱼ A' ▹ B')

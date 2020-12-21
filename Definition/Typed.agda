@@ -244,7 +244,7 @@ mutual
               → Γ ⊢ u ≡ u' ∷ A ^ !
               → Γ ⊢ Id A t u ≡ Id A' t' u' ∷ SProp ^ !
     Id-Π : ∀ {A rA B t u}
-           → Γ ⊢ A ∷ (Univ rA) ^ !
+           → Γ ⊢ A ^ rA
            → Γ ∙ A ^ rA ⊢ B ^ !
            → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
@@ -378,7 +378,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
             → Γ ⊢ B ⇒ B' ∷ U ^ !
             → Γ ⊢ Id U (Π A ^ rA ▹ P) B ⇒ Id U (Π A ^ rA ▹ P) B' ∷ SProp ^ !
   Id-Π : ∀ {A rA B t u}
-         → Γ ⊢ A ∷ (Univ rA) ^ !
+         → Γ ⊢ A ^ rA
          → Γ ∙ A ^ rA ⊢ B ^ !
          → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
          → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
