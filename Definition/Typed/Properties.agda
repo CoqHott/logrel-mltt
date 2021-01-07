@@ -335,7 +335,7 @@ whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 whrDetTerm-aux1 : ∀{Γ t u F rF A A' rA rA' B B' e f}
   → (d :  t PE.≡ cast (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B') e f)
   → (d′ : Γ ⊢ t ⇒ u ∷ F ^ rF)
-  → (lam A' ▹ let a = cast (wk1 A') (wk1 A) (Id_sym (Univ rA) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in cast (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a)) PE.≡ u
+  → (lam A' ▹ let a = cast (wk1 A') (wk1 A) (Idsym (Univ rA) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in cast (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a)) PE.≡ u
 whrDetTerm-aux1 d (conv d' x) = whrDetTerm-aux1 d d'
 whrDetTerm-aux1 PE.refl (cast-subst d' x x₁ x₂) = ⊥-elim (whnfRedTerm d' Πₙ)
 whrDetTerm-aux1 PE.refl (cast-Π-subst x x₁ d' x₂ x₃) = ⊥-elim (whnfRedTerm d' Πₙ)
@@ -344,7 +344,7 @@ whrDetTerm-aux1 PE.refl (cast-Π x x₁ x₂ x₃ x₄ x₅) = PE.refl
 whrDetTerm-aux2 : ∀{Γ t u F rF A rA B A' rA' B'}
   → (d : t PE.≡ Id U (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B'))
   → (d' : Γ ⊢ t ⇒ u ∷ F ^ rF)
-  → (Σ (Id (Univ rA) A A') ▹ (Π (wk1 A') ^ rA ▹ Id U ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B'))) PE.≡ u
+  → (Σ (Id (Univ rA) A A') ▹ (Π (wk1 A') ^ rA ▹ Id U ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B'))) PE.≡ u
 whrDetTerm-aux2 d (conv d' x) = whrDetTerm-aux2 d d'
 whrDetTerm-aux2 PE.refl (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
 whrDetTerm-aux2 PE.refl (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' Πₙ)
