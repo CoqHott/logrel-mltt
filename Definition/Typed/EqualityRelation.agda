@@ -108,7 +108,7 @@ record EqRelSet : Set₁ where
     ≅-Emptyrefl   : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ^ %
     ≅ₜ-Emptyrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ∷ SProp ^ !
 
-    -- Π-congurence
+    -- Π-congruence
 
     ≅-Π-cong  : ∀ {F G H E rF rG Γ}
               → Γ ⊢ F ^ rF
@@ -121,6 +121,14 @@ record EqRelSet : Set₁ where
               → Γ ⊢ F ≅ H ∷ (Univ rF) ^ !
               → Γ ∙ F ^ rF ⊢ G ≅ E ∷ (Univ rG) ^ !
               → Γ ⊢ Π F ^ rF ▹ G ≅ Π H ^ rF ▹ E ∷ (Univ rG) ^ !
+
+    -- Σ-congruence
+    -- Since Σ types are always small, no need for a type-level rule
+    ≅ₜ-Σ-cong : ∀ {F G H E Γ}
+              → Γ ⊢ F ^ %
+              → Γ ⊢ F ≅ H ∷ SProp ^ !
+              → Γ ∙ F ^ % ⊢ G ≅ E ∷ SProp ^ !
+              → Γ ⊢ Σ F ▹ G ≅ Σ H ▹ E ∷ SProp ^ !
 
     -- Zero reflexivity
     ≅ₜ-zerorefl : ∀ {Γ} → ⊢ Γ → Γ ⊢ zero ≅ zero ∷ ℕ ^ !
@@ -161,6 +169,69 @@ record EqRelSet : Set₁ where
              → Γ     ⊢ n ~ n′ ∷ Empty ^ %
              → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ rF
 
+    -- Id congruences
+    ~-Id  : ∀ {A A' t t' u u' Γ}
+          → Γ ⊢ A ~ A' ∷ U ^ !
+          → Γ ⊢ t ≅ t' ∷ A ^ !
+          → Γ ⊢ u ≅ u' ∷ A ^ !
+          → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp ^ !
+
+    ~-Idℕ : ∀ {t t' u u' Γ}
+          → Γ ⊢ t ~ t' ∷ ℕ ^ !
+          → Γ ⊢ u ≅ u' ∷ ℕ ^ !
+          → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ∷ SProp ^ !
+
+    ~-Idℕ0 : ∀ {u u' Γ}
+           → Γ ⊢ u ~ u' ∷ ℕ ^ !
+           → Γ ⊢ Id ℕ zero u ~ Id ℕ zero u' ∷ SProp ^ !
+
+    ~-IdℕS : ∀ {t t' u u' Γ}
+           → Γ ⊢ t ≅ t' ∷ ℕ ^ !
+           → Γ ⊢ u ~ u' ∷ ℕ ^ !
+           → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ^ !
+
+    ~-IdU : ∀ {t t' u u' Γ}
+          → Γ ⊢ t ~ t' ∷ U ^ !
+          → Γ ⊢ u ≅ u' ∷ U ^ !
+          → Γ ⊢ Id U t u ~ Id U t' u' ∷ SProp ^ !
+
+    ~-IdUℕ : ∀ {u u' Γ}
+           → Γ ⊢ u ~ u' ∷ U ^ !
+           → Γ ⊢ Id U ℕ u ~ Id U ℕ u' ∷ SProp ^ !
+
+    ~-IdUΠ : ∀ {A rA B A' B' u u' Γ}
+           → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
+           → Γ ∙ A ^ rA ⊢ B ≅ B' ∷ U ^ !
+           → Γ ⊢ u ~ u' ∷ U ^ !
+           → Γ ⊢ Id U (Π A ^ rA ▹ B) u ~ Id U (Π A' ^ rA ▹ B) u' ∷ SProp ^ !
+
+    -- cast congruences
+
+    ~-cast : ∀ {A A' B B' e e' t t' Γ}
+           → Γ ⊢ A ~ A' ∷ U ^ !
+           → Γ ⊢ B ≅ B' ∷ U ^ !
+           → Γ ⊢ e ≅ e' ∷ Id U A B ^ %
+           → Γ ⊢ t ≅ t' ∷ A ^ !
+           → Γ ⊢ cast A B e t ~ cast A' B' e' t' ∷ B ^ !
+
+    ~-castℕ : ∀ {B B' e e' t t' Γ}
+           → Γ ⊢ B ~ B' ∷ U ^ !
+           → Γ ⊢ e ≅ e' ∷ Id U ℕ B ^ %
+           → Γ ⊢ t ≅ t' ∷ ℕ ^ !
+           → Γ ⊢ cast ℕ B e t ~ cast ℕ B' e' t' ∷ B ^ !
+
+    ~-castℕℕ : ∀ {e e' t t' Γ}
+           → Γ ⊢ e ≅ e' ∷ Id U ℕ ℕ ^ %
+           → Γ ⊢ t ~ t' ∷ ℕ ^ !
+           → Γ ⊢ cast ℕ ℕ e t ~ cast ℕ ℕ e' t' ∷ ℕ ^ !
+
+    ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ}
+           → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
+           → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ^ !
+           → Γ ⊢ B ~ B' ∷ U ^ !
+           → Γ ⊢ e ≅ e' ∷ Id U (Π A ^ rA ▹ P) B ^ %
+           → Γ ⊢ t ≅ t' ∷ Π A ^ rA ▹ P ^ !
+           → Γ ⊢ cast (Π A ^ rA ▹ P) B e t ~ cast (Π A' ^ rA ▹ P') B' e' t' ∷ B ^ !
 
     ~-irrelevance : ∀ {n n′ A Γ} → Γ ⊢ n ∷ A ^ % → Γ ⊢ n′ ∷ A ^ %
                   → Γ ⊢ n ~ n ∷ A ^ %
