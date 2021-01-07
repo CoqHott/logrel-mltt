@@ -15,17 +15,17 @@ infix 30 Πⱼ_▹_
 Unit : Term
 Unit = Π Empty ^ % ▹ Empty
 
-tt : Term
+tt : Term -- currently not used
 tt = lam Empty ▹ (Emptyrec Empty (var 0))
 
-ap : (A B f x y e : Term) → Term
+ap : (A B f x y e : Term) → Term -- currently not used
 ap A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x)) ((wk1 f) ∘ (var 0))) x (Idrefl B (f ∘ x)) y e
 
-Id_sym : (A x y e : Term) → Term
-Id_sym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
+Idsym : (A x y e : Term) → Term
+Idsym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
 
-Id_trans : (A x y z e f : Term) → Term
-Id_trans A x y z e f = transp A (Id (wk1 A) (wk1 x) (var 0)) y e z f
+Idtrans : (A x y z e f : Term) → Term -- currently not used
+Idtrans A x y z e f = transp A (Id (wk1 A) (wk1 x) (var 0)) y e z f
 
 -- Well-typed variables
 data _∷_^_∈_ : (x : Nat) (A : Term) (r : Relevance) (Γ : Con Term) → Set where
@@ -269,7 +269,7 @@ mutual
               → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
                     ≡ Σ (Id (Univ rA) A A') ▹
                       (Π (wk1 A') ^ rA ▹ Id U
-                        ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                        ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk (lift (step id)) B'))
                   ∷ SProp ^ !
     Id-U-ℕℕ : ⊢ Γ
@@ -297,7 +297,7 @@ mutual
              → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
              → Γ ⊢ (cast (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
                ≡ (lam A' ▹
-                 let a = cast (wk1 A') (wk1 A) (Id_sym (Univ rA) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
+                 let a = cast (wk1 A') (wk1 A) (Idsym (Univ rA) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
                  cast (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
                    ∷ Π A' ^ rA ▹ B' ^ !
     cast-ℕ-0 : ∀ {e}
@@ -403,8 +403,8 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
             → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
                   ⇒ Σ (Id (Univ rA) A A') ▹
                     (Π (wk1 A') ^ rA ▹ Id U
-                      ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Id_sym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
-                      (wk (lift (step id)) B'))
+                      ((wk1d B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                      (wk1d B'))
                   ∷ SProp ^ !
   Id-U-ℕℕ : ⊢ Γ
           → Γ ⊢ (Id U ℕ ℕ)
@@ -443,7 +443,7 @@ data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → 
            → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ (cast (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
              ⇒ (lam A' ▹
-               let a = cast (wk1 A') (wk1 A) (Id_sym (Univ rA) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
+               let a = cast (wk1 A') (wk1 A) (Idsym (Univ rA) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
                cast (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
                  ∷ Π A' ^ rA ▹ B' ^ !
   cast-ℕ-0 : ∀ {e}

@@ -352,6 +352,9 @@ mutual
 wk1 : Term → Term
 wk1 = wk (step id)
 
+wk1d : Term → Term
+wk1d = wk (lift (step id))
+
 -- Weakening of a neutral term.
 
 wkNeutral : ∀ {t} ρ → Neutral t → Neutral (wk ρ t)

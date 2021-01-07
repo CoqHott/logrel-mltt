@@ -8,7 +8,7 @@ open import Definition.Untyped
 
 open import Tools.Nat
 open import Tools.List
-open import Tools.PropositionalEquality hiding (subst)
+open import Tools.PropositionalEquality renaming (subst to PEsubst)
 
 
 -- Weakening properties
@@ -150,6 +150,18 @@ lift-wk1 pr A = trans (wk-comp (lift pr) (step id) A)
 
 wk1-wk≡lift-wk1 : ∀ ρ t → wk1 (wk ρ t) ≡ wk (lift ρ) (wk1 t)
 wk1-wk≡lift-wk1 ρ t = trans (wk1-wk ρ t) (sym (lift-wk1 ρ t))
+
+wk1wk1-wk≡liftlift-wk1 : ∀ ρ t → wk1 (wk1 (wk ρ t)) ≡ wk (lift (lift ρ)) (wk1 (wk1 t))
+wk1wk1-wk≡liftlift-wk1 ρ t = PEsubst (λ x → (wk1 x ≡ wk (lift (lift ρ)) (wk1 (wk1 t)))) (sym (wk1-wk≡lift-wk1 ρ t)) (wk1-wk≡lift-wk1 (lift ρ) (wk1 t))
+
+wk1d-wk : ∀ ρ t → wk1d (wk (lift ρ) t) ≡ wk (lift (step ρ)) t
+wk1d-wk ρ t = wk-comp (lift (step id)) (lift ρ) t
+
+lift-wk1d : ∀ ρ t → wk (lift (lift ρ)) (wk1d t) ≡ wk (lift (step ρ)) t
+lift-wk1d ρ t = trans (wk-comp (lift (lift ρ)) (lift (step id)) t) (cong (λ x → wk (lift x) t) (sym (lift-step-comp ρ)))
+
+wk1d-wk≡lift-wk1d : ∀ ρ t → wk1d (wk (lift ρ) t) ≡ wk (lift (lift ρ)) (wk1d t)
+wk1d-wk≡lift-wk1d ρ t = trans (wk1d-wk ρ t) (sym (lift-wk1d ρ t))
 
 -- Substitution properties.
 
