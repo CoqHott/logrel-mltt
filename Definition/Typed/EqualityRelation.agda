@@ -177,33 +177,39 @@ record EqRelSet : Set₁ where
           → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp ^ !
 
     ~-Idℕ : ∀ {t t' u u' Γ}
+          → ⊢ Γ
           → Γ ⊢ t ~ t' ∷ ℕ ^ !
           → Γ ⊢ u ≅ u' ∷ ℕ ^ !
           → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ∷ SProp ^ !
 
     ~-Idℕ0 : ∀ {u u' Γ}
+           → ⊢ Γ
            → Γ ⊢ u ~ u' ∷ ℕ ^ !
            → Γ ⊢ Id ℕ zero u ~ Id ℕ zero u' ∷ SProp ^ !
 
     ~-IdℕS : ∀ {t t' u u' Γ}
+           → ⊢ Γ
            → Γ ⊢ t ≅ t' ∷ ℕ ^ !
            → Γ ⊢ u ~ u' ∷ ℕ ^ !
            → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ^ !
 
     ~-IdU : ∀ {t t' u u' Γ}
+          → ⊢ Γ
           → Γ ⊢ t ~ t' ∷ U ^ !
           → Γ ⊢ u ≅ u' ∷ U ^ !
           → Γ ⊢ Id U t u ~ Id U t' u' ∷ SProp ^ !
 
     ~-IdUℕ : ∀ {u u' Γ}
+           → ⊢ Γ
            → Γ ⊢ u ~ u' ∷ U ^ !
            → Γ ⊢ Id U ℕ u ~ Id U ℕ u' ∷ SProp ^ !
 
     ~-IdUΠ : ∀ {A rA B A' B' u u' Γ}
+           → Γ ⊢ A ∷ Univ rA ^ !
            → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
            → Γ ∙ A ^ rA ⊢ B ≅ B' ∷ U ^ !
            → Γ ⊢ u ~ u' ∷ U ^ !
-           → Γ ⊢ Id U (Π A ^ rA ▹ B) u ~ Id U (Π A' ^ rA ▹ B) u' ∷ SProp ^ !
+           → Γ ⊢ Id U (Π A ^ rA ▹ B) u ~ Id U (Π A' ^ rA ▹ B') u' ∷ SProp ^ !
 
     -- cast congruences
 
@@ -215,17 +221,20 @@ record EqRelSet : Set₁ where
            → Γ ⊢ cast A B e t ~ cast A' B' e' t' ∷ B ^ !
 
     ~-castℕ : ∀ {B B' e e' t t' Γ}
-           → Γ ⊢ B ~ B' ∷ U ^ !
-           → Γ ⊢ e ≅ e' ∷ Id U ℕ B ^ %
-           → Γ ⊢ t ≅ t' ∷ ℕ ^ !
-           → Γ ⊢ cast ℕ B e t ~ cast ℕ B' e' t' ∷ B ^ !
+            → ⊢ Γ
+            → Γ ⊢ B ~ B' ∷ U ^ !
+            → Γ ⊢ e ≅ e' ∷ Id U ℕ B ^ %
+            → Γ ⊢ t ≅ t' ∷ ℕ ^ !
+            → Γ ⊢ cast ℕ B e t ~ cast ℕ B' e' t' ∷ B ^ !
 
     ~-castℕℕ : ∀ {e e' t t' Γ}
-           → Γ ⊢ e ≅ e' ∷ Id U ℕ ℕ ^ %
-           → Γ ⊢ t ~ t' ∷ ℕ ^ !
-           → Γ ⊢ cast ℕ ℕ e t ~ cast ℕ ℕ e' t' ∷ ℕ ^ !
+             → ⊢ Γ
+             → Γ ⊢ e ≅ e' ∷ Id U ℕ ℕ ^ %
+             → Γ ⊢ t ~ t' ∷ ℕ ^ !
+             → Γ ⊢ cast ℕ ℕ e t ~ cast ℕ ℕ e' t' ∷ ℕ ^ !
 
     ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ}
+           → Γ ⊢ A ^ rA
            → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
            → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ^ !
            → Γ ⊢ B ~ B' ∷ U ^ !
