@@ -13,13 +13,6 @@ open import Tools.Function
 
 -- Judgmental instance of the equality relation
 
-private
-  proof-irrelevance′ : ∀ {a b A Γ} → Γ ⊢ a ∷ A ^ % → Γ ⊢ b ∷ A ^ %
-                     → Γ ⊢ a ≡ a ∷ A ^ %
-                     → Γ ⊢ b ≡ b ∷ A ^ %
-                     → Γ ⊢ a ≡ b ∷ A ^ %
-  proof-irrelevance′ ⊢a ⊢b _ _ = proof-irrelevance ⊢a ⊢b
-
 instance eqRelInstance : EqRelSet
 eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       idᶠ idᶠ idᶠ univ
@@ -31,4 +24,4 @@ eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       Π-cong Π-cong (refl ∘ᶠ zeroⱼ) suc-cong
                       (λ x x₁ x₂ x₃ x₄ x₅ → η-eq x x₁ x₂ x₅)
                       refl app-cong natrec-cong Emptyrec-cong
-                      proof-irrelevance′
+                      proof-irrelevance
