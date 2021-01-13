@@ -8,6 +8,7 @@ open EqRelSet {{...}}
 open import Definition.Untyped as U
 open import Definition.Typed
 open import Definition.Typed.Weakening
+open import Definition.Typed.Reduction
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -418,3 +419,17 @@ _⊩⟨_⟩_∷_^_/_ : (Γ : Con Term) (l : TypeLevel) (t A : Term) (r : Relevan
 
 _⊩⟨_⟩_≡_∷_^_/_ : (Γ : Con Term) (l : TypeLevel) (t u A : Term) (r : Relevance) → Γ ⊩⟨ l ⟩ A ^ r → Set
 Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A] = Γ ⊩ t ≡ u ∷ A ^ r / [A] where open LogRelKit (kit l)
+
+
+logRelIrr : ∀ {l t Γ A} ([A] : Γ ⊩⟨ l ⟩ A ^ %) (⊢t : Γ ⊢ t ∷ A ^ %) → Γ ⊩⟨ l ⟩ t ∷ A ^ % / [A]
+logRelIrr (Emptyᵣ [ ⊢A , ⊢B , D ]) ⊢t = Emptyₜ (ne (conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
+logRelIrr (ne x) ⊢t = neₜ ⊢t
+logRelIrr (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) 
+logRelIrr (emb 0<1 [A]) ⊢t = logRelIrr [A] ⊢t
+
+logRelIrrEq : ∀ {l t u Γ A} ([A] : Γ ⊩⟨ l ⟩ A ^ %) (⊢t : Γ ⊢ t ∷ A ^ %) (⊢u : Γ ⊢ u ∷ A ^ %) → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ % / [A]
+logRelIrrEq (Emptyᵣ [ ⊢A , ⊢B , D ]) ⊢t ⊢u = Emptyₜ₌ (ne ((conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
+                                                         (conv ⊢u (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
+logRelIrrEq (ne x) ⊢t ⊢u = neₜ₌ ⊢t ⊢u
+logRelIrrEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) , (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )
+logRelIrrEq (emb 0<1 [A]) ⊢t ⊢u = logRelIrrEq [A] ⊢t ⊢u 
