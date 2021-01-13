@@ -50,12 +50,12 @@ record EqRelSet : Set₁ where
     -- Symmetry
     ≅-sym  : ∀ {A B Γ r} → Γ ⊢ A ≅ B ^ r → Γ ⊢ B ≅ A ^ r
     ≅ₜ-sym : ∀ {t u A Γ} → Γ ⊢ t ≅ u ∷ A ^ ! → Γ ⊢ u ≅ t ∷ A ^ !
-    ~-sym  : ∀ {k l A Γ} → Γ ⊢ k ~ l ∷ A ^ ! → Γ ⊢ l ~ k ∷ A ^ !
+    ~-sym  : ∀ {k l A Γ r} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
 
     -- Transitivity
     ≅-trans  : ∀ {A B C r Γ} → Γ ⊢ A ≅ B ^ r → Γ ⊢ B ≅ C ^ r → Γ ⊢ A ≅ C ^ r
     ≅ₜ-trans : ∀ {t u v A Γ} → Γ ⊢ t ≅ u ∷ A ^ ! → Γ ⊢ u ≅ v ∷ A ^ ! → Γ ⊢ t ≅ v ∷ A ^ !
-    ~-trans  : ∀ {k l m A Γ} → Γ ⊢ k ~ l ∷ A ^ ! → Γ ⊢ l ~ m ∷ A ^ ! → Γ ⊢ k ~ m ∷ A ^ !
+    ~-trans  : ∀ {k l m A r Γ} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ m ∷ A ^ r → Γ ⊢ k ~ m ∷ A ^ r
 
     -- Conversion
     ≅-conv : ∀ {t u A B Γ} → Γ ⊢ t ≅ u ∷ A ^ ! → Γ ⊢ A ≡ B ^ ! → Γ ⊢ t ≅ u ∷ B ^ !
@@ -139,7 +139,7 @@ record EqRelSet : Set₁ where
               → Γ ⊢ f ≅ g ∷ Π F ^ rF ▹ G ^ !
 
     -- Variable reflexivity
-    ~-var : ∀ {x A Γ} → Γ ⊢ var x ∷ A ^ ! → Γ ⊢ var x ~ var x ∷ A ^ !
+    ~-var : ∀ {x A Γ r} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ~ var x ∷ A ^ r
 
     -- Application congurence
     ~-app : ∀ {a b f g F G rF Γ}

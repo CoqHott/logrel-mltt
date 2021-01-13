@@ -25,7 +25,7 @@ neu : ∀ {l Γ A r} (neA : Neutral A)
     → Γ ⊢ A ^ r
     → Γ ⊢ A ~ A ∷ Univ r ^ !
     → Γ ⊩⟨ l ⟩ A ^ r
-neu neA A A~A = ? -- ne′ _ (idRed:*: A) neA A~A
+neu neA A A~A = ne′ _ (idRed:*: A) neA A~A
 
   -- Helper function for reducible neutral equality of a specific type of derivation.
 neuEq′ : ∀ {l Γ A B r} ([A] : Γ ⊩⟨ l ⟩ne A ^ r)
@@ -64,16 +64,11 @@ mutual
         n~n′ = ~-conv n~n A≡ℕ
         n≡n  = ~-to-≅ₜ n~n′
     in  ℕₜ _ (idRedTerm:*: (conv n A≡ℕ)) n≡n (ne (neNfₜ neN (conv n A≡ℕ) n~n′))
-  neuTerm (Emptyᵣ [ ⊢A , ⊢B , D ]) neN n n~n =
-    let A≡Empty  = subset* D
-        n~n′ = ~-conv n~n A≡Empty
-        n≡n  = ~-to-≅ₜ n~n′
-    in  Emptyₜ _ (idRedTerm:*: (conv n A≡Empty)) n≡n (ne (neNfₜ neN (conv n A≡Empty) n~n′))
-  neuTerm (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) neN n n~n =
+  neuTerm {r = !} (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) neN n n~n =
     let A≡K = subset* D
     in  neₜ _ (idRedTerm:*: (conv n A≡K)) (neNfₜ neN (conv n A≡K)
             (~-conv n~n A≡K))
-  neuTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n =
+  neuTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n =
     let A≡ΠFG = subset* (red D)
     in  Πₜ _ (idRedTerm:*: (conv n A≡ΠFG)) (ne neN) (~-to-≅ₜ (~-conv n~n A≡ΠFG))
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
@@ -99,8 +94,16 @@ mutual
               in  neuTerm ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkNeutral ρ neN))
                           (conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG ∘ⱼ a)
                           (~-app (~-wk [ρ] ⊢Δ (~-conv n~n A≡ΠFG)) a≡a))
+  -- neuTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n = {!!}
   neuTerm (emb 0<1 x) neN n = neuTerm x neN n
-
+  neuTerm (Emptyᵣ [ ⊢A , ⊢B , D ]) neN n n~n =
+    let A≡ℕ  = subset* D
+    in Emptyₜ (ne (conv n A≡ℕ))
+  neuTerm {r = %} (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) neN n n~n =
+    let A≡K = subset* D
+    in  neₜ n
+  neuTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n = let A≡ΠFG = subset* (red D) in conv n A≡ΠFG
+  
   -- Neutrally equal terms are of reducible equality.
   neuEqTerm : ∀ {l Γ A n n′ r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               (neN : Neutral n) (neN′ : Neutral n′)
@@ -110,8 +113,8 @@ mutual
             → Γ ⊩⟨ l ⟩ n ≡ n′ ∷ A ^ r / [A]
   neuEqTerm (Uᵣ′ _ .⁰ 0<1 ⊢Γ) neN neN′ n n′ n~n′ =
     let [n]  = neu neN  (univ n) (~-trans n~n′ (~-sym n~n′))
-        [n′] = neu neN′ (univ n′) (~-trans (~-sym n~n′) n~n′)
-    in  Uₜ₌ _ _ (idRedTerm:*: n) (idRedTerm:*: n′) (ne neN) (ne neN′)
+        [n′] = neu neN′ (univ n′) (~-trans (~-sym n~n′) n~n′) in
+        Uₜ₌ _ _ (idRedTerm:*: n) (idRedTerm:*: n′) (ne neN) (ne neN′)
             (~-to-≅ₜ n~n′) [n] [n′] (neuEq [n] neN neN′ (univ n) (univ n′) n~n′)
   neuEqTerm (ℕᵣ [ ⊢A , ⊢B , D ]) neN neN′ n n′ n~n′ =
     let A≡ℕ = subset* D
@@ -121,15 +124,15 @@ mutual
             n≡n′ (ne (neNfₜ₌ neN neN′ n~n′₁))
   neuEqTerm (Emptyᵣ [ ⊢A , ⊢B , D ]) neN neN′ n n′ n~n′ =
     let A≡Empty = subset* D
-        n~n′₁ = ~-conv n~n′ A≡Empty
-        n≡n′ = ~-to-≅ₜ n~n′₁
-    in  Emptyₜ₌ _ _ (idRedTerm:*: (conv n A≡Empty)) (idRedTerm:*: (conv n′ A≡Empty))
-            n≡n′ (ne (neNfₜ₌ neN neN′ n~n′₁))
-  neuEqTerm (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K)) neN neN′ n n′ n~n′ =
+    in  Emptyₜ₌  (ne (conv n A≡Empty) (conv n′ A≡Empty))
+  neuEqTerm {r = !} (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K)) neN neN′ n n′ n~n′ =
     let A≡K = subset* D
     in  neₜ₌ _ _ (idRedTerm:*: (conv n A≡K)) (idRedTerm:*: (conv n′ A≡K))
              (neNfₜ₌ neN neN′ (~-conv n~n′ A≡K))
-  neuEqTerm (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
+  neuEqTerm {r = %} (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K)) neN neN′ n n′ n~n′ =
+    let A≡K = subset* D
+    in neₜ₌ n n′
+  neuEqTerm {r = !} (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
     let [ΠFG] = Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext
         A≡ΠFG = subset* D
         n~n′₁ = ~-conv n~n′ A≡ΠFG
@@ -152,4 +155,7 @@ mutual
                              (conv ρn  ρA≡ρΠFG ∘ⱼ a)
                              (conv ρn′ ρA≡ρΠFG ∘ⱼ a)
                              (~-app (~-wk [ρ] ⊢Δ n~n′₁) a≡a))
+  neuEqTerm {r = %} (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
+    let A≡ΠFG = subset* D
+    in conv n A≡ΠFG , conv n′ A≡ΠFG
   neuEqTerm (emb 0<1 x) neN neN′ n:≡:n′ = neuEqTerm x neN neN′ n:≡:n′

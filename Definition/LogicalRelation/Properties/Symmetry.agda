@@ -73,7 +73,8 @@ mutual
 symNeutralTerm : ∀ {t u A r Γ}
                → Γ ⊩neNf t ≡ u ∷ A ^ r
                → Γ ⊩neNf u ≡ t ∷ A ^ r
-symNeutralTerm (neNfₜ₌ neK neM k≡m) = neNfₜ₌ neM neK (~-sym k≡m)
+symNeutralTerm {r = !} (neNfₜ₌ neK neM k≡m) = neNfₜ₌ neM neK (~-sym k≡m)
+symNeutralTerm {r = %} (neNfₜ₌ neK neM k≡m) = neNfₜ₌ neM neK (~-sym k≡m)
 
 symNatural-prop : ∀ {Γ k k′}
                 → [Natural]-prop Γ k k′
@@ -97,10 +98,13 @@ symEqTerm (Uᵣ′ _ .⁰ 0<1 ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [
 symEqTerm (ℕᵣ D) (ℕₜ₌ k k′ d d′ t≡u prop) =
   ℕₜ₌ k′ k d′ d (≅ₜ-sym t≡u) (symNatural-prop prop)
 symEqTerm (Emptyᵣ D) (Emptyₜ₌ prop) = Emptyₜ₌ (symEmpty-prop prop)
-symEqTerm (ne′ K D neK K≡K) (neₜ₌ k m d d′ nf) =
+symEqTerm {r = !} (ne′ K D neK K≡K) (neₜ₌ k m d d′ nf) =
   neₜ₌ m k d′ d (symNeutralTerm nf)
-symEqTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+symEqTerm {r = %} (ne′ K D neK K≡K) (neₜ₌ d d′) = neₜ₌ d′ d
+symEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
           (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
       (λ ρ ⊢Δ [a] → symEqTerm ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
+symEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
 symEqTerm (emb 0<1 x) t≡u = symEqTerm x t≡u

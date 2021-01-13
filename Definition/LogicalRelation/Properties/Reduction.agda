@@ -5,6 +5,7 @@ open import Definition.Typed.EqualityRelation
 module Definition.LogicalRelation.Properties.Reduction {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
+open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.Typed.RedSteps
@@ -44,12 +45,12 @@ redSubst* D (emb 0<1 x) with redSubst* D x
 redSubst* D (emb 0<1 x) | y , y₁ = emb 0<1 y , y₁
 
 -- Weak head expansion of reducible terms.
-redSubst*Term : ∀ {A t u r l Γ}
-              → Γ ⊢ t ⇒* u ∷ A ^ r
-              → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
-              → Γ ⊩⟨ l ⟩ u ∷ A ^ r / [A]
-              → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
-              × Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
+redSubst*Term : ∀ {A t u l Γ}
+              → Γ ⊢ t ⇒* u ∷ A 
+              → ([A] : Γ ⊩⟨ l ⟩ A ^ !)
+              → Γ ⊩⟨ l ⟩ u ∷ A ^ ! / [A]
+              → Γ ⊩⟨ l ⟩ t ∷ A ^ ! / [A]
+              × Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ ! / [A]
 redSubst*Term t⇒u (Uᵣ′ rU .⁰ 0<1 ⊢Γ) (Uₜ A [ ⊢t , ⊢u , d ] typeA A≡A [u]) =
   let [d]  = [ ⊢t , ⊢u , d ]
       [d′] = [ redFirst*Term t⇒u , ⊢u , t⇒u ⇨∷* d ]
@@ -63,13 +64,12 @@ redSubst*Term t⇒u (ℕᵣ D) (ℕₜ n [ ⊢u , ⊢n , d ] n≡n prop) =
   in  ℕₜ n [ ⊢t , ⊢n , t⇒u′ ⇨∷* d ] n≡n prop
   ,   ℕₜ₌ n n [ ⊢t , ⊢n , t⇒u′ ⇨∷* d ] [ ⊢u , ⊢n , d ]
           n≡n (reflNatural-prop prop)
-redSubst*Term t⇒u (Emptyᵣ D) (Emptyₜ n [ ⊢u , ⊢n , d ] n≡n prop) =
-  let A≡Empty  = subset* (red D)
-      ⊢t   = conv (redFirst*Term t⇒u) A≡Empty
-      t⇒u′ = conv* t⇒u A≡Empty
-  in  Emptyₜ n [ ⊢t , ⊢n , t⇒u′ ⇨∷* d ] n≡n prop
-  ,   Emptyₜ₌ n n [ ⊢t , ⊢n , t⇒u′ ⇨∷* d ] [ ⊢u , ⊢n , d ]
-          n≡n (reflEmpty-prop prop)
+-- redSubst*Term t⇒u (Emptyᵣ D) (Emptyₜ n ) = 
+--   let A≡Empty  = subset* (red D)
+--       ⊢t   = conv (redFirst*Term t⇒u) A≡Empty
+--       t⇒u′ = conv* t⇒u A≡Empty
+--   in  Emptyₜ n 
+--   ,   Emptyₜ₌ n 
 redSubst*Term t⇒u (ne′ K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] (neNfₜ neK₁ ⊢k k≡k)) =
   let A≡K  = subset* (red D)
       [d]  = [ ⊢t , ⊢u , d ]
@@ -97,10 +97,10 @@ redSubst : ∀ {A B r l Γ}
 redSubst A⇒B [B] = redSubst* (A⇒B ⇨ id (escape [B])) [B]
 
 -- Weak head expansion of reducible terms with single reduction step.
-redSubstTerm : ∀ {A t u r l Γ}
-             → Γ ⊢ t ⇒ u ∷ A ^ r
-             → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
-             → Γ ⊩⟨ l ⟩ u ∷ A ^ r / [A]
-             → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
-             × Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
+redSubstTerm : ∀ {A t u l Γ}
+             → Γ ⊢ t ⇒ u ∷ A 
+             → ([A] : Γ ⊩⟨ l ⟩ A ^ !)
+             → Γ ⊩⟨ l ⟩ u ∷ A ^ ! / [A]
+             → Γ ⊩⟨ l ⟩ t ∷ A ^ ! / [A]
+             × Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ ! / [A]
 redSubstTerm t⇒u [A] [u] = redSubst*Term (t⇒u ⇨ id (escapeTerm [A] [u])) [A] [u]

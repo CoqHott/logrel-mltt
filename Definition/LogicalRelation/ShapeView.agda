@@ -52,11 +52,11 @@ Empty-intr : ∀ {A Γ l} → Γ ⊩⟨ l ⟩Empty A → Γ ⊩⟨ l ⟩ A ^ %
 Empty-intr (noemb x) = Emptyᵣ x
 Empty-intr (emb 0<1 x) = emb 0<1 (Empty-intr x)
 
-ne-intr : ∀ {A Γ l} → Γ ⊩⟨ l ⟩ne A ^ ! → Γ ⊩⟨ l ⟩ A ^ !
+ne-intr : ∀ {A Γ l r} → Γ ⊩⟨ l ⟩ne A ^ r → Γ ⊩⟨ l ⟩ A ^ r
 ne-intr (noemb x) = ne x
 ne-intr (emb 0<1 x) = emb 0<1 (ne-intr x)
 
-Π-intr : ∀ {A Γ l} → Γ ⊩⟨ l ⟩Π A ^ ! → Γ ⊩⟨ l ⟩ A ^ !
+Π-intr : ∀ {A Γ l r} → Γ ⊩⟨ l ⟩Π A ^ r → Γ ⊩⟨ l ⟩ A ^ r
 Π-intr (noemb x) = Πᵣ x
 Π-intr (emb 0<1 x) = emb 0<1 (Π-intr x)
 
@@ -99,7 +99,7 @@ Empty-elim′ D (Πᵣ′ rF F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
 Empty-elim : ∀ {Γ l} → Γ ⊩⟨ l ⟩ Empty ^ % → Γ ⊩⟨ l ⟩Empty Empty
 Empty-elim [Empty] = Empty-elim′ (id (escape [Empty])) [Empty]
 
-ne-elim′ : ∀ {A Γ l K} → Γ ⊢ A ⇒* K ^ ! → Neutral K → Γ ⊩⟨ l ⟩ A ^ ! → Γ ⊩⟨ l ⟩ne A ^ !
+ne-elim′ : ∀ {A Γ l K r} → Γ ⊢ A ⇒* K ^ r → Neutral K → Γ ⊩⟨ l ⟩ A ^ r → Γ ⊩⟨ l ⟩ne A ^ r
 ne-elim′ D neK (Uᵣ′ _ l′ l< ⊢Γ) =
   ⊥-elim (U≢ne neK (whrDet* (id (Uⱼ ⊢Γ) , Uₙ) (D , ne neK)))
 ne-elim′ D neK (ℕᵣ D′) = ⊥-elim (ℕ≢ne neK (whrDet* (red D′ , ℕₙ) (D , ne neK)))
@@ -109,13 +109,15 @@ ne-elim′ D neK (Πᵣ′ rF F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
 ne-elim′ D neK (emb 0<1 x) with ne-elim′ D neK x
 ne-elim′ D neK (emb 0<1 x) | noemb x₁ = emb 0<1 (noemb x₁)
 ne-elim′ D neK (emb 0<1 x) | emb () x₂
+ne-elim′ D neK (Emptyᵣ D′) = ⊥-elim (Empty≢ne neK (whrDet* (red D′ , Emptyₙ) (D , ne neK)))
 
-ne-elim : ∀ {Γ l K} → Neutral K  → Γ ⊩⟨ l ⟩ K ^ ! → Γ ⊩⟨ l ⟩ne K ^ !
+ne-elim : ∀ {Γ l K r} → Neutral K  → Γ ⊩⟨ l ⟩ K ^ r → Γ ⊩⟨ l ⟩ne K ^ r
 ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K]
 
-Π-elim′ : ∀ {A Γ F G rF l} → Γ ⊢ A ⇒* Π F ^ rF ▹ G ^ ! → Γ ⊩⟨ l ⟩ A ^ ! → Γ ⊩⟨ l ⟩Π A ^ !
+Π-elim′ : ∀ {A Γ F G rF rG l} → Γ ⊢ A ⇒* Π F ^ rF ▹ G ^ rG → Γ ⊩⟨ l ⟩ A ^ rG → Γ ⊩⟨ l ⟩Π A ^ rG
 Π-elim′ D (Uᵣ′ _ l′ l< ⊢Γ) = ⊥-elim (U≢Π (whrDet* (id (Uⱼ ⊢Γ) , Uₙ) (D , Πₙ)))
 Π-elim′ D (ℕᵣ D′) = ⊥-elim (ℕ≢Π (whrDet* (red D′ , ℕₙ) (D , Πₙ)))
+Π-elim′ D (Emptyᵣ D′) = ⊥-elim (Empty≢Π (whrDet* (red D′ , Emptyₙ) (D , Πₙ)))
 Π-elim′ D (ne′ K D′ neK K≡K) =
   ⊥-elim (Π≢ne neK (whrDet* (D , Πₙ) (red D′ , ne neK)))
 Π-elim′ D (Πᵣ′ rF F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
@@ -124,7 +126,7 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K]
 Π-elim′ D (emb 0<1 x) | noemb x₁ = emb 0<1 (noemb x₁)
 Π-elim′ D (emb 0<1 x) | emb () x₂
 
-Π-elim : ∀ {Γ F G rF l} → Γ ⊩⟨ l ⟩ Π F ^ rF ▹ G ^ ! → Γ ⊩⟨ l ⟩Π Π F ^ rF ▹ G ^ !
+Π-elim : ∀ {Γ F G rF rG l} → Γ ⊩⟨ l ⟩ Π F ^ rF ▹ G ^ rG → Γ ⊩⟨ l ⟩Π Π F ^ rF ▹ G ^ rG
 Π-elim [Π] = Π-elim′ (id (escape [Π])) [Π]
 
 -- Extract a type and a level from a maybe embedding
