@@ -21,14 +21,14 @@ import Tools.PropositionalEquality as PE
 
 
 -- Helper function for application of specific type derivations.
-appTerm′ : ∀ {F G t u Γ rF rG l l′ l″}
+appTerm′ : ∀ {F G t u Γ rF ! l l′ l″}
           ([F] : Γ ⊩⟨ l″ ⟩ F ^ rF)
-          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ rG)
-          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ▹ G ^ rG)
-          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF ▹ G ^ rG / Π-intr [ΠFG])
+          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ !)
+          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ▹ G ^ !)
+          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF ▹ G ^ ! / Π-intr [ΠFG])
           ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ^ rF / [F])
-        → Γ ⊩⟨ l′ ⟩ t ∘ u ∷ G [ u ] ^ rG / [G[u]]
-appTerm′ {t = t} {Γ = Γ} {rG = rG} [F] [G[u]] (noemb (Πᵣ rF′ F G D ⊢F ⊢G A≡A [F′] [G′] G-ext))
+        → Γ ⊩⟨ l′ ⟩ t ∘ u ∷ G [ u ] ^ ! / [G[u]]
+appTerm′ {t = t} {Γ = Γ} [F] [G[u]] (noemb (Πᵣ rF′ F G D ⊢F ⊢G A≡A [F′] [G′] G-ext))
          (Πₜ f d funcF f≡f [f] [f]₁) [u] =
   let ΠFG≡ΠF′G′ = whnfRed* (red D) Πₙ
       F≡F′ , rF≡rF′ , G≡G′ = Π-PE-injectivity ΠFG≡ΠF′G′
@@ -40,7 +40,7 @@ appTerm′ {t = t} {Γ = Γ} {rG = rG} [F] [G[u]] (noemb (Πᵣ rF′ F G D ⊢F
       [f∘u] = irrelevanceTerm″ idG′ᵤ≡Gᵤ idf∘u≡f∘u
                                 ([G′] id ⊢Γ [u]′) [G[u]] ([f]₁ id ⊢Γ [u]′)
       ⊢u = escapeTerm [F] [u]
-      d′ = PE.subst (λ x → Γ ⊢ t ⇒* f ∷ x ^ rG) (PE.sym ΠFG≡ΠF′G′) (redₜ d)
+      d′ = PE.subst (λ x → Γ ⊢ t ⇒* f ∷ x ^ !) (PE.sym ΠFG≡ΠF′G′) (redₜ d)
   in  proj₁ (redSubst*Term (app-subst* d′ ⊢u) [G[u]] [f∘u])
 appTerm′ [F] [G[u]] (emb 0<1 x) [t] [u] = appTerm′ [F] [G[u]] x [t] [u]
 

@@ -45,13 +45,15 @@ escapeTerm : ∀ {l Γ A t r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
 escapeTerm (Uᵣ′ _ l′ l< ⊢Γ) (Uₜ A [ ⊢t , ⊢u , d ] typeA A≡A [A]) = ⊢t
 escapeTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm (Emptyᵣ D) (Emptyₜ e [ ⊢t , ⊢u , d ] t≡t prop) =
+escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) = 
   conv ⊢t (sym (subset* (red D)))
-escapeTerm (ne′ K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] nf) =
+escapeTerm {r = !}(ne′ K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] nf) = 
   conv ⊢t (sym (subset* (red D)))
-escapeTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-               (f , [ ⊢t , ⊢u , d ] , funcF , f≡f , [f] , [f]₁) =
+escapeTerm {r = %}(ne′ K D neK K≡K) (neₜ d) = d
+escapeTerm {r = ! } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+               (f , [ ⊢t , ⊢u , d ] , funcF , f≡f , [f] , [f]₁) = 
   conv ⊢t (sym (subset* (red D)))
+escapeTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
 escapeTerm (emb 0<1 A) t = escapeTerm A t
 
 -- Reducible term equality respect the equality relation.
@@ -64,15 +66,16 @@ escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) ℕₙ
              (naturalWhnf natK) (naturalWhnf natK′) k≡k′
-escapeTermEq (Emptyᵣ D) (Emptyₜ₌ k k′ d d′ k≡k′ prop) =
-  let natK , natK′ = esplit prop
-  in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) Emptyₙ
-             (ne natK) (ne natK′) k≡k′
-escapeTermEq (ne′ K D neK K≡K)
+escapeTermEq (Emptyᵣ D) (Emptyₜ₌ (ne ⊢t ⊢u)) =
+  ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D)))))  ((conv ⊢u (sym (subset* (red D))))))
+escapeTermEq {r = !} (ne′ K D neK K≡K)
                  (neₜ₌ k m d d′ (neNfₜ₌ neT neU t≡u)) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) (ne neK) (ne neT) (ne neU)
          (~-to-≅ₜ t≡u)
-escapeTermEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+escapeTermEq {r = %} (ne′ K D neK K≡K)
+                 (neₜ₌ d d′) = ~-to-≅ₜ (~-irrelevance d d′)
+escapeTermEq {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
+escapeTermEq {r = % } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq (emb 0<1 A) t≡u = escapeTermEq A t≡u

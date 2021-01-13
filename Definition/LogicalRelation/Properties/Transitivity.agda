@@ -27,8 +27,8 @@ mutual
            → Γ ⊩⟨ l ⟩  A ≡ C ^ r / [A]
   transEqT (ℕᵥ D D′ D″) A≡B B≡C = B≡C
   transEqT (Emptyᵥ D D′ D″) A≡B B≡C = B≡C
-  transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)
-               (ne K₂ D₂ neK₂ K≡K₂))
+  transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ _)
+               (ne K₂ D₂ neK₂ _))
            (ne₌ M D′ neM K≡M) (ne₌ M₁ D″ neM₁ K≡M₁)
            rewrite whrDet* (red D₁ , ne neK₁) (red D′ , ne neM)
                  | whrDet* (red D₂ , ne neK₂) (red D″ , ne neM₁) =
@@ -146,21 +146,13 @@ transEmpty-prop : ∀ {Γ k k′ k″}
   → [Empty]-prop Γ k k′
   → [Empty]-prop Γ k′ k″
   → [Empty]-prop Γ k k″
-transEmpty-prop (ne [k≡k′]) (ne [k′≡k″]) =
-  ne (transEqTermNe [k≡k′] [k′≡k″])
+transEmpty-prop (ne a b) (ne c d) = ne a d
 
 transEqTermEmpty : ∀ {Γ n n′ n″}
   → Γ ⊩Empty n  ≡ n′  ∷Empty
   → Γ ⊩Empty n′ ≡ n″ ∷Empty
   → Γ ⊩Empty n  ≡ n″ ∷Empty
-transEqTermEmpty (Emptyₜ₌ k k′ d d′ t≡u prop)
-             (Emptyₜ₌ k₁ k″ d₁ d″ t≡u₁ prop₁) =
-  let k₁Whnf = ne (proj₁ (esplit prop₁))
-      k′Whnf = ne (proj₂ (esplit prop))
-      k₁≡k′ = whrDet*Term (redₜ d₁ , k₁Whnf) (redₜ d′ , k′Whnf)
-      prop′ = PE.subst (λ x → [Empty]-prop _ x _) k₁≡k′ prop₁
-    in  Emptyₜ₌ k k″ d d″ (≅ₜ-trans t≡u (PE.subst (λ x → _ ⊢ x ≅ _ ∷ _ ^ _) k₁≡k′ t≡u₁))
-      (transEmpty-prop prop prop′)
+transEqTermEmpty (Emptyₜ₌ (ne a b)) (Emptyₜ₌ (ne c d)) = Emptyₜ₌ (ne a d)
 
 
 -- Transitivty of term equality.

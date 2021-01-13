@@ -25,7 +25,7 @@ neu : ∀ {l Γ A r} (neA : Neutral A)
     → Γ ⊢ A ^ r
     → Γ ⊢ A ~ A ∷ Univ r ^ !
     → Γ ⊩⟨ l ⟩ A ^ r
-neu neA A A~A = ne′ _ (idRed:*: A) neA A~A
+neu neA A A~A = ? -- ne′ _ (idRed:*: A) neA A~A
 
   -- Helper function for reducible neutral equality of a specific type of derivation.
 neuEq′ : ∀ {l Γ A B r} ([A] : Γ ⊩⟨ l ⟩ne A ^ r)

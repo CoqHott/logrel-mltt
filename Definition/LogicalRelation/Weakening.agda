@@ -64,23 +64,23 @@ mutual
 -- Empty
 wkTermEmpty : ∀ {ρ Γ Δ n} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
   → Γ ⊩Empty n ∷Empty → Δ ⊩Empty U.wk ρ n ∷Empty
-wkTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ n d n≡n (ne prop)) =
-  Emptyₜ (U.wk ρ n) (wkRed:*:Term [ρ] ⊢Δ d)
-     (≅ₜ-wk [ρ] ⊢Δ n≡n)
-     (ne (wkTermNe [ρ] ⊢Δ prop))
+wkTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ (ne d)) = Emptyₜ (ne (T.wkTerm [ρ] ⊢Δ d))
+  -- Emptyₜ (U.wk ρ n) (wkRed:*:Term [ρ] ⊢Δ d)
+  --    (≅ₜ-wk [ρ] ⊢Δ n≡n)
+  --    (ne (wkTermNe [ρ] ⊢Δ prop))
 
 wk[Empty]-prop : ∀ {ρ Γ Δ n n′} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
   → [Empty]-prop Γ n n′
   → [Empty]-prop Δ (U.wk ρ n) (U.wk ρ n′)
-wk[Empty]-prop ρ ⊢Δ (ne x) = ne (wkEqTermNe ρ ⊢Δ x)
+wk[Empty]-prop {ρ} [ρ] ⊢Δ (ne d d') = ne (T.wkTerm [ρ] ⊢Δ d) (T.wkTerm [ρ] ⊢Δ d') -- ne (wkEqTermNe ρ ⊢Δ x)
 
 wkEqTermEmpty : ∀ {ρ Γ Δ t u} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
   → Γ ⊩Empty t ≡ u ∷Empty
   → Δ ⊩Empty U.wk ρ t ≡ U.wk ρ u ∷Empty
-wkEqTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ₌ k k′ d d′ t≡u prop) =
-  Emptyₜ₌ (U.wk ρ k) (U.wk ρ k′) (wkRed:*:Term [ρ] ⊢Δ d)
-      (wkRed:*:Term [ρ] ⊢Δ d′) (≅ₜ-wk [ρ] ⊢Δ t≡u)
-      (wk[Empty]-prop [ρ] ⊢Δ prop)
+wkEqTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ₌ (ne d d')) = Emptyₜ₌ (ne (T.wkTerm [ρ] ⊢Δ d) (T.wkTerm [ρ] ⊢Δ d'))
+  -- Emptyₜ₌ (U.wk ρ k) (U.wk ρ k′) (wkRed:*:Term [ρ] ⊢Δ d)
+  --     (wkRed:*:Term [ρ] ⊢Δ d′) (≅ₜ-wk [ρ] ⊢Δ t≡u)
+  --     (wk[Empty]-prop [ρ] ⊢Δ prop)
 
 
 -- Weakening of the logical relation
