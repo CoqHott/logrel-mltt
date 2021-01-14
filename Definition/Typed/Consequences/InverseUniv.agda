@@ -39,7 +39,7 @@ noUNe : ∀ {A} → Neutral A → ¬ (UFull A)
 noUNe (var n) ()
 noUNe (∘ₙ neA) ()
 noUNe (natrecₙ neA) ()
-noUNe (Emptyrecₙ neA) ()
+noUNe Emptyrecₙ ()
 
 -- Helper function where if at least one Π-type does not contain U,
 -- one of F and H will not contain U and one of G and E will not contain U.

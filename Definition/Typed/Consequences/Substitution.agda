@@ -65,7 +65,7 @@ substRefl : ∀ {σ Γ Δ}
           → Δ ⊢ˢ σ ∷ Γ
           → Δ ⊢ˢ σ ≡ σ ∷ Γ
 substRefl id = id
-substRefl (σ , x) = substRefl σ , refl x
+substRefl (σ , x) = substRefl σ , genRefl x
 
 -- Weakening of well-formed substitution.
 wkSubst′ : ∀ {ρ σ Γ Δ Δ′} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ) (⊢Δ′ : ⊢ Δ′)

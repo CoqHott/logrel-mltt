@@ -17,39 +17,24 @@ mutual
   ne~↑! (var-refl x₁ x≡y) = var _ , var _
   ne~↑! (app-cong x x₁) = let _ , q , w = ne~↓! x
                          in  ∘ₙ q , ∘ₙ w
+  ne~↑! (app-cong% x x₁) = let _ , q , w = ne~↓! x
+                         in  ∘ₙ q , ∘ₙ w
   ne~↑! (natrec-cong x x₁ x₂ x₃) = let _ , q , w = ne~↓! x₃
                                   in  natrecₙ q , natrecₙ w
-  ne~↑! (Emptyrec-cong x x₁) = let _ , q , w = ne~↓% x₁
-                              in Emptyrecₙ q , Emptyrecₙ w
+  ne~↑! (Emptyrec-cong x x₁) = Emptyrecₙ , Emptyrecₙ
 
-  ne~↑% : ∀ {t u A Γ}
-        → Γ ⊢ t ~ u ↑% A
-        → Neutral t × Neutral u
-  ne~↑% (%~↑ neK neL ⊢k ⊢l) = neK , neL
-
-  ne~↑ : ∀ {t u A rA Γ}
-       → Γ ⊢ t ~ u ↑ A ^ rA
-       → Neutral t × Neutral u
-  ne~↑ (~↑! x) = ne~↑! x
-  ne~↑ (~↑% x) = ne~↑% x
 
   ne~↓! : ∀ {t u A Γ}
         → Γ ⊢ t ~ u ↓! A
         → Whnf A × Neutral t × Neutral u
   ne~↓! ([~] A D whnfB k~l) = whnfB , ne~↑! k~l
 
-  ne~↓% : ∀ {t u A Γ}
-        → Γ ⊢ t ~ u ↓% A
-        → Whnf A × Neutral t × Neutral u
-  ne~↓% ([~] A D whnfB k~l) = whnfB , ne~↑% k~l
-
   -- Extraction of neutrality and WHNF from algorithmic equality of neutrals
   -- with type in WHNF.
-  ne~↓ : ∀ {t u A rA Γ}
-       → Γ ⊢ t ~ u ↓ A ^ rA
+  ne~↓ : ∀ {t u A Γ}
+       → Γ ⊢ t ~ u ↓ A ^ !
        → Whnf A × Neutral t × Neutral u
   ne~↓ (~↓! ([~] A₁ D whnfB k~l)) = whnfB , ne~↑! k~l
-  ne~↓ (~↓% ([~] A D whnfB k~l)) = whnfB , ne~↑% k~l
 
 -- Extraction of WHNF from algorithmic equality of types in WHNF.
 whnfConv↓ : ∀ {A B rA Γ}
@@ -63,13 +48,13 @@ whnfConv↓ (ne x) = let _ , neA , neB = ne~↓! x
 whnfConv↓ (Π-cong _ x x₁ x₂) = Πₙ , Πₙ
 
 -- Extraction of WHNF from algorithmic equality of terms in WHNF.
-whnfConv↓Term : ∀ {t u A rA Γ}
-              → Γ ⊢ t [conv↓] u ∷ A ^ rA
+whnfConv↓Term : ∀ {t u A Γ}
+              → Γ ⊢ t [conv↓] u ∷ A 
               → Whnf A × Whnf t × Whnf u
 whnfConv↓Term (ℕ-ins x) = let _ , neT , neU = ne~↓! x
                           in ℕₙ , ne neT , ne neU
-whnfConv↓Term (Empty-ins x) = let _ , neT , neU = ne~↓% x
-                          in Emptyₙ , ne neT , ne neU
+-- whnfConv↓Term (Empty-ins x) = let _ , neT , neU = ne~↓% x
+--                           in Emptyₙ , ne neT , ne neU
 whnfConv↓Term (ne-ins t u x x₁) =
   let _ , neT , neU = ne~↓ x₁
   in ne x , ne neT , ne neU

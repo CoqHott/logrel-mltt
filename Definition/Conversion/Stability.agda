@@ -66,7 +66,7 @@ stabilityTerm Γ≡Δ t =
   in  PE.subst₂ (λ x y → _ ⊢ x ∷ y ^ _) (subst-id _) (subst-id _) q
 
 -- Stability of term reduction.
-stabilityRedTerm : ∀ {t u A rA Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t ⇒ u ∷ A ^ rA → Δ ⊢ t ⇒ u ∷ A ^ rA
+stabilityRedTerm : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t ⇒ u ∷ A → Δ ⊢ t ⇒ u ∷ A 
 stabilityRedTerm Γ≡Δ (conv d x) =
   conv (stabilityRedTerm Γ≡Δ d) (stabilityEq Γ≡Δ x)
 stabilityRedTerm Γ≡Δ (app-subst d x) =
@@ -86,8 +86,6 @@ stabilityRedTerm Γ≡Δ (natrec-suc x x₁ x₂ x₃) =
   let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
   in  natrec-suc (stabilityTerm Γ≡Δ x) (stability (Γ≡Δ ∙ refl (ℕⱼ ⊢Γ)) x₁)
                  (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
-stabilityRedTerm Γ≡Δ (Emptyrec-subst x d) =
-  Emptyrec-subst (stability Γ≡Δ x) (stabilityRedTerm Γ≡Δ d)
 
 -- Stability of type reductions.
 stabilityRed : ∀ {A B r Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ A ⇒ B ^ r → Δ ⊢ A ⇒ B ^ r
@@ -99,7 +97,7 @@ stabilityRed* Γ≡Δ (id x) = id (stability Γ≡Δ x)
 stabilityRed* Γ≡Δ (x ⇨ D) = stabilityRed Γ≡Δ x ⇨ stabilityRed* Γ≡Δ D
 
 -- Stability of term reduction closures.
-stabilityRed*Term : ∀ {t u A rA Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t ⇒* u ∷ A ^ rA → Δ ⊢ t ⇒* u ∷ A ^ rA
+stabilityRed*Term : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t ⇒* u ∷ A → Δ ⊢ t ⇒* u ∷ A 
 stabilityRed*Term Γ≡Δ (id x) = id (stabilityTerm Γ≡Δ x)
 stabilityRed*Term Γ≡Δ (x ⇨ d) = stabilityRedTerm Γ≡Δ x ⇨ stabilityRed*Term Γ≡Δ d
 
@@ -113,6 +111,8 @@ mutual
     var-refl (stabilityTerm Γ≡Δ x) x≡y
   stability~↑! Γ≡Δ (app-cong k~l x) =
     app-cong (stability~↓! Γ≡Δ k~l) (stabilityConv↑Term Γ≡Δ x)
+  stability~↑! Γ≡Δ (app-cong% k~l x) =
+    app-cong% (stability~↓! Γ≡Δ k~l) (stability~↑% Γ≡Δ x)
   stability~↑! Γ≡Δ (natrec-cong x₁ x₂ x₃ k~l) =
     let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
     in natrec-cong (stabilityConv↑ (Γ≡Δ ∙ (refl (ℕⱼ ⊢Γ))) x₁)
@@ -127,7 +127,7 @@ mutual
               → ⊢ Γ ≡ Δ
               → Γ ⊢ k ~ l ↑% A
               → Δ ⊢ k ~ l ↑% A
-  stability~↑% Γ≡Δ (%~↑ neK neL ⊢k ⊢l) = %~↑ neK neL (stabilityTerm Γ≡Δ ⊢k) (stabilityTerm Γ≡Δ ⊢l)
+  stability~↑% Γ≡Δ (%~↑ ⊢k ⊢l) = %~↑ (stabilityTerm Γ≡Δ ⊢k) (stabilityTerm Γ≡Δ ⊢l)
 
   stability~↑ : ∀ {k l A rA Γ Δ}
               → ⊢ Γ ≡ Δ
@@ -188,24 +188,24 @@ mutual
            (stabilityConv↑ (Γ≡Δ ∙ refl F) A<>B₁)
 
   -- Stability of algorithmic equality of terms.
-  stabilityConv↑Term : ∀ {t u A rA Γ Δ}
+  stabilityConv↑Term : ∀ {t u A Γ Δ}
                      → ⊢ Γ ≡ Δ
-                     → Γ ⊢ t [conv↑] u ∷ A ^ rA
-                     → Δ ⊢ t [conv↑] u ∷ A ^ rA
+                     → Γ ⊢ t [conv↑] u ∷ A 
+                     → Δ ⊢ t [conv↑] u ∷ A 
   stabilityConv↑Term Γ≡Δ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) =
     [↑]ₜ B t′ u′ (stabilityRed* Γ≡Δ D) (stabilityRed*Term Γ≡Δ d)
                  (stabilityRed*Term Γ≡Δ d′) whnfB whnft′ whnfu′
                  (stabilityConv↓Term Γ≡Δ t<>u)
 
   -- Stability of algorithmic equality of terms in WHNF.
-  stabilityConv↓Term : ∀ {t u A rA Γ Δ}
+  stabilityConv↓Term : ∀ {t u A Γ Δ}
                      → ⊢ Γ ≡ Δ
-                     → Γ ⊢ t [conv↓] u ∷ A ^ rA
-                     → Δ ⊢ t [conv↓] u ∷ A ^ rA
+                     → Γ ⊢ t [conv↓] u ∷ A 
+                     → Δ ⊢ t [conv↓] u ∷ A 
   stabilityConv↓Term Γ≡Δ (ℕ-ins x) =
     ℕ-ins (stability~↓! Γ≡Δ x)
-  stabilityConv↓Term Γ≡Δ (Empty-ins x) =
-    Empty-ins (stability~↓% Γ≡Δ x)
+  -- stabilityConv↓Term Γ≡Δ (Empty-ins x) =
+  --   Empty-ins (stability~↓% Γ≡Δ x)
   stabilityConv↓Term Γ≡Δ (ne-ins t u neN x) =
     ne-ins (stabilityTerm Γ≡Δ t) (stabilityTerm Γ≡Δ u) neN (stability~↓ Γ≡Δ x)
   stabilityConv↓Term Γ≡Δ (univ x x₁ x₂) =

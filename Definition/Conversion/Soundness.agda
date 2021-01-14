@@ -20,6 +20,7 @@ mutual
   soundness~↑! : ∀ {k l A Γ} → Γ ⊢ k ~ l ↑! A → Γ ⊢ k ≡ l ∷ A ^ !
   soundness~↑! (var-refl x x≡y) = PE.subst (λ y → _ ⊢ _ ≡ var y ∷ _ ^ _) x≡y (refl x)
   soundness~↑! (app-cong k~l x₁) = app-cong (soundness~↓! k~l) (soundnessConv↑Term x₁)
+  soundness~↑! (app-cong% k~l x₁) = app-cong (soundness~↓! k~l) (soundness~↑% x₁)
   soundness~↑! (natrec-cong x₁ x₂ x₃ k~l) =
     natrec-cong (soundnessConv↑ x₁) (soundnessConv↑Term x₂)
                 (soundnessConv↑Term x₃) (soundness~↓! k~l)
@@ -27,7 +28,7 @@ mutual
     Emptyrec-cong (soundnessConv↑ x₁) (soundness~↓% k~l)
 
   soundness~↑% : ∀ {k l A Γ} → Γ ⊢ k ~ l ↑% A → Γ ⊢ k ≡ l ∷ A ^ %
-  soundness~↑% (%~↑ neK neL ⊢k ⊢l) = proof-irrelevance ⊢k ⊢l
+  soundness~↑% (%~↑ ⊢k ⊢l) = proof-irrelevance ⊢k ⊢l
 
   soundness~↑ : ∀ {k l A rA Γ} → Γ ⊢ k ~ l ↑ A ^ rA → Γ ⊢ k ≡ l ∷ A ^ rA
   soundness~↑ (~↑! x) = soundness~↑! x
@@ -59,7 +60,7 @@ mutual
     Π-cong F (soundnessConv↑ c) (soundnessConv↑ c₁)
 
   -- Algorithmic equality of terms is well-formed.
-  soundnessConv↑Term : ∀ {a b A rA Γ} → Γ ⊢ a [conv↑] b ∷ A ^ rA → Γ ⊢ a ≡ b ∷ A ^ rA
+  soundnessConv↑Term : ∀ {a b A Γ} → Γ ⊢ a [conv↑] b ∷ A → Γ ⊢ a ≡ b ∷ A ^ !
   soundnessConv↑Term ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) =
     conv (trans (subset*Term d)
                 (trans (soundnessConv↓Term t<>u)
@@ -67,9 +68,9 @@ mutual
          (sym (subset* D))
 
   -- Algorithmic equality of terms in WHNF is well-formed.
-  soundnessConv↓Term : ∀ {a b A rA Γ} → Γ ⊢ a [conv↓] b ∷ A ^ rA → Γ ⊢ a ≡ b ∷ A ^ rA
+  soundnessConv↓Term : ∀ {a b A Γ} → Γ ⊢ a [conv↓] b ∷ A → Γ ⊢ a ≡ b ∷ A ^ !
   soundnessConv↓Term (ℕ-ins x) = soundness~↓! x
-  soundnessConv↓Term (Empty-ins x) = soundness~↓% x
+  -- soundnessConv↓Term (Empty-ins x) = soundness~↓% x
   soundnessConv↓Term (ne-ins t u x x₁) =
     let _ , neA , _ = ne~↓ x₁
         _ , t∷M , _ = syntacticEqTerm (soundness~↓ x₁)
@@ -83,42 +84,28 @@ mutual
 
 
 
-app-cong′ : ∀ {Γ k l t v F rF G rG}
-          → Γ ⊢ k ~ l ↓ Π F ^ rF ▹ G ^ rG
-          → Γ ⊢ t [conv↑] v ∷ F ^ rF
-          → Γ ⊢ k ∘ t ~ l ∘ v ↑ G [ t ] ^ rG
+app-cong′ : ∀ {Γ k l t v F G}
+          → Γ ⊢ k ~ l ↓ Π F ^ ! ▹ G ^ !
+          → Γ ⊢ t [conv↑] v ∷ F 
+          → Γ ⊢ k ∘ t ~ l ∘ v ↑ G [ t ] ^ !
 app-cong′ (~↓! k~l) t=v = ~↑! (app-cong k~l t=v)
-app-cong′ (~↓% k~l) t=v =
-  let _ , neK , neL = ne~↓% k~l
-      k≡l = soundness~↓% k~l
-      t≡v = soundnessConv↑Term t=v
-      _ , ⊢₁ , ⊢₂ = syntacticEqTerm (app-cong k≡l t≡v)
-  in ~↑% (%~↑ (∘ₙ neK) (∘ₙ neL) ⊢₁ ⊢₂)
 
-natrec-cong′ : ∀ {Γ k l h g a b F G r}
-             → Γ ∙ ℕ ^ ! ⊢ F [conv↑] G ^ r
-             → Γ ⊢ a [conv↑] b ∷ F [ zero ] ^ r
-             → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ▹ (F ^ r ▹▹ F [ suc (var 0) ]↑) ^ r
+app-cong%′ : ∀ {Γ k l t v F G}
+          → Γ ⊢ k ~ l ↓ Π F ^ % ▹ G ^ !
+          → Γ ⊢ t ~ v ↑% F 
+          → Γ ⊢ k ∘ t ~ l ∘ v ↑ G [ t ] ^ !
+app-cong%′ (~↓! k~l) t=v = ~↑! (app-cong% k~l t=v)
+
+natrec-cong′ : ∀ {Γ k l h g a b F G}
+             → Γ ∙ ℕ ^ ! ⊢ F [conv↑] G ^ !
+             → Γ ⊢ a [conv↑] b ∷ F [ zero ] 
+             → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var 0) ]↑) 
              → Γ ⊢ k ~ l ↓ ℕ ^ !
-             → Γ ⊢ natrec F a h k ~ natrec G b g l ↑ F [ k ] ^ r
-natrec-cong′ {r = !} F=G a=b h=g (~↓! k~l) = ~↑! (natrec-cong F=G a=b h=g k~l)
-natrec-cong′ {F = F} {G = G} {r = %} F=G a=b h=g k~l =
-  let _ , neK , neL = ne~↓ k~l
-      F≡G = soundnessConv↑ F=G
-      a≡b = soundnessConv↑Term a=b
-      h≡g = soundnessConv↑Term h=g
-      k≡l = soundness~↓ k~l
-      _ , ⊢₁ , ⊢₂ = syntacticEqTerm (natrec-cong F≡G a≡b h≡g k≡l)
-  in ~↑% (%~↑ (natrecₙ neK) (natrecₙ neL) ⊢₁ ⊢₂)
+             → Γ ⊢ natrec F a h k ~ natrec G b g l ↑ F [ k ] ^ !
+natrec-cong′ F=G a=b h=g (~↓! k~l) = ~↑! (natrec-cong F=G a=b h=g k~l)
 
-Emptyrec-cong′ : ∀ {Γ k l F G r}
-               → Γ ⊢ F [conv↑] G ^ r
+Emptyrec-cong′ : ∀ {Γ k l F G}
+               → Γ ⊢ F [conv↑] G ^ !
                → Γ ⊢ k ~ l ↓ Empty ^ %
-               → Γ ⊢ Emptyrec F k ~ Emptyrec G l ↑ F ^ r
-Emptyrec-cong′ {r = !} F=G (~↓% k~l) = ~↑! (Emptyrec-cong F=G k~l)
-Emptyrec-cong′ {r = %} F=G k~l =
-  let _ , neK , neL = ne~↓ k~l
-      F≡G = soundnessConv↑ F=G
-      k≡l = soundness~↓ k~l
-      _ , ⊢₁ , ⊢₂ = syntacticEqTerm (Emptyrec-cong F≡G k≡l)
-  in ~↑% (%~↑ (Emptyrecₙ neK) (Emptyrecₙ neL) ⊢₁ ⊢₂)
+               → Γ ⊢ Emptyrec F k ~ Emptyrec G l ↑ F ^ !
+Emptyrec-cong′ F=G (~↓% k~l) = ~↑! (Emptyrec-cong F=G k~l)

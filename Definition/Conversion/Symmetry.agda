@@ -38,6 +38,14 @@ mutual
     in  _ , substTypeEq G≡G′ (soundnessConv↑Term x)
     ,   app-cong (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x) ΠF′G′≡B u~t)
                  (convConvTerm (symConv↑Term Γ≡Δ x) (stabilityEq Γ≡Δ F≡F′))
+  sym~↑! Γ≡Δ (app-cong% t~u x) =
+    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
+        F′ , G′ , ΠF′G′≡B = Π≡A A≡B whnfB
+        F≡F′ , rF≡rF′ , G≡G′ = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ^ _) ΠF′G′≡B A≡B)
+    in  _ , substTypeEq G≡G′ (soundness~↑% x)
+    ,   app-cong% (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x) ΠF′G′≡B u~t)
+                  (sym~↑% Γ≡Δ (conv~↑% x (stabilityEq (reflConEq ⊢Γ) F≡F′)))
   sym~↑! Γ≡Δ (natrec-cong x x₁ x₂ t~u) =
     let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
         B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
@@ -61,7 +69,7 @@ mutual
   sym~↑% : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ
          → Γ ⊢ t ~ u ↑% A
          → Δ ⊢ u ~ t ↑% A
-  sym~↑% Γ≡Δ (%~↑ neK neL ⊢k ⊢l) = %~↑ neL neK (stabilityTerm Γ≡Δ ⊢l) (stabilityTerm Γ≡Δ ⊢k)
+  sym~↑% Γ≡Δ (%~↑ ⊢k ⊢l) = %~↑ (stabilityTerm Γ≡Δ ⊢l) (stabilityTerm Γ≡Δ ⊢k)
 
   sym~↑ : ∀ {t u A rA Γ Δ} → ⊢ Γ ≡ Δ
         → Γ ⊢ t ~ u ↑ A ^ rA
@@ -129,21 +137,21 @@ mutual
                   (symConv↑ (Γ≡Δ ∙ F≡H) A<>B₁)
 
   -- Symmetry of algorithmic equality of terms.
-  symConv↑Term : ∀ {t u A rA Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t [conv↑] u ∷ A ^ rA → Δ ⊢ u [conv↑] t ∷ A ^ rA
+  symConv↑Term : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t [conv↑] u ∷ A  → Δ ⊢ u [conv↑] t ∷ A 
   symConv↑Term Γ≡Δ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) =
     [↑]ₜ B u′ t′ (stabilityRed* Γ≡Δ D) (stabilityRed*Term Γ≡Δ d′)
          (stabilityRed*Term Γ≡Δ d) whnfB whnfu′ whnft′ (symConv↓Term Γ≡Δ t<>u)
 
   -- Symmetry of algorithmic equality of terms in WHNF.
-  symConv↓Term : ∀ {t u A rA Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t [conv↓] u ∷ A ^ rA → Δ ⊢ u [conv↓] t ∷ A ^ rA
+  symConv↓Term : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t [conv↓] u ∷ A  → Δ ⊢ u [conv↓] t ∷ A 
   symConv↓Term Γ≡Δ (ℕ-ins t~u) =
     let B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
         B≡ℕ = ℕ≡A A≡B whnfB
     in  ℕ-ins (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x) B≡ℕ u~t)
-  symConv↓Term Γ≡Δ (Empty-ins t~u) =
-    let B , whnfB , A≡B , u~t = sym~↓% Γ≡Δ t~u
-        B≡Empty = Empty≡A A≡B whnfB
-    in  Empty-ins (PE.subst (λ x → _ ⊢ _ ~ _ ↓% x) B≡Empty u~t)
+  -- symConv↓Term Γ≡Δ (Empty-ins t~u) =
+  --   let B , whnfB , A≡B , u~t = sym~↓% Γ≡Δ t~u
+  --       B≡Empty = Empty≡A A≡B whnfB
+  --   in  Empty-ins (PE.subst (λ x → _ ⊢ _ ~ _ ↓% x) B≡Empty u~t)
   symConv↓Term Γ≡Δ (ne-ins t u x t~u) =
     let B , whnfB , A≡B , u~t = sym~↓ Γ≡Δ t~u
     in  ne-ins (stabilityTerm Γ≡Δ u) (stabilityTerm Γ≡Δ t) x u~t
@@ -164,7 +172,7 @@ symConv A<>B =
   in  symConv↑ (reflConEq ⊢Γ) A<>B
 
 -- Symmetry of algorithmic equality of terms with preserved context.
-symConvTerm : ∀ {t u A rA Γ} → Γ ⊢ t [conv↑] u ∷ A ^ rA → Γ ⊢ u [conv↑] t ∷ A ^ rA
+symConvTerm : ∀ {t u A Γ} → Γ ⊢ t [conv↑] u ∷ A  → Γ ⊢ u [conv↑] t ∷ A 
 symConvTerm t<>u =
   let ⊢Γ = wfEqTerm (soundnessConv↑Term t<>u)
   in  symConv↑Term (reflConEq ⊢Γ) t<>u
