@@ -27,7 +27,7 @@ injectivity′ : ∀ {F G H E rF rH rG Γ l}
              → Γ ⊢ F ≡ H ^ rF
              × rF PE.≡ rH
              × Γ ∙ F ^ rF ⊢ G ≡ E ^ rG
-injectivity′ (noemb (Πᵣ rF′ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
+injectivity′ (noemb (Πᵣ ! F G D ⊢F ⊢G A≡A [F] [G] G-ext))
          (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   let F≡F₁ , rF≡rF₁ , G≡G₁ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
       H≡F′ , rH≡rF′ , E≡G′ = Π-PE-injectivity (whnfRed* D′ Πₙ)
@@ -48,9 +48,35 @@ injectivity′ (noemb (Πᵣ rF′ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
       [G≡E]′ = irrelevanceEqLift″ (PE.trans (wkSingleSubstId _) (PE.sym G≡G₁))
                                    (PE.trans (wkSingleSubstId _) (PE.sym E≡G′))
                                    (PE.sym F≡F₁) [G]₁ [G]′ [G≡E]₁
-  in  PE.subst _ (PE.sym rF≡rF₁) (escapeEq [F]′ [F≡H]′)
+      foo = escapeEq [G]′ [G≡E]′
+  in  PE.subst (λ r → _ ⊢ _ ≡ _ ^ r) (PE.sym rF≡rF₁) (escapeEq [F]′ [F≡H]′)
     , PE.trans rF≡rF₁ (PE.sym rH≡rF′)
-    , PE.subst _ (PE.sym rF≡rF₁) (escapeEq [G]′ [G≡E]′)
+    , PE.subst (λ r → (_ ∙ _ ^ r) ⊢ _ ≡ _ ^ _) (PE.sym rF≡rF₁) (escapeEq [G]′ [G≡E]′)
+injectivity′ (noemb (Πᵣ % F G D ⊢F ⊢G A≡A [F] [G] G-ext))
+         (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
+  let F≡F₁ , rF≡rF₁ , G≡G₁ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
+      H≡F′ , rH≡rF′ , E≡G′ = Π-PE-injectivity (whnfRed* D′ Πₙ)
+      ⊢Γ = wf ⊢F
+      [F]₁ = [F] id ⊢Γ
+      [F]′ = irrelevance′ (PE.trans (wk-id _) (PE.sym F≡F₁)) [F]₁
+      [x∷F] = neuTerm ([F] (step id) (⊢Γ ∙ ⊢F)) (var 0) (var (⊢Γ ∙ ⊢F) here)
+                      (proof-irrelevance (var (⊢Γ ∙ ⊢F) here) (var (⊢Γ ∙ ⊢F) here))
+      [G]₁ = [G] (step id) (⊢Γ ∙ ⊢F) [x∷F]
+      [G]′ = PE.subst₂ (λ x y → _ ∙ y ^ _ ⊩⟨ _ ⟩ x ^ _)
+                       (PE.trans (wkSingleSubstId _) (PE.sym G≡G₁))
+                       (PE.sym F≡F₁) [G]₁
+      [F≡H]₁ = [F≡F′] id ⊢Γ
+      [F≡H]′ = irrelevanceEq″ (PE.trans (wk-id _) (PE.sym F≡F₁))
+                               (PE.trans (wk-id _) (PE.sym H≡F′))
+                               [F]₁ [F]′ [F≡H]₁
+      [G≡E]₁ = [G≡G′] (step id) (⊢Γ ∙ ⊢F) [x∷F]
+      [G≡E]′ = irrelevanceEqLift″ (PE.trans (wkSingleSubstId _) (PE.sym G≡G₁))
+                                   (PE.trans (wkSingleSubstId _) (PE.sym E≡G′))
+                                   (PE.sym F≡F₁) [G]₁ [G]′ [G≡E]₁
+      foo =                              escapeEq [G]′ [G≡E]′
+  in PE.subst (λ r → _ ⊢ _ ≡ _ ^ r) (PE.sym rF≡rF₁) (escapeEq [F]′ [F≡H]′) ,
+     PE.trans rF≡rF₁ (PE.sym rH≡rF′) ,
+     PE.subst (λ r → (_ ∙ _ ^ r) ⊢ _ ≡ _ ^ _) (PE.sym rF≡rF₁) (escapeEq [G]′ [G≡E]′)
 injectivity′ (emb 0<1 x) [ΠFG≡ΠHE] = injectivity′ x [ΠFG≡ΠHE]
 
 -- Injectivity of Π
