@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K #-}
 
 module Definition.Conversion.EqRelInstance where
 
@@ -15,7 +15,7 @@ open import Definition.Conversion.Soundness
 open import Definition.Conversion.Lift
 open import Definition.Conversion.Conversion
 open import Definition.Conversion.Symmetry
--- open import Definition.Conversion.Transitivity
+open import Definition.Conversion.Transitivity
 open import Definition.Conversion.Weakening
 open import Definition.Conversion.Whnf
 open import Definition.Typed.EqualityRelation
@@ -110,10 +110,10 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
 ~-trans : {k l m A : Term} {r : Relevance} {Γ : Con Term}
         → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ m ∷ A ^ r
         → Γ ⊢ k ~ m ∷ A ^ r
-~-trans (↑ x x₁) (↑ x₂ x₃) = {!!}
-  -- let ⊢Γ = wfEq x
-  --     k~m , _ = trans~↑ (reflConEq ⊢Γ) x₁ x₃
-  -- in  ↑ x k~m
+~-trans (↑ x x₁) (↑ x₂ x₃) = 
+  let ⊢Γ = wfEq x
+      k~m , _ = trans~↑ (reflConEq ⊢Γ) x₁ x₃
+  in  ↑ x k~m
 
 ~-wk : {k l A : Term} {r : Relevance} {ρ : Wk} {Γ Δ : Con Term} →
       ρ ∷ Δ ⊆ Γ →
@@ -175,13 +175,20 @@ convgenconv : ∀ {t u A B : Term} {r : Relevance} {Γ : Con Term} →
 convgenconv {r = !} = convConvTerm
 convgenconv {r = %} = conv~↑%
 
+transgenConv : ∀ {t u v A : Term} {r : Relevance} {Γ : Con Term} →
+      Γ ⊢ t [genconv↑] u ∷ A ^ r →
+      Γ ⊢ u [genconv↑] v ∷ A ^ r → Γ ⊢ t [genconv↑] v ∷ A ^ r
+transgenConv {r = !} = transConvTerm
+transgenConv {r = %} = trans~↑!Term
+
+
 -- Algorithmic equality instance of the generic equality relation.
 instance eqRelInstance : EqRelSet
 eqRelInstance = eqRel _⊢_[conv↑]_^_ _⊢_[genconv↑]_∷_^_ _⊢_~_∷_^_
                       ~-to-conv soundnessConv↑ soundnessgenConv
                       univConv↑
                       symConv symgenConv ~-sym
-                      {!!} {!!} {!!} -- transConv transConvTerm ~-trans
+                      transConv transgenConv ~-trans
                       convgenconv ~-conv
                       wkConv↑ wkgenConv↑Term ~-wk
                       reductionConv↑ reductionConv↑Term
