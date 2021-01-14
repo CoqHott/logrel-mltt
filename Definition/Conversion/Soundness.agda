@@ -19,8 +19,8 @@ mutual
   -- Algorithmic equality of neutrals is well-formed.
   soundness~↑! : ∀ {k l A Γ} → Γ ⊢ k ~ l ↑! A → Γ ⊢ k ≡ l ∷ A ^ !
   soundness~↑! (var-refl x x≡y) = PE.subst (λ y → _ ⊢ _ ≡ var y ∷ _ ^ _) x≡y (refl x)
-  soundness~↑! (app-cong k~l x₁) = app-cong (soundness~↓! k~l) (soundnessConv↑Term x₁)
-  soundness~↑! (app-cong% k~l x₁) = app-cong (soundness~↓! k~l) (soundness~↑% x₁)
+  soundness~↑! (app-cong {rF = !} k~l x₁) = app-cong (soundness~↓! k~l) (soundnessConv↑Term x₁)
+  soundness~↑! (app-cong {rF = %} k~l x₁) = app-cong (soundness~↓! k~l) (soundness~↑% x₁)
   soundness~↑! (natrec-cong x₁ x₂ x₃ k~l) =
     natrec-cong (soundnessConv↑ x₁) (soundnessConv↑Term x₂)
                 (soundnessConv↑Term x₃) (soundness~↓! k~l)
@@ -84,17 +84,11 @@ mutual
 
 
 
-app-cong′ : ∀ {Γ k l t v F G}
-          → Γ ⊢ k ~ l ↓ Π F ^ ! ▹ G ^ !
-          → Γ ⊢ t [conv↑] v ∷ F 
+app-cong′ : ∀ {Γ k l t v F rF G}
+          → Γ ⊢ k ~ l ↓ Π F ^ rF ▹ G ^ !
+          → Γ ⊢ t [genconv↑] v ∷ F ^ rF 
           → Γ ⊢ k ∘ t ~ l ∘ v ↑ G [ t ] ^ !
 app-cong′ (~↓! k~l) t=v = ~↑! (app-cong k~l t=v)
-
-app-cong%′ : ∀ {Γ k l t v F G}
-          → Γ ⊢ k ~ l ↓ Π F ^ % ▹ G ^ !
-          → Γ ⊢ t ~ v ↑% F 
-          → Γ ⊢ k ∘ t ~ l ∘ v ↑ G [ t ] ^ !
-app-cong%′ (~↓! k~l) t=v = ~↑! (app-cong% k~l t=v)
 
 natrec-cong′ : ∀ {Γ k l h g a b F G}
              → Γ ∙ ℕ ^ ! ⊢ F [conv↑] G ^ !

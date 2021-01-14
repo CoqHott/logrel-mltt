@@ -101,6 +101,7 @@ stabilityRed*Term : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t ⇒* u ∷ 
 stabilityRed*Term Γ≡Δ (id x) = id (stabilityTerm Γ≡Δ x)
 stabilityRed*Term Γ≡Δ (x ⇨ d) = stabilityRedTerm Γ≡Δ x ⇨ stabilityRed*Term Γ≡Δ d
 
+
 mutual
   -- Stability of algorithmic equality of neutrals.
   stability~↑! : ∀ {k l A Γ Δ}
@@ -109,10 +110,10 @@ mutual
               → Δ ⊢ k ~ l ↑! A
   stability~↑! Γ≡Δ (var-refl x x≡y) =
     var-refl (stabilityTerm Γ≡Δ x) x≡y
-  stability~↑! Γ≡Δ (app-cong k~l x) =
+  stability~↑! Γ≡Δ (app-cong {rF = ! } k~l x) =
     app-cong (stability~↓! Γ≡Δ k~l) (stabilityConv↑Term Γ≡Δ x)
-  stability~↑! Γ≡Δ (app-cong% k~l x) =
-    app-cong% (stability~↓! Γ≡Δ k~l) (stability~↑% Γ≡Δ x)
+  stability~↑! Γ≡Δ (app-cong {rF = %} k~l x) =
+    app-cong (stability~↓! Γ≡Δ k~l) (stability~↑% Γ≡Δ x)
   stability~↑! Γ≡Δ (natrec-cong x₁ x₂ x₃ k~l) =
     let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
     in natrec-cong (stabilityConv↑ (Γ≡Δ ∙ (refl (ℕⱼ ⊢Γ))) x₁)

@@ -17,8 +17,6 @@ mutual
   ne~↑! (var-refl x₁ x≡y) = var _ , var _
   ne~↑! (app-cong x x₁) = let _ , q , w = ne~↓! x
                          in  ∘ₙ q , ∘ₙ w
-  ne~↑! (app-cong% x x₁) = let _ , q , w = ne~↓! x
-                         in  ∘ₙ q , ∘ₙ w
   ne~↑! (natrec-cong x x₁ x₂ x₃) = let _ , q , w = ne~↓! x₃
                                   in  natrecₙ q , natrecₙ w
   ne~↑! (Emptyrec-cong x x₁) = Emptyrecₙ , Emptyrecₙ

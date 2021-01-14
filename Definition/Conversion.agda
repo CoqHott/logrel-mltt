@@ -17,6 +17,7 @@ infix 10 _⊢_[conv↑]_^_
 infix 10 _⊢_[conv↓]_^_
 infix 10 _⊢_[conv↑]_∷_
 infix 10 _⊢_[conv↓]_∷_
+infix 10 _⊢_[genconv↑]_∷_^_
 
 mutual
   -- Neutral equality.
@@ -25,13 +26,9 @@ mutual
                 → Γ ⊢ var x ∷ A ^ !
                 → x PE.≡ y
                 → Γ ⊢ var x ~ var y ↑! A
-    app-cong    : ∀ {k l t v F G}
-                → Γ ⊢ k ~ l ↓! Π F ^ ! ▹ G
-                → Γ ⊢ t [conv↑] v ∷ F
-                → Γ ⊢ k ∘ t ~ l ∘ v ↑! G [ t ]
-    app-cong%   : ∀ {k l t v F G}
-                → Γ ⊢ k ~ l ↓! Π F ^ % ▹ G
-                → Γ ⊢ t ~ v ↑% F 
+    app-cong    : ∀ {k l t v F rF G}
+                → Γ ⊢ k ~ l ↓! Π F ^ rF ▹ G
+                → Γ ⊢ t [genconv↑] v ∷ F ^ rF
                 → Γ ⊢ k ∘ t ~ l ∘ v ↑! G [ t ]
     natrec-cong : ∀ {k l h g a₀ b₀ F G}
                 → Γ ∙ ℕ ^ ! ⊢ F [conv↑] G ^ !
@@ -149,6 +146,11 @@ mutual
               → Function g
               → Γ ∙ F ^ rF ⊢ wk1 f ∘ var 0 [conv↑] wk1 g ∘ var 0 ∷ G 
               → Γ ⊢ f [conv↓] g ∷ Π F ^ rF ▹ G 
+
+  _⊢_[genconv↑]_∷_^_ : (Γ : Con Term) (t u A : Term) (r : Relevance) → Set 
+  _⊢_[genconv↑]_∷_^_ Γ k l A ! =  Γ ⊢ k [conv↑] l ∷ A 
+  _⊢_[genconv↑]_∷_^_ Γ k l A % =  Γ ⊢ k ~ l ↑% A 
+  
 
 var-refl′ : ∀ {Γ x A rA}
           → Γ ⊢ var x ∷ A ^ rA

@@ -82,7 +82,7 @@ mutual
         var0 = neuTerm ([F] (step id) (⊢Γ ∙ ⊢F)) (var 0) (var (⊢Γ ∙ ⊢F) here)
                        (genRefl (var (⊢Γ ∙ ⊢F) here))
         k∘0≡l∘0 = lift~toConv↑′ ([G] (step id) (⊢Γ ∙ ⊢F) var0)
-                                 (~↑! (app-cong% (wk~↓! (step id) (⊢Γ ∙ ⊢F) ([~] A D₂ Πₙ k~l)) (%~↑ (var (⊢Γ ∙ ⊢F) here) (var (⊢Γ ∙ ⊢F) here))))
+                                 (~↑! (app-cong (wk~↓! (step id) (⊢Γ ∙ ⊢F) ([~] A D₂ Πₙ k~l)) (%~↑ (var (⊢Γ ∙ ⊢F) here) (var (⊢Γ ∙ ⊢F) here))))
     in  η-eq ⊢F ⊢t ⊢u (ne neT) (ne neU)
              (PE.subst (λ x → _ ⊢ _ [conv↑] _ ∷ x )
                        (wkSingleSubstId _)
