@@ -110,10 +110,10 @@ mutual
                 → Γ ⊢ t ≡ u ∷ A ^ !
                 → Γ ⊢ u ≡ v ∷ A ^ !
                 → Γ ⊢ t ≡ v ∷ A ^ !
-    conv        : ∀ {A B t u}
-                → Γ ⊢ t ≡ u ∷ A ^ !
-                → Γ ⊢ A ≡ B ^ !
-                → Γ ⊢ t ≡ u ∷ B ^ !
+    conv        : ∀ {A B r t u}
+                → Γ ⊢ t ≡ u ∷ A ^ r
+                → Γ ⊢ A ≡ B ^ r
+                → Γ ⊢ t ≡ u ∷ B ^ r
     Π-cong      : ∀ {E F G H rF rG}
                 → Γ     ⊢ F ^ rF
                 → Γ     ⊢ F ≡ H       ∷ (Univ rF) ^ !

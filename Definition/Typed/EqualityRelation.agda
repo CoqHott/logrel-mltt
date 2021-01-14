@@ -58,8 +58,8 @@ record EqRelSet : Set₁ where
     ~-trans  : ∀ {k l m A r Γ} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ m ∷ A ^ r → Γ ⊢ k ~ m ∷ A ^ r
 
     -- Conversion
-    ≅-conv : ∀ {t u A B Γ} → Γ ⊢ t ≅ u ∷ A ^ ! → Γ ⊢ A ≡ B ^ ! → Γ ⊢ t ≅ u ∷ B ^ !
-    ~-conv : ∀ {k l A B Γ} → Γ ⊢ k ~ l ∷ A ^ ! → Γ ⊢ A ≡ B ^ ! → Γ ⊢ k ~ l ∷ B ^ !
+    ≅-conv : ∀ {t u A B r Γ} → Γ ⊢ t ≅ u ∷ A ^ r → Γ ⊢ A ≡ B ^ r → Γ ⊢ t ≅ u ∷ B ^ r
+    ~-conv : ∀ {k l A B r Γ} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ A ≡ B ^ r → Γ ⊢ k ~ l ∷ B ^ r
 
     -- Weakening
     ≅-wk  : ∀ {A B r ρ Γ Δ}

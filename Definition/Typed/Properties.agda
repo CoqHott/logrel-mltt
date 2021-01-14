@@ -240,9 +240,32 @@ redU* : ∀ {A Γ r } → Γ ⊢ A ⇒* (Univ r) ^ ! → A PE.≡ (Univ r)
 redU* (id x) = PE.refl
 redU* (x ⇨ A⇒*U) rewrite redU* A⇒*U = ⊥-elim (redU x)
 
+-- convertibility for irrelevant terms implies typing
 
--- general version of reflexivity
+typeInversion : ∀ {t u A Γ} → Γ ⊢ t ≡ u ∷ A ^ % → Γ ⊢ t ∷ A ^ %
+typeInversion (conv X x) = let d = typeInversion X in conv d x
+typeInversion (proof-irrelevance x x₁) = x
+
+-- general version of reflexivity, symmetry and transitivity 
 
 genRefl : ∀ {A Γ t r } → Γ ⊢ t ∷ A ^ r → Γ ⊢ t ≡ t ∷ A ^ r
 genRefl {r = !} d = refl d
 genRefl {r = %} d = proof-irrelevance d d
+
+-- Judgmental instance of the equality relation
+
+genSym : ∀ {k l A Γ r} → Γ ⊢ k ≡ l ∷ A ^ r → Γ ⊢ l ≡ k ∷ A ^ r
+genSym {r = !} = sym
+genSym {r = %} (proof-irrelevance x x₁) = proof-irrelevance x₁ x
+genSym {r = %} (conv x x₁) = conv (genSym x) x₁
+
+genTrans : ∀ {k l m A r Γ} → Γ ⊢ k ≡ l ∷ A ^ r → Γ ⊢ l ≡ m ∷ A ^ r → Γ ⊢ k ≡ m ∷ A ^ r
+genTrans {r = !} = trans
+genTrans {r = %} (conv X x) (conv Y x₁) = conv (genTrans X (conv Y (trans x₁ (sym x)))) x
+genTrans {r = %} (conv X x) (proof-irrelevance x₁ x₂) = proof-irrelevance (conv (typeInversion X) x) x₂
+genTrans {r = %} (proof-irrelevance x x₁) (conv Y x₂) = proof-irrelevance x (conv (typeInversion (genSym Y)) x₂)
+genTrans {r = %} (proof-irrelevance x x₁) (proof-irrelevance x₂ x₃) = proof-irrelevance x x₃
+
+genVar : ∀ {x A Γ r} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ≡ var x ∷ A ^ r
+genVar {r = !} = refl
+genVar {r = %} d = proof-irrelevance d d

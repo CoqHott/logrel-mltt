@@ -4,26 +4,12 @@ module Definition.Typed.EqRelInstance where
 
 open import Definition.Untyped
 open import Definition.Typed
+open import Definition.Typed.Properties
 open import Definition.Typed.Weakening
 open import Definition.Typed.Reduction
 open import Definition.Typed.EqualityRelation
 
 open import Tools.Function
-
-
--- Judgmental instance of the equality relation
-
-genSym : ∀ {k l A Γ r} → Γ ⊢ k ≡ l ∷ A ^ r → Γ ⊢ l ≡ k ∷ A ^ r
-genSym {r = !} = sym
-genSym {r = %} (proof-irrelevance x x₁) = proof-irrelevance x₁ x
-
-genTrans : ∀ {k l m A r Γ} → Γ ⊢ k ≡ l ∷ A ^ r → Γ ⊢ l ≡ m ∷ A ^ r → Γ ⊢ k ≡ m ∷ A ^ r
-genTrans {r = !} = trans
-genTrans {r = %} (proof-irrelevance x y) (proof-irrelevance x' z) = proof-irrelevance x z
-
-genVar : ∀ {x A Γ r} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ≡ var x ∷ A ^ r
-genVar {r = !} = refl
-genVar {r = %} d = proof-irrelevance d d
 
 instance eqRelInstance : EqRelSet
 eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
