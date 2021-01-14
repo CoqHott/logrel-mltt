@@ -82,8 +82,8 @@ Emptyrec-congTerm : ∀ {F F′ rF n m Γ Δ σ σ′ l}
 Emptyrec-congTerm {F} {F′} {rF = !} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]
-                d
-                d′
+                (Emptyₜ (ne ⊢n′))
+                (Emptyₜ (ne ⊢m′))
                 (Emptyₜ₌ (ne d₁ d₁′)) =
   let [Empty] = Emptyᵛ {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
@@ -101,30 +101,44 @@ Emptyrec-congTerm {F} {F′} {rF = !} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
       [σF≡σ′F] = proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′]
       [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
       [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
-      -- EmptyrecN = neuTerm [σF] (Emptyrecₙ neN′) (Emptyrecⱼ ⊢F ⊢n′)
-      --                   (~-Emptyrec ⊢F≡F n≡n₁)
-      -- EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ neM′) (Emptyrecⱼ ⊢F′ ⊢m′)
-      --                   (~-Emptyrec ⊢F′≡F′ m≡m₁)
-      -- EmptyrecN≡M =
-      --     (neuEqTerm [σF] (Emptyrecₙ neN′) (Emptyrecₙ neM′)
-      --                (Emptyrecⱼ ⊢F ⊢n′)
-      --                (conv (Emptyrecⱼ ⊢F′ ⊢m′)
-      --                       (sym (≅-eq (escapeEq [σF]
-      --                         (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
-      --                (~-Emptyrec ⊢F≡F′
-      --                          (PE.subst₂ (λ x y → _ ⊢ x ~ y ∷ _ ^ %)
-      --                                     n″≡n′ m″≡m′ prop₂)))
-  in {!!} -- transEqTerm [σF] eq₁
-       --           (transEqTerm [σF] EmptyrecN≡M
-       --                        (convEqTerm₂ [σF] [σ′F′] [σF≡σ′F′]
-       --                                     (symEqTerm [σ′F′] eq₂)))
-
+      EmptyrecN = neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F ⊢n′)
+                           (~-Emptyrec ⊢F≡F (~-irrelevance ⊢n′ ⊢n′)) 
+      EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ) (Emptyrecⱼ ⊢F′ ⊢m′)
+                           (~-Emptyrec ⊢F′≡F′ (~-irrelevance ⊢m′ ⊢m′)) 
+      EmptyrecN≡M =
+          neuEqTerm [σF] Emptyrecₙ Emptyrecₙ
+                     (Emptyrecⱼ ⊢F ⊢n′)
+                     (conv (Emptyrecⱼ ⊢F′ ⊢m′)
+                            (sym (≅-eq (escapeEq [σF]
+                              (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
+                     (~-Emptyrec ⊢F≡F′ (~-irrelevance ⊢n′ ⊢m′))
+  in EmptyrecN≡M
+  
 Emptyrec-congTerm {F} {F′} {rF = %} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]
-                d
-                d′
-                (Emptyₜ₌ (ne d₁ d₁′)) = {!!}
+                (Emptyₜ (ne ⊢n′))
+                (Emptyₜ (ne ⊢m′))
+                (Emptyₜ₌ (ne d₁ d₁′)) =
+  let [Empty] = Emptyᵛ {l = l} [Γ]
+      [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
+      [σ′Empty] = proj₁ ([Empty] ⊢Δ [σ′])
+      [σF] = proj₁ ([F] ⊢Δ [σ])
+      [σ′F] = proj₁ ([F] ⊢Δ [σ′])
+      [σ′F′] = proj₁ ([F′] ⊢Δ [σ′])
+      ⊢F = escape [σF]
+      ⊢F≡F = escapeEq [σF] (reflEq [σF])
+      ⊢F′ = escape [σ′F′]
+      ⊢F′≡F′ = escapeEq [σ′F′] (reflEq [σ′F′])
+      ⊢σF≡σ′F = escapeEq [σF] (proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′])
+      ⊢σ′F≡σ′F′ = escapeEq [σ′F] ([F≡F′] ⊢Δ [σ′])
+      ⊢F≡F′ = ≅-trans ⊢σF≡σ′F ⊢σ′F≡σ′F′
+      [σF≡σ′F] = proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′]
+      [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
+      [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
+  in logRelIrrEq [σF] (Emptyrecⱼ ⊢F ⊢n′) (conv (Emptyrecⱼ ⊢F′ ⊢m′)
+                            (sym (≅-eq (escapeEq [σF]
+                              (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
 
 
 -- Validity of empty recursion.
