@@ -228,9 +228,9 @@ mutual
                                                      ([t≡u]₁ ⊢Δ [σ]′)
                      in  transEqTerm (proj₁ ([A] ⊢Δ [σ]))
                                      ([t≡u] ⊢Δ [σ]) [t≡u]₁′)
-  fundamentalTermEq (conv {A} {B} {t} {u} t≡u A′≡A)
+  fundamentalTermEq (conv {A} {B} {r} {t} {u} t≡u A′≡A)
     with fundamentalTermEq t≡u | fundamentalEq A′≡A
-  fundamentalTermEq (conv {A} {B} {t} {u} t≡u A′≡A)
+  fundamentalTermEq (conv {A} {B} {r} {t} {u} t≡u A′≡A)
     | [Γ] , modelsTermEq [A′] [t] [u] [t≡u] | [Γ]₁ , [A′]₁ , [A] , [A′≡A] =
       let [t]′ = S.irrelevanceTerm {A = A} {t = t} [Γ] [Γ]₁ [A′] [A′]₁ [t]
           [u]′ = S.irrelevanceTerm {A = A} {t = u} [Γ] [Γ]₁ [A′] [A′]₁ [u]
