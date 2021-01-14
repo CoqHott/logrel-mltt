@@ -28,7 +28,7 @@ genVar {r = %} d = proof-irrelevance d d
 instance eqRelInstance : EqRelSet
 eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       idᶠ idᶠ idᶠ univ
-                      sym sym genSym trans trans genTrans
+                      sym genSym genSym trans genTrans genTrans
                       conv conv wkEq wkEqTerm wkEqTerm
                       reduction reductionₜ
                       (refl ∘ᶠ Uⱼ) (refl ∘ᶠ ℕⱼ) (refl ∘ᶠ ℕⱼ)
