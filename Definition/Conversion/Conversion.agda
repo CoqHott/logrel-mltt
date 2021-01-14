@@ -46,7 +46,7 @@ mutual
   convConv↓Term Γ≡Δ A≡B whnfB (ne-ins t u x x₁) with ne≡A x A≡B whnfB
   convConv↓Term Γ≡Δ A≡B whnfB (ne-ins t u x x₁) | B , neB , PE.refl = 
     ne-ins (stabilityTerm Γ≡Δ (conv t A≡B)) (stabilityTerm Γ≡Δ (conv u A≡B))
-           neB (stability~↓ Γ≡Δ x₁)
+           neB (stability~↓! Γ≡Δ x₁)
   convConv↓Term Γ≡Δ A≡B whnfB (univ x x₁ x₂) rewrite U≡A A≡B =
     univ (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityConv↓ Γ≡Δ x₂)
   convConv↓Term Γ≡Δ A≡B whnfB (zero-refl x) rewrite ℕ≡A A≡B whnfB =
@@ -70,7 +70,8 @@ convConvTerm : ∀ {t u A B Γ}
 convConvTerm t<>u A≡B = convConv↑Term (reflConEq (wfEq A≡B)) A≡B t<>u
 
 conv~↑% : ∀ {t u A B Γ}
+              -- → ⊢ Γ ≡ Δ
               → Γ ⊢ t ~ u ↑% A 
               → Γ ⊢ A ≡ B ^ %
               → Γ ⊢ t ~ u ↑% B 
-conv~↑% (%~↑ ⊢k ⊢l) e = %~↑ (conv ⊢k e) (conv ⊢l e)
+conv~↑% (%~↑ ⊢k ⊢l) e = %~↑ (conv ⊢k e) (conv ⊢l e) --(stabilityTerm ⊢Γ≡Δ (conv ⊢k e)) (stabilityTerm ⊢Γ≡Δ (conv ⊢l e))

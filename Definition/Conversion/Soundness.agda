@@ -25,7 +25,7 @@ mutual
     natrec-cong (soundnessConv↑ x₁) (soundnessConv↑Term x₂)
                 (soundnessConv↑Term x₃) (soundness~↓! k~l)
   soundness~↑! (Emptyrec-cong x₁ k~l) =
-    Emptyrec-cong (soundnessConv↑ x₁) (soundness~↓% k~l)
+    Emptyrec-cong (soundnessConv↑ x₁) (soundness~↑% k~l)
 
   soundness~↑% : ∀ {k l A Γ} → Γ ⊢ k ~ l ↑% A → Γ ⊢ k ≡ l ∷ A ^ %
   soundness~↑% (%~↑ ⊢k ⊢l) = proof-irrelevance ⊢k ⊢l
@@ -37,13 +37,6 @@ mutual
   -- Algorithmic equality of neutrals in WHNF is well-formed.
   soundness~↓! : ∀ {k l A Γ} → Γ ⊢ k ~ l ↓! A → Γ ⊢ k ≡ l ∷ A ^ !
   soundness~↓! ([~] A₁ D whnfA k~l) = conv (soundness~↑! k~l) (subset* D)
-
-  soundness~↓% : ∀ {k l A Γ} → Γ ⊢ k ~ l ↓% A → Γ ⊢ k ≡ l ∷ A ^ %
-  soundness~↓% ([~] A₁ D whnfA k~l) = conv (soundness~↑% k~l) (subset* D)
-
-  soundness~↓ : ∀ {k l A rA Γ} → Γ ⊢ k ~ l ↓ A ^ rA → Γ ⊢ k ≡ l ∷ A ^ rA
-  soundness~↓ (~↓! x) = soundness~↓! x
-  soundness~↓ (~↓% x) = soundness~↓% x
 
   -- Algorithmic equality of types is well-formed.
   soundnessConv↑ : ∀ {A B rA Γ} → Γ ⊢ A [conv↑] B ^ rA → Γ ⊢ A ≡ B ^ rA
@@ -73,9 +66,9 @@ mutual
   -- soundnessConv↓Term (Empty-ins x) = soundness~↓% x
   soundnessConv↓Term (ne-ins t u x x₁) =
     let _ , neA , _ = ne~↓ x₁
-        _ , t∷M , _ = syntacticEqTerm (soundness~↓ x₁)
+        _ , t∷M , _ = syntacticEqTerm (soundness~↓! x₁)
         M≡A = neTypeEq neA t∷M t
-    in  conv (soundness~↓ x₁) M≡A
+    in  conv (soundness~↓! x₁) M≡A
   soundnessConv↓Term (univ x x₁ x₂) = inverseUnivEq x (soundnessConv↓ x₂)
   soundnessConv↓Term (zero-refl ⊢Γ) = refl (zeroⱼ ⊢Γ)
   soundnessConv↓Term (suc-cong c) = suc-cong (soundnessConv↑Term c)
@@ -85,21 +78,21 @@ mutual
 
 
 app-cong′ : ∀ {Γ k l t v F rF G}
-          → Γ ⊢ k ~ l ↓ Π F ^ rF ▹ G ^ !
+          → Γ ⊢ k ~ l ↓! Π F ^ rF ▹ G
           → Γ ⊢ t [genconv↑] v ∷ F ^ rF 
           → Γ ⊢ k ∘ t ~ l ∘ v ↑ G [ t ] ^ !
-app-cong′ (~↓! k~l) t=v = ~↑! (app-cong k~l t=v)
+app-cong′ k~l t=v = ~↑! (app-cong k~l t=v)
 
 natrec-cong′ : ∀ {Γ k l h g a b F G}
              → Γ ∙ ℕ ^ ! ⊢ F [conv↑] G ^ !
              → Γ ⊢ a [conv↑] b ∷ F [ zero ] 
              → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var 0) ]↑) 
-             → Γ ⊢ k ~ l ↓ ℕ ^ !
+             → Γ ⊢ k ~ l ↓! ℕ 
              → Γ ⊢ natrec F a h k ~ natrec G b g l ↑ F [ k ] ^ !
-natrec-cong′ F=G a=b h=g (~↓! k~l) = ~↑! (natrec-cong F=G a=b h=g k~l)
+natrec-cong′ F=G a=b h=g k~l = ~↑! (natrec-cong F=G a=b h=g k~l)
 
 Emptyrec-cong′ : ∀ {Γ k l F G}
                → Γ ⊢ F [conv↑] G ^ !
-               → Γ ⊢ k ~ l ↓ Empty ^ %
+               → Γ ⊢ k ~ l ↑% Empty 
                → Γ ⊢ Emptyrec F k ~ Emptyrec G l ↑ F ^ !
-Emptyrec-cong′ F=G (~↓% k~l) = ~↑! (Emptyrec-cong F=G k~l)
+Emptyrec-cong′ F=G k~l = ~↑! (Emptyrec-cong F=G k~l)

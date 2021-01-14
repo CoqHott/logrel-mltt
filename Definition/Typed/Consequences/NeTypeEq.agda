@@ -5,6 +5,7 @@ module Definition.Typed.Consequences.NeTypeEq where
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Properties
+open import Definition.Typed.Weakening
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Substitution
@@ -43,3 +44,14 @@ neTypeEq x (conv t∷A x₁) t∷B = let q = neTypeEq x t∷A t∷B
                                in  trans (sym x₁) q
 neTypeEq x t∷A (conv t∷B x₃) = let q = neTypeEq x t∷A t∷B
                                in  trans q x₃
+
+transport : ∀ {l} {A : Set l} (P : A → Set l) {x : A} (t : P x) {y : A} (e : x PE.≡ y) → P y
+transport P t PE.refl = t
+
+natTypeEq : ∀ {A rA Γ} → Γ ⊢ ℕ ∷ A ^ rA → rA PE.≡ ! × Γ ⊢ A ≡ U ^ !
+natTypeEq (ℕⱼ x) = PE.refl , refl (Uⱼ x)
+natTypeEq (conv X x) = let eqrA , eqAU = natTypeEq X in eqrA , trans (sym (transport (λ r → _ ⊢ _ ≡ _ ^ r) x eqrA)) eqAU 
+
+emptyTypeEq : ∀ {A rA Γ} → Γ ⊢ Empty ∷ A ^ rA → rA PE.≡ ! × Γ ⊢ A ≡ SProp ^ !
+emptyTypeEq (Emptyⱼ x) = PE.refl , refl (Uⱼ x)
+emptyTypeEq (conv X x) = let eqrA , eqAU = emptyTypeEq X in eqrA , trans (sym (transport (λ r → _ ⊢ _ ≡ _ ^ r) x eqrA)) eqAU 

@@ -31,7 +31,7 @@ mutual
                                     (wk-β-natrec _ F !) (wkConv↑Term [ρ] ⊢Δ x₂))
                           (wk~↓! [ρ] ⊢Δ t~u))
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Emptyrec-cong {k} {l} {F} {G} x t~u) =
-    Emptyrec-cong (wkConv↑ [ρ] ⊢Δ x) (wk~↓% [ρ] ⊢Δ t~u)
+    Emptyrec-cong (wkConv↑ [ρ] ⊢Δ x) (wk~↑% [ρ] ⊢Δ t~u)
 
   wk~↑% : ∀ {ρ t u A Γ Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
         → Γ ⊢ t ~ u ↑% A
@@ -51,18 +51,6 @@ mutual
       → Δ ⊢ U.wk ρ t ~ U.wk ρ u ↓! U.wk ρ A
   wk~↓! {ρ} [ρ] ⊢Δ ([~] A₁ D whnfA k~l) =
     [~] (U.wk ρ A₁) (wkRed* [ρ] ⊢Δ D) (wkWhnf ρ whnfA) (wk~↑! [ρ] ⊢Δ k~l)
-
-  wk~↓% : ∀ {ρ t u A Γ Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
-      → Γ ⊢ t ~ u ↓% A
-      → Δ ⊢ U.wk ρ t ~ U.wk ρ u ↓% U.wk ρ A
-  wk~↓% {ρ} [ρ] ⊢Δ ([~] A₁ D whnfA k~l) =
-    [~] (U.wk ρ A₁) (wkRed* [ρ] ⊢Δ D) (wkWhnf ρ whnfA) (wk~↑% [ρ] ⊢Δ k~l)
-
-  wk~↓ : ∀ {ρ t u A rA Γ Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
-      → Γ ⊢ t ~ u ↓ A ^ rA
-      → Δ ⊢ U.wk ρ t ~ U.wk ρ u ↓ U.wk ρ A ^ rA
-  wk~↓ [ρ] ⊢Δ (~↓! x) = ~↓! (wk~↓! [ρ] ⊢Δ x)
-  wk~↓ [ρ] ⊢Δ (~↓% x) = ~↓% (wk~↓% [ρ] ⊢Δ x)
 
   -- Weakening of algorithmic equality of types.
   wkConv↑ : ∀ {ρ A B rA Γ Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
@@ -103,7 +91,7 @@ mutual
   -- wkConv↓Term ρ ⊢Δ (Empty-ins x) =
   --   Empty-ins (wk~↓% ρ ⊢Δ x)
   wkConv↓Term {ρ} [ρ] ⊢Δ (ne-ins t u x x₁) =
-    ne-ins (wkTerm [ρ] ⊢Δ t) (wkTerm [ρ] ⊢Δ u) (wkNeutral ρ x) (wk~↓ [ρ] ⊢Δ x₁)
+    ne-ins (wkTerm [ρ] ⊢Δ t) (wkTerm [ρ] ⊢Δ u) (wkNeutral ρ x) (wk~↓! [ρ] ⊢Δ x₁)
   wkConv↓Term ρ ⊢Δ (univ x x₁ x₂) =
     univ (wkTerm ρ ⊢Δ x) (wkTerm ρ ⊢Δ x₁) (wkConv↓ ρ ⊢Δ x₂)
   wkConv↓Term ρ ⊢Δ (zero-refl x) = zero-refl ⊢Δ

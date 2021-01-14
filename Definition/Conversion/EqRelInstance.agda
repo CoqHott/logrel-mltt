@@ -46,7 +46,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
       → Γ ⊢ f ~ g ∷ Π F ^ rF ▹ G ^ !
       → Γ ⊢ a [genconv↑] b ∷ F ^ rF
       → Γ ⊢ f ∘ a ~ g ∘ b ∷ G [ a ] ^ !
-~-app {rF = !} (↑ A≡B x) x₁ =
+~-app {rF = !} (↑ A≡B (~↑! x)) x₁ =
   let _ , ⊢B = syntacticEq A≡B
       B′ , whnfB′ , D = whNorm ⊢B
       ΠFG≡B′ = trans A≡B (subset* (red D))
@@ -54,10 +54,10 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
       F≡H , _ , G≡E = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ^ _) B≡ΠHE ΠFG≡B′)
       _ , ⊢f , _ = syntacticEqTerm (soundnessConv↑Term x₁)
   in  ↑ (substTypeEq G≡E (refl ⊢f))
-        (app-cong′ (PE.subst (λ x → _ ⊢ _ ~ _ ↓ x ^ _)
-                       B≡ΠHE ([~]′ _ (red D) whnfB′ x))
+        (app-cong′  (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x)
+                       B≡ΠHE ([~] _ (red D) whnfB′ x))
              (convConvTerm x₁ F≡H))
-~-app {rF = %} (↑ A≡B x) x₁ =
+~-app {rF = %} (↑ A≡B (~↑! x)) x₁ =
   let _ , ⊢B = syntacticEq A≡B
       B′ , whnfB′ , D = whNorm ⊢B
       ΠFG≡B′ = trans A≡B (subset* (red D))
@@ -65,9 +65,9 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
       F≡H , _ , G≡E = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ^ _) B≡ΠHE ΠFG≡B′)
       _ , ⊢f , _ = syntacticEqTerm (soundness~↑% x₁)
   in  ↑ (substTypeEq G≡E (genRefl ⊢f))
-        (app-cong′ (PE.subst (λ x → _ ⊢ _ ~ _ ↓ x ^ _)
-                       B≡ΠHE ([~]′ _ (red D) whnfB′ x))
-             (conv~↑% x₁ F≡H))
+        (app-cong′ (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x)
+                       B≡ΠHE ([~] _ (red D) whnfB′ x))
+                   (conv~↑% x₁ F≡H))
 
 ~-natrec : ∀ {z z′ s s′ n n′ F F′ Γ}
          → (Γ ∙ ℕ ^ !) ⊢ F [conv↑] F′ ^ !  →
@@ -75,30 +75,25 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
       Γ ⊢ s [conv↑] s′ ∷ (Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var 0) ]↑))  →
       Γ ⊢ n ~ n′ ∷ ℕ ^ ! →
       Γ ⊢ natrec F z s n ~ natrec F′ z′ s′ n′ ∷ (F [ n ]) ^ !
-~-natrec x x₁ x₂ (↑ A≡B x₄) =
+~-natrec {n = n} {n′ = n′} x x₁ x₂ (↑ A≡B (~↑! x₄)) =
   let _ , ⊢B = syntacticEq A≡B
       B′ , whnfB′ , D = whNorm ⊢B
       ℕ≡B′ = trans A≡B (subset* (red D))
       B≡ℕ = ℕ≡A ℕ≡B′ whnfB′
-      k~l′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓ x  ^ _) B≡ℕ
-                      ([~]′ _ (red D) whnfB′ x₄)
+      k~l′ = PE.subst (λ x → _ ⊢ n ~ n′ ↓! x) B≡ℕ
+                      ([~] _ (red D) whnfB′ x₄)
       ⊢F , _ = syntacticEq (soundnessConv↑ x)
-      _ , ⊢n , _ = syntacticEqTerm (soundness~↓ k~l′)
+      _ , ⊢n , _ = syntacticEqTerm (soundness~↓! k~l′)
   in  ↑ (refl (substType ⊢F ⊢n)) (natrec-cong′ x x₁ x₂ k~l′)
 
 ~-Emptyrec : ∀ {n n′ F F′ Γ}
          → Γ ⊢ F [conv↑] F′ ^ ! →
       Γ ⊢ n ~ n′ ∷ Empty ^ % →
       Γ ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ !
-~-Emptyrec x (↑ A≡B x₄) =
-  let _ , ⊢B = syntacticEq A≡B
-      B′ , whnfB′ , D = whNorm ⊢B
-      Empty≡B′ = trans A≡B (subset* (red D))
-      B≡Empty = Empty≡A Empty≡B′ whnfB′
-      k~l′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓ x ^ _) B≡Empty
-                      ([~]′ _ (red D) whnfB′ x₄)
+~-Emptyrec {n = n} {n′ = n′} x (↑ A≡B (~↑% x₄)) =
+  let k~l′ = conv~↑% x₄ (sym A≡B)
       ⊢F , _ = syntacticEq (soundnessConv↑ x)
-      _ , ⊢n , _ = syntacticEqTerm (soundness~↓ k~l′)
+      _ , ⊢n , _ = syntacticEqTerm (soundness~↑% k~l′)
   in  ↑ (refl ⊢F) (Emptyrec-cong′ x k~l′)
 
 ~-sym : {k l A : Term} {r : Relevance} {Γ : Con Term} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
@@ -110,10 +105,14 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
 ~-trans : {k l m A : Term} {r : Relevance} {Γ : Con Term}
         → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ m ∷ A ^ r
         → Γ ⊢ k ~ m ∷ A ^ r
-~-trans (↑ x x₁) (↑ x₂ x₃) = 
+~-trans (↑ x (~↑! x₁)) (↑ x₂ (~↑! x₃)) = 
   let ⊢Γ = wfEq x
-      k~m , _ = trans~↑ (reflConEq ⊢Γ) x₁ x₃
-  in  ↑ x k~m
+      k~m , _ = trans~↑! (reflConEq ⊢Γ) x₁ x₃
+  in  ↑ x (~↑! k~m)
+~-trans (↑ x (~↑% x₁)) (↑ x₂ (~↑% x₃)) = 
+  let ⊢Γ = wfEq x
+      k~m = trans~↑% (reflConEq ⊢Γ) x₁ (conv~↑% x₃ (trans (sym x₂) x))
+  in  ↑ x (~↑% k~m)
 
 ~-wk : {k l A : Term} {r : Relevance} {ρ : Wk} {Γ Δ : Con Term} →
       ρ ∷ Δ ⊆ Γ →

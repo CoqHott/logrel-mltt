@@ -60,7 +60,7 @@ mutual
                 rewrite PE.sym (whrDet* (red D , ne neK) (D₁ , whnfB)) =
     let _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↑! k~l)
         A≡K = subset* D₂
-    in  ne-ins (conv ⊢t A≡K) (conv ⊢u A≡K) neK (~↓! ([~] A D₂ (ne neK) k~l))
+    in  ne-ins (conv ⊢t A≡K) (conv ⊢u A≡K) neK ([~] A D₂ (ne neK) k~l)
   lift~toConv↓!′ (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) with PE.sym (whrDet* (red D , Πₙ) (D₁ , whnfB))
   lift~toConv↓!′ (Πᵣ′ ! F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) | PE.refl =
     let ⊢ΠFG , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! ([~] A D₂ Πₙ k~l))
@@ -117,9 +117,9 @@ lift~toConv↓! ([~] A D whnfB k~l) =
   lift~toConv↓!′ (reducible (proj₁ (syntacticRed D))) D ([~] A D whnfB k~l)
 
 lift~toConv↓ : ∀ {t u A Γ}
-             → Γ ⊢ t ~ u ↓ A ^ !
+             → Γ ⊢ t ~ u ↓! A 
              → Γ ⊢ t [conv↓] u ∷ A 
-lift~toConv↓ (~↓! x) = lift~toConv↓! x
+lift~toConv↓ x = lift~toConv↓! x
 
 -- Lifting of algorithmic equality of terms from neutrals to generic terms.
 lift~toConv↑! : ∀ {t u A Γ}

@@ -12,7 +12,7 @@ import Tools.PropositionalEquality as PE
 
 
 infix 10 _⊢_~_↑_^_
-infix 10 _⊢_~_↓_^_
+-- infix 10 _⊢_~_↓_^_
 infix 10 _⊢_[conv↑]_^_
 infix 10 _⊢_[conv↓]_^_
 infix 10 _⊢_[conv↑]_∷_
@@ -38,7 +38,7 @@ mutual
                 → Γ ⊢ natrec F a₀ h k ~ natrec G b₀ g l ↑! F [ k ]
     Emptyrec-cong : ∀ {k l F G}
                   → Γ ⊢ F [conv↑] G ^ !
-                  → Γ ⊢ k ~ l ↓% Empty
+                  → Γ ⊢ k ~ l ↑% Empty
                   → Γ ⊢ Emptyrec F k ~ Emptyrec G l ↑! F
 
   record _⊢_~_↑%_ (Γ : Con Term) (k l A : Term) : Set where
@@ -61,20 +61,6 @@ mutual
       D     : Γ ⊢ A ⇒* B ^ !
       whnfB : Whnf B
       k~l   : Γ ⊢ k ~ l ↑! A
-
-  -- Neutral equality with types in WHNF.
-  record _⊢_~_↓%_ (Γ : Con Term) (k l B : Term) : Set where
-    inductive
-    constructor [~]
-    field
-      A     : Term
-      D     : Γ ⊢ A ⇒* B ^ %
-      whnfB : Whnf B
-      k~l : Γ ⊢ k ~ l ↑% A
-
-  data _⊢_~_↓_^_  (Γ : Con Term) (k l B : Term) : Relevance → Set where
-    ~↓! : Γ ⊢ k ~ l ↓! B → Γ ⊢ k ~ l ↓ B ^ !
-    ~↓% : Γ ⊢ k ~ l ↓% B → Γ ⊢ k ~ l ↓ B ^ %
 
   -- Type equality.
   record _⊢_[conv↑]_^_ (Γ : Con Term) (A B : Term) (rA : Relevance) : Set where
@@ -127,7 +113,7 @@ mutual
               → Γ ⊢ k ∷ N ^ !
               → Γ ⊢ l ∷ N ^ !
               → Neutral N
-              → Γ ⊢ k ~ l ↓ M ^ !
+              → Γ ⊢ k ~ l ↓! M 
               → Γ ⊢ k [conv↓] l ∷ N 
     univ      : ∀ {A B r}
               → Γ ⊢ A ∷ Univ r ^ !
@@ -157,9 +143,3 @@ var-refl′ : ∀ {Γ x A rA}
           → Γ ⊢ var x ~ var x ↑ A ^ rA
 var-refl′ {rA = !} ⊢x = ~↑! (var-refl ⊢x PE.refl)
 var-refl′ {rA = %} ⊢x = ~↑% (%~↑ ⊢x ⊢x)
-
-[~]′ : ∀ {Γ k l B r} (A : Term) (D : Γ ⊢ A ⇒* B ^ r)
-     → Whnf B → Γ ⊢ k ~ l ↑ A ^ r
-     → Γ ⊢ k ~ l ↓ B ^ r
-[~]′ A D whnfB (~↑! x) = ~↓! ([~] A D whnfB x)
-[~]′ A D whnfB (~↑% x) = ~↓% ([~] A D whnfB x)

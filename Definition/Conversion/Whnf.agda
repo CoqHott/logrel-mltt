@@ -30,9 +30,9 @@ mutual
   -- Extraction of neutrality and WHNF from algorithmic equality of neutrals
   -- with type in WHNF.
   ne~↓ : ∀ {t u A Γ}
-       → Γ ⊢ t ~ u ↓ A ^ !
+       → Γ ⊢ t ~ u ↓! A
        → Whnf A × Neutral t × Neutral u
-  ne~↓ (~↓! ([~] A₁ D whnfB k~l)) = whnfB , ne~↑! k~l
+  ne~↓ ([~] A D whnfB k~l) = whnfB , ne~↑! k~l
 
 -- Extraction of WHNF from algorithmic equality of types in WHNF.
 whnfConv↓ : ∀ {A B rA Γ}

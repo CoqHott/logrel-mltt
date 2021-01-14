@@ -59,12 +59,10 @@ mutual
                     (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x) B≡ℕ u~t)
   sym~↑! Γ≡Δ (Emptyrec-cong x t~u) =
     let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓% Γ≡Δ t~u
-        B≡Empty = Empty≡A A≡B whnfB
+        u~t = sym~↑% Γ≡Δ t~u
         F≡G = stabilityEq Γ≡Δ (soundnessConv↑ x)
-        u~t′ = PE.subst (λ x₁ → _ ⊢ _ ~ _ ↓% x₁) B≡Empty u~t
     in  _ , soundnessConv↑ x
-    , Emptyrec-cong (symConv↑ Γ≡Δ x) u~t′
+    , Emptyrec-cong (symConv↑ Γ≡Δ x) u~t
 
   sym~↑% : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ
          → Γ ⊢ t ~ u ↑% A
@@ -91,23 +89,6 @@ mutual
         B′ , whnfB′ , D′ = whNorm ⊢B
         A≡B′ = trans (sym (subset* D)) (trans A≡B (subset* (red D′)))
     in  B′ , whnfB′ , A≡B′ , [~] B (stabilityRed* Γ≡Δ (red D′)) whnfB′ k~l′
-
-  sym~↓% : ∀ {t u A Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t ~ u ↓% A
-         → ∃ λ B → Whnf B × Γ ⊢ A ≡ B ^ % × Δ ⊢ u ~ t ↓% B
-  sym~↓% Γ≡Δ ([~] A D whnfA k~l) =
-    let k~l′ = sym~↑% Γ≡Δ k~l
-        B′ , whnfB′ , D′ = whNorm (proj₁ (syntacticRed D))
-        A≡B′ = trans (sym (subset* D)) (subset* (red D′))
-    in  B′ , whnfB′ , A≡B′ , [~] A (stabilityRed* Γ≡Δ (red D′)) whnfB′ k~l′
-
-  sym~↓ : ∀ {t u A rA Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ t ~ u ↓ A ^ rA
-         → ∃ λ B → Whnf B × Γ ⊢ A ≡ B ^ rA × Δ ⊢ u ~ t ↓ B ^ rA
-  sym~↓ Γ≡Δ (~↓! x) =
-    let B , wB , A≡B , x′ = sym~↓! Γ≡Δ x
-    in B , wB , A≡B , ~↓! x′
-  sym~↓ Γ≡Δ (~↓% x) =
-    let B , wB , A≡B , x′ = sym~↓% Γ≡Δ x
-    in B , wB , A≡B , ~↓% x′
 
   -- Symmetry of algorithmic equality of types.
   symConv↑ : ∀ {A B r Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ A [conv↑] B ^ r → Δ ⊢ B [conv↑] A ^ r
@@ -153,7 +134,7 @@ mutual
   --       B≡Empty = Empty≡A A≡B whnfB
   --   in  Empty-ins (PE.subst (λ x → _ ⊢ _ ~ _ ↓% x) B≡Empty u~t)
   symConv↓Term Γ≡Δ (ne-ins t u x t~u) =
-    let B , whnfB , A≡B , u~t = sym~↓ Γ≡Δ t~u
+    let B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
     in  ne-ins (stabilityTerm Γ≡Δ u) (stabilityTerm Γ≡Δ t) x u~t
   symConv↓Term Γ≡Δ (univ x x₁ x₂) =
     univ (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x) (symConv↓ Γ≡Δ x₂)

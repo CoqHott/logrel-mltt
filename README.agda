@@ -203,13 +203,13 @@ import Definition.Conversion.Soundness
 import Definition.Conversion.Conversion
 
 -- Decidability of the conversion algorithm.
-import Definition.Conversion.Decidable
+-- import Definition.Conversion.Decidable
 
 -- Symmetry of the conversion algorithm.
 import Definition.Conversion.Symmetry
 
 -- Transitivity of the conversion algorithm.
-import Definition.Conversion.Transitivity
+-- import Definition.Conversion.Transitivity
 
 -- Weakening of the conversion algorithm.
 import Definition.Conversion.Weakening
@@ -224,4 +224,4 @@ import Definition.Conversion.EqRelInstance
 import Definition.Conversion.Consequences.Completeness
 
 -- Decidability of judgemental conversion.
-import Definition.Typed.Decidable
+-- import Definition.Typed.Decidable
