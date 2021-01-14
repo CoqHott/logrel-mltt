@@ -239,3 +239,10 @@ redU (univ x) = redU*Term′ PE.refl x
 redU* : ∀ {A Γ r } → Γ ⊢ A ⇒* (Univ r) ^ ! → A PE.≡ (Univ r)
 redU* (id x) = PE.refl
 redU* (x ⇨ A⇒*U) rewrite redU* A⇒*U = ⊥-elim (redU x)
+
+
+-- general version of reflexivity
+
+genRefl : ∀ {A Γ t r } → Γ ⊢ t ∷ A ^ r → Γ ⊢ t ≡ t ∷ A ^ r
+genRefl {r = !} d = refl d
+genRefl {r = %} d = proof-irrelevance d d
