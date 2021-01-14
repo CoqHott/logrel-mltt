@@ -69,8 +69,7 @@ canonicity ⊢t | [ℕ] , [t] =
 -- Canonicity for Empty
 
 ¬Empty′ : ∀ {n} → ε ⊩Empty n ∷Empty → ⊥
-¬Empty′ (Emptyₜ n _ n≡n (ne (neNfₜ neN ⊢n _))) =
-  noNe ⊢n neN
+¬Empty′ (Emptyₜ (ne ⊢n)) = noEmpty ⊢n
 
 ¬Empty : ∀ {n} → ε ⊢ n ∷ Empty ^ % → ⊥
 ¬Empty {n} ⊢n =
