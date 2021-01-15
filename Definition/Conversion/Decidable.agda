@@ -3,6 +3,7 @@
 module Definition.Conversion.Decidable where
 
 open import Definition.Untyped
+open import Definition.Untyped.Properties
 open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.Conversion
@@ -32,9 +33,6 @@ dec-relevance ! ! = yes PE.refl
 dec-relevance ! % = no (λ ())
 dec-relevance % ! = no (λ ())
 dec-relevance % % = yes PE.refl
-
-relevance-discr : ! PE.≡ % → ⊥
-relevance-discr ()
 
 -- Algorithmic equality of variables infers propositional equality.
 strongVarEq : ∀ {m n A Γ} → Γ ⊢ var n ~ var m ↑! A → n PE.≡ m
@@ -150,7 +148,7 @@ mutual
   dec~↑! Γ≡Δ (Emptyrec-cong x x₁) (app-cong x₄ x₅) = no (λ { (_ , ()) })
   dec~↑! Γ≡Δ (Emptyrec-cong x x₁) (natrec-cong _ _ _ _) = no (λ { (_ , ()) })
   dec~↑! Γ≡Δ (natrec-cong _ _ _ _) (Emptyrec-cong x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) (natrec-cong x₄ x₅ x₆ x₇)
+  dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) (natrec-cong x₄ x₅ x₆ x₇) 
         with decConv↑ (Γ≡Δ ∙ refl (ℕⱼ (wfEqTerm (soundness~↓! x₃)))) x x₄
   dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) (natrec-cong x₄ x₅ x₆ x₇) | yes p
         with decConv↑TermConv Γ≡Δ
@@ -236,15 +234,11 @@ mutual
   ... | yes p = yes (U-refl p x)
   ... | no ¬p = no λ p → ¬p (Uinjectivity (soundnessConv↓ p))
   decConv↓ Γ≡Δ (U-refl e x) (ℕ-refl x₁) = no (λ { (ne ([~] A D whnfB ())) })
---  decConv↓ Γ≡Δ (U-refl e x) (Empty-refl x₁) = no (λ { (ne ([~] A D whnfB ())) })
   decConv↓ Γ≡Δ (U-refl e x) (ne x₁) =
     no (λ x₂ → let whnfA , neK , neL = ne~↓! x₁
                in  ⊥-elim (IE.U≢ne! neK (soundnessConv↓ x₂)))
   decConv↓ Γ≡Δ (U-refl e x) (Π-cong e₁ x₁ x₂ x₃) = no (λ { (ne ([~] A D whnfB ())) })
   decConv↓ Γ≡Δ (ℕ-refl x) (U-refl e x₁) = no (λ { (ne ([~] A D whnfB ())) })
---  decConv↓ Γ≡Δ (Empty-refl x) (U-refl e x₁) = no (λ { (ne ([~] A D whnfB ())) })
---  decConv↓ Γ≡Δ (Empty-refl x) (ℕ-refl x₁) = no (λ { (ne ([~] A D whnfB ())) })
---  decConv↓ Γ≡Δ (ℕ-refl x) (Empty-refl x₁) = no (λ { (ne ([~] A D whnfB ())) })
   decConv↓ Γ≡Δ (ℕ-refl x) (ℕ-refl x₁) = yes (ℕ-refl x)
   decConv↓ Γ≡Δ (Empty-refl x) (Empty-refl x₁) = yes (Empty-refl x)
   decConv↓ Γ≡Δ (ℕ-refl x) (ne x₁) =
@@ -451,6 +445,6 @@ mutual
                 → Δ ⊢ u [genconv↑] u ∷ B ^ rF
                 → Dec (Γ ⊢ t [genconv↑] u ∷ A ^ rF)
   decConv↑TermConv {rF = !} Γ≡Δ A≡B t u =
-    decConv↑Term Γ≡Δ t (convConvTerm u (stabilityEq Γ≡Δ (sym A≡B)))
+   decConv↑Term Γ≡Δ t (convConvTerm u (stabilityEq Γ≡Δ (sym A≡B)))
   decConv↑TermConv {rF = %} Γ≡Δ A≡B (%~↑ ⊢t ⊢t') (%~↑ ⊢u ⊢u') = yes (%~↑ ⊢t (conv (stabilityTerm (symConEq Γ≡Δ) ⊢u) (sym A≡B)))
 
