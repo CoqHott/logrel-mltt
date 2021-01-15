@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --no-termination #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Conversion.Decidable where
 
@@ -445,6 +445,6 @@ mutual
                 → Δ ⊢ u [genconv↑] u ∷ B ^ r
                 → Dec (Γ ⊢ t [genconv↑] u ∷ A ^ r)
   decConv↑TermConv {r = !} Γ≡Δ A≡B t u =
-   decConv↑Term Γ≡Δ t (convConvTerm u (stabilityEq Γ≡Δ (sym A≡B)))
-  decConv↑TermConv {r = %} Γ≡Δ A≡B (%~↑ ⊢t ⊢t') (%~↑ ⊢u ⊢u') = yes (%~↑ ⊢t (conv (stabilityTerm (symConEq Γ≡Δ) ⊢u) (sym A≡B)))
-
+    decConv↑Term Γ≡Δ t (convConvTerm u (stabilityEq Γ≡Δ (sym A≡B)))
+  decConv↑TermConv {r = %} Γ≡Δ A≡B (%~↑ ⊢t ⊢t') (%~↑ ⊢u ⊢u') =
+    yes (%~↑ ⊢t (conv (stabilityTerm (symConEq Γ≡Δ) ⊢u) (sym A≡B)))

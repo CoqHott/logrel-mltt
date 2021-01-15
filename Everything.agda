@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K  #-}
+{-# OPTIONS --safe #-}
 
 -- A Logical Relation for Dependent Type Theory Formalized in Agda
 
@@ -55,7 +55,7 @@ import Definition.LogicalRelation.Fundamental
 import Definition.LogicalRelation.Fundamental.Reducibility
 
 -- Consequences of the logical relation for typing and conversion
-import Definition.Typed.Consequences.Canonicity
+-- import Definition.Typed.Consequences.Canonicity
 import Definition.Typed.Consequences.Injectivity
 import Definition.Typed.Consequences.Syntactic
 import Definition.Typed.Consequences.Inversion

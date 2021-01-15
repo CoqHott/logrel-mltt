@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Typed.Decidable where
 

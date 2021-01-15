@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 module README where
 
@@ -209,7 +209,7 @@ import Definition.Conversion.Conversion
 import Definition.Conversion.Symmetry
 
 -- Transitivity of the conversion algorithm.
--- import Definition.Conversion.Transitivity
+import Definition.Conversion.Transitivity
 
 -- Weakening of the conversion algorithm.
 import Definition.Conversion.Weakening
@@ -224,4 +224,4 @@ import Definition.Conversion.EqRelInstance
 import Definition.Conversion.Consequences.Completeness
 
 -- Decidability of judgemental conversion.
--- import Definition.Typed.Decidable
+import Definition.Typed.Decidable
