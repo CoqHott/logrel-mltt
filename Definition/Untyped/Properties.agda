@@ -9,7 +9,12 @@ open import Definition.Untyped
 open import Tools.Nat
 open import Tools.List
 open import Tools.PropositionalEquality hiding (subst)
+open import Tools.Empty using (⊥; ⊥-elim)
 
+-- helper function on relevance
+
+relevance-discr : ! ≡ % → ⊥
+relevance-discr ()
 
 -- Weakening properties
 

@@ -1,8 +1,9 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --safe #-}
 
 module Definition.Conversion.Transitivity where
 
 open import Definition.Untyped
+open import Definition.Untyped.Properties
 open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.Typed.RedSteps
@@ -23,8 +24,6 @@ open import Tools.Nat
 open import Tools.Product
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
-
-postulate impossibleCase : ⊥
 
 mutual
   -- Transitivity of algorithmic equality of neutrals.
@@ -50,8 +49,20 @@ mutual
         ⊢Γ = proj₁ (proj₂ (contextConvSubst Γ≡Δ))
         a<>c = trans~↑% Γ≡Δ a<>b (conv~↑% b<>c (stabilityEq Γ≡Δ (sym F≡F₁)))
     in  app-cong t~v a<>c , substTypeEq G≡G₁ (soundness~↑% a<>b)
-  trans~↑! Γ≡Δ (app-cong {rF = !} t~u a<>b) (app-cong {rF = %} u~v b<>c) = ⊥-elim impossibleCase
-  trans~↑! Γ≡Δ (app-cong {rF = %} t~u a<>b) (app-cong {rF = !} u~v b<>c) = ⊥-elim impossibleCase
+  trans~↑! Γ≡Δ (app-cong {rF = !} t~u a<>b) (app-cong {rF = %} u~v b<>c) = 
+   let whnfA , neK , neL = ne~↓! t~u 
+       ⊢A , ⊢k , ⊢l₁ = syntacticEqTerm (soundness~↓! t~u)
+       ⊢A' , ⊢l₁' , ⊢l = syntacticEqTerm (soundness~↓! u~v)
+       ΠFG≡ΠF₂G₂ = neTypeEq neL ⊢l₁ (stabilityTerm (symConEq Γ≡Δ) ⊢l₁')
+       F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
+   in ⊥-elim (relevance-discr rF≡rF₂)
+  trans~↑! Γ≡Δ (app-cong {rF = %} t~u a<>b) (app-cong {rF = !} u~v b<>c) =
+   let whnfA , neK , neL = ne~↓! t~u 
+       ⊢A , ⊢k , ⊢l₁ = syntacticEqTerm (soundness~↓! t~u)
+       ⊢A' , ⊢l₁' , ⊢l = syntacticEqTerm (soundness~↓! u~v)
+       ΠFG≡ΠF₂G₂ = neTypeEq neL ⊢l₁ (stabilityTerm (symConEq Γ≡Δ) ⊢l₁')
+       F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
+   in ⊥-elim (relevance-discr (PE.sym rF≡rF₂))
   trans~↑! Γ≡Δ (natrec-cong A<>B a₀<>b₀ aₛ<>bₛ t~u) (natrec-cong B<>C b₀<>c₀ bₛ<>cₛ u~v) =
     let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
         A≡B = soundnessConv↑ A<>B

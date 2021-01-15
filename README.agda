@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --safe #-}
 
 module README where
 
@@ -151,7 +151,7 @@ import Definition.LogicalRelation.Fundamental.Reducibility
 -- Consequences of the fundamental theorem:
 
 -- Canonicity of the system.
-import Definition.Typed.Consequences.Canonicity
+--import Definition.Typed.Consequences.Canonicity
 
 -- Injectivity of Π-types.
 import Definition.Typed.Consequences.Injectivity
