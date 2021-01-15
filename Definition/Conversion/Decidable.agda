@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K --no-termination #-}
 
 module Definition.Conversion.Decidable where
 
@@ -438,13 +438,13 @@ mutual
           ; (η-eq x₁₂ x₁₃ x₁₄ x₁₅ x₁₆ x₁₇) → ¬p x₁₇ })
 
   -- Decidability of algorithmic equality of terms of equal types.
-  decConv↑TermConv : ∀ {t u A B rF Γ Δ}
+  decConv↑TermConv : ∀ {t u A B r Γ Δ}
                 → ⊢ Γ ≡ Δ
-                → Γ ⊢ A ≡ B ^ rF
-                → Γ ⊢ t [genconv↑] t ∷ A ^ rF
-                → Δ ⊢ u [genconv↑] u ∷ B ^ rF
-                → Dec (Γ ⊢ t [genconv↑] u ∷ A ^ rF)
-  decConv↑TermConv {rF = !} Γ≡Δ A≡B t u =
+                → Γ ⊢ A ≡ B ^ r
+                → Γ ⊢ t [genconv↑] t ∷ A ^ r
+                → Δ ⊢ u [genconv↑] u ∷ B ^ r
+                → Dec (Γ ⊢ t [genconv↑] u ∷ A ^ r)
+  decConv↑TermConv {r = !} Γ≡Δ A≡B t u =
    decConv↑Term Γ≡Δ t (convConvTerm u (stabilityEq Γ≡Δ (sym A≡B)))
-  decConv↑TermConv {rF = %} Γ≡Δ A≡B (%~↑ ⊢t ⊢t') (%~↑ ⊢u ⊢u') = yes (%~↑ ⊢t (conv (stabilityTerm (symConEq Γ≡Δ) ⊢u) (sym A≡B)))
+  decConv↑TermConv {r = %} Γ≡Δ A≡B (%~↑ ⊢t ⊢t') (%~↑ ⊢u ⊢u') = yes (%~↑ ⊢t (conv (stabilityTerm (symConEq Γ≡Δ) ⊢u) (sym A≡B)))
 

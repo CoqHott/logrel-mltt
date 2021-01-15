@@ -1,10 +1,11 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K #-}
 
 module Definition.Typed.Decidable where
 
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Properties
+open import Definition.Typed.Consequences.Syntactic
 open import Definition.Conversion
 open import Definition.Conversion.Decidable
 open import Definition.Conversion.Soundness
@@ -23,7 +24,11 @@ dec ⊢A ⊢B =
 
 -- Decidability of conversion of well-formed terms
 decTerm : ∀ {t u A r Γ} → Γ ⊢ t ∷ A ^ r → Γ ⊢ u ∷ A ^ r → Dec (Γ ⊢ t ≡ u ∷ A ^ r)
-decTerm ⊢t ⊢u =
+decTerm {r = !} ⊢t ⊢u =
   let ⊢Γ≡Γ = reflConEq (wfTerm ⊢t)
   in  map soundnessConv↑Term completeEqTerm
-          (decConv↑Term ⊢Γ≡Γ (completeEqTerm (refl ⊢t)) (completeEqTerm (refl ⊢u)))
+          (decConv↑TermConv ⊢Γ≡Γ (refl (syntacticTerm ⊢t)) (completeEqTerm (genRefl ⊢t)) (completeEqTerm (genRefl ⊢u)))
+decTerm {r = %} ⊢t ⊢u =
+  let ⊢Γ≡Γ = reflConEq (wfTerm ⊢t)
+  in  map soundness~↑% completeEqTerm
+          (decConv↑TermConv ⊢Γ≡Γ (refl (syntacticTerm ⊢t)) (completeEqTerm (genRefl ⊢t)) (completeEqTerm (genRefl ⊢u)))

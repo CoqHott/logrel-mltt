@@ -22,7 +22,7 @@ completeEq A≡B =
   in  escapeEqᵛ [Γ] [A] [A≡B]
 
 -- Algorithmic equality is derivable from judgemental equality of terms.
-completeEqTerm : ∀ {t u A Γ} → Γ ⊢ t ≡ u ∷ A ^ ! → Γ ⊢ t [conv↑] u ∷ A 
+completeEqTerm : ∀ {t u A r Γ} → Γ ⊢ t ≡ u ∷ A ^ r → Γ ⊢ t [genconv↑] u ∷ A ^ r
 completeEqTerm t≡u =
   let [Γ] , modelsTermEq [A] [t] [u] [t≡u] = fundamentalTermEq t≡u
   in  escapeEqTermᵛ [Γ] [A] [t≡u]
