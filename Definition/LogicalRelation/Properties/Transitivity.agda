@@ -27,8 +27,8 @@ mutual
            → Γ ⊩⟨ l ⟩  A ≡ C ^ r / [A]
   transEqT (ℕᵥ D D′ D″) A≡B B≡C = B≡C
   transEqT (Emptyᵥ D D′ D″) A≡B B≡C = B≡C
-  transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)
-               (ne K₂ D₂ neK₂ K≡K₂))
+  transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ _)
+               (ne K₂ D₂ neK₂ _))
            (ne₌ M D′ neM K≡M) (ne₌ M₁ D″ neM₁ K≡M₁)
            rewrite whrDet* (red D₁ , ne neK₁) (red D′ , ne neM)
                  | whrDet* (red D₂ , ne neK₂) (red D″ , ne neM₁) =
