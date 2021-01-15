@@ -248,7 +248,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     -- Π-type
     record _⊩¹Π_^_ (Γ : Con Term) (A : Term) (r : Relevance) : Set where
       inductive
-      pattern
+      eta-equality
       constructor Πᵣ
       field
         rF : Relevance
@@ -273,7 +273,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     -- Π-type equality
     record _⊩¹Π_≡_^_/_ (Γ : Con Term) (A B : Term) (r : Relevance) ([A] : Γ ⊩¹Π A ^ r) : Set where
       inductive
-      pattern
+      eta-equality
       constructor Π₌
       open _⊩¹Π_^_ [A]
       field
