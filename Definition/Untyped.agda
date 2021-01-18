@@ -175,6 +175,8 @@ data Neutral : Term → Set where
   castℕₙ : ∀ {B e t} → Neutral B → Neutral (cast ℕ B e t)
   castΠₙ : ∀ {A rA P B e t} → Neutral B → Neutral (cast (Π A ^ rA ▹ P) B e t)
   castℕℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
+  castℕΠₙ : ∀ {A rA B e t} → Neutral (cast ℕ (Π A ^ rA ▹ B) e t)
+  castΠℕₙ : ∀ {A rA B e t} → Neutral (cast (Π A ^ rA ▹ B) ℕ e t)
   Emptyrecₙ : ∀ {A e} -> Neutral (Emptyrec A e)
 
 
@@ -190,7 +192,6 @@ data Whnf : Term → Set where
   Σₙ    : ∀ {A B} → Whnf (Σ A ▹ B)
   ℕₙ    : Whnf ℕ
   Emptyₙ : Whnf Empty
-  -- Id types never are whnfs, unless neutral
 
   -- Introductions are whnfs.
   lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
@@ -265,6 +266,7 @@ data Type : Term → Set where
   Πₙ : ∀ {A r B} → Type (Π A ^ r ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
+  Σₙ : ∀ {A B} → Type (Σ A ▹ B)
   ne : ∀{n} → Neutral n → Type n
 
 -- A whnf of type Π A B is either lam t or neutral.
@@ -284,6 +286,7 @@ naturalWhnf (ne x) = ne x
 typeWhnf : ∀ {A} → Type A → Whnf A
 typeWhnf Πₙ = Πₙ
 typeWhnf ℕₙ = ℕₙ
+typeWhnf Σₙ = Σₙ
 typeWhnf Emptyₙ = Emptyₙ
 typeWhnf (ne x) = ne x
 
@@ -374,6 +377,8 @@ wkNeutral ρ (castₙ A) = castₙ (wkNeutral ρ A)
 wkNeutral ρ (castℕₙ A) = castℕₙ (wkNeutral ρ A)
 wkNeutral ρ (castΠₙ A) = castΠₙ (wkNeutral ρ A)
 wkNeutral ρ (castℕℕₙ t) = castℕℕₙ (wkNeutral ρ t)
+wkNeutral ρ castℕΠₙ = castℕΠₙ
+wkNeutral ρ castΠℕₙ = castΠℕₙ
 
 -- Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 u)
 -- IdℕSₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 (suc u))
@@ -395,6 +400,7 @@ wkNatural ρ (ne x) = ne (wkNeutral ρ x)
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
 wkType ρ Πₙ      = Πₙ
 wkType ρ ℕₙ      = ℕₙ
+wkType ρ Σₙ      = Σₙ
 wkType ρ Emptyₙ  = Emptyₙ
 wkType ρ (ne x) = ne (wkNeutral ρ x)
 

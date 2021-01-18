@@ -282,6 +282,20 @@ mutual
                → Γ ⊢ (Id SProp A B)
                      ≡ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                      ∷ SProp ^ !
+    Id-ℕ-0S : ∀ {t}
+            → Γ ⊢ t ∷ ℕ ^ !
+            → Γ ⊢ Id ℕ zero (suc t) ≡ Empty ∷ SProp ^ !
+    Id-ℕ-S0 : ∀ {t}
+            → Γ ⊢ t ∷ ℕ ^ !
+            → Γ ⊢ Id ℕ (suc t) zero ≡ Empty ∷ SProp ^ !
+    Id-U-ℕΠ : ∀ {A rA B}
+            → Γ ⊢ A ∷ Univ rA ^ !
+            → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+            → Γ ⊢ Id U ℕ (Π A ^ rA ▹ B) ≡ Empty ∷ SProp ^ !
+    Id-U-Πℕ : ∀ {A rA B}
+            → Γ ⊢ A ∷ Univ rA ^ !
+            → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+            → Γ ⊢ Id U (Π A ^ rA ▹ B) ℕ ≡ Empty ∷ SProp ^ !
     cast-cong : ∀ {A A' B B' e e' t t'}
                 → Γ ⊢ A ≡ A' ∷ U ^ !
                 → Γ ⊢ B ≡ B' ∷ U ^ !
@@ -412,6 +426,20 @@ data _⊢_⇒_∷_ (Γ : Con Term) : Term → Term → Term → Set where
              → Γ ⊢ (Id SProp A B)
                    ⇒ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                    ∷ SProp
+  Id-ℕ-0S : ∀ {t}
+          → Γ ⊢ t ∷ ℕ ^ !
+          → Γ ⊢ Id ℕ zero (suc t) ⇒ Empty ∷ SProp
+  Id-ℕ-S0 : ∀ {t}
+          → Γ ⊢ t ∷ ℕ ^ !
+          → Γ ⊢ Id ℕ (suc t) zero ⇒ Empty ∷ SProp
+  Id-U-ℕΠ : ∀ {A rA B}
+          → Γ ⊢ A ∷ Univ rA ^ !
+          → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+          → Γ ⊢ Id U ℕ (Π A ^ rA ▹ B) ⇒ Empty ∷ SProp
+  Id-U-Πℕ : ∀ {A rA B}
+          → Γ ⊢ A ∷ Univ rA ^ !
+          → Γ ∙ A ^ rA ⊢ B ∷ U ^ !
+          → Γ ⊢ Id U (Π A ^ rA ▹ B) ℕ ⇒ Empty ∷ SProp
   cast-subst : ∀ {A A' B e t}
                 → Γ ⊢ A ⇒ A' ∷ U
                 → Γ ⊢ B ∷ U ^ !
