@@ -34,4 +34,6 @@ eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       (λ ⊢Γ → cast-cong (refl (ℕⱼ ⊢Γ)))
                       (λ ⊢Γ → cast-cong (refl (ℕⱼ ⊢Γ)) (refl (ℕⱼ ⊢Γ)))
                       (λ ⊢A A P → cast-cong (Π-cong ⊢A A P))
+                      (λ ⊢A A ⊢P P e → cast-cong (refl (ℕⱼ (wf (univ ⊢A)))) (Π-cong (univ ⊢A) A P) (conv e (sym (univ (Id-U-ℕΠ ⊢A ⊢P)))))
+                      (λ ⊢A A ⊢P P e → cast-cong (Π-cong (univ ⊢A) A P) (refl (ℕⱼ (wf (univ ⊢A)))) (conv e (sym (univ (Id-U-Πℕ ⊢A ⊢P)))))
                       proof-irrelevance

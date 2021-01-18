@@ -89,8 +89,8 @@ record EqRelSet : Set₁ where
 
     ≅ₜ-red : ∀ {a a′ b b′ A B Γ}
            → Γ ⊢ A ⇒* B ^ !
-           → Γ ⊢ a ⇒* a′ ∷ B 
-           → Γ ⊢ b ⇒* b′ ∷ B 
+           → Γ ⊢ a ⇒* a′ ∷ B
+           → Γ ⊢ b ⇒* b′ ∷ B
            → Whnf B
            → Whnf a′
            → Whnf b′
@@ -241,6 +241,24 @@ record EqRelSet : Set₁ where
            → Γ ⊢ e ≅ e' ∷ Id U (Π A ^ rA ▹ P) B ^ %
            → Γ ⊢ t ≅ t' ∷ Π A ^ rA ▹ P ^ !
            → Γ ⊢ cast (Π A ^ rA ▹ P) B e t ~ cast (Π A' ^ rA ▹ P') B' e' t' ∷ B ^ !
+
+    ~-castℕΠ : ∀ {A A' rA P P' e e' t t' Γ}
+             → Γ ⊢ A ∷ Univ rA ^ !
+             → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
+             → Γ ∙ A ^ rA ⊢ P ∷ U ^ !
+             → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ^ !
+             → Γ ⊢ e ≅ e' ∷ Empty ^ %
+             → Γ ⊢ t ≅ t' ∷ ℕ ^ !
+             → Γ ⊢ cast ℕ (Π A ^ rA ▹ P) e t ~ cast ℕ (Π A' ^ rA ▹ P') e' t' ∷ (Π A ^ rA ▹ P) ^ !
+
+    ~-castΠℕ : ∀ {A A' rA P P' e e' t t' Γ}
+             → Γ ⊢ A ∷ Univ rA ^ !
+             → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
+             → Γ ∙ A ^ rA ⊢ P ∷ U ^ !
+             → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ^ !
+             → Γ ⊢ e ≅ e' ∷ Empty ^ %
+             → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ▹ P) ^ !
+             → Γ ⊢ cast (Π A ^ rA ▹ P) ℕ e t ~ cast (Π A' ^ rA ▹ P') ℕ e' t' ∷ ℕ ^ !
 
     ~-irrelevance : ∀ {n n′ A Γ} → Γ ⊢ n ∷ A ^ % → Γ ⊢ n′ ∷ A ^ %
                   → Γ ⊢ n ~ n′ ∷ A ^ %
