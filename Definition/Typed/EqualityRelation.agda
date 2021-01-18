@@ -48,9 +48,9 @@ record EqRelSet : Set₁ where
            → Γ ⊢ A ≅ B ^ r
 
     -- Symmetry
-    ≅-sym  : ∀ {A B r Γ} → Γ ⊢ A ≅ B ^ r → Γ ⊢ B ≅ A ^ r
+    ≅-sym  : ∀ {A B Γ r} → Γ ⊢ A ≅ B ^ r → Γ ⊢ B ≅ A ^ r
     ≅ₜ-sym : ∀ {t u A r Γ} → Γ ⊢ t ≅ u ∷ A ^ r → Γ ⊢ u ≅ t ∷ A ^ r
-    ~-sym  : ∀ {k l A r Γ} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
+    ~-sym  : ∀ {k l A Γ r} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
 
     -- Transitivity
     ≅-trans  : ∀ {A B C r Γ} → Γ ⊢ A ≅ B ^ r → Γ ⊢ B ≅ C ^ r → Γ ⊢ A ≅ C ^ r
@@ -87,15 +87,15 @@ record EqRelSet : Set₁ where
           → Γ ⊢ A′ ≅ B′ ^ r
           → Γ ⊢ A  ≅ B ^ r
 
-    ≅ₜ-red : ∀ {a a′ b b′ A B r Γ}
-           → Γ ⊢ A ⇒* B ^ r
-           → Γ ⊢ a ⇒* a′ ∷ B ^ r
-           → Γ ⊢ b ⇒* b′ ∷ B ^ r
+    ≅ₜ-red : ∀ {a a′ b b′ A B Γ}
+           → Γ ⊢ A ⇒* B ^ !
+           → Γ ⊢ a ⇒* a′ ∷ B 
+           → Γ ⊢ b ⇒* b′ ∷ B 
            → Whnf B
            → Whnf a′
            → Whnf b′
-           → Γ ⊢ a′ ≅ b′ ∷ B ^ r
-           → Γ ⊢ a  ≅ b  ∷ A ^ r
+           → Γ ⊢ a′ ≅ b′ ∷ B ^ !
+           → Γ ⊢ a  ≅ b  ∷ A ^ !
 
     -- Universe type reflexivity
     ≅-Urefl   : ∀ {r Γ} → ⊢ Γ → Γ ⊢ (Univ r) ≅ (Univ r) ^ !
@@ -137,37 +137,37 @@ record EqRelSet : Set₁ where
     ≅-suc-cong : ∀ {m n Γ} → Γ ⊢ m ≅ n ∷ ℕ ^ ! → Γ ⊢ suc m ≅ suc n ∷ ℕ ^ !
 
     -- η-equality
-    ≅-η-eq : ∀ {f g F G rF rG Γ}
+    ≅-η-eq : ∀ {f g F G rF Γ}
               → Γ ⊢ F ^ rF
-              → Γ ⊢ f ∷ Π F ^ rF ▹ G ^ rG
-              → Γ ⊢ g ∷ Π F ^ rF ▹ G ^ rG
+              → Γ ⊢ f ∷ Π F ^ rF ▹ G ^ !
+              → Γ ⊢ g ∷ Π F ^ rF ▹ G ^ !
               → Function f
               → Function g
-              → Γ ∙ F ^ rF ⊢ wk1 f ∘ var 0 ≅ wk1 g ∘ var 0 ∷ G ^ rG
-              → Γ ⊢ f ≅ g ∷ Π F ^ rF ▹ G ^ rG
+              → Γ ∙ F ^ rF ⊢ wk1 f ∘ var 0 ≅ wk1 g ∘ var 0 ∷ G ^ !
+              → Γ ⊢ f ≅ g ∷ Π F ^ rF ▹ G ^ !
 
     -- Variable reflexivity
-    ~-var : ∀ {x A r Γ} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ~ var x ∷ A ^ r
+    ~-var : ∀ {x A Γ r} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ~ var x ∷ A ^ r
 
     -- Application congurence
-    ~-app : ∀ {a b f g F G rF rG Γ}
-          → Γ ⊢ f ~ g ∷ Π F ^ rF ▹ G ^ rG
+    ~-app : ∀ {a b f g F G rF Γ}
+          → Γ ⊢ f ~ g ∷ Π F ^ rF ▹ G ^ !
           → Γ ⊢ a ≅ b ∷ F ^ rF
-          → Γ ⊢ f ∘ a ~ g ∘ b ∷ G [ a ] ^ rG
+          → Γ ⊢ f ∘ a ~ g ∘ b ∷ G [ a ] ^ !
 
     -- Natural recursion congurence
-    ~-natrec : ∀ {z z′ s s′ n n′ F F′ rF Γ}
-             → Γ ∙ ℕ ^ ! ⊢ F ≅ F′ ^ rF
-             → Γ     ⊢ z ≅ z′ ∷ F [ zero ] ^ rF
-             → Γ     ⊢ s ≅ s′ ∷ Π ℕ ^ ! ▹ (F ^ rF ▹▹ F [ suc (var 0) ]↑) ^ rF
+    ~-natrec : ∀ {z z′ s s′ n n′ F F′ Γ}
+             → Γ ∙ ℕ ^ ! ⊢ F ≅ F′ ^ !
+             → Γ     ⊢ z ≅ z′ ∷ F [ zero ] ^ !
+             → Γ     ⊢ s ≅ s′ ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var 0) ]↑) ^ !
              → Γ     ⊢ n ~ n′ ∷ ℕ ^ !
-             → Γ     ⊢ natrec F z s n ~ natrec F′ z′ s′ n′ ∷ F [ n ] ^ rF
+             → Γ     ⊢ natrec F z s n ~ natrec F′ z′ s′ n′ ∷ F [ n ] ^ !
 
     -- Empty recursion congurence
-    ~-Emptyrec : ∀ {n n′ F F′ rF Γ}
-             → Γ ⊢ F ≅ F′ ^ rF
+    ~-Emptyrec : ∀ {n n′ F F′ Γ}
+             → Γ ⊢ F ≅ F′ ^ !
              → Γ     ⊢ n ~ n′ ∷ Empty ^ %
-             → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ rF
+             → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ !
 
     -- Id congruences
     ~-Id  : ∀ {A A' t t' u u' Γ}
@@ -243,8 +243,6 @@ record EqRelSet : Set₁ where
            → Γ ⊢ cast (Π A ^ rA ▹ P) B e t ~ cast (Π A' ^ rA ▹ P') B' e' t' ∷ B ^ !
 
     ~-irrelevance : ∀ {n n′ A Γ} → Γ ⊢ n ∷ A ^ % → Γ ⊢ n′ ∷ A ^ %
-                  → Γ ⊢ n ~ n ∷ A ^ %
-                  → Γ ⊢ n′ ~ n′ ∷ A ^ %
                   → Γ ⊢ n ~ n′ ∷ A ^ %
 
   -- Composition of universe and generic equality compatibility

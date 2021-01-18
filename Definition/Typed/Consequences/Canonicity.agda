@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K #-}
 
 module Definition.Typed.Consequences.Canonicity where
 
@@ -22,6 +22,23 @@ open import Tools.Product
 sucᵏ : Nat → Term
 sucᵏ 0 = zero
 sucᵏ (1+ n) = suc (sucᵏ n)
+
+-- No neutral terms are well-formed in an empty context
+
+-- we need to postulate consistency
+
+postulate noEmpty : ∀ {t} → ε ⊢ t ∷ Empty ^ % → ⊥
+
+noNe : ∀ {t A r} → ε ⊢ t ∷ A ^ r → Neutral t → ⊥
+noNe (var x₁ ()) (var x)
+noNe (conv ⊢t x) (var n) = noNe ⊢t (var n)
+noNe (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe ⊢t neT
+noNe (conv ⊢t x) (∘ₙ neT) = noNe ⊢t (∘ₙ neT)
+noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
+noNe (Emptyrecⱼ A ⊢e) Emptyrecₙ = noEmpty ⊢e
+noNe (conv ⊢t x) (natrecₙ neT) = noNe ⊢t (natrecₙ neT)
+noNe (conv ⊢t x) Emptyrecₙ = noNe ⊢t Emptyrecₙ
+
 
 -- Helper function for canonicity for reducible natural properties
 canonicity″ : ∀ {t}
@@ -52,8 +69,7 @@ canonicity ⊢t | [ℕ] , [t] =
 -- Canonicity for Empty
 
 ¬Empty′ : ∀ {n} → ε ⊩Empty n ∷Empty → ⊥
-¬Empty′ (Emptyₜ n _ n≡n (ne (neNfₜ neN ⊢n _))) =
-  noNe ⊢n neN
+¬Empty′ (Emptyₜ (ne ⊢n)) = noEmpty ⊢n
 
 ¬Empty : ∀ {n} → ε ⊢ n ∷ Empty ^ % → ⊥
 ¬Empty {n} ⊢n =

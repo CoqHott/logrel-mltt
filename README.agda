@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 module README where
 
@@ -151,7 +151,7 @@ import Definition.LogicalRelation.Fundamental.Reducibility
 -- Consequences of the fundamental theorem:
 
 -- Canonicity of the system.
-import Definition.Typed.Consequences.Canonicity
+--import Definition.Typed.Consequences.Canonicity
 
 -- Injectivity of Π-types.
 import Definition.Typed.Consequences.Injectivity
@@ -203,7 +203,7 @@ import Definition.Conversion.Soundness
 import Definition.Conversion.Conversion
 
 -- Decidability of the conversion algorithm.
-import Definition.Conversion.Decidable
+-- import Definition.Conversion.Decidable
 
 -- Symmetry of the conversion algorithm.
 import Definition.Conversion.Symmetry

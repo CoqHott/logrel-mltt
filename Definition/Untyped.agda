@@ -158,12 +158,12 @@ Univ-PE-injectivity PE.refl = PE.refl
 
 -- A term is neutral if it has a variable in head position.
 -- The variable blocks reduction of such terms.
+-- Emptyrec is always neutral
 
 data Neutral : Term → Set where
   var     : ∀ n                     → Neutral (var n)
   ∘ₙ      : ∀ {k u}     → Neutral k → Neutral (k ∘ u)
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
-  Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
   Idₙ : ∀ {A t u} → Neutral A → Neutral (Id A t u)
   Idℕₙ : ∀ {t u} → Neutral t → Neutral (Id ℕ t u)
   Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ zero u)
@@ -175,6 +175,7 @@ data Neutral : Term → Set where
   castℕₙ : ∀ {B e t} → Neutral B → Neutral (cast ℕ B e t)
   castΠₙ : ∀ {A rA P B e t} → Neutral B → Neutral (cast (Π A ^ rA ▹ P) B e t)
   castℕℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
+  Emptyrecₙ : ∀ {A e} -> Neutral (Emptyrec A e)
 
 
 -- Weak head normal forms (whnfs).
@@ -361,7 +362,7 @@ wkNeutral : ∀ {t} ρ → Neutral t → Neutral (wk ρ t)
 wkNeutral ρ (var n)    = var (wkVar ρ n)
 wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
 wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
-wkNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkNeutral ρ e)
+wkNeutral ρ Emptyrecₙ = Emptyrecₙ
 wkNeutral ρ (Idₙ A) = Idₙ (wkNeutral ρ A)
 wkNeutral ρ (Idℕₙ t) = Idℕₙ (wkNeutral ρ t)
 wkNeutral ρ (Idℕ0ₙ t) = Idℕ0ₙ (wkNeutral ρ t)

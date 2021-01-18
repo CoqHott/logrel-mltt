@@ -32,20 +32,6 @@ open import Tools.Nat
 
 import Tools.PropositionalEquality as PE
 
-
--- Natural recursion closure reduction (requires reducible terms and equality).
-Emptyrec-subst* : ∀ {Γ C rC n n′ l}
-              → Γ ⊢ C ^ rC
-              → Γ ⊢ n ⇒* n′ ∷ Empty ^ %
-              → ([Empty] : Γ ⊩⟨ l ⟩ Empty ^ %)
-              → Γ ⊩⟨ l ⟩ n′ ∷ Empty ^ % / [Empty]
-              → Γ ⊢ Emptyrec C n ⇒* Emptyrec C n′ ∷ C ^ rC
-Emptyrec-subst* C (id x) [Empty] [n′] = id (Emptyrecⱼ C x)
-Emptyrec-subst* C (x ⇨ n⇒n′) [Empty] [n′] =
-  let q , w = redSubst*Term n⇒n′ [Empty] [n′]
-      a , s = redSubstTerm x [Empty] q
-  in  Emptyrec-subst C x ⇨ conv* (Emptyrec-subst* C n⇒n′ [Empty] [n′]) (refl C)
-
 -- Reducibility of natural recursion under a valid substitution.
 EmptyrecTerm : ∀ {F rF n Γ Δ σ l}
              ([Γ]  : ⊩ᵛ Γ)
@@ -56,18 +42,24 @@ EmptyrecTerm : ∀ {F rF n Γ Δ σ l}
            → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
                ∷ subst σ F ^ rF
                / proj₁ ([F] ⊢Δ [σ])
-EmptyrecTerm {F} {rF} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
-           (Emptyₜ m d n≡n (ne (neNfₜ neM ⊢m m≡m))) =
+EmptyrecTerm {F} {rF = !} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
+           (Emptyₜ (ne d)) =
   let [Empty] = Emptyᵛ {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
-      [σm] = neuTerm [σEmpty] neM ⊢m m≡m
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
       ⊢F≡F = escapeEq [σF] (reflEq [σF])
-      EmptyrecM = neuTerm [σF] (Emptyrecₙ neM) (Emptyrecⱼ ⊢F ⊢m)
-                        (~-Emptyrec ⊢F≡F m≡m)
-      reduction = Emptyrec-subst* ⊢F (redₜ d) [σEmpty] [σm]
-  in proj₁ (redSubst*Term reduction [σF] EmptyrecM)
+  in neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F d)
+                        (~-Emptyrec ⊢F≡F (~-irrelevance d d)) 
+  
+EmptyrecTerm {F} {rF = %} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
+           (Emptyₜ (ne d)) =
+  let [Empty] = Emptyᵛ {l = l} [Γ]
+      [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
+      [σF] = proj₁ ([F] ⊢Δ [σ])
+      ⊢F = escape [σF]
+      ⊢F≡F = escapeEq [σF] (reflEq [σF])
+  in logRelIrr [σF] (Emptyrecⱼ ⊢F d)
 
 
 -- Reducibility of natural recursion congurence under a valid substitution equality.
@@ -87,22 +79,18 @@ Emptyrec-congTerm : ∀ {F F′ rF n m Γ Δ σ σ′ l}
                     ≡ Emptyrec (subst σ′ F′) m
                     ∷ subst σ F ^ rF
                     / proj₁ ([F] ⊢Δ [σ])
-Emptyrec-congTerm {F} {F′} {rF} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
+Emptyrec-congTerm {F} {F′} {rF = !} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]
-                (Emptyₜ n′ d n≡n (ne (neNfₜ neN′ ⊢n′ n≡n₁)))
-                (Emptyₜ m′ d′ m≡m (ne (neNfₜ neM′ ⊢m′ m≡m₁)))
-                (Emptyₜ₌ n″ m″ d₁ d₁′ t≡u (ne (neNfₜ₌ x₂ x₃ prop₂))) =
-  let n″≡n′ = whrDet*Term (redₜ d₁ , ne x₂) (redₜ d , ne neN′)
-      m″≡m′ = whrDet*Term (redₜ d₁′ , ne x₃) (redₜ d′ , ne neM′)
-      [Empty] = Emptyᵛ {l = l} [Γ]
+                (Emptyₜ (ne ⊢n′))
+                (Emptyₜ (ne ⊢m′))
+                (Emptyₜ₌ (ne d₁ d₁′)) =
+  let [Empty] = Emptyᵛ {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
       [σ′Empty] = proj₁ ([Empty] ⊢Δ [σ′])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       [σ′F] = proj₁ ([F] ⊢Δ [σ′])
       [σ′F′] = proj₁ ([F′] ⊢Δ [σ′])
-      [σn′] = neuTerm [σEmpty] neN′ ⊢n′ n≡n₁
-      [σ′m′] = neuTerm [σ′Empty] neM′ ⊢m′ m≡m₁
       ⊢F = escape [σF]
       ⊢F≡F = escapeEq [σF] (reflEq [σF])
       ⊢F′ = escape [σ′F′]
@@ -113,28 +101,44 @@ Emptyrec-congTerm {F} {F′} {rF} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
       [σF≡σ′F] = proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′]
       [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
       [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
-      EmptyrecN = neuTerm [σF] (Emptyrecₙ neN′) (Emptyrecⱼ ⊢F ⊢n′)
-                        (~-Emptyrec ⊢F≡F n≡n₁)
-      EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ neM′) (Emptyrecⱼ ⊢F′ ⊢m′)
-                        (~-Emptyrec ⊢F′≡F′ m≡m₁)
+      EmptyrecN = neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F ⊢n′)
+                           (~-Emptyrec ⊢F≡F (~-irrelevance ⊢n′ ⊢n′)) 
+      EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ) (Emptyrecⱼ ⊢F′ ⊢m′)
+                           (~-Emptyrec ⊢F′≡F′ (~-irrelevance ⊢m′ ⊢m′)) 
       EmptyrecN≡M =
-          (neuEqTerm [σF] (Emptyrecₙ neN′) (Emptyrecₙ neM′)
+          neuEqTerm [σF] Emptyrecₙ Emptyrecₙ
                      (Emptyrecⱼ ⊢F ⊢n′)
                      (conv (Emptyrecⱼ ⊢F′ ⊢m′)
                             (sym (≅-eq (escapeEq [σF]
                               (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
-                     (~-Emptyrec ⊢F≡F′
-                               (PE.subst₂ (λ x y → _ ⊢ x ~ y ∷ _ ^ %)
-                                          n″≡n′ m″≡m′ prop₂)))
-      reduction₁ = Emptyrec-subst* ⊢F (redₜ d) [σEmpty] [σn′]
-      reduction₂ = Emptyrec-subst* ⊢F′ (redₜ d′) [σ′Empty] [σ′m′]
-      eq₁ = proj₂ (redSubst*Term reduction₁ [σF] EmptyrecN)
-      eq₂ = proj₂ (redSubst*Term reduction₂ [σ′F′] EmptyrecM)
-  in transEqTerm [σF] eq₁
-                 (transEqTerm [σF] EmptyrecN≡M
-                              (convEqTerm₂ [σF] [σ′F′] [σF≡σ′F′]
-                                           (symEqTerm [σ′F′] eq₂)))
-
+                     (~-Emptyrec ⊢F≡F′ (~-irrelevance ⊢n′ ⊢m′))
+  in EmptyrecN≡M
+  
+Emptyrec-congTerm {F} {F′} {rF = %} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
+                [Γ] [F] [F′] [F≡F′]
+                ⊢Δ [σ] [σ′] [σ≡σ′]
+                (Emptyₜ (ne ⊢n′))
+                (Emptyₜ (ne ⊢m′))
+                (Emptyₜ₌ (ne d₁ d₁′)) =
+  let [Empty] = Emptyᵛ {l = l} [Γ]
+      [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
+      [σ′Empty] = proj₁ ([Empty] ⊢Δ [σ′])
+      [σF] = proj₁ ([F] ⊢Δ [σ])
+      [σ′F] = proj₁ ([F] ⊢Δ [σ′])
+      [σ′F′] = proj₁ ([F′] ⊢Δ [σ′])
+      ⊢F = escape [σF]
+      ⊢F≡F = escapeEq [σF] (reflEq [σF])
+      ⊢F′ = escape [σ′F′]
+      ⊢F′≡F′ = escapeEq [σ′F′] (reflEq [σ′F′])
+      ⊢σF≡σ′F = escapeEq [σF] (proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′])
+      ⊢σ′F≡σ′F′ = escapeEq [σ′F] ([F≡F′] ⊢Δ [σ′])
+      ⊢F≡F′ = ≅-trans ⊢σF≡σ′F ⊢σ′F≡σ′F′
+      [σF≡σ′F] = proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′]
+      [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
+      [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
+  in logRelIrrEq [σF] (Emptyrecⱼ ⊢F ⊢n′) (conv (Emptyrecⱼ ⊢F′ ⊢m′)
+                            (sym (≅-eq (escapeEq [σF]
+                              (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
 
 
 -- Validity of empty recursion.

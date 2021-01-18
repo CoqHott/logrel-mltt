@@ -57,13 +57,13 @@ U≢Π′ : ∀ {rU B rB Γ l l′}
      → ShapeView Γ l l′ _ _ _ _ (Uᵣ {r = rU} [U]) (Πᵣ [Π]) → ⊥
 U≢Π′ a b ()
 
-U≢Π-red : ∀ {B F G rB rF rU Γ} → Γ ⊢ B ⇒* Π F ^ rF ▹ G ^ rB → Γ ⊢ Univ rU ≡ B ^ ! → ⊥
-U≢Π-red {rB = rB} D = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩U)
+U≢Π-red : ∀ {B F G rF rU Γ} → Γ ⊢ B ⇒* Π F ^ rF ▹ G ^ ! → Γ ⊢ Univ rU ≡ B ^ ! → ⊥
+U≢Π-red D = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩U)
                 (λ Γ l A → Γ ⊩′⟨ l ⟩Π A ^ !) Uᵣ Πᵣ
                 (λ x → extractMaybeEmb (U-elim x))
                 (λ x → extractMaybeEmb (Π-elim′ D x))
                 U≢Π′
-
+                
 -- U and Π F ▹ G for any F and G cannot be judgmentally equal.
 U≢Π! : ∀ {rU F rF G Γ} → Γ ⊢ Univ rU ≡ Π F ^ rF ▹ G ^ ! → ⊥
 U≢Π! U≡Π =
@@ -76,7 +76,7 @@ U≢ne′ : ∀ {r r' K Γ l l′}
      → ShapeView Γ l l′ _ _ _ _ (Uᵣ {r = r} [U]) (ne [K]) → ⊥
 U≢ne′ a b ()
 
-U≢ne-red : ∀ {rU r B K Γ} → Γ ⊢ B ⇒* K ^ r → Neutral K → Γ ⊢ Univ rU ≡ B ^ ! → ⊥
+U≢ne-red : ∀ {rU B K Γ} → Γ ⊢ B ⇒* K ^ ! → Neutral K → Γ ⊢ Univ rU ≡ B ^ ! → ⊥
 U≢ne-red D neK = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩U) (λ Γ l B → Γ ⊩ne B ^ !) Uᵣ ne
                      (λ x → extractMaybeEmb (U-elim x))
                      (λ x → extractMaybeEmb (ne-elim′ D neK x))

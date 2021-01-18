@@ -27,8 +27,8 @@ mutual
            → Γ ⊩⟨ l ⟩  A ≡ C ^ r / [A]
   transEqT (ℕᵥ D D′ D″) A≡B B≡C = B≡C
   transEqT (Emptyᵥ D D′ D″) A≡B B≡C = B≡C
-  transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)
-               (ne K₂ D₂ neK₂ K≡K₂))
+  transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ _)
+               (ne K₂ D₂ neK₂ _))
            (ne₌ M D′ neM K≡M) (ne₌ M₁ D″ neM₁ K≡M₁)
            rewrite whrDet* (red D₁ , ne neK₁) (red D′ , ne neM)
                  | whrDet* (red D₂ , ne neK₂) (red D″ , ne neM₁) =
@@ -146,21 +146,13 @@ transEmpty-prop : ∀ {Γ k k′ k″}
   → [Empty]-prop Γ k k′
   → [Empty]-prop Γ k′ k″
   → [Empty]-prop Γ k k″
-transEmpty-prop (ne [k≡k′]) (ne [k′≡k″]) =
-  ne (transEqTermNe [k≡k′] [k′≡k″])
+transEmpty-prop (ne a b) (ne c d) = ne a d
 
 transEqTermEmpty : ∀ {Γ n n′ n″}
   → Γ ⊩Empty n  ≡ n′  ∷Empty
   → Γ ⊩Empty n′ ≡ n″ ∷Empty
   → Γ ⊩Empty n  ≡ n″ ∷Empty
-transEqTermEmpty (Emptyₜ₌ k k′ d d′ t≡u prop)
-             (Emptyₜ₌ k₁ k″ d₁ d″ t≡u₁ prop₁) =
-  let k₁Whnf = ne (proj₁ (esplit prop₁))
-      k′Whnf = ne (proj₂ (esplit prop))
-      k₁≡k′ = whrDet*Term (redₜ d₁ , k₁Whnf) (redₜ d′ , k′Whnf)
-      prop′ = PE.subst (λ x → [Empty]-prop _ x _) k₁≡k′ prop₁
-    in  Emptyₜ₌ k k″ d d″ (≅ₜ-trans t≡u (PE.subst (λ x → _ ⊢ x ≅ _ ∷ _ ^ _) k₁≡k′ t≡u₁))
-      (transEmpty-prop prop prop′)
+transEqTermEmpty (Emptyₜ₌ (ne a b)) (Emptyₜ₌ (ne c d)) = Emptyₜ₌ (ne a d)
 
 
 -- Transitivty of term equality.
@@ -177,13 +169,15 @@ transEqTerm (Uᵣ′ rU .⁰ 0<1 ⊢Γ)
       (transEq [t] [u] [u]₁ [t≡u] (irrelevanceEq [t]₁ [u] [t≡u]₁))
 transEqTerm (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
 transEqTerm (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
-transEqTerm (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
+transEqTerm {r = !} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
                               (neₜ₌ k₁ m₁ d₁ d″ (neNfₜ₌ neK₂ neM₁ k≡m₁)) =
   let k₁≡m = whrDet*Term (redₜ d₁ , ne neK₂) (redₜ d′ , ne neM)
   in  neₜ₌ k m₁ d d″
            (neNfₜ₌ neK₁ neM₁
                    (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
-transEqTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+transEqTerm {r = %} (ne′ K D neK K≡K) (neₜ₌ d d′)
+                              (neₜ₌ d₁ d″) = neₜ₌ d d″
+transEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
             (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
             (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
             rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)
@@ -192,4 +186,7 @@ transEqTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
       (λ ρ ⊢Δ [a] → transEqTerm ([G] ρ ⊢Δ [a])
                                 ([f≡g] ρ ⊢Δ [a])
                                 ([f≡g]₁ ρ ⊢Δ [a]))
+transEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
 transEqTerm (emb 0<1 x) t≡u u≡v = transEqTerm x t≡u u≡v

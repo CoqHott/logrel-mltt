@@ -5,6 +5,7 @@ open import Definition.Typed.EqualityRelation
 module Definition.LogicalRelation.Substitution.Reduction {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
+open import Definition.Untyped
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
 
@@ -12,13 +13,13 @@ open import Tools.Product
 
 
 -- Weak head expansion of valid terms.
-redSubstTermᵛ : ∀ {A t u rA l Γ}
+redSubstTermᵛ : ∀ {A t u l Γ}
               → ([Γ] : ⊩ᵛ Γ)
-              → Γ ⊩ᵛ t ⇒ u ∷ A ^ rA / [Γ]
-              → ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ])
-              → Γ ⊩ᵛ⟨ l ⟩ u ∷ A ^ rA / [Γ] / [A]
-              → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ rA / [Γ] / [A]
-              × Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ rA / [Γ] / [A]
+              → Γ ⊩ᵛ t ⇒ u ∷ A / [Γ]
+              → ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ ! / [Γ])
+              → Γ ⊩ᵛ⟨ l ⟩ u ∷ A ^ ! / [Γ] / [A]
+              → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ ! / [Γ] / [A]
+              × Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ ! / [Γ] / [A]
 redSubstTermᵛ [Γ] t⇒u [A] [u] =
   (λ ⊢Δ [σ] →
      let [σA] = proj₁ ([A] ⊢Δ [σ])

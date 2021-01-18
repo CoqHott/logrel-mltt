@@ -37,7 +37,7 @@ reflNatural-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 reflEmpty-prop : ∀ {Γ n}
                  → Empty-prop Γ n
                  → [Empty]-prop Γ n n
-reflEmpty-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
+reflEmpty-prop (ne x) = ne x x
 
 -- Reflexivity of reducible terms.
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
@@ -48,14 +48,14 @@ reflEqTerm (Uᵣ′ _ ⁰ 0<1 ⊢Γ) (Uₜ A d typeA A≡A [A]) =
 reflEqTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
   ℕₜ₌ n n [ ⊢t , ⊢u , d ] [ ⊢t , ⊢u , d ] t≡t
       (reflNatural-prop prop)
-reflEqTerm (Emptyᵣ D) (Emptyₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
-  Emptyₜ₌ n n [ ⊢t , ⊢u , d ] [ ⊢t , ⊢u , d ] t≡t
-    (reflEmpty-prop prop)
-reflEqTerm (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
+reflEqTerm (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
+reflEqTerm {r = !} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
   neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
-reflEqTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+reflEqTerm {r = %} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
+reflEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
   Πₜ₌ f f d d funcF funcF f≡f
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm ([F] ρ ⊢Δ) [a]))
+reflEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
 reflEqTerm (emb 0<1 [A]) t = reflEqTerm [A] t

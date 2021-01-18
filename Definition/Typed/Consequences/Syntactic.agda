@@ -39,7 +39,7 @@ syntacticRed D | [Γ] , [A] , [B] , [A≡B] =
   escapeᵛ [Γ] [A] , escapeᵛ [Γ] [B]
 
 -- Syntactic validity of term reductions.
-syntacticRedTerm : ∀ {t u A rA Γ} → Γ ⊢ t ⇒* u ∷ A ^ rA → Γ ⊢ A ^ rA × (Γ ⊢ t ∷ A ^ rA × Γ ⊢ u ∷ A ^ rA)
+syntacticRedTerm : ∀ {t u A Γ} → Γ ⊢ t ⇒* u ∷ A → Γ ⊢ A ^ ! × (Γ ⊢ t ∷ A ^ ! × Γ ⊢ u ∷ A ^ !)
 syntacticRedTerm d with fundamentalTermEq (subset*Term d)
 syntacticRedTerm d | [Γ] , modelsTermEq [A] [t] [u] [t≡u] =
   escapeᵛ [Γ] [A] , escapeTermᵛ [Γ] [A] [t] , escapeTermᵛ [Γ] [A] [u]

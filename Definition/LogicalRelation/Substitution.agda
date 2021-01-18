@@ -81,6 +81,6 @@ record [_⊩ᵛ⟨_⟩_≡_∷_^_/_] (Γ : Con Term) (l : TypeLevel)
     [t≡u] : Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ rA / [Γ] / [A]
 
 -- Validity of reduction of terms
-_⊩ᵛ_⇒_∷_^_/_ : (Γ : Con Term) (t u A : Term) (rA : Relevance) ([Γ] : ⊩ᵛ Γ) → Set
-Γ ⊩ᵛ t ⇒ u ∷ A ^ rA / [Γ] = ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-                       → Δ ⊢ subst σ t ⇒ subst σ u ∷ subst σ A ^ rA
+_⊩ᵛ_⇒_∷_/_ : (Γ : Con Term) (t u A : Term) ([Γ] : ⊩ᵛ Γ) → Set
+Γ ⊩ᵛ t ⇒ u ∷ A / [Γ] = ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+                       → Δ ⊢ subst σ t ⇒ subst σ u ∷ subst σ A 

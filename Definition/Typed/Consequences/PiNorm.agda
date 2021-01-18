@@ -37,23 +37,23 @@ data ΠNorm : Term → Set where
 ΠNorm-Π (Πₙ x) = x
 ΠNorm-Π (ne ())
 
-data _⊢_⇒Π_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → Set where
-  regular : ∀ {t u A r} → Γ ⊢ t ⇒ u ∷ A ^ r → Γ ⊢ t ⇒Π u ∷ A ^ r
+data _⊢_⇒Π_∷_ (Γ : Con Term) : Term → Term → Term → Set where
+  regular : ∀ {t u A} → Γ ⊢ t ⇒ u ∷ A → Γ ⊢ t ⇒Π u ∷ A 
   deep : ∀ {A rA B B′ rB}
-       → Γ ∙ A ^ rA ⊢ B ⇒Π B′ ∷ Univ rB ^ !
-       → Γ ⊢ Π A ^ rA ▹ B ⇒Π Π A ^ rA ▹ B′ ∷ Univ rB ^ !
+       → Γ ∙ A ^ rA ⊢ B ⇒Π B′ ∷ Univ rB 
+       → Γ ⊢ Π A ^ rA ▹ B ⇒Π Π A ^ rA ▹ B′ ∷ Univ rB 
 
 data _⊢_⇒Π_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
   univ : ∀ {A B r}
-       → Γ ⊢ A ⇒Π B ∷ (Univ r) ^ !
+       → Γ ⊢ A ⇒Π B ∷ (Univ r)
        → Γ ⊢ A ⇒Π B ^ r
 
-data _⊢_⇒*Π_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → Set where
-  id : ∀ {t T r} → Γ ⊢ t ⇒*Π t ∷ T ^ r
-  _⇨_ : ∀ {t t' u T r}
-      → Γ ⊢ t  ⇒Π t' ∷ T ^ r
-      → Γ ⊢ t' ⇒*Π u ∷ T ^ r
-      → Γ ⊢ t  ⇒*Π u ∷ T ^ r
+data _⊢_⇒*Π_∷_ (Γ : Con Term) : Term → Term → Term → Set where
+  id : ∀ {t T} → Γ ⊢ t ⇒*Π t ∷ T 
+  _⇨_ : ∀ {t t' u T}
+      → Γ ⊢ t  ⇒Π t' ∷ T 
+      → Γ ⊢ t' ⇒*Π u ∷ T 
+      → Γ ⊢ t  ⇒*Π u ∷ T 
 
 data _⊢_⇒*Π_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
   id : ∀ {t r} → Γ ⊢ t ⇒*Π t ^ r
@@ -106,7 +106,7 @@ doΠNorm ⊢A = doΠNorm′ (reducible ⊢A)
 ΠNorm-whnf Emptyₙ = Emptyₙ
 ΠNorm-whnf (ne x) = ne x
 
-ΠNorm-noredTerm : ∀ {Γ A B T r} → Γ ⊢ A ⇒Π B ∷ T ^ r → ΠNorm A → ⊥
+ΠNorm-noredTerm : ∀ {Γ A B T } → Γ ⊢ A ⇒Π B ∷ T  → ΠNorm A → ⊥
 ΠNorm-noredTerm (regular x) w = whnfRedTerm x (ΠNorm-whnf w)
 ΠNorm-noredTerm (deep x) (Πₙ w) = ΠNorm-noredTerm x w
 ΠNorm-noredTerm (deep x) (ne ())
@@ -114,7 +114,7 @@ doΠNorm ⊢A = doΠNorm′ (reducible ⊢A)
 ΠNorm-nored : ∀ {Γ A B r} → Γ ⊢ A ⇒Π B ^ r → ΠNorm A → ⊥
 ΠNorm-nored (univ x) w = ΠNorm-noredTerm x w
 
-detΠRedTerm : ∀ {Γ A B B′ T T′ r r′} → Γ ⊢ A ⇒Π B ∷ T ^ r → Γ ⊢ A ⇒Π B′ ∷ T′ ^ r′ → B PE.≡ B′
+detΠRedTerm : ∀ {Γ A B B′ T T′} → Γ ⊢ A ⇒Π B ∷ T  → Γ ⊢ A ⇒Π B′ ∷ T′ → B PE.≡ B′
 detΠRedTerm (regular x) (regular x₁) = whrDetTerm x x₁
 detΠRedTerm (regular x) (deep y) = ⊥-elim (whnfRedTerm x Πₙ)
 detΠRedTerm (deep x) (regular x₁) = ⊥-elim (whnfRedTerm x₁ Πₙ)

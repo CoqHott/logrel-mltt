@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS  --safe #-}
 
 module Definition.Typed.Reduction where
 
@@ -29,29 +29,29 @@ reduction′ D D′ whnfA′ whnfB′ A≡B =
   trans (sym (subset* D)) (trans A≡B (subset* D′))
 
 -- Weak head expansion of term equality
-reductionₜ : ∀ {a a′ b b′ A B r Γ}
-           → Γ ⊢ A ⇒* B ^ r
-           → Γ ⊢ a ⇒* a′ ∷ B ^ r
-           → Γ ⊢ b ⇒* b′ ∷ B ^ r
+reductionₜ : ∀ {a a′ b b′ A B Γ}
+           → Γ ⊢ A ⇒* B ^ !
+           → Γ ⊢ a ⇒* a′ ∷ B
+           → Γ ⊢ b ⇒* b′ ∷ B
            → Whnf B
            → Whnf a′
            → Whnf b′
-           → Γ ⊢ a′ ≡ b′ ∷ B ^ r
-           → Γ ⊢ a ≡ b ∷ A ^ r
+           → Γ ⊢ a′ ≡ b′ ∷ B ^ !
+           → Γ ⊢ a ≡ b ∷ A ^ !
 reductionₜ D d d′ whnfB whnfA′ whnfB′ a′≡b′ =
   conv (trans (subset*Term d)
               (trans a′≡b′ (sym (subset*Term d′))))
        (sym (subset* D))
 
-reductionₜ′ : ∀ {a a′ b b′ A B r Γ}
-           → Γ ⊢ A ⇒* B ^ r
-           → Γ ⊢ a ⇒* a′ ∷ B ^ r
-           → Γ ⊢ b ⇒* b′ ∷ B ^ r
+reductionₜ′ : ∀ {a a′ b b′ A B Γ}
+           → Γ ⊢ A ⇒* B ^ !
+           → Γ ⊢ a ⇒* a′ ∷ B
+           → Γ ⊢ b ⇒* b′ ∷ B
            → Whnf B
            → Whnf a′
            → Whnf b′
-           → Γ ⊢ a ≡ b ∷ A ^ r
-           → Γ ⊢ a′ ≡ b′ ∷ B ^ r
+           → Γ ⊢ a ≡ b ∷ A ^ !
+           → Γ ⊢ a′ ≡ b′ ∷ B ^ !
 reductionₜ′ D d d′ whnfB whnfA′ whnfB′ a≡b =
   trans (sym (subset*Term d))
         (trans (conv a≡b (subset* D)) (subset*Term d′))
