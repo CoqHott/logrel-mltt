@@ -257,6 +257,16 @@ mutual
           (λ x → _ ⊢ Id SProp _ (U.wk ρ B) ≡ Σ (Π _ ^ % ▹ x) ▹ (x ^ % ▹▹ _) ∷ _ ^ !)
           (wk1-wk≡lift-wk1 ρ B)
           (Id-SProp ρA ρB)))
+  wkEqTerm ρ ⊢Δ (Id-ℕ-0S n) = Id-ℕ-0S (wkTerm ρ ⊢Δ n)
+  wkEqTerm ρ ⊢Δ (Id-ℕ-S0 n) = Id-ℕ-S0 (wkTerm ρ ⊢Δ n)
+  wkEqTerm ρ ⊢Δ (Id-U-ℕΠ A B) =
+    let ρA = wkTerm ρ ⊢Δ A in
+    let ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B in
+    Id-U-ℕΠ ρA ρB
+  wkEqTerm ρ ⊢Δ (Id-U-Πℕ A B) =
+    let ρA = wkTerm ρ ⊢Δ A in
+    let ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B in
+    Id-U-Πℕ ρA ρB
   wkEqTerm ρ ⊢Δ (cast-cong A B e t) = cast-cong (wkEqTerm ρ ⊢Δ A) (wkEqTerm ρ ⊢Δ B) (wkEqTerm ρ ⊢Δ e) (wkEqTerm ρ ⊢Δ t)
   wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) =
     let ρA = wkTerm [ρ] ⊢Δ Aⱼ in
@@ -381,6 +391,16 @@ mutual
           (λ x → _ ⊢ Id SProp _ (U.wk ρ B) ⇒ Σ (Π _ ^ % ▹ x) ▹ (x ^ % ▹▹ _) ∷ _)
           (wk1-wk≡lift-wk1 ρ B)
           (Id-SProp ρA ρB)))
+  wkRedTerm ρ ⊢Δ (Id-ℕ-0S n) = Id-ℕ-0S (wkTerm ρ ⊢Δ n)
+  wkRedTerm ρ ⊢Δ (Id-ℕ-S0 n) = Id-ℕ-S0 (wkTerm ρ ⊢Δ n)
+  wkRedTerm ρ ⊢Δ (Id-U-ℕΠ A B) =
+    let ρA = wkTerm ρ ⊢Δ A in
+    let ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B in
+    Id-U-ℕΠ ρA ρB
+  wkRedTerm ρ ⊢Δ (Id-U-Πℕ A B) =
+    let ρA = wkTerm ρ ⊢Δ A in
+    let ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B in
+    Id-U-Πℕ ρA ρB
   wkRedTerm ρ ⊢Δ  (cast-subst A B e t) = cast-subst (wkRedTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ  B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkRedTerm ρ ⊢Δ  (cast-ℕ-subst B e t) = cast-ℕ-subst (wkRedTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkRedTerm ρ ⊢Δ  (cast-Π-subst A P B e t) = let ρA = wkTerm ρ ⊢Δ A in cast-Π-subst ρA (wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) P) (wkRedTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
