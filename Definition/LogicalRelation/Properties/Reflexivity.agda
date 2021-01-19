@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -23,6 +23,10 @@ reflEq (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
   Π₌ _ _ D A≡A
      (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
      (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
+reflEq (∃ᵣ′ F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
+  LogRel.∃₌ _ _ D A≡A
+    (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
+    (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
 reflEq (emb 0<1 [A]) = reflEq [A]
 
 reflNatural-prop : ∀ {Γ n}
@@ -58,4 +62,5 @@ reflEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d 
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm ([F] ρ ⊢Δ) [a]))
 reflEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
 reflEqTerm (emb 0<1 [A]) t = reflEqTerm [A] t
