@@ -122,13 +122,13 @@ record EqRelSet : Set₁ where
               → Γ ∙ F ^ rF ⊢ G ≅ E ∷ (Univ rG) ^ !
               → Γ ⊢ Π F ^ rF ▹ G ≅ Π H ^ rF ▹ E ∷ (Univ rG) ^ !
 
-    -- Σ-congruence
-    -- Since Σ types are always small, no need for a type-level rule
-    ≅ₜ-Σ-cong : ∀ {F G H E Γ}
+    -- ∃-congruence
+    -- Since ∃ types are always small, no need for a type-level rule
+    ≅ₜ-∃-cong : ∀ {F G H E Γ}
               → Γ ⊢ F ^ %
               → Γ ⊢ F ≅ H ∷ SProp ^ !
               → Γ ∙ F ^ % ⊢ G ≅ E ∷ SProp ^ !
-              → Γ ⊢ Σ F ▹ G ≅ Σ H ▹ E ∷ SProp ^ !
+              → Γ ⊢ ∃ F ▹ G ≅ ∃ H ▹ E ∷ SProp ^ !
 
     -- Zero reflexivity
     ≅ₜ-zerorefl : ∀ {Γ} → ⊢ Γ → Γ ⊢ zero ≅ zero ∷ ℕ ^ !

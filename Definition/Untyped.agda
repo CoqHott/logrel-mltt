@@ -80,8 +80,8 @@ pattern Univ r = gen (Ukind r) []
 Π_^_▹_   : Term → Relevance → Term → Term  -- Dependent function type (B is a binder).
 Π A ^ r ▹ B = gen (Pikind r) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
-Σ_▹_ : Term → Term → Term -- Dependent pairs
-Σ A ▹ B = gen Sigmakind (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
+∃_▹_ : Term → Term → Term -- Dependent pairs
+∃ A ▹ B = gen Sigmakind (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
 ℕ      : Term                     -- Type of natural numbers.
 ℕ = gen Natkind []
@@ -187,7 +187,7 @@ data Whnf : Term → Set where
   -- Type constructors are whnfs.
   Uₙ    : ∀ {r} → Whnf (Univ r)
   Πₙ    : ∀ {A r B} → Whnf (Π A ^ r ▹ B)
-  Σₙ    : ∀ {A B} → Whnf (Σ A ▹ B)
+  ∃ₙ    : ∀ {A B} → Whnf (∃ A ▹ B)
   ℕₙ    : Whnf ℕ
   Emptyₙ : Whnf Empty
 
@@ -264,7 +264,7 @@ data Type : Term → Set where
   Πₙ : ∀ {A r B} → Type (Π A ^ r ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
-  Σₙ : ∀ {A B} → Type (Σ A ▹ B)
+  ∃ₙ : ∀ {A B} → Type (∃ A ▹ B)
   ne : ∀{n} → Neutral n → Type n
 
 -- A whnf of type Π A B is either lam t or neutral.
@@ -284,7 +284,7 @@ naturalWhnf (ne x) = ne x
 typeWhnf : ∀ {A} → Type A → Whnf A
 typeWhnf Πₙ = Πₙ
 typeWhnf ℕₙ = ℕₙ
-typeWhnf Σₙ = Σₙ
+typeWhnf ∃ₙ = ∃ₙ
 typeWhnf Emptyₙ = Emptyₙ
 typeWhnf (ne x) = ne x
 
@@ -398,7 +398,7 @@ wkNatural ρ (ne x) = ne (wkNeutral ρ x)
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
 wkType ρ Πₙ      = Πₙ
 wkType ρ ℕₙ      = ℕₙ
-wkType ρ Σₙ      = Σₙ
+wkType ρ ∃ₙ      = ∃ₙ
 wkType ρ Emptyₙ  = Emptyₙ
 wkType ρ (ne x) = ne (wkNeutral ρ x)
 
@@ -409,7 +409,7 @@ wkFunction ρ (ne x) = ne (wkNeutral ρ x)
 wkWhnf : ∀ {t} ρ → Whnf t → Whnf (wk ρ t)
 wkWhnf ρ Uₙ      = Uₙ
 wkWhnf ρ Πₙ      = Πₙ
-wkWhnf ρ Σₙ      = Σₙ
+wkWhnf ρ ∃ₙ      = ∃ₙ
 wkWhnf ρ ℕₙ      = ℕₙ
 wkWhnf ρ Emptyₙ  = Emptyₙ
 wkWhnf ρ lamₙ    = lamₙ

@@ -17,7 +17,7 @@ wfTerm : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → ⊢ Γ
 wfTerm (ℕⱼ ⊢Γ) = ⊢Γ
 wfTerm (Emptyⱼ ⊢Γ) = ⊢Γ
 wfTerm (Πⱼ F ▹ G) = wfTerm F
-wfTerm (Σⱼ F ▹ G) = wfTerm F
+wfTerm (∃ⱼ F ▹ G) = wfTerm F
 wfTerm (var ⊢Γ x₁) = ⊢Γ
 wfTerm (lamⱼ F t) with wfTerm t
 wfTerm (lamⱼ F t) | ⊢Γ ∙ F′ = ⊢Γ
@@ -41,7 +41,7 @@ wf (ℕⱼ ⊢Γ) = ⊢Γ
 wf (Emptyⱼ ⊢Γ) = ⊢Γ
 wf (Uⱼ ⊢Γ) = ⊢Γ
 wf (Πⱼ F ▹ G) = wf F
-wf (Σⱼ F ▹ G) = wf F
+wf (∃ⱼ F ▹ G) = wf F
 wf (univ A) = wfTerm A
 wf (Idⱼ A t u) = wfTerm t
 
@@ -51,7 +51,7 @@ wfEqTerm (sym t≡u) = wfEqTerm t≡u
 wfEqTerm (trans t≡u u≡r) = wfEqTerm t≡u
 wfEqTerm (conv t≡u A≡B) = wfEqTerm t≡u
 wfEqTerm (Π-cong F F≡H G≡E) = wfEqTerm F≡H
-wfEqTerm (Σ-cong F F≡H G≡E) = wfEqTerm F≡H
+wfEqTerm (∃-cong F F≡H G≡E) = wfEqTerm F≡H
 wfEqTerm (app-cong f≡g a≡b) = wfEqTerm f≡g
 wfEqTerm (β-red F t a) = wfTerm a
 wfEqTerm (η-eq F f g f0≡g0) = wfTerm f
@@ -318,7 +318,7 @@ whnfRed (univ x) w = whnfRedTerm x w
 whnfRed*Term : ∀ {Γ t u A} (d : Γ ⊢ t ⇒* u ∷ A) (w : Whnf t) → t PE.≡ u
 whnfRed*Term (id x) Uₙ = PE.refl
 whnfRed*Term (id x) Πₙ = PE.refl
-whnfRed*Term (id x) Σₙ = PE.refl
+whnfRed*Term (id x) ∃ₙ = PE.refl
 whnfRed*Term (id x) ℕₙ = PE.refl
 whnfRed*Term (id x) Emptyₙ = PE.refl
 whnfRed*Term (id x) lamₙ = PE.refl
@@ -349,7 +349,7 @@ whrDetTerm-aux1 PE.refl (cast-Π x x₁ x₂ x₃ x₄ x₅) = PE.refl
 whrDetTerm-aux2 : ∀{Γ t u F A rA B A' rA' B'}
   → (d : t PE.≡ Id U (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B'))
   → (d' : Γ ⊢ t ⇒ u ∷ F)
-  → (Σ (Id (Univ rA) A A') ▹ (Π (wk1 A') ^ rA ▹ Id U ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B'))) PE.≡ u
+  → (∃ (Id (Univ rA) A A') ▹ (Π (wk1 A') ^ rA ▹ Id U ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B'))) PE.≡ u
 whrDetTerm-aux2 d (conv d' x) = whrDetTerm-aux2 d d'
 whrDetTerm-aux2 PE.refl (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
 whrDetTerm-aux2 PE.refl (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' Πₙ)

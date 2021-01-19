@@ -50,10 +50,10 @@ mutual
          → Γ     ⊢ F ^ rF
          → Γ ∙ F ^ rF ⊢ G ^ rG
          → Γ     ⊢ Π F ^ rF ▹ G ^ rG
-    Σⱼ_▹_ : ∀ {F G} -- For now we want only irrelevant sigma
+    ∃ⱼ_▹_ : ∀ {F G} -- For now we want only irrelevant sigma
             → Γ ⊢ F ^ %
             → Γ ∙ F ^ % ⊢ G ^ %
-            → Γ ⊢ Σ F ▹ G ^ %
+            → Γ ⊢ ∃ F ▹ G ^ %
     univ : ∀ {A r}
          → Γ ⊢ A ∷ (Univ r) ^ !
          → Γ ⊢ A ^ r
@@ -76,10 +76,10 @@ mutual
            → Γ     ⊢ F ∷ (Univ rF) ^ !
            → Γ ∙ F ^ rF ⊢ G ∷ (Univ rG) ^ !
            → Γ     ⊢ Π F ^ rF ▹ G ∷ (Univ rG) ^ !
-    Σⱼ_▹_ : ∀ {F G}
+    ∃ⱼ_▹_ : ∀ {F G}
             → Γ ⊢ F ∷ SProp ^ !
             → Γ ∙ F ^ % ⊢ G ∷ SProp ^ !
-            → Γ ⊢ Σ F ▹ G ∷ SProp ^ !
+            → Γ ⊢ ∃ F ▹ G ∷ SProp ^ !
     var    : ∀ {A r x}
            → ⊢ Γ
            → x ∷ A ^ r ∈ Γ
@@ -95,16 +95,16 @@ mutual
     ⦅_,_⦆ⱼ : ∀ {F G t u}
              → Γ ⊢ t ∷ F ^ %
              → Γ ⊢ u ∷ G [ t ] ^ %
-             → Γ ⊢ ⦅ t , u ⦆ ∷ Σ F ▹ G ^ %
+             → Γ ⊢ ⦅ t , u ⦆ ∷ ∃ F ▹ G ^ %
     fstⱼ : ∀ {F G t}
            → Γ ⊢ F ∷ SProp ^ !
            → Γ ∙ F ^ % ⊢ G ∷ SProp ^ !
-           → Γ ⊢ t ∷ Σ F ▹ G ^ %
+           → Γ ⊢ t ∷ ∃ F ▹ G ^ %
            → Γ ⊢ fst t ∷ F ^ %
     sndⱼ : ∀ {F G t}
            → Γ ⊢ F ∷ SProp ^ !
            → Γ ∙ F ^ % ⊢ G ∷ SProp ^ !
-           → Γ ⊢ t ∷ Σ F ▹ G ^ %
+           → Γ ⊢ t ∷ ∃ F ▹ G ^ %
            → Γ ⊢ snd t ∷ G [ fst t ] ^ %
     zeroⱼ   : ⊢ Γ
            → Γ ⊢ zero ∷ ℕ ^ !
@@ -170,7 +170,7 @@ mutual
            → Γ     ⊢ F ≡ H ^ rF
            → Γ ∙ F ^ rF ⊢ G ≡ E ^ rG
            → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ^ rG
-    -- I dont think we want Σ and Id conversion rules, as they are always in SProp
+    -- I dont think we want ∃ and Id conversion rules, as they are always in SProp
     -- and can therefore be recovered from typed conversion
 
   -- Term equality
@@ -194,11 +194,11 @@ mutual
                 → Γ     ⊢ F ≡ H       ∷ (Univ rF) ^ !
                 → Γ ∙ F ^ rF ⊢ G ≡ E       ∷ (Univ rG) ^ !
                 → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ∷ (Univ rG) ^ !
-    Σ-cong      : ∀ {E F G H}
+    ∃-cong      : ∀ {E F G H}
                 → Γ     ⊢ F ^ %
                 → Γ     ⊢ F ≡ H       ∷ SProp ^ !
                 → Γ ∙ F ^ % ⊢ G ≡ E       ∷ SProp ^ !
-                → Γ     ⊢ Σ F ▹ G ≡ Σ H ▹ E ∷ SProp ^ !
+                → Γ     ⊢ ∃ F ▹ G ≡ ∃ H ▹ E ∷ SProp ^ !
     app-cong    : ∀ {a b f g F G rF}
                 → Γ ⊢ f ≡ g ∷ Π F ^ rF ▹ G ^ !
                 → Γ ⊢ a ≡ b ∷ F ^ rF
@@ -272,7 +272,7 @@ mutual
               → Γ ⊢ A' ∷ (Univ rA) ^ !
               → Γ ∙ A' ^ rA ⊢ B' ∷ U ^ !
               → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
-                    ≡ Σ (Id (Univ rA) A A') ▹
+                    ≡ ∃ (Id (Univ rA) A A') ▹
                       (Π (wk1 A') ^ rA ▹ Id U
                         ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk (lift (step id)) B'))
@@ -285,7 +285,7 @@ mutual
                → Γ ⊢ A ∷ SProp ^ !
                → Γ ⊢ B ∷ SProp ^ !
                → Γ ⊢ (Id SProp A B)
-                     ≡ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
+                     ≡ (∃ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                      ∷ SProp ^ !
     Id-ℕ-0S : ∀ {t}
             → Γ ⊢ t ∷ ℕ ^ !
@@ -416,7 +416,7 @@ data _⊢_⇒_∷_ (Γ : Con Term) : Term → Term → Term → Set where
             → Γ ⊢ A' ∷ (Univ rA) ^ !
             → Γ ∙ A' ^ rA ⊢ B' ∷ U ^ !
             → Γ ⊢ (Id U (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
-                  ⇒ Σ (Id (Univ rA) A A') ▹
+                  ⇒ ∃ (Id (Univ rA) A A') ▹
                     (Π (wk1 A') ^ rA ▹ Id U
                       ((wk1d B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                       (wk1d B'))
@@ -429,7 +429,7 @@ data _⊢_⇒_∷_ (Γ : Con Term) : Term → Term → Term → Set where
              → Γ ⊢ A ∷ SProp ^ !
              → Γ ⊢ B ∷ SProp ^ !
              → Γ ⊢ (Id SProp A B)
-                   ⇒ (Σ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
+                   ⇒ (∃ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
                    ∷ SProp
   Id-ℕ-0S : ∀ {t}
           → Γ ⊢ t ∷ ℕ ^ !
