@@ -179,9 +179,7 @@ data Neutral : Term → Set where
   castΠℕₙ : ∀ {A rA B e t} → Neutral (cast (Π A ^ rA ▹ B) ℕ e t)
   Emptyrecₙ : ∀ {A e} -> Neutral (Emptyrec A e)
 
-
 -- Weak head normal forms (whnfs).
-
 -- These are the (lazy) values of our language.
 
 data Whnf : Term → Set where

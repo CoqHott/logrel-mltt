@@ -62,6 +62,11 @@ mutual
           → Γ ⊢ t ∷ A ^ !
           → Γ ⊢ u ∷ A ^ !
           → Γ ⊢ (Id A t u) ^ %
+    -- We also want:
+    -- Σ Relevant ▹ Relevant ∷ Relevant
+    -- Σ Relevant ▹ Irrelevant ∷ Relevant (allow us to encode relevant Empty, bool)
+    -- Quotients
+    -- J-types (identity types that have J)
 
   -- Well-formed term of a type
   data _⊢_∷_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
