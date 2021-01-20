@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -19,7 +19,7 @@ import Tools.PropositionalEquality as PE
 
 
 -- Conversion of syntactic reduction closures.
-convRed:*: : ∀ {t u A B Γ} → Γ ⊢ t :⇒*: u ∷ A → Γ ⊢ A ≡ B ^ ! → Γ ⊢ t :⇒*: u ∷ B 
+convRed:*: : ∀ {t u A B Γ} → Γ ⊢ t :⇒*: u ∷ A → Γ ⊢ A ≡ B ^ ! → Γ ⊢ t :⇒*: u ∷ B
 convRed:*: [ ⊢t , ⊢u , d ] A≡B = [ conv ⊢t  A≡B , conv ⊢u  A≡B , conv* d  A≡B ]
 
 mutual
@@ -81,6 +81,14 @@ mutual
                      ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ▹ G ≡ x ^ %) (PE.sym ΠF₁G₁≡ΠF′G′)
                                           (≅-eq A≡B)
                  in conv d ΠFG≡ΠF₁G₁
+  convTermT₁ {Γ = Γ} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                         (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+             (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
+             d = let ∃F₁G₁≡∃F′G′   = whrDet* (red D₁ , ∃ₙ) (D′ , ∃ₙ)
+                     F₁≡F′ , G₁≡G′ = ∃-PE-injectivity ∃F₁G₁≡∃F′G′
+                     ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ %) (PE.sym ∃F₁G₁≡∃F′G′)
+                                          (≅-eq A≡B)
+                 in conv d ∃FG≡∃F₁G₁
   convTermT₁ (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) A≡B t rewrite Univ-PE-injectivity A≡B = t
   convTermT₁ (emb⁰¹ x) A≡B t = convTermT₁ x A≡B t
   convTermT₁ (emb¹⁰ x) A≡B t = convTermT₁ x A≡B t
@@ -144,6 +152,14 @@ mutual
                      ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ▹ G ≡ x ^ %)
                                           (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                  in  conv d (sym ΠFG≡ΠF₁G₁)
+  convTermT₂ {Γ = Γ} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                         (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+             (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
+             d = let ∃F₁G₁≡∃F′G′   = whrDet* (red D₁ , ∃ₙ) (D′ , ∃ₙ)
+                     F₁≡F′ ,  G₁≡G′ = ∃-PE-injectivity ∃F₁G₁≡∃F′G′
+                     ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ %)
+                                          (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
+                 in  conv d (sym ∃FG≡∃F₁G₁)
   convTermT₂ (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) A≡B t rewrite Univ-PE-injectivity A≡B = t
   convTermT₂ (emb⁰¹ x) A≡B t = convTermT₂ x A≡B t
   convTermT₂ (emb¹⁰ x) A≡B t = convTermT₂ x A≡B t
@@ -233,6 +249,13 @@ mutual
                               ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ▹ G ≡ x ^ %)
                                                    (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                           in (conv d ΠFG≡ΠF₁G₁) , conv d′ ΠFG≡ΠF₁G₁
+  convEqTermT₁ {Γ = Γ} {r = %} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                           (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+               (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
+               (d , d′) = let ∃F₁G₁≡∃F′G′ = whrDet* (red D₁ , ∃ₙ) (D′ , ∃ₙ)
+                              ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ %)
+                                                   (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
+                          in (conv d ∃FG≡∃F₁G₁) , conv d′ ∃FG≡∃F₁G₁
   convEqTermT₁ (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) A≡B t≡u rewrite Univ-PE-injectivity A≡B = t≡u
   convEqTermT₁ (emb⁰¹ x) A≡B t≡u = convEqTermT₁ x A≡B t≡u
   convEqTermT₁ (emb¹⁰ x) A≡B t≡u = convEqTermT₁ x A≡B t≡u
@@ -291,6 +314,14 @@ mutual
                    ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ▹ G ≡ x ^ %)
                                         (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                in (conv d (sym ΠFG≡ΠF₁G₁)) , (conv d′ (sym ΠFG≡ΠF₁G₁))
+  convEqTermT₂ {Γ = Γ} {r = %} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                           (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+               (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
+               (d , d′) =
+               let ∃F₁G₁≡∃F′G′ = whrDet* (red D₁ , ∃ₙ) (D′ , ∃ₙ)
+                   ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ %)
+                                        (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
+               in (conv d (sym ∃FG≡∃F₁G₁)) , (conv d′ (sym ∃FG≡∃F₁G₁))
   convEqTermT₂ (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) A≡B t≡u rewrite Univ-PE-injectivity A≡B = t≡u
   convEqTermT₂ (emb⁰¹ x) A≡B t≡u = convEqTermT₂ x A≡B t≡u
   convEqTermT₂ (emb¹⁰ x) A≡B t≡u = convEqTermT₂ x A≡B t≡u
