@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -6,7 +6,7 @@ module Definition.LogicalRelation.Substitution.Irrelevance {{eqrel : EqRelSet}} 
 open EqRelSet {{...}}
 
 open import Definition.Untyped
-open import Definition.Typed
+open import Definition.Typed hiding (tt)
 open import Definition.LogicalRelation
 import Definition.LogicalRelation.Irrelevance as LR
 open import Definition.LogicalRelation.Substitution

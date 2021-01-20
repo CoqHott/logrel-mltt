@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -35,13 +35,15 @@ proof-irrelevanceRel : ∀ {Γ A t u l} ([A] : Γ ⊩⟨ l ⟩ A ^ %)
 proof-irrelevanceRel (Emptyᵣ x)
                    (Emptyₜ (ne ⊢t))
                    (Emptyₜ (ne ⊢t₁)) = Emptyₜ₌ (ne ⊢t ⊢t₁)
-  
+
 proof-irrelevanceRel (ne x)
                    (neₜ ⊢t)
                    (neₜ ⊢t₁) =
                    neₜ₌ ⊢t  ⊢t₁
 proof-irrelevanceRel {Γ} {l = l} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
-  [f] , [f₁] 
+  [f] , [f₁]
+proof-irrelevanceRel {Γ} {l = l} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
+  [f] , [f₁]
 
 proof-irrelevanceRel (emb 0<1 [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
 

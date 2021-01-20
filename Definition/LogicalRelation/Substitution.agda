@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -83,4 +83,4 @@ record [_⊩ᵛ⟨_⟩_≡_∷_^_/_] (Γ : Con Term) (l : TypeLevel)
 -- Validity of reduction of terms
 _⊩ᵛ_⇒_∷_/_ : (Γ : Con Term) (t u A : Term) ([Γ] : ⊩ᵛ Γ) → Set
 Γ ⊩ᵛ t ⇒ u ∷ A / [Γ] = ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-                       → Δ ⊢ subst σ t ⇒ subst σ u ∷ subst σ A 
+                       → Δ ⊢ subst σ t ⇒ subst σ u ∷ subst σ A

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -7,7 +7,7 @@ open EqRelSet {{...}}
 
 open import Definition.Untyped
 open import Definition.Untyped.Properties
-open import Definition.Typed
+open import Definition.Typed hiding (tt)
 open import Definition.Typed.Weakening
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Substitution
