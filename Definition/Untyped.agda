@@ -145,6 +145,10 @@ castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
   → F PE.≡ H × rF PE.≡ rH × G PE.≡ E
 Π-PE-injectivity PE.refl = PE.refl , PE.refl , PE.refl
 
+∃-PE-injectivity : ∀ {F G H E} → ∃ F ▹ G PE.≡ ∃ H ▹ E
+  → F PE.≡ H × G PE.≡ E
+∃-PE-injectivity PE.refl = PE.refl , PE.refl
+
 -- If  suc n = suc m  then  n = m.
 
 suc-PE-injectivity : ∀ {n m} → suc n PE.≡ suc m → n PE.≡ m
