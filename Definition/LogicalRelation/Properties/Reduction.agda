@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -41,12 +41,17 @@ redSubst* D (Πᵣ′ rF F G [ ⊢B , ⊢ΠFG , D′ ] ⊢F ⊢G A≡A [F] [G] G
   in  (Πᵣ′ rF F G [ ⊢A , ⊢ΠFG , D ⇨* D′ ] ⊢F ⊢G A≡A [F] [G] G-ext)
   ,   (Π₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
         (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
+redSubst* D (∃ᵣ′ F G [ ⊢B , ⊢ΠFG , D′ ] ⊢F ⊢G A≡A [F] [G] G-ext) =
+  let ⊢A = redFirst* D
+  in  (∃ᵣ′ F G [ ⊢A , ⊢ΠFG , D ⇨* D′ ] ⊢F ⊢G A≡A [F] [G] G-ext)
+  ,   (∃₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
+        (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
 redSubst* D (emb 0<1 x) with redSubst* D x
 redSubst* D (emb 0<1 x) | y , y₁ = emb 0<1 y , y₁
 
 -- Weak head expansion of reducible terms.
 redSubst*Term : ∀ {A t u l Γ}
-              → Γ ⊢ t ⇒* u ∷ A 
+              → Γ ⊢ t ⇒* u ∷ A
               → ([A] : Γ ⊩⟨ l ⟩ A ^ !)
               → Γ ⊩⟨ l ⟩ u ∷ A ^ ! / [A]
               → Γ ⊩⟨ l ⟩ t ∷ A ^ ! / [A]
@@ -64,12 +69,12 @@ redSubst*Term t⇒u (ℕᵣ D) (ℕₜ n [ ⊢u , ⊢n , d ] n≡n prop) =
   in  ℕₜ n [ ⊢t , ⊢n , t⇒u′ ⇨∷* d ] n≡n prop
   ,   ℕₜ₌ n n [ ⊢t , ⊢n , t⇒u′ ⇨∷* d ] [ ⊢u , ⊢n , d ]
           n≡n (reflNatural-prop prop)
--- redSubst*Term t⇒u (Emptyᵣ D) (Emptyₜ n ) = 
+-- redSubst*Term t⇒u (Emptyᵣ D) (Emptyₜ n ) =
 --   let A≡Empty  = subset* (red D)
 --       ⊢t   = conv (redFirst*Term t⇒u) A≡Empty
 --       t⇒u′ = conv* t⇒u A≡Empty
---   in  Emptyₜ n 
---   ,   Emptyₜ₌ n 
+--   in  Emptyₜ n
+--   ,   Emptyₜ₌ n
 redSubst*Term t⇒u (ne′ K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] (neNfₜ neK₁ ⊢k k≡k)) =
   let A≡K  = subset* (red D)
       [d]  = [ ⊢t , ⊢u , d ]
@@ -98,7 +103,7 @@ redSubst A⇒B [B] = redSubst* (A⇒B ⇨ id (escape [B])) [B]
 
 -- Weak head expansion of reducible terms with single reduction step.
 redSubstTerm : ∀ {A t u l Γ}
-             → Γ ⊢ t ⇒ u ∷ A 
+             → Γ ⊢ t ⇒ u ∷ A
              → ([A] : Γ ⊩⟨ l ⟩ A ^ !)
              → Γ ⊩⟨ l ⟩ u ∷ A ^ ! / [A]
              → Γ ⊩⟨ l ⟩ t ∷ A ^ ! / [A]
