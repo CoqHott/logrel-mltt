@@ -465,6 +465,9 @@ _⊩′⟨_⟩U : (Γ : Con Term) (l : TypeLevel) → Set
 _⊩′⟨_⟩Π_^_ : (Γ : Con Term) (l : TypeLevel) → Term → Relevance → Set
 Γ ⊩′⟨ l ⟩Π A ^ r = Γ ⊩Π A ^ r where open LogRelKit (kit l)
 
+_⊩′⟨_⟩∃_ : (Γ : Con Term) (l : TypeLevel) → Term → Set
+Γ ⊩′⟨ l ⟩∃ A = Γ ⊩∃ A where open LogRelKit (kit l)
+
 _⊩⟨_⟩_^_ : (Γ : Con Term) (l : TypeLevel) → Term → Relevance → Set
 Γ ⊩⟨ l ⟩ A ^ r = Γ ⊩ A ^ r where open LogRelKit (kit l)
 

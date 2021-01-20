@@ -214,11 +214,17 @@ U≢Empty ()
 U≢Π : ∀ {r r' F G} → Univ r PE.≢ Π F ^ r' ▹ G
 U≢Π ()
 
+U≢∃ : ∀ {r F G} → Univ r PE.≢ ∃ F ▹ G
+U≢∃ ()
+
 U≢ne : ∀ {r K} → Neutral K → Univ r PE.≢ K
 U≢ne () PE.refl
 
 ℕ≢Π : ∀ {F r G} → ℕ PE.≢ Π F ^ r ▹ G
 ℕ≢Π ()
+
+ℕ≢∃ : ∀ {F G} → ℕ PE.≢ ∃ F ▹ G
+ℕ≢∃ ()
 
 ℕ≢Empty : ℕ PE.≢ Empty
 ℕ≢Empty ()
@@ -235,8 +241,17 @@ Empty≢ne () PE.refl
 Empty≢Π : ∀ {F r G} → Empty PE.≢ Π F ^ r ▹ G
 Empty≢Π ()
 
+Empty≢∃ : ∀ {F G} → Empty PE.≢ ∃ F ▹ G
+Empty≢∃ ()
+
 Π≢ne : ∀ {F r G K} → Neutral K → Π F ^ r ▹ G PE.≢ K
 Π≢ne () PE.refl
+
+Π≢∃ : ∀ {F r G F' G'} → Π F ^ r ▹ G PE.≢ ∃ F' ▹ G'
+Π≢∃ ()
+
+∃≢ne : ∀ {F G K} → Neutral K → ∃ F ▹ G PE.≢ K
+∃≢ne () PE.refl
 
 zero≢suc : ∀ {n} → zero PE.≢ suc n
 zero≢suc ()
