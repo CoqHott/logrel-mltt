@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -83,6 +83,57 @@ mutual
            (λ ρ ⊢Δ [a] →
               let [a′] = convTerm₁′ (PE.sym rF₁≡rF′) ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F≡F′] ρ ⊢Δ) [a]
                   [a″] = convTerm₁′ (PE.sym rF₂≡rF′) ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ) ([F′≡F″] ρ ⊢Δ) [a′]
+              in  transEq ([G] ρ ⊢Δ [a]) ([G′] ρ ⊢Δ [a′]) ([G″] ρ ⊢Δ [a″])
+                          ([G≡G′] ρ ⊢Δ [a]) ([G′≡G″] ρ ⊢Δ [a′]))
+  transEqT {Γ}  {r = r} {l = l} {l′ = l′} {l″ = l″}
+           (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+               (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
+               (∃ᵣ F₂ G₂ D₂ ⊢F₂ ⊢G₂ A≡A₂ [F]₂ [G]₂ G-ext₂))
+           (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
+           (∃₌ F″ G″ D″ A≡B₁ [F≡F′]₁ [G≡G′]₁) =
+    let ∃F₁G₁≡∃F′G′    = whrDet* (red D₁ , ∃ₙ) (D′  , ∃ₙ)
+        F₁≡F′ ,  G₁≡G′ = ∃-PE-injectivity ∃F₁G₁≡∃F′G′
+        F₂≡F″ ,  G₂≡G″  = ∃-PE-injectivity (whrDet* (red D₂ , ∃ₙ) (D″ , ∃ₙ))
+        substLift {Δ} {l} {a} {r} ρ x = Δ ⊩⟨ l ⟩ wk (lift ρ) x [ a ] ^ r
+        [F′] : ∀ {ρ Δ} [ρ] ⊢Δ → Δ ⊩⟨ l′ ⟩ wk ρ F′ ^ %
+        [F′] {ρ} [ρ] ⊢Δ = PE.subst (λ x → _ ⊩⟨ _ ⟩ wk ρ x ^ _) F₁≡F′ ([F]₁ [ρ] ⊢Δ)
+        [F″] : ∀ {ρ} {Δ} [ρ] ⊢Δ → Δ ⊩⟨ l″ ⟩ wk ρ F″ ^ %
+        [F″] {ρ} [ρ] ⊢Δ = PE.subst (λ x → _ ⊩⟨ _ ⟩ wk ρ x ^ _) F₂≡F″ ([F]₂ [ρ] ⊢Δ)
+        [F′≡F″] : ∀ {ρ} {Δ} [ρ] ⊢Δ → Δ ⊩⟨ l′ ⟩ wk ρ F′ ≡ wk ρ F″ ^ % / [F′] [ρ] ⊢Δ
+        [F′≡F″] {ρ} [ρ] ⊢Δ = irrelevanceEq′ (PE.cong (wk ρ) F₁≡F′) PE.refl
+                                      ([F]₁ [ρ] ⊢Δ) ([F′] [ρ] ⊢Δ) ([F≡F′]₁ [ρ] ⊢Δ)
+        [G′] : ∀ {ρ Δ a} [ρ] ⊢Δ
+             → Δ ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ % / [F′] [ρ] ⊢Δ
+             → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′ [ a ] ^ r
+        [G′] {ρ} [ρ] ⊢Δ [a] =
+          let [a′] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₁≡F′)) PE.refl
+                                      ([F′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ) [a]
+          in  PE.subst (substLift ρ) G₁≡G′ ([G]₁ [ρ] ⊢Δ [a′])
+        [G″] : ∀ {ρ Δ a} [ρ] ⊢Δ
+             → Δ ⊩⟨ l″ ⟩ a ∷ wk ρ F″ ^ % / [F″] [ρ] ⊢Δ
+             → Δ ⊩⟨ l″ ⟩ wk (lift ρ) G″ [ a ] ^ r
+        [G″] {ρ} [ρ] ⊢Δ [a] =
+          let [a″] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₂≡F″)) PE.refl
+                                      ([F″] [ρ] ⊢Δ) ([F]₂ [ρ] ⊢Δ) [a]
+          in  PE.subst (substLift ρ) G₂≡G″ ([G]₂ [ρ] ⊢Δ [a″])
+        [G′≡G″] : ∀ {ρ Δ a} [ρ] ⊢Δ
+                  ([a] : Δ ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ % / [F′] [ρ] ⊢Δ)
+                → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′  [ a ]
+                          ≡ wk (lift ρ) G″ [ a ] ^ r / [G′] [ρ] ⊢Δ [a]
+        [G′≡G″] {ρ} [ρ] ⊢Δ [a′] =
+          let [a]₁ = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₁≡F′)) PE.refl
+                                      ([F′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ) [a′]
+          in  irrelevanceEq′ (PE.cong (λ x → wk (lift ρ) x [ _ ]) G₁≡G′) PE.refl
+                             ([G]₁ [ρ] ⊢Δ [a]₁) ([G′] [ρ] ⊢Δ [a′])
+                             ([G≡G′]₁ [ρ] ⊢Δ [a]₁)
+                             -- Γ ⊢ .C ⇒* ∃ F″ ^ rF ▹ G″ ^ r
+    in  ∃₌ F″ G″ D″ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ ∃ F″ ▹ G″ ^ %) ∃F₁G₁≡∃F′G′ A≡B₁))
+           (λ ρ ⊢Δ → transEq′ PE.refl PE.refl PE.refl PE.refl
+           ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ)
+           ([F≡F′] ρ ⊢Δ) ([F′≡F″] ρ ⊢Δ))
+           (λ ρ ⊢Δ [a] →
+              let [a′] = convTerm₁′ PE.refl ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F≡F′] ρ ⊢Δ) [a]
+                  [a″] = convTerm₁′ PE.refl ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ) ([F′≡F″] ρ ⊢Δ) [a′]
               in  transEq ([G] ρ ⊢Δ [a]) ([G′] ρ ⊢Δ [a′]) ([G″] ρ ⊢Δ [a″])
                           ([G≡G′] ρ ⊢Δ [a]) ([G′≡G″] ρ ⊢Δ [a′]))
   transEqT (Uᵥ ⊢Γ ⊢Γ₁ ⊢Γ₂) A≡B B≡C rewrite Univ-PE-injectivity B≡C = A≡B
@@ -187,6 +238,9 @@ transEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                 ([f≡g] ρ ⊢Δ [a])
                                 ([f≡g]₁ ρ ⊢Δ [a]))
 transEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
+transEqTerm {r = %} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
 transEqTerm (emb 0<1 x) t≡u u≡v = transEqTerm x t≡u u≡v

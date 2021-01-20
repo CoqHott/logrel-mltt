@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -103,7 +103,8 @@ mutual
     let A≡K = subset* D
     in  neₜ n
   neuTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n = let A≡ΠFG = subset* (red D) in conv n A≡ΠFG
-  
+  neuTerm {r = %} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n = let A≡ΠFG = subset* (red D) in conv n A≡ΠFG
+
   -- Neutrally equal terms are of reducible equality.
   neuEqTerm : ∀ {l Γ A n n′ r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               (neN : Neutral n) (neN′ : Neutral n′)
@@ -156,6 +157,9 @@ mutual
                              (conv ρn′ ρA≡ρΠFG ∘ⱼ a)
                              (~-app (~-wk [ρ] ⊢Δ n~n′₁) a≡a))
   neuEqTerm {r = %} (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
+    let A≡ΠFG = subset* D
+    in conv n A≡ΠFG , conv n′ A≡ΠFG
+  neuEqTerm {r = %} (∃ᵣ′ F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
     let A≡ΠFG = subset* D
     in conv n A≡ΠFG , conv n′ A≡ΠFG
   neuEqTerm (emb 0<1 x) neN neN′ n:≡:n′ = neuEqTerm x neN neN′ n:≡:n′
