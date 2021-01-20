@@ -54,6 +54,31 @@ mutual
                                   ([G]₁ [ρ] ⊢Δ [a])
                                   (symEq ([G] [ρ] ⊢Δ [a]₁) [ρG′a]
                                          ([G≡G′] [ρ] ⊢Δ [a]₁)))
+  symEqT {Γ = Γ} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                     (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+         (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
+    let ∃F₁G₁≡∃F′G′   = whrDet* (red D₁ , ∃ₙ) (D′ , ∃ₙ)
+        F₁≡F′ , G₁≡G′ = ∃-PE-injectivity ∃F₁G₁≡∃F′G′
+        [F₁≡F] : ∀ {Δ} {ρ} [ρ] ⊢Δ → _
+        [F₁≡F] {Δ} {ρ} [ρ] ⊢Δ =
+          let ρF′≡ρF₁ ρ = PE.cong (wk ρ) (PE.sym F₁≡F′)
+              [ρF′] {ρ} [ρ] ⊢Δ = PE.subst (λ x → Δ ⊩⟨ _ ⟩ wk ρ x ^ _) F₁≡F′ ([F]₁ [ρ] ⊢Δ)
+          in  irrelevanceEq′ {Δ} (ρF′≡ρF₁ ρ) PE.refl
+                             ([ρF′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ)
+                             (symEq′ PE.refl ([F] [ρ] ⊢Δ) ([ρF′] [ρ] ⊢Δ)
+                                    ([F≡F′] [ρ] ⊢Δ))
+    in  ∃₌ _ _ (red D) (≅-sym (PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≅ x ^ %) (PE.sym ∃F₁G₁≡∃F′G′) A≡B))
+          [F₁≡F]
+          (λ {ρ} [ρ] ⊢Δ [a] →
+               let ρG′a≡ρG₁′a = PE.cong (λ x → wk (lift ρ) x [ _ ]) (PE.sym G₁≡G′)
+                   [ρG′a] = PE.subst (λ x → _ ⊩⟨ _ ⟩ wk (lift ρ) x [ _ ] ^ _) G₁≡G′
+                                     ([G]₁ [ρ] ⊢Δ [a])
+                   [a]₁ = convTerm₁′ PE.refl ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ) ([F₁≡F] [ρ] ⊢Δ) [a]
+               in  irrelevanceEq′ ρG′a≡ρG₁′a PE.refl
+                                  [ρG′a]
+                                  ([G]₁ [ρ] ⊢Δ [a])
+                                  (symEq ([G] [ρ] ⊢Δ [a]₁) [ρG′a]
+                                         ([G≡G′] [ρ] ⊢Δ [a]₁)))
   symEqT (Uᵥ (Uᵣ _ _ _) (Uᵣ _ _ _)) A≡B rewrite Univ-PE-injectivity A≡B = PE.refl
   symEqT (emb⁰¹ x) A≡B = symEqT x A≡B
   symEqT (emb¹⁰ x) A≡B = symEqT x A≡B
@@ -106,5 +131,7 @@ symEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
   Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
       (λ ρ ⊢Δ [a] → symEqTerm ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
 symEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
+symEqTerm {r = %} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
           (d , d′) = d′ , d
 symEqTerm (emb 0<1 x) t≡u = symEqTerm x t≡u
