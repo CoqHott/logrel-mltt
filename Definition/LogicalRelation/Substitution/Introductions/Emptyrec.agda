@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -50,8 +50,8 @@ EmptyrecTerm {F} {rF = !} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
       ⊢F = escape [σF]
       ⊢F≡F = escapeEq [σF] (reflEq [σF])
   in neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F d)
-                        (~-Emptyrec ⊢F≡F (~-irrelevance d d)) 
-  
+                        (~-Emptyrec ⊢F≡F (~-irrelevance d d))
+
 EmptyrecTerm {F} {rF = %} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
            (Emptyₜ (ne d)) =
   let [Empty] = Emptyᵛ {l = l} [Γ]
@@ -102,9 +102,9 @@ Emptyrec-congTerm {F} {F′} {rF = !} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
       [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
       [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
       EmptyrecN = neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F ⊢n′)
-                           (~-Emptyrec ⊢F≡F (~-irrelevance ⊢n′ ⊢n′)) 
+                           (~-Emptyrec ⊢F≡F (~-irrelevance ⊢n′ ⊢n′))
       EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ) (Emptyrecⱼ ⊢F′ ⊢m′)
-                           (~-Emptyrec ⊢F′≡F′ (~-irrelevance ⊢m′ ⊢m′)) 
+                           (~-Emptyrec ⊢F′≡F′ (~-irrelevance ⊢m′ ⊢m′))
       EmptyrecN≡M =
           neuEqTerm [σF] Emptyrecₙ Emptyrecₙ
                      (Emptyrecⱼ ⊢F ⊢n′)
@@ -113,7 +113,7 @@ Emptyrec-congTerm {F} {F′} {rF = !} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                               (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
                      (~-Emptyrec ⊢F≡F′ (~-irrelevance ⊢n′ ⊢m′))
   in EmptyrecN≡M
-  
+
 Emptyrec-congTerm {F} {F′} {rF = %} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]

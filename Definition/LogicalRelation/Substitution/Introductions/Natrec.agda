@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -31,14 +31,14 @@ import Tools.PropositionalEquality as PE
 -- Natural recursion closure reduction (requires reducible terms and equality).
 natrec-subst* : ∀ {Γ C c g n n′ l} → Γ ∙ ℕ ^ ! ⊢ C ^ ! → Γ ⊢ c ∷ C [ zero ] ^ !
               → Γ ⊢ g ∷ Π ℕ ^ ! ▹ (C ^ ! ▹▹ C [ suc (var 0) ]↑) ^ !
-              → Γ ⊢ n ⇒* n′ ∷ ℕ 
+              → Γ ⊢ n ⇒* n′ ∷ ℕ
               → ([ℕ] : Γ ⊩⟨ l ⟩ ℕ ^ !)
               → Γ ⊩⟨ l ⟩ n′ ∷ ℕ ^ ! / [ℕ]
               → (∀ {t t′} → Γ ⊩⟨ l ⟩ t  ∷ ℕ ^ ! / [ℕ]
                           → Γ ⊩⟨ l ⟩ t′ ∷ ℕ ^ ! / [ℕ]
                           → Γ ⊩⟨ l ⟩ t ≡ t′ ∷ ℕ ^ ! / [ℕ]
                           → Γ ⊢ C [ t ] ≡ C [ t′ ] ^ !)
-              → Γ ⊢ natrec C c g n ⇒* natrec C c g n′ ∷ C [ n ] 
+              → Γ ⊢ natrec C c g n ⇒* natrec C c g n′ ∷ C [ n ]
 natrec-subst* C c g (id x) [ℕ] [n′] prop = id (natrecⱼ C c g x)
 natrec-subst* C c g (x ⇨ n⇒n′) [ℕ] [n′] prop =
   let q , w = redSubst*Term n⇒n′ [ℕ] [n′]
@@ -198,7 +198,7 @@ natrecTerm {F} {rF = %} {z} {s} {n} {Γ} {Δ} {σ} {l} [Γ] [F] [F₀] [F₊] [z
       [σFₙ] = irrelevance′ (PE.sym (singleSubstComp n σ F)) [σFₙ]′
       [ ⊢n , _ , _ ] = d
   in logRelIrr [σFₙ] (natrecⱼ ⊢F ⊢z ⊢s ⊢n)
-  
+
 natrecTerm {F} {rF = !} {z} {s} {n} {Γ} {Δ} {σ} {l} [Γ] [F] [F₀] [F₊] [z] [s] ⊢Δ [σ]
            (ℕₜ .zero d n≡n zeroᵣ) =
   let [ℕ] = ℕᵛ {l = l} [Γ]
