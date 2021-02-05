@@ -133,12 +133,19 @@ IdTerm {A} {t} {u} {Γ} {l} ⊢Γ (ℕᵣ [ ⊢A , ⊢B , D ]) [t] [u] | ⊢tA |
     aux : ∀ ([t]′ : Γ ⊩⟨ l ⟩ t ∷ A ^ ! / [A]) ([u]′ : Γ ⊩⟨ l ⟩ u ∷ A ^ ! / [A]) →
         Γ ⊩⟨ ¹ ⟩ Id A t u ∷ SProp ^ ! / Uᵣ′ _ ⁰ 0<1 ⊢Γ
     aux (ℕₜ .(suc _) d n≡n (sucᵣ x)) [u]′ = {!!}
-    aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ) (ℕₜ .(suc _) [ ⊢uℕ , ⊢sucℕ , du ] suc≡suc (sucᵣ x)) = {!!}
-    aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ) (ℕₜ .zero [ ⊢uℕ , ⊢0ℕ′ , du ] 0≡0′ zeroᵣ) =
+    aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
+        (ℕₜ .(suc _) [ ⊢uℕ , ⊢sucℕ , du ] suc≡suc (sucᵣ (ℕₜ n [ ⊢u′ , ⊢nℕ , du′ ] n≡n prop))) =
+      let nfId = (IdRed*Term′ ⊢tA ⊢uA D ⇨∷* IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ)
+            ⇨∷* (Idℕ0Red*Term′ ⊢uℕ ⊢sucℕ du ⇨∷* (Id-ℕ-0S ⊢u′ ⇨ id (Emptyⱼ ⊢Γ)))
+          nfId′ = [ Idⱼ ⊢A ⊢tA ⊢uA , Emptyⱼ ⊢Γ , nfId ]
+          [Empty] = Emptyᵣ (idRed:*: (Emptyⱼ ⊢Γ))
+          [Empty]′ = proj₁ (redSubst* (redSProp′ nfId) [Empty])
+      in Uₜ Empty nfId′ Emptyₙ (≅ₜ-Emptyrefl ⊢Γ) [Empty]′
+    aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
+        (ℕₜ .zero [ ⊢uℕ , ⊢0ℕ′ , du ] 0≡0′ zeroᵣ) =
       let nfId = (IdRed*Term′ ⊢tA ⊢uA D ⇨∷* IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ)
             ⇨∷* (Idℕ0Red*Term′ ⊢uℕ ⊢0ℕ du ⇨∷* (Id-ℕ-00 ⊢Γ ⇨ id (Unitⱼ ⊢Γ)))
           nfId′ = [ Idⱼ ⊢A ⊢tA ⊢uA , Unitⱼ ⊢Γ , nfId ]
-          nfIdType = redSProp′ nfId
           [Unit] = proj₁ (redSubst* (redSProp′ nfId) (UnitType ⊢Γ))
       in Uₜ Unit nfId′ typeUnit (Unit≡Unit ⊢Γ) [Unit]
     aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
