@@ -341,7 +341,7 @@ mutual
                          (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ !)
                                    (wk-β-natrec ρ F !)
                                    (wkTerm [ρ] ⊢Δ ⊢s)))
-  wkRedTerm ρ ⊢Δ (Id-subst A t u) = Id-subst (wkRedTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ u)
+  wkRedTerm ρ ⊢Δ (Id-subst A t u) = Id-subst (wkRed ρ ⊢Δ A) (wkTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ u)
   wkRedTerm ρ ⊢Δ (Id-ℕ-subst m n) = Id-ℕ-subst (wkRedTerm ρ ⊢Δ m) (wkTerm ρ ⊢Δ n)
   wkRedTerm ρ ⊢Δ (Id-ℕ-0-subst n) = Id-ℕ-0-subst (wkRedTerm ρ ⊢Δ n)
   wkRedTerm ρ ⊢Δ (Id-ℕ-S-subst m n) = Id-ℕ-S-subst (wkTerm ρ ⊢Δ m) (wkRedTerm ρ ⊢Δ n)
