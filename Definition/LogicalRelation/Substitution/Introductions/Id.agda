@@ -89,12 +89,6 @@ IdℕRed*Term′ : ∀ {Γ t t′ u}
 IdℕRed*Term′ ⊢t ⊢t′ (id x) ⊢u = id (Idⱼ (ℕⱼ (wfTerm ⊢u)) ⊢t ⊢u)
 IdℕRed*Term′ ⊢t ⊢t′ (x ⇨ d) ⊢u = _⇨_ (Id-ℕ-subst x ⊢u) (IdℕRed*Term′ (redFirst*Term d) ⊢t′ d ⊢u)
 
-IdℕRed*Term : ∀ {Γ t t′ u}
-              (d : Γ ⊢ t :⇒*: t′ ∷ ℕ)
-              (⊢u : Γ ⊢ u ∷ ℕ ^ !)
-            → Γ ⊢ Id ℕ t u :⇒*: Id ℕ t′ u ∷ SProp
-IdℕRed*Term [ ⊢t , ⊢t′ , d ] ⊢u = [ Idⱼ (ℕⱼ (wfTerm ⊢u)) ⊢t ⊢u , Idⱼ (ℕⱼ (wfTerm ⊢u)) ⊢t′ ⊢u , IdℕRed*Term′ ⊢t ⊢t′ d ⊢u ]
-
 Idℕ0Red*Term′ : ∀ {Γ t t′}
                 (⊢t : Γ ⊢ t ∷ ℕ ^ !)
                 (⊢t′ : Γ ⊢ t′ ∷ ℕ ^ !)
@@ -102,6 +96,15 @@ Idℕ0Red*Term′ : ∀ {Γ t t′}
               → Γ ⊢ Id ℕ zero t ⇒* Id ℕ zero t′ ∷ SProp
 Idℕ0Red*Term′ ⊢t ⊢t′ (id x) = id (Idⱼ (ℕⱼ (wfTerm ⊢t)) (zeroⱼ (wfTerm ⊢t)) ⊢t)
 Idℕ0Red*Term′ ⊢t ⊢t′ (x ⇨ d) = Id-ℕ-0-subst x ⇨ Idℕ0Red*Term′ (redFirst*Term d) ⊢t′ d
+
+IdℕSRed*Term′ : ∀ {Γ t u u′}
+                (⊢t : Γ ⊢ t ∷ ℕ ^ !)
+                (⊢u : Γ ⊢ u ∷ ℕ ^ !)
+                (⊢u′ : Γ ⊢ u′ ∷ ℕ ^ !)
+                (d : Γ ⊢ u ⇒* u′ ∷ ℕ)
+              → Γ ⊢ Id ℕ (suc t) u ⇒* Id ℕ (suc t) u′ ∷ SProp
+IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (id x) = id (Idⱼ (ℕⱼ (wfTerm ⊢t)) (sucⱼ ⊢t) ⊢u)
+IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (x ⇨ d) = Id-ℕ-S-subst ⊢t x ⇨ IdℕSRed*Term′ ⊢t (redFirst*Term d) ⊢u′ d
 
 redSProp′ : ∀ {Γ A B}
            (D : Γ ⊢ A ⇒* B ∷ SProp)
@@ -123,41 +126,49 @@ IdTerm : ∀ {A t u Γ l}
 IdTerm {A} {t} {u} {Γ} {l} ⊢Γ [A] [t] [u] with escapeTerm {l = l} [A] [t] | escapeTerm {l = l} [A] [u]
 IdTerm ⊢Γ (Uᵣ (Uᵣ l′ l< ⊢Γ₁)) [t] [u] | ⊢tA | ⊢uA = {!!}
 IdTerm {A} {t} {u} {Γ} {l} ⊢Γ (ℕᵣ [ ⊢A , ⊢B , D ]) [t] [u] | ⊢tA | ⊢uA =
-  aux [t] [u]
+  proj₁ (redSubst*Term (IdRed*Term′ ⊢tA ⊢uA D) (Uᵣ′ _ ⁰ 0<1 ⊢Γ) (aux [t] [u]))
   where
     [A] = (ℕᵣ ([ ⊢A , ⊢B , D ]))
     [ℕ] : Γ ⊩⟨ l ⟩ ℕ ^ !
     [ℕ] = ℕᵣ (idRed:*: (ℕⱼ ⊢Γ))
     A≡ℕ = redSubst* D [ℕ]
 
-    aux : ∀ ([t]′ : Γ ⊩⟨ l ⟩ t ∷ A ^ ! / [A]) ([u]′ : Γ ⊩⟨ l ⟩ u ∷ A ^ ! / [A]) →
-        Γ ⊩⟨ ¹ ⟩ Id A t u ∷ SProp ^ ! / Uᵣ′ _ ⁰ 0<1 ⊢Γ
-    aux (ℕₜ .(suc _) d n≡n (sucᵣ x)) [u]′ = {!!}
-    aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
+    aux : ∀ {t u} ([t]′ : Γ ⊩⟨ l ⟩ t ∷ ℕ ^ ! / [ℕ]) ([u]′ : Γ ⊩⟨ l ⟩ u ∷ ℕ ^ ! / [ℕ]) →
+        Γ ⊩⟨ ¹ ⟩ Id ℕ t u ∷ SProp ^ ! / Uᵣ′ _ ⁰ 0<1 ⊢Γ
+    aux (ℕₜ .(suc m) [ ⊢tℕ , ⊢smℕ , dt ] sm≡sm (sucᵣ {m} [m]))
+        (ℕₜ .(suc n) [ ⊢uℕ , ⊢snℕ , du ] sn≡sn (sucᵣ {n} [n])) =
+      let [Idmn] = aux [m] [n]
+          ⊢mℕ = escapeTerm [ℕ] [m]
+          ⊢nℕ = escapeTerm [ℕ] [n]
+          nfId = (IdℕRed*Term′ ⊢tℕ ⊢smℕ dt ⊢uℕ ⇨∷* IdℕSRed*Term′ ⊢mℕ ⊢uℕ ⊢snℕ du)
+            ⇨∷* (Id-ℕ-SS ⊢mℕ ⊢nℕ ⇨ id (Idⱼ (ℕⱼ ⊢Γ) ⊢mℕ ⊢nℕ))
+      in proj₁ (redSubst*Term nfId (Uᵣ′ _ ⁰ 0<1 ⊢Γ) [Idmn])
+    aux {t} {u} (ℕₜ .(suc _) d n≡n (sucᵣ x)) (ℕₜ .zero d₁ n≡n₁ zeroᵣ) = {!!}
+    aux {t} {u} (ℕₜ .(suc _) d n≡n (sucᵣ x)) (ℕₜ n d₁ n≡n₁ (ne x₁)) = {!!}
+    aux {t} {u} (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
         (ℕₜ .(suc _) [ ⊢uℕ , ⊢sucℕ , du ] suc≡suc (sucᵣ (ℕₜ n [ ⊢u′ , ⊢nℕ , du′ ] n≡n prop))) =
-      let nfId = (IdRed*Term′ ⊢tA ⊢uA D ⇨∷* IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ)
+      let nfId = (IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ)
             ⇨∷* (Idℕ0Red*Term′ ⊢uℕ ⊢sucℕ du ⇨∷* (Id-ℕ-0S ⊢u′ ⇨ id (Emptyⱼ ⊢Γ)))
-          nfId′ = [ Idⱼ ⊢A ⊢tA ⊢uA , Emptyⱼ ⊢Γ , nfId ]
+          nfId′ = [ Idⱼ (ℕⱼ ⊢Γ) ⊢tℕ ⊢uℕ , Emptyⱼ ⊢Γ , nfId ]
           [Empty] = Emptyᵣ (idRed:*: (Emptyⱼ ⊢Γ))
           [Empty]′ = proj₁ (redSubst* (redSProp′ nfId) [Empty])
       in Uₜ Empty nfId′ Emptyₙ (≅ₜ-Emptyrefl ⊢Γ) [Empty]′
-    aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
+    aux {t} {u} (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
         (ℕₜ .zero [ ⊢uℕ , ⊢0ℕ′ , du ] 0≡0′ zeroᵣ) =
-      let nfId = (IdRed*Term′ ⊢tA ⊢uA D ⇨∷* IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ)
+      let nfId = (IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ)
             ⇨∷* (Idℕ0Red*Term′ ⊢uℕ ⊢0ℕ du ⇨∷* (Id-ℕ-00 ⊢Γ ⇨ id (Unitⱼ ⊢Γ)))
-          nfId′ = [ Idⱼ ⊢A ⊢tA ⊢uA , Unitⱼ ⊢Γ , nfId ]
+          nfId′ = [ Idⱼ (ℕⱼ ⊢Γ) ⊢tℕ ⊢uℕ , Unitⱼ ⊢Γ , nfId ]
           [Unit] = proj₁ (redSubst* (redSProp′ nfId) (UnitType ⊢Γ))
       in Uₜ Unit nfId′ typeUnit (Unit≡Unit ⊢Γ) [Unit]
-    aux (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
+    aux {t} {u} (ℕₜ .zero [ ⊢tℕ , ⊢0ℕ , dt ] 0≡0 zeroᵣ)
         (ℕₜ k [ ⊢uℕ , ⊢kℕ , du ] k≡k′ (ne (neNfₜ neK ⊢k k≡k))) =
-      let nfId = (IdRed*Term′ ⊢tA ⊢uA D ⇨∷* IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ)
-            ⇨∷* Idℕ0Red*Term′ ⊢uℕ ⊢kℕ du
-          nfId′ = [ Idⱼ ⊢A ⊢tA ⊢uA , Idⱼ (ℕⱼ ⊢Γ) (zeroⱼ ⊢Γ) ⊢kℕ , nfId ]
+      let nfId = (IdℕRed*Term′ ⊢tℕ ⊢0ℕ dt ⊢uℕ) ⇨∷* Idℕ0Red*Term′ ⊢uℕ ⊢kℕ du
+          nfId′ = [ Idⱼ (ℕⱼ ⊢Γ) ⊢tℕ ⊢uℕ , Idⱼ (ℕⱼ ⊢Γ) (zeroⱼ ⊢Γ) ⊢kℕ , nfId ]
       in Uₜ (Id ℕ zero k) nfId′ (ne (Idℕ0ₙ neK)) (~-to-≅ₜ (~-Idℕ0 ⊢Γ k≡k))
         (ne′ (Id ℕ zero k) (redSProp nfId′) (Idℕ0ₙ neK) (~-Idℕ0 ⊢Γ k≡k))
-    aux (ℕₜ k [ ⊢t , ⊢k , d ] n≡n (ne (neNfₜ neK ⊢k′ k≡k))) [u] =
-      let nfId = [ Idⱼ ⊢A ⊢tA ⊢uA , Idⱼ (ℕⱼ ⊢Γ) ⊢k (conv ⊢uA (subset* D))
-                 , IdRed*Term′ ⊢tA ⊢uA D ⇨∷* IdℕRed*Term′ ⊢t ⊢k d (conv ⊢uA (subset* D)) ]
+    aux {t} {u} (ℕₜ k [ ⊢t , ⊢k , d ] n≡n (ne (neNfₜ neK ⊢k′ k≡k))) [u] =
+      let nfId = [ Idⱼ (ℕⱼ ⊢Γ) ⊢t (escapeTerm [ℕ] [u]) , Idⱼ (ℕⱼ ⊢Γ) ⊢k (escapeTerm [ℕ] [u])
+                 , IdℕRed*Term′ ⊢t ⊢k d (escapeTerm [ℕ] [u]) ]
           [u]′ = convTerm₁ (proj₁ A≡ℕ) [ℕ] (proj₂ A≡ℕ)
             (irrelevanceTerm {l = l} [A] (proj₁ A≡ℕ) [u])
           u≡u = escapeTermEq [ℕ] (reflEqTerm [ℕ] [u]′)
