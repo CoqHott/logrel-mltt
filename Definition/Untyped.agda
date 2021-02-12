@@ -64,7 +64,7 @@ data Kind : Set where
   Idkind : Kind
   Idreflkind : Kind
   Transpkind : Kind
-  Castkind : Kind
+  Castkind : Level → Kind
   Castreflkind : Kind
   Sigmakind : Kind
   Pairkind : Kind
@@ -143,8 +143,8 @@ Idrefl A t = gen Idreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 transp : (A P t s u e : Term) → Term
 transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
-cast : (A B e t : Term) → Term
-cast A B e t = gen Castkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
+cast : Level → (A B e t : Term) → Term
+cast l A B e t = gen (Castkind l) (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
 castrefl : (A t : Term) → Term
 castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
@@ -187,12 +187,12 @@ data Neutral : Term → Set where
   IdUₙ : ∀ {t u l} → Neutral t → Neutral (Id (U l) t u)
   IdUℕₙ : ∀ {u l} → Neutral u → Neutral (Id (U l) ℕ u)
   IdUΠₙ : ∀ {A rA l B u} → Neutral u → Neutral (Id (U l) (Π A ^ rA ▹ B) u)
-  castₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
-  castℕₙ : ∀ {B e t} → Neutral B → Neutral (cast ℕ B e t)
-  castΠₙ : ∀ {A rA P B e t} → Neutral B → Neutral (cast (Π A ^ rA ▹ P) B e t)
-  castℕℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
-  castℕΠₙ : ∀ {A rA B e t} → Neutral (cast ℕ (Π A ^ rA ▹ B) e t)
-  castΠℕₙ : ∀ {A rA B e t} → Neutral (cast (Π A ^ rA ▹ B) ℕ e t)
+  castₙ : ∀ {l A B e t} → Neutral A → Neutral (cast l A B e t)
+  castℕₙ : ∀ {l B e t} → Neutral B → Neutral (cast l ℕ B e t)
+  castΠₙ : ∀ {l A rA P B e t} → Neutral B → Neutral (cast l (Π A ^ rA ▹ P) B e t)
+  castℕℕₙ : ∀ {l e t} → Neutral t → Neutral (cast l ℕ ℕ e t)
+  castℕΠₙ : ∀ {l A rA B e t} → Neutral (cast l ℕ (Π A ^ rA ▹ B) e t)
+  castΠℕₙ : ∀ {l A rA B e t} → Neutral (cast l (Π A ^ rA ▹ B) ℕ e t)
   Emptyrecₙ : ∀ {A e} -> Neutral (Emptyrec A e)
 
 -- Weak head normal forms (whnfs).

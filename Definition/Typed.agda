@@ -143,11 +143,11 @@ mutual
             → Γ ⊢ B ∷ U l ^ !
             → Γ ⊢ e ∷ (Id (U l) A B) ^ %
             → Γ ⊢ t ∷ A ^ !
-            → Γ ⊢ cast A B e t ∷ B ^ !
+            → Γ ⊢ cast l A B e t ∷ B ^ !
     castreflⱼ : ∀ {A l t}
                  → Γ ⊢ A ∷ U l ^ !
                  → Γ ⊢ t ∷ A ^ !
-                 → Γ ⊢ castrefl A t ∷ (Id A t (cast A A (Idrefl (U l) A) t)) ^ %
+                 → Γ ⊢ castrefl A t ∷ (Id A t (cast l A A (Idrefl (U l) A) t)) ^ %
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
@@ -254,7 +254,7 @@ mutual
               → Γ ⊢ Id A t u ≡ Id A' t' u' ∷ SProp l ^ !
     Id-Π : ∀ {A rA l B t u}
            → Γ ⊢ A ∷ Univ rA l ^ !
-           → Γ ∙ A ^ rA ⊢ B ^ !
+           → Γ ∙ A ^ rA ⊢ B ∷ Univ ! l ^ !
            → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
@@ -279,13 +279,13 @@ mutual
               → Γ ⊢ (Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
                     ≡ ∃ (Id (Univ rA l) A A') ▹
                       (Π (wk1 A') ^ rA ▹ Id (U l)
-                        ((wk (lift (step id)) B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                        ((wk (lift (step id)) B) [ cast l (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk (lift (step id)) B'))
                   ∷ SProp l' ^ !
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ Id (U ⁰) ℕ ℕ
                   ≡ Unit
-                  ∷ (SProp ⁰) ^ !
+                  ∷ (SProp ¹) ^ !
     Id-SProp : ∀ {A B l l'}
                → l < l'
                → Γ ⊢ A ∷ SProp l ^ !
@@ -302,16 +302,16 @@ mutual
     Id-U-ℕΠ : ∀ {A rA B}
             → Γ ⊢ A ∷ Univ rA ⁰ ^ !
             → Γ ∙ A ^ rA ⊢ B ∷ U ⁰ ^ !
-            → Γ ⊢ Id (U ⁰) ℕ (Π A ^ rA ▹ B) ≡ Empty ∷ SProp ⁰ ^ !
+            → Γ ⊢ Id (U ⁰) ℕ (Π A ^ rA ▹ B) ≡ Empty ∷ SProp ¹ ^ !
     Id-U-Πℕ : ∀ {A rA B}
             → Γ ⊢ A ∷ Univ rA ⁰ ^ !
             → Γ ∙ A ^ rA ⊢ B ∷ U ⁰ ^ !
-            → Γ ⊢ Id (U ⁰) (Π A ^ rA ▹ B) ℕ ≡ Empty ∷ SProp ⁰ ^ !
+            → Γ ⊢ Id (U ⁰) (Π A ^ rA ▹ B) ℕ ≡ Empty ∷ SProp ¹ ^ !
     cast-cong : ∀ {A A' B B' l e e' t t'}
                 → Γ ⊢ A ≡ A' ∷ U l ^ !
                 → Γ ⊢ B ≡ B' ∷ U l ^ !
                 → Γ ⊢ t ≡ t' ∷ A ^ !
-                → Γ ⊢ cast A B e t ≡ cast A' B' e' t' ∷ B ^ !
+                → Γ ⊢ cast l A B e t ≡ cast l A' B' e' t' ∷ B ^ !
     cast-Π : ∀ {A A' rA l B B' e f}
              → Γ ⊢ A ∷ (Univ rA l) ^ !
              → Γ ∙ A ^ rA ⊢ B ∷ U l ^ !
@@ -319,21 +319,21 @@ mutual
              → Γ ∙ A' ^ rA ⊢ B' ∷ U l ^ !
              → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ %
              → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
-             → Γ ⊢ (cast (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
+             → Γ ⊢ (cast l (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
                ≡ (lam A' ▹
-                 let a = cast (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                 cast (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
+                 let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
+                 cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
                    ∷ Π A' ^ rA ▹ B' ^ !
     cast-ℕ-0 : ∀ {e}
                → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
-               → Γ ⊢ cast ℕ ℕ e zero
+               → Γ ⊢ cast ⁰ ℕ ℕ e zero
                    ≡ zero
                    ∷ ℕ ^ !
     cast-ℕ-S : ∀ {e n}
                → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
                → Γ ⊢ n ∷ ℕ ^ !
-               → Γ ⊢ cast ℕ ℕ e (suc n)
-                   ≡ suc (cast ℕ ℕ e n)
+               → Γ ⊢ cast ⁰ ℕ ℕ e (suc n)
+                   ≡ suc (cast ⁰ ℕ ℕ e n)
                    ∷ ℕ ^ !
 
 mutual
@@ -401,7 +401,7 @@ mutual
               → Γ ⊢ Id (U l) (Π A ^ rA ▹ P) B ⇒ Id (U l) (Π A ^ rA ▹ P) B' ∷ SProp l'
     Id-Π : ∀ {A rA l B t u}
            → Γ ⊢ A ∷ Univ rA l ^ !
-           → Γ ∙ A ^ rA ⊢ B ∷ U l ^ !
+           → Γ ∙ A ^ rA ⊢ B  ∷ Univ ! l ^ !
            → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
@@ -426,7 +426,7 @@ mutual
               → Γ ⊢ (Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
                     ⇒ ∃ (Id (Univ rA l) A A') ▹
                       (Π (wk1 A') ^ rA ▹ Id (U l)
-                        ((wk1d B) [ cast (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                        ((wk1d B) [ cast l (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk1d B'))
                     ∷ SProp l'
     Id-U-ℕℕ : ⊢ Γ
@@ -459,19 +459,19 @@ mutual
                   → Γ ⊢ B ∷ U l ^ !
                   → Γ ⊢ e ∷ Id (U l) A B ^ %
                   → Γ ⊢ t ∷ A ^ !
-                  → Γ ⊢ cast A B e t ⇒ cast A' B e t ∷ B
+                  → Γ ⊢ cast l A B e t ⇒ cast l A' B e t ∷ B
     cast-ℕ-subst : ∀ {B B' e t}
                   → Γ ⊢ B ⇒ B' ∷ U ⁰
                   → Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ %
                   → Γ ⊢ t ∷ ℕ ^ !
-                  → Γ ⊢ cast ℕ B e t ⇒ cast ℕ B' e t ∷ B
+                  → Γ ⊢ cast ⁰ ℕ B e t ⇒ cast ⁰ ℕ B' e t ∷ B
     cast-Π-subst : ∀ {A rA l P B B' e t}
                   → Γ ⊢ A ∷ (Univ rA l) ^ !
                   → Γ ∙ A ^ rA ⊢ P ∷ U l ^ !
                   → Γ ⊢ B ⇒ B' ∷ U l
                   → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ P) B ^ %
                   → Γ ⊢ t ∷ (Π A ^ rA ▹ P) ^ !
-                  → Γ ⊢ cast (Π A ^ rA ▹ P) B e t ⇒ cast (Π A ^ rA ▹ P) B' e t ∷ B
+                  → Γ ⊢ cast l (Π A ^ rA ▹ P) B e t ⇒ cast l (Π A ^ rA ▹ P) B' e t ∷ B
     cast-Π : ∀ {A A' rA l B B' e f}
              → Γ ⊢ A ∷ (Univ rA l) ^ !
              → Γ ∙ A ^ rA ⊢ B ∷ U l ^ !
@@ -479,21 +479,21 @@ mutual
              → Γ ∙ A' ^ rA ⊢ B' ∷ U l ^ !
              → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ %
              → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
-             → Γ ⊢ (cast (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
+             → Γ ⊢ (cast l (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
                ⇒ (lam A' ▹
-                 let a = cast (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                 cast (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
+                 let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
+                 cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
                    ∷ Π A' ^ rA ▹ B'
     cast-ℕ-0 : ∀ {e}
                → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
-               → Γ ⊢ cast ℕ ℕ e zero
+               → Γ ⊢ cast ⁰ ℕ ℕ e zero
                    ⇒ zero
                    ∷ ℕ
     cast-ℕ-S : ∀ {e n}
                → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
                → Γ ⊢ n ∷ ℕ ^ !
-               → Γ ⊢ cast ℕ ℕ e (suc n)
-                   ⇒ suc (cast ℕ ℕ e n)
+               → Γ ⊢ cast ⁰ ℕ ℕ e (suc n)
+                   ⇒ suc (cast ⁰ ℕ ℕ e n)
                    ∷ ℕ
 
   -- Type reduction
