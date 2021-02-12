@@ -22,7 +22,7 @@ conv* (id x) A≡B = id (conv x A≡B)
 conv* (x ⇨ d) A≡B = conv x A≡B ⇨ conv* d A≡B
 
 -- Universe of reduction closures
-univ* : ∀ {Γ A B r} → Γ ⊢ A ⇒* B ∷ (Univ r) → Γ ⊢ A ⇒* B ^ r
+univ* : ∀ {Γ A B r l} → Γ ⊢ A ⇒* B ∷ (Univ r l) → Γ ⊢ A ⇒* B ^ r
 univ* (id x) = id (univ x)
 univ* (x ⇨ A⇒B) = univ x ⇨ univ* A⇒B
 
