@@ -72,7 +72,7 @@ mutual
     univ : ∀ {r l l'}
          → l < l'
          → ⊢ Γ
-         → Γ ⊢ (Univ r l) ∷ (Univ r l') ^ !
+         → Γ ⊢ (Univ r l) ∷ (Univ ! l') ^ !
     ℕⱼ      : ⊢ Γ → Γ ⊢ ℕ ∷ U ⁰ ^ !
     Emptyⱼ :  ⊢ Γ → Γ ⊢ Empty ∷ SProp ⁰ ^ !
     Πⱼ_▹_   : ∀ {F rF G rG l}
