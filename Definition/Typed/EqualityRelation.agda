@@ -43,8 +43,8 @@ record EqRelSet : Set₁ where
           → Γ ⊢ t ≡ u ∷ A ^ r
 
     -- Universe
-    ≅-univ : ∀ {A B r Γ}
-           → Γ ⊢ A ≅ B ∷ (Univ r) ^ !
+    ≅-univ : ∀ {A B r l Γ}
+           → Γ ⊢ A ≅ B ∷ (Univ r l) ^ !
            → Γ ⊢ A ≅ B ^ r
 
     -- Symmetry
@@ -98,15 +98,15 @@ record EqRelSet : Set₁ where
            → Γ ⊢ a  ≅ b  ∷ A ^ !
 
     -- Universe type reflexivity
-    ≅-Urefl   : ∀ {r Γ} → ⊢ Γ → Γ ⊢ (Univ r) ≅ (Univ r) ^ !
+    ≅-Urefl   : ∀ {r l Γ} → ⊢ Γ → Γ ⊢ (Univ r l) ≅ (Univ r l) ^ !
 
     -- Natural number type reflexivity
     ≅-ℕrefl   : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ^ !
-    ≅ₜ-ℕrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ∷ U ^ !
+    ≅ₜ-ℕrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ∷ U ⁰ ^ !
 
     -- Empty type reflexivity
     ≅-Emptyrefl   : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ^ %
-    ≅ₜ-Emptyrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ∷ SProp ^ !
+    ≅ₜ-Emptyrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ∷ SProp ⁰ ^ !
 
     -- Π-congruence
 
@@ -116,19 +116,19 @@ record EqRelSet : Set₁ where
               → Γ ∙ F ^ rF ⊢ G ≅ E ^ rG
               → Γ ⊢ Π F ^ rF ▹ G ≅ Π H ^ rF ▹ E ^ rG
 
-    ≅ₜ-Π-cong : ∀ {F G H E rF rG Γ}
+    ≅ₜ-Π-cong : ∀ {F G H E rF rG l Γ}
               → Γ ⊢ F ^ rF
-              → Γ ⊢ F ≅ H ∷ (Univ rF) ^ !
-              → Γ ∙ F ^ rF ⊢ G ≅ E ∷ (Univ rG) ^ !
-              → Γ ⊢ Π F ^ rF ▹ G ≅ Π H ^ rF ▹ E ∷ (Univ rG) ^ !
+              → Γ ⊢ F ≅ H ∷ (Univ rF l) ^ !
+              → Γ ∙ F ^ rF ⊢ G ≅ E ∷ (Univ rG l) ^ !
+              → Γ ⊢ Π F ^ rF ▹ G ≅ Π H ^ rF ▹ E ∷ (Univ rG l) ^ !
 
     -- ∃-congruence
     -- Since ∃ types are always small, no need for a type-level rule
-    ≅ₜ-∃-cong : ∀ {F G H E Γ}
+    ≅ₜ-∃-cong : ∀ {F G H E l Γ}
               → Γ ⊢ F ^ %
-              → Γ ⊢ F ≅ H ∷ SProp ^ !
-              → Γ ∙ F ^ % ⊢ G ≅ E ∷ SProp ^ !
-              → Γ ⊢ ∃ F ▹ G ≅ ∃ H ▹ E ∷ SProp ^ !
+              → Γ ⊢ F ≅ H ∷ SProp l ^ !
+              → Γ ∙ F ^ % ⊢ G ≅ E ∷ SProp l ^ !
+              → Γ ⊢ ∃ F ▹ G ≅ ∃ H ▹ E ∷ SProp l ^ !
 
     -- Zero reflexivity
     ≅ₜ-zerorefl : ∀ {Γ} → ⊢ Γ → Γ ⊢ zero ≅ zero ∷ ℕ ^ !
@@ -170,99 +170,100 @@ record EqRelSet : Set₁ where
              → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ !
 
     -- Id congruences
-    ~-Id  : ∀ {A A' t t' u u' Γ}
-          → Γ ⊢ A ~ A' ∷ U ^ !
+    ~-Id  : ∀ {A A' l t t' u u' Γ}
+          → Γ ⊢ A ~ A' ∷ U l ^ !
           → Γ ⊢ t ≅ t' ∷ A ^ !
           → Γ ⊢ u ≅ u' ∷ A ^ !
-          → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp ^ !
+          → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp l ^ !
 
     ~-Idℕ : ∀ {t t' u u' Γ}
           → ⊢ Γ
           → Γ ⊢ t ~ t' ∷ ℕ ^ !
           → Γ ⊢ u ≅ u' ∷ ℕ ^ !
-          → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ∷ SProp ^ !
+          → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ∷ SProp ⁰ ^ !
 
     ~-Idℕ0 : ∀ {u u' Γ}
            → ⊢ Γ
            → Γ ⊢ u ~ u' ∷ ℕ ^ !
-           → Γ ⊢ Id ℕ zero u ~ Id ℕ zero u' ∷ SProp ^ !
+           → Γ ⊢ Id ℕ zero u ~ Id ℕ zero u' ∷ SProp ⁰ ^ !
 
     ~-IdℕS : ∀ {t t' u u' Γ}
            → ⊢ Γ
            → Γ ⊢ t ≅ t' ∷ ℕ ^ !
            → Γ ⊢ u ~ u' ∷ ℕ ^ !
-           → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ^ !
+           → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ⁰ ^ !
 
-    ~-IdU : ∀ {t t' u u' Γ}
+    ~-IdU : ∀ {t t' u u' l l' Γ}
+          → l < l'
           → ⊢ Γ
-          → Γ ⊢ t ~ t' ∷ U ^ !
-          → Γ ⊢ u ≅ u' ∷ U ^ !
-          → Γ ⊢ Id U t u ~ Id U t' u' ∷ SProp ^ !
+          → Γ ⊢ t ~ t' ∷ U l ^ !
+          → Γ ⊢ u ≅ u' ∷ U l ^ !
+          → Γ ⊢ Id (U l) t u ~ Id (U l) t' u' ∷ SProp l' ^ !
 
     ~-IdUℕ : ∀ {u u' Γ}
            → ⊢ Γ
-           → Γ ⊢ u ~ u' ∷ U ^ !
-           → Γ ⊢ Id U ℕ u ~ Id U ℕ u' ∷ SProp ^ !
+           → Γ ⊢ u ~ u' ∷ U ⁰ ^ !
+           → Γ ⊢ Id (U ⁰) ℕ u ~ Id (U ⁰) ℕ u' ∷ SProp ¹ ^ !
 
-    ~-IdUΠ : ∀ {A rA B A' B' u u' Γ}
-           → Γ ⊢ A ∷ Univ rA ^ !
-           → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
-           → Γ ∙ A ^ rA ⊢ B ≅ B' ∷ U ^ !
-           → Γ ⊢ u ~ u' ∷ U ^ !
-           → Γ ⊢ Id U (Π A ^ rA ▹ B) u ~ Id U (Π A' ^ rA ▹ B') u' ∷ SProp ^ !
+    ~-IdUΠ : ∀ {A rA l l' B A' B' u u' Γ}
+           → l < l'
+           → Γ ⊢ A ∷ Univ rA l ^ !
+           → Γ ⊢ A ≅ A' ∷ Univ rA l ^ !
+           → Γ ∙ A ^ rA ⊢ B ≅ B' ∷ U l ^ !
+           → Γ ⊢ u ~ u' ∷ U l ^ !
+           → Γ ⊢ Id (U l)  (Π A ^ rA ▹ B) u ~ Id (U l) (Π A' ^ rA ▹ B') u' ∷ SProp l' ^ !
 
     -- cast congruences
 
-    ~-cast : ∀ {A A' B B' e e' t t' Γ}
-           → Γ ⊢ A ~ A' ∷ U ^ !
-           → Γ ⊢ B ≅ B' ∷ U ^ !
-           → Γ ⊢ e ≅ e' ∷ Id U A B ^ %
+    ~-cast : ∀ {A A' B B' l e e' t t' Γ}
+           → Γ ⊢ A ~ A' ∷ U l ^ !
+           → Γ ⊢ B ≅ B' ∷ U l ^ !
            → Γ ⊢ t ≅ t' ∷ A ^ !
-           → Γ ⊢ cast A B e t ~ cast A' B' e' t' ∷ B ^ !
+           → Γ ⊢ cast l A B e t ~ cast l A' B' e' t' ∷ B ^ !
 
     ~-castℕ : ∀ {B B' e e' t t' Γ}
             → ⊢ Γ
-            → Γ ⊢ B ~ B' ∷ U ^ !
-            → Γ ⊢ e ≅ e' ∷ Id U ℕ B ^ %
+            → Γ ⊢ B ~ B' ∷ U ⁰ ^ !
+            → Γ ⊢ e ≅ e' ∷ Id (U ⁰) ℕ B ^ %
             → Γ ⊢ t ≅ t' ∷ ℕ ^ !
-            → Γ ⊢ cast ℕ B e t ~ cast ℕ B' e' t' ∷ B ^ !
+            → Γ ⊢ cast ⁰ ℕ B e t ~ cast ⁰ ℕ B' e' t' ∷ B ^ !
 
     ~-castℕℕ : ∀ {e e' t t' Γ}
              → ⊢ Γ
-             → Γ ⊢ e ≅ e' ∷ Id U ℕ ℕ ^ %
+             → Γ ⊢ e ≅ e' ∷ Id (U ⁰) ℕ ℕ ^ %
              → Γ ⊢ t ~ t' ∷ ℕ ^ !
-             → Γ ⊢ cast ℕ ℕ e t ~ cast ℕ ℕ e' t' ∷ ℕ ^ !
+             → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ∷ ℕ ^ !
 
-    ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ}
+    ~-castΠ : ∀ {A A' rA l P P' B B' e e' t t' Γ}
            → Γ ⊢ A ^ rA
-           → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
-           → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ^ !
-           → Γ ⊢ B ~ B' ∷ U ^ !
-           → Γ ⊢ e ≅ e' ∷ Id U (Π A ^ rA ▹ P) B ^ %
+           → Γ ⊢ A ≅ A' ∷ Univ rA l ^ !
+           → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U l ^ !
+           → Γ ⊢ B ~ B' ∷ U l ^ !
+           → Γ ⊢ e ≅ e' ∷ Id (U l) (Π A ^ rA ▹ P) B ^ %
            → Γ ⊢ t ≅ t' ∷ Π A ^ rA ▹ P ^ !
-           → Γ ⊢ cast (Π A ^ rA ▹ P) B e t ~ cast (Π A' ^ rA ▹ P') B' e' t' ∷ B ^ !
+           → Γ ⊢ cast l (Π A ^ rA ▹ P) B e t ~ cast l (Π A' ^ rA ▹ P') B' e' t' ∷ B ^ !
 
     ~-castℕΠ : ∀ {A A' rA P P' e e' t t' Γ}
-             → Γ ⊢ A ∷ Univ rA ^ !
-             → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
-             → Γ ∙ A ^ rA ⊢ P ∷ U ^ !
-             → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ^ !
+             → Γ ⊢ A ∷ Univ rA ⁰ ^ !
+             → Γ ⊢ A ≅ A' ∷ Univ rA ⁰ ^ !
+             → Γ ∙ A ^ rA ⊢ P ∷ U ⁰ ^ !
+             → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ⁰ ^ !
              → Γ ⊢ e ≅ e' ∷ Empty ^ %
              → Γ ⊢ t ≅ t' ∷ ℕ ^ !
-             → Γ ⊢ cast ℕ (Π A ^ rA ▹ P) e t ~ cast ℕ (Π A' ^ rA ▹ P') e' t' ∷ (Π A ^ rA ▹ P) ^ !
+             → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ▹ P) e t ~ cast ⁰ ℕ (Π A' ^ rA ▹ P') e' t' ∷ (Π A ^ rA ▹ P) ^ !
 
-    ~-castΠℕ : ∀ {A A' rA P P' e e' t t' Γ}
-             → Γ ⊢ A ∷ Univ rA ^ !
-             → Γ ⊢ A ≅ A' ∷ Univ rA ^ !
-             → Γ ∙ A ^ rA ⊢ P ∷ U ^ !
-             → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U ^ !
+    ~-castΠℕ : ∀ {A A' rA l P P' e e' t t' Γ}
+             → Γ ⊢ A ∷ Univ rA l ^ !
+             → Γ ⊢ A ≅ A' ∷ Univ rA l ^ !
+             → Γ ∙ A ^ rA ⊢ P ∷ U l ^ !
+             → Γ ∙ A ^ rA ⊢ P ≅ P' ∷ U l ^ !
              → Γ ⊢ e ≅ e' ∷ Empty ^ %
              → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ▹ P) ^ !
-             → Γ ⊢ cast (Π A ^ rA ▹ P) ℕ e t ~ cast (Π A' ^ rA ▹ P') ℕ e' t' ∷ ℕ ^ !
+             → Γ ⊢ cast l (Π A ^ rA ▹ P) ℕ e t ~ cast l (Π A' ^ rA ▹ P') ℕ e' t' ∷ ℕ ^ !
 
     ~-irrelevance : ∀ {n n′ A Γ} → Γ ⊢ n ∷ A ^ % → Γ ⊢ n′ ∷ A ^ %
                   → Γ ⊢ n ~ n′ ∷ A ^ %
 
   -- Composition of universe and generic equality compatibility
-  ~-to-≅ : ∀ {k l r Γ} → Γ ⊢ k ~ l ∷ (Univ r) ^ ! → Γ ⊢ k ≅ l ^ r
-  ~-to-≅ k~l = ≅-univ (~-to-≅ₜ k~l)
+  ~-to-≅ : ∀ {t u r l Γ} → Γ ⊢ t ~ u ∷ (Univ r l) ^ ! → Γ ⊢ t ≅ u ^ r
+  ~-to-≅ t~u = ≅-univ (~-to-≅ₜ t~u)
