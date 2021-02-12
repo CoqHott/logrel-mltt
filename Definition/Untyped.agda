@@ -24,6 +24,18 @@ data Relevance : Set where
 !≢% : ! PE.≢ %
 !≢% ()
 
+-- two levels of types
+
+data Level : Set where
+  ⁰ : Level
+  ¹ : Level
+
+⁰≢¹ : ⁰ PE.≢ ¹
+⁰≢¹ ()
+
+data _<_ : (i j : Level) → Set where
+  0<1 : ⁰ < ¹
+
 -- Typing contexts (snoc-lists, isomorphic to lists).
 
 data Con (A : Set) : Set where
@@ -37,8 +49,9 @@ record GenT (A : Set) : Set where
     l : Nat
     t : A
 
+
 data Kind : Set where
-  Ukind : Relevance → Kind
+  Ukind : Relevance → Level → Kind
   Pikind : Relevance → Kind
   Natkind : Kind
   Lamkind : Kind
@@ -69,13 +82,13 @@ data Term : Set where
 -- Π, lam, and natrec are binders.
 
 -- Type constructors.
-U      : Term                     -- Universe.
-U = gen (Ukind !) []
+U      : Level → Term                     -- Universe.
+U l = gen (Ukind ! l) []
 
-SProp : Term
-SProp = gen (Ukind %) []
+SProp : Level → Term
+SProp l = gen (Ukind % l) []
 
-pattern Univ r = gen (Ukind r) []
+pattern Univ r l = gen (Ukind r l) []
 
 Π_^_▹_   : Term → Relevance → Term → Term  -- Dependent function type (B is a binder).
 Π A ^ r ▹ B = gen (Pikind r) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
@@ -154,9 +167,8 @@ castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 suc-PE-injectivity : ∀ {n m} → suc n PE.≡ suc m → n PE.≡ m
 suc-PE-injectivity PE.refl = PE.refl
 
-Univ-PE-injectivity : ∀ {r r'} → Univ r PE.≡ Univ r' → r PE.≡ r'
-Univ-PE-injectivity PE.refl = PE.refl
-
+Univ-PE-injectivity : ∀ {r r' l l'} → Univ r l PE.≡ Univ r' l' → r PE.≡ r' × l PE.≡ l'
+Univ-PE-injectivity PE.refl = PE.refl , PE.refl
 
 -- Neutral terms.
 
@@ -172,9 +184,9 @@ data Neutral : Term → Set where
   Idℕₙ : ∀ {t u} → Neutral t → Neutral (Id ℕ t u)
   Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ zero u)
   IdℕSₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ (suc t) u)
-  IdUₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
-  IdUℕₙ : ∀ {u} → Neutral u → Neutral (Id U ℕ u)
-  IdUΠₙ : ∀ {A rA B u} → Neutral u → Neutral (Id U (Π A ^ rA ▹ B) u)
+  IdUₙ : ∀ {t u l} → Neutral t → Neutral (Id (U l) t u)
+  IdUℕₙ : ∀ {u l} → Neutral u → Neutral (Id (U l) ℕ u)
+  IdUΠₙ : ∀ {A rA l B u} → Neutral u → Neutral (Id (U l) (Π A ^ rA ▹ B) u)
   castₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
   castℕₙ : ∀ {B e t} → Neutral B → Neutral (cast ℕ B e t)
   castΠₙ : ∀ {A rA P B e t} → Neutral B → Neutral (cast (Π A ^ rA ▹ P) B e t)
@@ -189,7 +201,7 @@ data Neutral : Term → Set where
 data Whnf : Term → Set where
 
   -- Type constructors are whnfs.
-  Uₙ    : ∀ {r} → Whnf (Univ r)
+  Uₙ    : ∀ {r l} → Whnf (Univ r l)
   Πₙ    : ∀ {A r B} → Whnf (Π A ^ r ▹ B)
   ∃ₙ    : ∀ {A B} → Whnf (∃ A ▹ B)
   ℕₙ    : Whnf ℕ
@@ -209,19 +221,19 @@ data Whnf : Term → Set where
 -- Different whnfs are trivially distinguished by propositional equality.
 -- (The following statements are sometimes called "no-confusion theorems".)
 
-U≢ℕ : ∀ {r} → Univ r PE.≢ ℕ
+U≢ℕ : ∀ {r l} → Univ r l PE.≢ ℕ
 U≢ℕ ()
 
-U≢Empty : ∀ {r} → Univ r PE.≢ Empty
+U≢Empty : ∀ {r l} → Univ r l PE.≢ Empty
 U≢Empty ()
 
-U≢Π : ∀ {r r' F G} → Univ r PE.≢ Π F ^ r' ▹ G
+U≢Π : ∀ {r r' l F G} → Univ r l PE.≢ Π F ^ r' ▹ G
 U≢Π ()
 
-U≢∃ : ∀ {r F G} → Univ r PE.≢ ∃ F ▹ G
+U≢∃ : ∀ {r l F G} → Univ r l PE.≢ ∃ F ▹ G
 U≢∃ ()
 
-U≢ne : ∀ {r K} → Neutral K → Univ r PE.≢ K
+U≢ne : ∀ {r l K} → Neutral K → Univ r l PE.≢ K
 U≢ne () PE.refl
 
 ℕ≢Π : ∀ {F r G} → ℕ PE.≢ Π F ^ r ▹ G
