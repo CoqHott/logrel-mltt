@@ -47,7 +47,21 @@ mutual
     univ : ∀ {A r l}
          → Γ ⊢ A ∷ Univ r l ^ !
          → Γ ⊢ A ^ r
-
+    ℕⱼ    : ⊢ Γ → Γ ⊢ ℕ ^ !
+    Emptyⱼ : ⊢ Γ -> Γ ⊢ Empty ^ %
+    Πⱼ_▹_ : ∀ {F rF G rG}
+         → Γ     ⊢ F ^ rF
+         → Γ ∙ F ^ rF ⊢ G ^ rG
+         → Γ     ⊢ Π F ^ rF ▹ G ^ rG
+    ∃ⱼ_▹_ : ∀ {F G} -- For now we want only irrelevant sigma
+            → Γ ⊢ F ^ %
+            → Γ ∙ F ^ % ⊢ G ^ %
+            → Γ ⊢ ∃ F ▹ G ^ %
+    Idⱼ : ∀ {A t u}
+          → Γ ⊢ A ^ !
+          → Γ ⊢ t ∷ A ^ !
+          → Γ ⊢ u ∷ A ^ !
+          → Γ ⊢ (Id A t u) ^ %
   -- Well-formed term of a type
     -- We also want:
     -- Σ Relevant ▹ Relevant ∷ Relevant
@@ -57,6 +71,7 @@ mutual
   data _⊢_∷_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
     univ : ∀ {r l l'}
          → l < l'
+         → ⊢ Γ
          → Γ ⊢ (Univ r l) ∷ (Univ r l') ^ !
     ℕⱼ      : ⊢ Γ → Γ ⊢ ℕ ∷ U ⁰ ^ !
     Emptyⱼ :  ⊢ Γ → Γ ⊢ Empty ∷ SProp ⁰ ^ !
@@ -153,6 +168,14 @@ mutual
            → Γ ⊢ A ≡ B ^ r
            → Γ ⊢ B ≡ C ^ r
            → Γ ⊢ A ≡ C ^ r
+    Π-cong : ∀ {F H rF G E rG}
+           → Γ     ⊢ F ^ rF
+           → Γ     ⊢ F ≡ H ^ rF
+           → Γ ∙ F ^ rF ⊢ G ≡ E ^ rG
+           → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ^ rG
+    -- I dont think we want ∃ and Id conversion rules, as they are always in SProp
+    -- and can therefore be recovered from typed conversion
+
 
   -- Term equality
   data _⊢_≡_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → Set where
@@ -230,7 +253,7 @@ mutual
               → Γ ⊢ u ≡ u' ∷ A ^ !
               → Γ ⊢ Id A t u ≡ Id A' t' u' ∷ SProp l ^ !
     Id-Π : ∀ {A rA l B t u}
-           → Γ ⊢ A ∷ U l ^ rA
+           → Γ ⊢ A ∷ Univ rA l ^ !
            → Γ ∙ A ^ rA ⊢ B ^ !
            → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
            → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !

@@ -591,12 +591,12 @@ wk1-tailId t = trans (sym (subst-id (wk1 t))) (subst-wk t)
 open import Tools.Product
 open import Tools.Sum using (_⊎_; inj₁; inj₂)
 
-subst-Univ-either : ∀ {r} a b → subst (sgSubst a) b ≡ Univ r
-                  → (a ≡ Univ r × b ≡ var 0) ⊎ (b ≡ Univ r)
+subst-Univ-either : ∀ {r l} a b → subst (sgSubst a) b ≡ Univ r l
+                  → (a ≡ Univ r l × b ≡ var 0) ⊎ (b ≡ Univ r l)
 subst-Univ-either a (var 0) e = inj₁ (e , refl)
-subst-Univ-either a (Univ x) refl = inj₂ refl
+subst-Univ-either a (Univ x l) refl = inj₂ refl
 subst-Univ-either a (var (1+ x)) ()
-subst-Univ-either a (gen (Ukind x) (x₁ ∷ y)) ()
+subst-Univ-either a (gen (Ukind x l) (x₁ ∷ y)) ()
 subst-Univ-either a (gen (Pikind x) c) ()
 subst-Univ-either a (gen Natkind c) ()
 subst-Univ-either a (gen Lamkind c) ()
