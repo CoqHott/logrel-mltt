@@ -195,10 +195,8 @@ i <∞ j = i Fin.< j
 ι ¹ = Fin.suc Fin.zero
 
 toLevel : {l l' : TypeLevel} → l' <∞ l → Level
-toLevel {Fin.suc l} {Fin.zero} (Nat.s≤s X) = ⁰
-toLevel {Fin.suc (Fin.suc Fin.zero)} {Fin.suc Fin.zero} (Nat.s≤s X) = ¹
-toLevel {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc l')} (Nat.s≤s (Nat.s≤s ()))
-toLevel {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc l')} (Nat.s≤s (Nat.s≤s (Nat.s≤s X)))
+toLevel {l} {Fin.zero} X = ⁰
+toLevel {l} {Fin.suc l'} X = ¹
 
 -- Logical relation
 
