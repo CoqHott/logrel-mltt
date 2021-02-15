@@ -39,13 +39,8 @@ wfTerm (castreflⱼ A t) = wfTerm t
 wfTerm (conv t A≡B) = wfTerm t
 
 wf : ∀ {Γ A r} → Γ ⊢ A ^ r → ⊢ Γ
-wf (ℕⱼ ⊢Γ) = ⊢Γ
-wf (Emptyⱼ ⊢Γ) = ⊢Γ
 wf (Uⱼ ⊢Γ) = ⊢Γ
-wf (Πⱼ F ▹ G) = wf F
-wf (∃ⱼ F ▹ G) = wf F
 wf (univ A) = wfTerm A
-wf (Idⱼ A t u) = wfTerm t
 
 wfEqTerm : ∀ {Γ A t u r} → Γ ⊢ t ≡ u ∷ A ^ r → ⊢ Γ
 wfEqTerm (refl t) = wfTerm t

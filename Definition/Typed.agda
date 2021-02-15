@@ -47,21 +47,6 @@ mutual
     univ : ∀ {A r l}
          → Γ ⊢ A ∷ Univ r l ^ !
          → Γ ⊢ A ^ r
-    ℕⱼ    : ⊢ Γ → Γ ⊢ ℕ ^ !
-    Emptyⱼ : ⊢ Γ -> Γ ⊢ Empty ^ %
-    Πⱼ_▹_ : ∀ {F rF G rG}
-         → Γ     ⊢ F ^ rF
-         → Γ ∙ F ^ rF ⊢ G ^ rG
-         → Γ     ⊢ Π F ^ rF ▹ G ^ rG
-    ∃ⱼ_▹_ : ∀ {F G} -- For now we want only irrelevant sigma
-            → Γ ⊢ F ^ %
-            → Γ ∙ F ^ % ⊢ G ^ %
-            → Γ ⊢ ∃ F ▹ G ^ %
-    Idⱼ : ∀ {A t u}
-          → Γ ⊢ A ^ !
-          → Γ ⊢ t ∷ A ^ !
-          → Γ ⊢ u ∷ A ^ !
-          → Γ ⊢ (Id A t u) ^ %
   -- Well-formed term of a type
     -- We also want:
     -- Σ Relevant ▹ Relevant ∷ Relevant
