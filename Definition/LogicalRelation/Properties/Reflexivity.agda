@@ -11,6 +11,8 @@ open import Definition.LogicalRelation
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+import Data.Fin as Fin
+import Data.Nat as Nat
 
 -- Reflexivity of reducible types.
 reflEq : ∀ {l Γ A r} ([A] : Γ ⊩⟨ l ⟩ A ^ r) → Γ ⊩⟨ l ⟩ A ≡ A ^ r / [A]
@@ -27,7 +29,9 @@ reflEq (∃ᵣ′ F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
   ∃₌ _ _ D A≡A
     (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
     (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
-reflEq (emb 0<1 [A]) = reflEq [A]
+reflEq {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEq [A]
+reflEq {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEq [A]
+reflEq {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEq [A]
 
 reflNatural-prop : ∀ {Γ n}
                  → Natural-prop Γ n
@@ -47,8 +51,10 @@ reflEmpty-prop (ne x) = ne x x
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
            → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ l ⟩ t ≡ t ∷ A ^ r / [A]
-reflEqTerm (Uᵣ′ _ ⁰ 0<1 ⊢Γ) (Uₜ A d typeA A≡A [A]) =
-  Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
+reflEqTerm {Fin.suc Fin.zero} (Uᵣ′ _ Fin.zero <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
+reflEqTerm {Fin.suc (Fin.suc l)} (Uᵣ′ _ Fin.zero <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
+reflEqTerm {Fin.suc (Fin.suc Fin.zero)} (Uᵣ′ _ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s <l)) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
+reflEqTerm {Fin.suc Fin.zero} (Uᵣ′ _ (Fin.suc l) (Nat.s≤s ()) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA)
 reflEqTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
   ℕₜ₌ n n [ ⊢t , ⊢u , d ] [ ⊢t , ⊢u , d ] t≡t
       (reflNatural-prop prop)
@@ -63,4 +69,6 @@ reflEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d 
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm ([F] ρ ⊢Δ) [a]))
 reflEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
 reflEqTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
-reflEqTerm (emb 0<1 [A]) t = reflEqTerm [A] t
+reflEqTerm {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEqTerm [A]
+reflEqTerm {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEqTerm [A]
+reflEqTerm {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEqTerm [A]
