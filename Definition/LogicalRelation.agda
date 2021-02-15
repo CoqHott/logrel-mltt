@@ -24,18 +24,19 @@ import Data.Nat as Nat
 -- Reducibility of Neutrals:
 
 -- Neutral type
-record _⊩ne_^_,_ (Γ : Con Term) (A : Term) (r : Relevance) (l : Level) : Set where
+record _⊩ne_^_ (Γ : Con Term) (A : Term) (r : Relevance) : Set where
   constructor ne
   field
+    l : Level
     K   : Term
     D   : Γ ⊢ A :⇒*: K ^ r
     neK : Neutral K
     K≡K : Γ ⊢ K ~ K ∷ (Univ r l) ^ !
 
 -- Neutral type equality
-record _⊩ne_≡_^_,_/_ (Γ : Con Term) (A B : Term) (r : Relevance) (l : Level) ([A] : Γ ⊩ne A ^ r , l) : Set where
+record _⊩ne_≡_^_/_ (Γ : Con Term) (A B : Term) (r : Relevance) ([A] : Γ ⊩ne A ^ r) : Set where
   constructor ne₌
-  open _⊩ne_^_,_ [A]
+  open _⊩ne_^_ [A]
   field
     M   : Term
     D′  : Γ ⊢ B :⇒*: M ^ r
@@ -52,20 +53,20 @@ record _⊩neNf_∷_^_ (Γ : Con Term) (k A : Term) (r : Relevance) : Set where
     k≡k  : Γ ⊢ k ~ k ∷ A ^ r
 
 -- Neutral relevant term
-record _⊩ne_∷_,_/_ (Γ : Con Term) (t A : Term) (l : Level) ([A] : Γ ⊩ne A ^ ! , l) : Set where
+record _⊩ne_∷_/_ (Γ : Con Term) (t A : Term) ([A] : Γ ⊩ne A ^ !) : Set where
   inductive
   constructor neₜ
-  open _⊩ne_^_,_ [A]
+  open _⊩ne_^_ [A]
   field
     k   : Term
     d   : Γ ⊢ t :⇒*: k ∷ K
     nf  : Γ ⊩neNf k ∷ K ^ !
 
 -- Neutral irrelevant term
-record _⊩neIrr_∷_,_/_ (Γ : Con Term) (t A : Term) (l : Level) ([A] : Γ ⊩ne A ^ % , l) : Set where
+record _⊩neIrr_∷_/_ (Γ : Con Term) (t A : Term) ([A] : Γ ⊩ne A ^ %) : Set where
   inductive
   constructor neₜ
-  open _⊩ne_^_,_ [A]
+  open _⊩ne_^_ [A]
   field
     d : Γ ⊢ t ∷ A ^ %
 
@@ -79,9 +80,9 @@ record _⊩neNf_≡_∷_^_ (Γ : Con Term) (k m A : Term) (r : Relevance) : Set 
     k≡m  : Γ ⊢ k ~ m ∷ A ^ r
 
 -- Neutral relevant term equality
-record _⊩ne_≡_∷_,_/_ (Γ : Con Term) (t u A : Term) (l : Level) ([A] : Γ ⊩ne A ^ ! , l) : Set where
+record _⊩ne_≡_∷_/_ (Γ : Con Term) (t u A : Term) ([A] : Γ ⊩ne A ^ !) : Set where
   constructor neₜ₌
-  open _⊩ne_^_,_ [A]
+  open _⊩ne_^_ [A]
   field
     k m : Term
     d   : Γ ⊢ t :⇒*: k ∷ K
@@ -89,9 +90,9 @@ record _⊩ne_≡_∷_,_/_ (Γ : Con Term) (t u A : Term) (l : Level) ([A] : Γ 
     nf  : Γ ⊩neNf k ≡ m ∷ K ^ !
 
 -- Neutral irrelevant term equality
-record _⊩neIrr_≡_∷_,_/_ (Γ : Con Term) (t u A : Term) (l : Level) ([A] : Γ ⊩ne A ^ % , l) : Set where
+record _⊩neIrr_≡_∷_/_ (Γ : Con Term) (t u A : Term) ([A] : Γ ⊩ne A ^ %) : Set where
   constructor neₜ₌
-  open _⊩ne_^_,_ [A]
+  open _⊩ne_^_ [A]
   field
     d   : Γ ⊢ t ∷ A ^ %
     d′  : Γ ⊢ u ∷ A ^ %
@@ -418,7 +419,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       Uᵣ  : ∀ {r} → (UA : Γ ⊩¹U) → Γ ⊩¹ Univ r (toLevel⊩¹U UA) ^ ! 
       ℕᵣ  : ∀ {A} → Γ ⊩ℕ A → Γ ⊩¹ A ^ !
       Emptyᵣ : ∀ {A} → Γ ⊩Empty A → Γ ⊩¹ A ^ %
-      ne  : ∀ {A r l} → Γ ⊩ne A ^ r , l → Γ ⊩¹ A ^ r 
+      ne  : ∀ {A r} → Γ ⊩ne A ^ r → Γ ⊩¹ A ^ r 
       Πᵣ  : ∀ {A r} → Γ ⊩¹Π A ^ r → Γ ⊩¹ A ^ r
       ∃ᵣ  : ∀ {A} → Γ ⊩¹∃ A → Γ ⊩¹ A ^ %
       emb : ∀ {A r l′} (l< : l′ <∞ l) (let open LogRelKit (rec l<))
@@ -428,7 +429,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     Γ ⊩¹ A ≡ B ^ .! / Uᵣ {r = r'} UA = Γ ⊩¹U r' ≡ B , (toLevel⊩¹U UA)
     Γ ⊩¹ A ≡ B ^ .! / ℕᵣ D = Γ ⊩ℕ A ≡ B
     Γ ⊩¹ A ≡ B ^ .% / Emptyᵣ D = Γ ⊩Empty A ≡ B
-    Γ ⊩¹ A ≡ B ^ r / ne {l = l} neA = Γ ⊩ne A ≡ B ^ r , l / neA
+    Γ ⊩¹ A ≡ B ^ r / ne neA = Γ ⊩ne A ≡ B ^ r / neA
     Γ ⊩¹ A ≡ B ^ r / Πᵣ ΠA = Γ ⊩¹Π A ≡ B ^ r / ΠA
     Γ ⊩¹ A ≡ B ^ .% / ∃ᵣ ∃A = Γ ⊩¹∃ A ≡ B / ∃A
     Γ ⊩¹ A ≡ B ^ r / emb l< [A] = Γ ⊩ A ≡ B ^ r / [A]
@@ -438,8 +439,8 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     Γ ⊩¹ t ∷ .(Univ r' (toLevel l<)) ^ .! / Uᵣ {r = r'} (Uᵣ l′ l< ⊢Γ) = Γ ⊩¹U t ∷U r' / l<
     Γ ⊩¹ t ∷ A ^ .! / ℕᵣ D = Γ ⊩ℕ t ∷ℕ
     Γ ⊩¹ t ∷ A ^ .% / Emptyᵣ D = Γ ⊩Empty t ∷Empty
-    Γ ⊩¹ t ∷ A ^ ! / ne {l = l} neA = Γ ⊩ne t ∷ A , l / neA
-    Γ ⊩¹ t ∷ A ^ % / ne {l = l} neA = Γ ⊩neIrr t ∷ A , l / neA
+    Γ ⊩¹ t ∷ A ^ ! / ne neA = Γ ⊩ne t ∷ A / neA
+    Γ ⊩¹ t ∷ A ^ % / ne neA = Γ ⊩neIrr t ∷ A / neA
     Γ ⊩¹ f ∷ A ^ ! / Πᵣ ΠA  = Γ ⊩¹Π f ∷ A / ΠA
     Γ ⊩¹ f ∷ A ^ % / Πᵣ ΠA  = Γ ⊩¹Πirr f ∷ A / ΠA
     Γ ⊩¹ f ∷ A ^ % / ∃ᵣ ∃A  = Γ ⊩¹∃ f ∷ A / ∃A
@@ -450,8 +451,8 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     Γ ⊩¹ t ≡ u ∷ .(Univ r' (toLevel l<)) ^ .! / Uᵣ {r = r'} (Uᵣ l′ l< ⊢Γ) = Γ ⊩¹U t ≡ u ∷U r' / l<
     Γ ⊩¹ t ≡ u ∷ A ^ .! / ℕᵣ D = Γ ⊩ℕ t ≡ u ∷ℕ
     Γ ⊩¹ t ≡ u ∷ A ^ .% / Emptyᵣ D = Γ ⊩Empty t ≡ u ∷Empty
-    Γ ⊩¹ t ≡ u ∷ A ^ ! / ne {l = l} neA = Γ ⊩ne t ≡ u ∷ A , l / neA
-    Γ ⊩¹ t ≡ u ∷ A ^ % / ne {l = l} neA = Γ ⊩neIrr t ≡ u ∷ A , l / neA
+    Γ ⊩¹ t ≡ u ∷ A ^ ! / ne neA = Γ ⊩ne t ≡ u ∷ A / neA
+    Γ ⊩¹ t ≡ u ∷ A ^ % / ne neA = Γ ⊩neIrr t ≡ u ∷ A / neA
     Γ ⊩¹ t ≡ u ∷ A ^ ! / Πᵣ ΠA = Γ ⊩¹Π t ≡ u ∷ A / ΠA
     Γ ⊩¹ t ≡ u ∷ A ^ % / Πᵣ ΠA = Γ ⊩¹Πirr t ≡ u ∷ A / ΠA
     Γ ⊩¹ t ≡ u ∷ A ^ % / ∃ᵣ ∃A = Γ ⊩¹∃ t ≡ u ∷ A / ∃A
@@ -469,7 +470,7 @@ pattern Πₜ a b c d e f = a , b , c , d , e , f
 pattern Πₜ₌ a b c d e f g h i j = a , b , c , d , e , f , g , h , i , j
 
 pattern Uᵣ′ r a b c = Uᵣ {r = r} (Uᵣ a b c)
-pattern ne′ a b c d = ne (ne a b c d)
+pattern ne′ a b c d e = ne (ne a b c d e)
 pattern Πᵣ′  a b c d e f g h i j = Πᵣ (Πᵣ a b c d e f g h i j)
 pattern ∃ᵣ′  a b c d e f g h i = ∃ᵣ (∃ᵣ a b c d e f g h i)
 

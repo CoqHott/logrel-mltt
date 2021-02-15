@@ -24,7 +24,7 @@ escape {Fin.suc (Fin.suc l)} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) = univ (u
 escape {Fin.suc (Fin.suc Fin.zero)} (Uᵣ′ _ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s l<)) ⊢Γ) = Uⱼ ⊢Γ
 escape (ℕᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (Emptyᵣ [ ⊢A , ⊢B , D ]) = ⊢A
-escape (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) = ⊢A
+escape (ne′ l K [ ⊢A , ⊢B , D ] neK K≡K) = ⊢A
 escape (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape (∃ᵣ′ F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) = escape A
@@ -38,7 +38,7 @@ escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
 escapeEq (Uᵣ′ _ l′ l< ⊢Γ) PE.refl = ≅-Urefl ⊢Γ
 escapeEq (ℕᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-ℕrefl (wf ⊢A))
 escapeEq (Emptyᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-Emptyrefl (wf ⊢A))
-escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
+escapeEq (ne′ l K D neK K≡K) (ne₌ M D′ neM K≡M) =
   ≅-red (red D) (red D′) (ne neK) (ne neM) (~-to-≅ K≡M)
 escapeEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
@@ -59,9 +59,9 @@ escapeTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm {r = !}(ne′ K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] nf) =
+escapeTerm {r = !} (ne′ l K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] nf) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm {r = %}(ne′ K D neK K≡K) (neₜ d) = d
+escapeTerm {r = %} (ne′ l K D neK K≡K) (neₜ d) = d
 escapeTerm {r = ! } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                (f , [ ⊢t , ⊢u , d ] , funcF , f≡f , [f] , [f]₁) =
   conv ⊢t (sym (subset* (red D)))
@@ -87,11 +87,11 @@ escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
              (naturalWhnf natK) (naturalWhnf natK′) k≡k′
 escapeTermEq (Emptyᵣ D) (Emptyₜ₌ (ne ⊢t ⊢u)) =
   ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D)))))  ((conv ⊢u (sym (subset* (red D))))))
-escapeTermEq {r = !} (ne′ K D neK K≡K)
+escapeTermEq {r = !} (ne′ l K D neK K≡K)
                  (neₜ₌ k m d d′ (neNfₜ₌ neT neU t≡u)) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) (ne neK) (ne neT) (ne neU)
          (~-to-≅ₜ t≡u)
-escapeTermEq {r = %} (ne′ K D neK K≡K)
+escapeTermEq {r = %} (ne′ l K D neK K≡K)
                  (neₜ₌ d d′) = ~-to-≅ₜ (~-irrelevance d d′)
 escapeTermEq {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =

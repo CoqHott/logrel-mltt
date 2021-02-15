@@ -126,9 +126,6 @@ mutual
   wkEq ρ ⊢Δ (refl A) = refl (wk ρ ⊢Δ A)
   wkEq ρ ⊢Δ (sym A≡B) = sym (wkEq ρ ⊢Δ A≡B)
   wkEq ρ ⊢Δ (trans A≡B B≡C) = trans (wkEq ρ ⊢Δ A≡B) (wkEq ρ ⊢Δ B≡C)
-  wkEq ρ ⊢Δ (Π-cong F F≡H G≡E) = let ρF = wk ρ ⊢Δ F
-                                 in  Π-cong ρF (wkEq ρ ⊢Δ F≡H)
-                                               (wkEq (lift ρ) (⊢Δ ∙ ρF) G≡E)
 
   wkEqTerm : ∀ {Γ Δ A t u r ρ} → ρ ∷ Δ ⊆ Γ →
            let ρA = U.wk ρ A

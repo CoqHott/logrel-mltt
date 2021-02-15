@@ -153,11 +153,6 @@ mutual
            → Γ ⊢ A ≡ B ^ r
            → Γ ⊢ B ≡ C ^ r
            → Γ ⊢ A ≡ C ^ r
-    Π-cong : ∀ {F H rF G E rG}
-           → Γ     ⊢ F ^ rF
-           → Γ     ⊢ F ≡ H ^ rF
-           → Γ ∙ F ^ rF ⊢ G ≡ E ^ rG
-           → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ^ rG
     -- I dont think we want ∃ and Id conversion rules, as they are always in SProp
     -- and can therefore be recovered from typed conversion
 

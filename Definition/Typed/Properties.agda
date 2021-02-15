@@ -79,8 +79,6 @@ wfEq (univ A≡B) = wfEqTerm A≡B
 wfEq (refl A) = wf A
 wfEq (sym A≡B) = wfEq A≡B
 wfEq (trans A≡B B≡C) = wfEq A≡B
-wfEq (Π-cong F F≡H G≡E) = wfEq F≡H
-
 
 -- Reduction is a subset of conversion
 
