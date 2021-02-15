@@ -387,20 +387,31 @@ data ShapeView₃ Γ : ∀ l l′ l″ A B C r1 r2 r3
          → ShapeView₃ Γ l l′ (ι ¹) A B C r1 r2 r3 p q r
          → ShapeView₃ Γ l l′ ∞ A B C r1 r2 r3 p q (emb (Nat.s≤s (Nat.s≤s Nat.z≤n)) r)
 
-{-
+combineUᵥ : ∀ {Γ l l′ l″ l‴ r1 r2 r4 UA UB UA' UB'}
+        → (toLevel (LogRel._⊩¹U.l< UB)) PE.≡ (toLevel (LogRel._⊩¹U.l< UA'))
+        → ShapeView Γ l l′  (Univ r1 (toLevel (LogRel._⊩¹U.l< UA))) (Univ r2 (toLevel (LogRel._⊩¹U.l< UB))) ! ! (Uᵣ UA) (Uᵣ UB)
+        → ShapeView Γ l″ l‴ (Univ r2 (toLevel (LogRel._⊩¹U.l< UA'))) (Univ r4 (toLevel (LogRel._⊩¹U.l< UB'))) ! ! (Uᵣ UA') (Uᵣ UB')
+        → ShapeView₃ Γ l l′ l‴ (Univ r1 (toLevel (LogRel._⊩¹U.l< UA))) (Univ r2 (toLevel (LogRel._⊩¹U.l< UB)))
+                               (Univ r4 (toLevel (LogRel._⊩¹U.l< UB'))) ! ! ! (Uᵣ UA) (Uᵣ UB) (Uᵣ UB')
+combineUᵥ {l′ = Fin.suc Fin.zero} {l″ = Fin.suc Fin.zero} e (Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ)) (Uᵥ (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ₁) UC) =
+  Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ) UC
+combineUᵥ {l′ = Fin.suc (Fin.suc Fin.zero)} {l″ = Fin.suc (Fin.suc Fin.zero)} e (Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ)) (Uᵥ (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ₁) UC) =
+  Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ) UC
+combineUᵥ {l′ = Fin.suc (Fin.suc Fin.zero)} {l″ = Fin.suc (Fin.suc Fin.zero)} e (Uᵥ UA (Uᵣ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ))
+                                                                              (Uᵥ (Uᵣ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ₁) UC) =
+  Uᵥ UA (Uᵣ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ) UC
+combineUᵥ {l′ = Fin.suc Fin.zero} {l″ = Fin.suc (Fin.suc l″)} e (Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ)) (Uᵥ (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ₁) UC) =
+  Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ) UC
+combineUᵥ {l′ = Fin.suc (Fin.suc Fin.zero)} {Fin.suc Fin.zero} e (Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ)) (Uᵥ (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ₁) UC) =
+  Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ) UC
+
 -- Combines two two-way views into a three-way view
 combine : ∀ {Γ l l′ l″ l‴ A B B' C r1 r2 r2' r3 [A] [B] [B]′ [C]}
         → B PE.≡ B'
         → ShapeView Γ l l′ A B r1 r2 [A] [B]
         → ShapeView Γ l″ l‴ B' C r2' r3 [B]′ [C]
         → ShapeView₃ Γ l l′ l‴ A B C r1 r2 r3 [A] [B] [C]
-combine {l′ = Fin.suc Fin.zero} {l″ = Fin.suc Fin.zero} e (Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ)) (Uᵥ (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ₁) UC) =
-  Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ) UC
-combine {l′ = Fin.suc (Fin.suc Fin.zero)} {l″ = Fin.suc (Fin.suc Fin.zero)} e (Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ)) (Uᵥ (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ₁) UC) =
-  Uᵥ UA (Uᵣ Fin.zero (Nat.s≤s Nat.z≤n) ⊢Γ) UC
-combine {l′ = Fin.suc (Fin.suc Fin.zero)} {l″ = Fin.suc (Fin.suc Fin.zero)} e (Uᵥ UA (Uᵣ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ))
-                                                                              (Uᵥ (Uᵣ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ₁) UC) =
-  Uᵥ UA (Uᵣ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ) UC
+combine e (Uᵥ UA UB) (Uᵥ UB' UC) = combineUᵥ (let _ , el = Univ-PE-injectivity e in el) (Uᵥ UA UB) (Uᵥ UB' UC)
 combine PE.refl (Uᵥ UA UB) (ℕᵥ ℕA ℕB) = ⊥-elim (U≢ℕ (whnfRed* (red ℕA) Uₙ))
 combine PE.refl (Uᵥ UA UB) (Emptyᵥ EmptyA EmptyB) = ⊥-elim (U≢Empty (whnfRed* (red EmptyA) Uₙ))
 combine PE.refl (Uᵥ UA UB) (ne (ne l K D neK K≡K) neB) =
@@ -466,10 +477,13 @@ combine PE.refl  (∃ᵥ ΠA (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
 combine PE.refl  (∃ᵥ ∃A ∃B) (∃ᵥ ∃A₁ ∃B₁) = ∃ᵥ ∃A ∃B ∃B₁
 combine PE.refl (emb⁰¹ [AB]) [BC] = emb⁰¹¹ (combine PE.refl [AB] [BC])
 combine PE.refl (emb¹⁰ [AB]) [BC] = emb¹⁰¹ (combine PE.refl [AB] [BC])
--- combine PE.refl [AB] (emb⁰¹ [BC]) = ? -- combine PE.refl [AB] [BC]
+combine e [AB] (emb⁰¹ [BC]) = combine e [AB] [BC]
 combine PE.refl [AB] (emb¹⁰ [BC]) = emb¹¹⁰ (combine PE.refl [AB] [BC])
-combine e X Y = {!!}
-
-
-
--}
+combine PE.refl (emb⁰∞ [AB]) [BC] = emb⁰∞∞ (combine PE.refl [AB] [BC])
+combine PE.refl (emb∞⁰ [AB]) [BC] = emb∞⁰∞ (combine PE.refl [AB] [BC])
+combine e [AB] (emb⁰∞ [BC]) = combine e [AB] [BC]
+combine PE.refl [AB] (emb∞⁰ [BC]) = emb∞∞⁰ (combine PE.refl [AB] [BC])
+combine PE.refl (emb¹∞ [AB]) [BC] = emb¹∞∞ (combine PE.refl [AB] [BC])
+combine PE.refl (emb∞¹ [AB]) [BC] = emb∞¹∞ (combine PE.refl [AB] [BC])
+combine e [AB] (emb¹∞ [BC]) = combine e [AB] [BC]
+combine PE.refl [AB] (emb∞¹ [BC]) = emb∞∞¹ (combine PE.refl [AB] [BC])
