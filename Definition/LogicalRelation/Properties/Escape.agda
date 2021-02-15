@@ -14,16 +14,22 @@ open import Definition.LogicalRelation
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+import Data.Fin as Fin
+import Data.Nat as Nat
 
 -- Reducible types are well-formed.
 escape : ∀ {l Γ A r} → Γ ⊩⟨ l ⟩ A ^ r → Γ ⊢ A ^ r
-escape (Uᵣ′ _ l′ l< ⊢Γ) = Uⱼ ⊢Γ
+escape {Fin.suc Fin.zero} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) = univ (univ 0<1 ⊢Γ)
+escape {Fin.suc (Fin.suc l)} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) = univ (univ 0<1 ⊢Γ)
+escape {Fin.suc (Fin.suc Fin.zero)} (Uᵣ′ _ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s l<)) ⊢Γ) = Uⱼ ⊢Γ
 escape (ℕᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (Emptyᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) = ⊢A
 escape (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape (∃ᵣ′ F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
-escape (emb 0<1 A) = escape A
+escape {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) = escape A
+escape {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) = escape A
+escape {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) = escape A
 
 -- Reducible type equality respect the equality relation.
 escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
@@ -40,13 +46,15 @@ escapeEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
 escapeEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ ∃ₙ ∃ₙ A≡B
-escapeEq (emb 0<1 A) A≡B = escapeEq A A≡B
+escapeEq {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
+escapeEq {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
+escapeEq {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) A≡B = escapeEq A A≡B
 
 -- Reducible terms are well-formed.
 escapeTerm : ∀ {l Γ A t r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
               → Γ ⊢ t ∷ A ^ r
-escapeTerm (Uᵣ′ _ l′ l< ⊢Γ) (Uₜ A [ ⊢t , ⊢u , d ] typeA A≡A [A]) = ⊢t
+escapeTerm (Uᵣ′ _ l′ l< ⊢Γ) (Uₜ A [ ⊢t , ⊢u , d ] typeA A≡A [A] IdA castA) = ⊢t
 escapeTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) =
@@ -59,14 +67,20 @@ escapeTerm {r = ! } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
   conv ⊢t (sym (subset* (red D)))
 escapeTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
 escapeTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
-escapeTerm (emb 0<1 A) t = escapeTerm A t
+escapeTerm {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t = escapeTerm A t
+escapeTerm {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t = escapeTerm A t
+escapeTerm {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) t = escapeTerm A t
 
 -- Reducible term equality respect the equality relation.
 escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
-escapeTermEq (Uᵣ′ r' l′ l< ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
-  ≅ₜ-red (id (Uⱼ ⊢Γ)) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
+escapeTermEq {Fin.suc Fin.zero} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+  ≅ₜ-red (id (univ (univ 0<1 ⊢Γ))) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
+escapeTermEq {Fin.suc (Fin.suc l)} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+  ≅ₜ-red (id (univ (univ 0<1 ⊢Γ))) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
+escapeTermEq {Fin.suc (Fin.suc Fin.zero)} (Uᵣ′ _ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s l<)) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+  ≅ₜ-red (id (Uⱼ ⊢Γ)) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B               
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) ℕₙ
@@ -84,4 +98,6 @@ escapeTermEq {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
 escapeTermEq {r = % } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
-escapeTermEq (emb 0<1 A) t≡u = escapeTermEq A t≡u
+escapeTermEq {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
+escapeTermEq {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
+escapeTermEq {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) t≡u = escapeTermEq A t≡u
