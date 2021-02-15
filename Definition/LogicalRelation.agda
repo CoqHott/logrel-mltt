@@ -13,6 +13,8 @@ open import Definition.Typed.Reduction
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+import Data.Fin as Fin
+import Data.Nat as Nat
 
 -- The different cases of the logical relation are spread out through out
 -- this file. This is due to them having different dependencies.
@@ -179,19 +181,24 @@ data _⊩Empty_≡_∷Empty (Γ : Con Term) (t u : Term) : Set where
 
 -- Type levels
 
-data TypeLevel : Set where
-  ι : Level → TypeLevel
-  ∞ : TypeLevel
+TypeLevel : Set
+TypeLevel = Fin.Fin 3
 
-data _<∞_ : (i j : TypeLevel) → Set where
-  -- 0<1 : ι ⁰ <∞ ι ¹
-  0<∞ : ι ⁰ <∞ ∞
-  1<∞ : ι ¹ <∞ ∞
+∞ : TypeLevel 
+∞ = Fin.suc (Fin.suc Fin.zero)
+
+_<∞_ : (i j : TypeLevel) → Set
+i <∞ j = i Fin.< j
+
+ι : Level → TypeLevel
+ι ⁰ = Fin.zero
+ι ¹ = Fin.suc Fin.zero
 
 toLevel : {l l' : TypeLevel} → l' <∞ l → Level
--- toLevel 0<1 = ⁰
-toLevel 0<∞ = ⁰
-toLevel 1<∞ = ¹
+toLevel {Fin.suc l} {Fin.zero} (Nat.s≤s X) = ⁰
+toLevel {Fin.suc (Fin.suc Fin.zero)} {Fin.suc Fin.zero} (Nat.s≤s X) = ¹
+toLevel {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc l')} (Nat.s≤s (Nat.s≤s ()))
+toLevel {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc l')} (Nat.s≤s (Nat.s≤s (Nat.s≤s X)))
 
 -- Logical relation
 
@@ -471,18 +478,17 @@ pattern ∃ᵣ′  a b c d e f g h i = ∃ᵣ (∃ᵣ a b c d e f g h i)
 
 -- we need to split the LogRelKit into the level part and the general part to convince Agda termination checker
 
--- logRelRecLevel : ∀ l {l′} → l′ <∞ ι l → LogRelKit
--- logRelRecLevel ⁰ = λ ()
--- logRelRecLevel ¹ 0<1 = LogRel.kit (ι ⁰) (λ ())
-
 logRelRec : ∀ l {l′} → l′ <∞ l → LogRelKit
-logRelRec (ι ⁰) = λ ()
-logRelRec (ι ¹) =  λ () -- LogRel.kit (ι ⁰) (λ ())
-logRelRec ∞ 0<∞ = LogRel.kit (ι ⁰) (λ ())
-logRelRec ∞ 1<∞ = LogRel.kit (ι ¹) (λ ()) --logRelRecLevel ¹)
+logRelRec Fin.zero = λ ()
+logRelRec (Fin.suc Fin.zero) X = LogRel.kit (ι ⁰) (λ ())
+logRelRec (Fin.suc (Fin.suc x)) {Fin.zero} X = LogRel.kit (ι ⁰) (λ ())
+logRelRec (Fin.suc (Fin.suc x)) {Fin.suc Fin.zero} (Nat.s≤s X) = LogRel.kit (ι ¹) λ x → LogRel.kit (ι ⁰) (λ ())
+logRelRec (Fin.suc (Fin.suc Fin.zero)) {Fin.suc (Fin.suc l)} (Nat.s≤s (Nat.s≤s ()))
+logRelRec (Fin.suc (Fin.suc (Fin.suc ()))) {Fin.suc (Fin.suc l)} (Nat.s≤s (Nat.s≤s (Nat.s≤s X)))
 
 kit : ∀ (i : TypeLevel) → LogRelKit
-kit l = LogRel.kit l (logRelRec l)
+kit l =  LogRel.kit l (logRelRec l)
+
 -- a bit of repetition in "kit ¹" definition, would work better with Fin 2 for
 -- TypeLevel because you could recurse.
 
@@ -513,9 +519,9 @@ logRelIrr (Emptyᵣ [ ⊢A , ⊢B , D ]) ⊢t = Emptyₜ (ne (conv ⊢t (reducti
 logRelIrr (ne x) ⊢t = neₜ ⊢t
 logRelIrr (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
 logRelIrr (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) ∃ₙ ∃ₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
--- logRelIrr (emb 0<1 [A]) ⊢t = logRelIrr [A] ⊢t
-logRelIrr (emb 0<∞ [A]) ⊢t = logRelIrr [A] ⊢t
-logRelIrr (emb 1<∞ [A]) ⊢t = logRelIrr [A] ⊢t 
+logRelIrr {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) ⊢t = logRelIrr [A] ⊢t
+logRelIrr {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) ⊢t = logRelIrr [A] ⊢t
+logRelIrr {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) [A]) ⊢t = logRelIrr [A] ⊢t
 
 logRelIrrEq : ∀ {l t u Γ A} ([A] : Γ ⊩⟨ l ⟩ A ^ %) (⊢t : Γ ⊢ t ∷ A ^ %) (⊢u : Γ ⊢ u ∷ A ^ %) → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ % / [A]
 logRelIrrEq (Emptyᵣ [ ⊢A , ⊢B , D ]) ⊢t ⊢u = Emptyₜ₌ (ne ((conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
@@ -523,7 +529,7 @@ logRelIrrEq (Emptyᵣ [ ⊢A , ⊢B , D ]) ⊢t ⊢u = Emptyₜ₌ (ne ((conv �
 logRelIrrEq (ne x) ⊢t ⊢u = neₜ₌ ⊢t ⊢u
 logRelIrrEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) , (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )
 logRelIrrEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) ∃ₙ ∃ₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) , (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) ∃ₙ ∃ₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )
--- logRelIrrEq (emb 0<1 [A]) ⊢t ⊢u = logRelIrrEq [A] ⊢t ⊢u
-logRelIrrEq (emb 0<∞ [A]) ⊢t ⊢u = logRelIrrEq [A] ⊢t ⊢u
-logRelIrrEq (emb 1<∞ [A]) ⊢t ⊢u = logRelIrrEq [A] ⊢t ⊢u
+logRelIrrEq {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) ⊢t = logRelIrrEq [A] ⊢t
+logRelIrrEq {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) ⊢t = logRelIrrEq [A] ⊢t
+logRelIrrEq {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) [A]) ⊢t = logRelIrrEq [A] ⊢t
 
