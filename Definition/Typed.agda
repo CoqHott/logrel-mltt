@@ -28,7 +28,7 @@ Idtrans : (A x y z e f : Term) → Term -- currently not used
 Idtrans A x y z e f = transp A (Id (wk1 A) (wk1 x) (var 0)) y e z f
 
 -- Well-typed variables
-data _∷_^_∈_ : (x : Nat) (A : Term) (r : Relevance) (Γ : Con Term) → Set where
+data _∷_^_∈_ : (x : Nat) (A : Term) (r : TypeInfo) (Γ : Con Term) → Set where
   here  : ∀ {Γ A r}                     →         0 ∷ wk1 A ^ r ∈ (Γ ∙ A ^ r )
   there : ∀ {Γ A rA B rB x} (h : x ∷ A ^ rA ∈ Γ) → Nat.suc x ∷ wk1 A ^ rA ∈ (Γ ∙ B ^ rB)
 
@@ -42,107 +42,108 @@ mutual
         → ⊢ Γ ∙ A ^ r
 
   -- Well-formed type
-  data _⊢_^_ (Γ : Con Term) : Term → Relevance → Set where
-    Uⱼ    : ∀ {r} → ⊢ Γ → Γ ⊢ Univ r ¹ ^ !
+  data _⊢_^_ (Γ : Con Term) : Term → TypeInfo → Set where
+    Uⱼ    : ∀ {r} → ⊢ Γ → Γ ⊢ Univ r ¹ ^ [ ! , ∞ ]
     univ : ∀ {A r l}
-         → Γ ⊢ A ∷ Univ r l ^ !
-         → Γ ⊢ A ^ r
+         → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
+         → Γ ⊢ A ^ [ r , ι l ]
   -- Well-formed term of a type
     -- We also want:
     -- Σ Relevant ▹ Relevant ∷ Relevant
     -- Σ Relevant ▹ Irrelevant ∷ Relevant (allow us to encode relevant Empty, bool)
     -- Quotients
     -- J-types (identity types that have J)
-  data _⊢_∷_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
+    
+  data _⊢_∷_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ : ∀ {r l l'}
          → l < l'
          → ⊢ Γ
-         → Γ ⊢ (Univ r l) ∷ (Univ ! l') ^ !
-    ℕⱼ      : ⊢ Γ → Γ ⊢ ℕ ∷ U ⁰ ^ !
-    Emptyⱼ :  ⊢ Γ → Γ ⊢ Empty ∷ SProp ⁰ ^ !
+         → Γ ⊢ (Univ r l) ∷ (Univ ! l') ^ [ ! , next l' ]
+    ℕⱼ      : ⊢ Γ → Γ ⊢ ℕ ∷ U ⁰ ^ [ ! , ι ¹ ]
+    Emptyⱼ :  ⊢ Γ → Γ ⊢ Empty ∷ SProp ⁰ ^ [ ! , ι ¹ ]
     Πⱼ_▹_   : ∀ {F rF G rG l}
-           → Γ     ⊢ F ∷ (Univ rF l) ^ !
-           → Γ ∙ F ^ rF ⊢ G ∷ (Univ rG l) ^ !
-           → Γ     ⊢ Π F ^ rF ▹ G ∷ (Univ rG l) ^ !
+           → Γ     ⊢ F ∷ (Univ rF l) ^ [ ! , next l ]
+           → Γ ∙ F ^ [ rF , ι l ] ⊢ G ∷ (Univ rG l) ^ [ ! , next l ]
+           → Γ     ⊢ Π F ^ rF ▹ G ∷ (Univ rG l) ^ [ ! , next l ]
     ∃ⱼ_▹_ : ∀ {F G l}
-            → Γ ⊢ F ∷ SProp l ^ !
-            → Γ ∙ F ^ % ⊢ G ∷ SProp l ^ !
-            → Γ ⊢ ∃ F ▹ G ∷ SProp l ^ !
-    var    : ∀ {A r x}
+            → Γ ⊢ F ∷ SProp l ^ [ ! , next l ]
+            → Γ ∙ F ^ [ % , ι l ] ⊢ G ∷ SProp l ^ [ ! , next l ]
+            → Γ ⊢ ∃ F ▹ G ∷ SProp l ^ [ ! , next l ]
+    var    : ∀ {A rl x}
            → ⊢ Γ
-           → x ∷ A ^ r ∈ Γ
-           → Γ ⊢ var x ∷ A ^ r
-    lamⱼ    : ∀ {F rF G rG t}
-           → Γ     ⊢ F ^ rF
-           → Γ ∙ F ^ rF ⊢ t ∷ G ^ rG
-           → Γ     ⊢ lam F ▹ t ∷ Π F ^ rF ▹ G ^ rG
-    _∘ⱼ_    : ∀ {g a F rF G rG}
-           → Γ ⊢     g ∷ Π F ^ rF ▹ G ^ rG
-           → Γ ⊢     a ∷ F ^ rF
-           → Γ ⊢ g ∘ a ∷ G [ a ] ^ rG
-    ⦅_,_⦆ⱼ : ∀ {F G t u}
-             → Γ ⊢ t ∷ F ^ %
-             → Γ ⊢ u ∷ G [ t ] ^ %
-             → Γ ⊢ ⦅ t , u ⦆ ∷ ∃ F ▹ G ^ %
+           → x ∷ A ^ rl ∈ Γ
+           → Γ ⊢ var x ∷ A ^ rl
+    lamⱼ    : ∀ {F l rF G rG t}
+           → Γ     ⊢ F ^ [ rF , l ]
+           → Γ ∙ F ^ [ rF , l ] ⊢ t ∷ G ^ [ rG , l ]
+           → Γ     ⊢ lam F ▹ t ∷ Π F ^ rF ▹ G ^ [ rG , l ]
+    _∘ⱼ_    : ∀ {g a F rF l G rG}
+           → Γ ⊢     g ∷ Π F ^ rF ▹ G ^ [ rG , l ]
+           → Γ ⊢     a ∷ F ^ [ rF , l ]
+           → Γ ⊢ g ∘ a ∷ G [ a ] ^ [ rG , l ]
+    ⦅_,_⦆ⱼ : ∀ {l F G t u}
+             → Γ ⊢ t ∷ F ^ [ % , l ]
+             → Γ ⊢ u ∷ G [ t ] ^ [ % , l ]
+             → Γ ⊢ ⦅ t , u ⦆ ∷ ∃ F ▹ G ^ [ % , l ]
     fstⱼ : ∀ {F G t l}
-           → Γ ⊢ F ∷ SProp l ^ !
-           → Γ ∙ F ^ % ⊢ G ∷ SProp l ^ !
-           → Γ ⊢ t ∷ ∃ F ▹ G ^ %
-           → Γ ⊢ fst t ∷ F ^ %
+           → Γ ⊢ F ∷ SProp l ^ [ ! , next l ]
+           → Γ ∙ F ^ [ % , ι l ] ⊢ G ∷ SProp l ^ [ ! , next l ]
+           → Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , ι l ]
+           → Γ ⊢ fst t ∷ F ^ [ % , ι l ]
     sndⱼ : ∀ {F G t l}
-           → Γ ⊢ F ∷ SProp l ^ !
-           → Γ ∙ F ^ % ⊢ G ∷ SProp l ^ !
-           → Γ ⊢ t ∷ ∃ F ▹ G ^ %
-           → Γ ⊢ snd t ∷ G [ fst t ] ^ %
+           → Γ ⊢ F ∷ SProp l ^ [ ! , next l ]
+           → Γ ∙ F ^ [ % , ι l ] ⊢ G ∷ SProp l ^ [ ! , next l ]
+           → Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , ι l ]
+           → Γ ⊢ snd t ∷ G [ fst t ] ^ [ % , ι l ]
     zeroⱼ   : ⊢ Γ
-           → Γ ⊢ zero ∷ ℕ ^ !
+           → Γ ⊢ zero ∷ ℕ ^ [ ! ,  ι ⁰ ]
     sucⱼ    : ∀ {n}
-           → Γ ⊢ n ∷ ℕ ^ !
-           → Γ ⊢ suc n ∷ ℕ ^ !
+           → Γ ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
+           → Γ ⊢ suc n ∷ ℕ ^ [ ! ,  ι ⁰ ]
     natrecⱼ : ∀ {G rG s z n}
-           → Γ ∙ ℕ ^ ! ⊢ G ^ rG
+           → Γ ∙ ℕ ^ [ ! ,  ι ⁰ ] ⊢ G ^ rG
            → Γ       ⊢ z ∷ G [ zero ] ^ rG
-           → Γ       ⊢ s ∷ Π ℕ ^ ! ▹ (G ^ rG ▹▹ G [ suc (var Nat.zero) ]↑) ^ rG
-           → Γ       ⊢ n ∷ ℕ ^ !
+           → Γ       ⊢ s ∷ Π ℕ ^ ! ▹ (G ^ TypeInfo.r rG ▹▹ G [ suc (var Nat.zero) ]↑) ^ rG
+           → Γ       ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ       ⊢ natrec G z s n ∷ G [ n ] ^ rG
     Emptyrecⱼ : ∀ {A rA e}
-           → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty ^ % -> Γ ⊢ Emptyrec A e ∷ A ^ rA
+           → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty ^ [ % ,  ι ⁰ ] -> Γ ⊢ Emptyrec A e ∷ A ^ rA
     Idⱼ : ∀ {A l t u}
-          → Γ ⊢ A ∷ U l ^ !
-          → Γ ⊢ t ∷ A ^ !
-          → Γ ⊢ u ∷ A ^ !
-          → Γ ⊢ Id A t u ∷ SProp l ^ !
-    Idreflⱼ : ∀ {A t}
-              → Γ ⊢ t ∷ A ^ !
-              → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ %
-    transpⱼ : ∀ {A P t s u e}
-              → Γ ⊢ A ^ !
-              → Γ ∙ A ^ ! ⊢ P ^ %
-              → Γ ⊢ t ∷ A ^ !
-              → Γ ⊢ s ∷ P [ t ] ^ %
-              → Γ ⊢ u ∷ A ^ !
-              → Γ ⊢ e ∷ (Id A t u) ^ %
-              → Γ ⊢ transp A P t s u e ∷ P [ u ] ^ %
+          → Γ ⊢ A ∷ U l ^ [ ! , next l ]
+          → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+          → Γ ⊢ u ∷ A ^ [ ! , ι l ]
+          → Γ ⊢ Id A t u ∷ SProp l ^ [ ! , next l ]
+    Idreflⱼ : ∀ {A l t}
+              → Γ ⊢ t ∷ A ^ [ ! , l ]
+              → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ [ % , l ]
+    transpⱼ : ∀ {A l P t s u e}
+              → Γ ⊢ A ^ [ ! , l ]
+              → Γ ∙ A ^ [ ! , l ] ⊢ P ^ [ % , l ]
+              → Γ ⊢ t ∷ A ^ [ ! , l ]
+              → Γ ⊢ s ∷ P [ t ] ^ [ % , l ]
+              → Γ ⊢ u ∷ A ^ [ ! , l ]
+              → Γ ⊢ e ∷ (Id A t u) ^ [ % , l ]
+              → Γ ⊢ transp A P t s u e ∷ P [ u ] ^ [ % , l ]
     castⱼ : ∀ {A B l e t}
-            → Γ ⊢ A ∷ U l ^ !
-            → Γ ⊢ B ∷ U l ^ !
-            → Γ ⊢ e ∷ (Id (U l) A B) ^ %
-            → Γ ⊢ t ∷ A ^ !
-            → Γ ⊢ cast l A B e t ∷ B ^ !
+            → Γ ⊢ A ∷ U l ^ [ ! , next l ]
+            → Γ ⊢ B ∷ U l ^ [ ! , next l ]
+            → Γ ⊢ e ∷ (Id (U l) A B) ^ [ % , next l ]
+            → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+            → Γ ⊢ cast l A B e t ∷ B ^ [ ! , ι l ]
     castreflⱼ : ∀ {A l t}
-                 → Γ ⊢ A ∷ U l ^ !
-                 → Γ ⊢ t ∷ A ^ !
-                 → Γ ⊢ castrefl A t ∷ (Id A t (cast l A A (Idrefl (U l) A) t)) ^ %
+                 → Γ ⊢ A ∷ U l ^ [ ! , next l ]
+                 → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+                 → Γ ⊢ castrefl A t ∷ (Id A t (cast l A A (Idrefl (U l) A) t)) ^ [ % , ι l ]
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
            → Γ ⊢ t ∷ B ^ r
 
   -- Type equality
-  data _⊢_≡_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
+  data _⊢_≡_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ   : ∀ {A B r l}
-           → Γ ⊢ A ≡ B ∷ (Univ r l) ^ !
-           → Γ ⊢ A ≡ B ^ r
+           → Γ ⊢ A ≡ B ∷ (Univ r l) ^ [ ! , next l ]
+           → Γ ⊢ A ≡ B ^ [ r , ι l ]
     refl   : ∀ {A r}
            → Γ ⊢ A ^ r
            → Γ ⊢ A ≡ A ^ r
@@ -158,342 +159,335 @@ mutual
 
 
   -- Term equality
-  data _⊢_≡_∷_^_ (Γ : Con Term) : Term → Term → Term → Relevance → Set where
-    refl        : ∀ {t A}
-                → Γ ⊢ t ∷ A ^ !
-                → Γ ⊢ t ≡ t ∷ A ^ !
-    sym         : ∀ {t u A}
-                → Γ ⊢ t ≡ u ∷ A ^ !
-                → Γ ⊢ u ≡ t ∷ A ^ !
-    trans       : ∀ {t u v A}
-                → Γ ⊢ t ≡ u ∷ A ^ !
-                → Γ ⊢ u ≡ v ∷ A ^ !
-                → Γ ⊢ t ≡ v ∷ A ^ !
+  data _⊢_≡_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeInfo → Set where
+    refl        : ∀ {t A l}
+                → Γ ⊢ t ∷ A ^ [ ! , l ]
+                → Γ ⊢ t ≡ t ∷ A ^ [ ! , l ]
+    sym         : ∀ {t u A l}
+                → Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
+                → Γ ⊢ u ≡ t ∷ A ^ [ ! , l ]
+    trans       : ∀ {t u v A l}
+                → Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
+                → Γ ⊢ u ≡ v ∷ A ^ [ ! , l ]
+                → Γ ⊢ t ≡ v ∷ A ^ [ ! , l ]
     conv        : ∀ {A B r t u}
                 → Γ ⊢ t ≡ u ∷ A ^ r
                 → Γ ⊢ A ≡ B ^ r
                 → Γ ⊢ t ≡ u ∷ B ^ r
     Π-cong      : ∀ {E F G H rF rG l}
-                → Γ     ⊢ F ^ rF
-                → Γ     ⊢ F ≡ H       ∷ (Univ rF l) ^ !
-                → Γ ∙ F ^ rF ⊢ G ≡ E       ∷ (Univ rG l) ^ !
-                → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ∷ (Univ rG l) ^ !
+                → Γ     ⊢ F ^ [ rF , ι l ]
+                → Γ     ⊢ F ≡ H       ∷ (Univ rF l) ^ [ ! , next l ]
+                → Γ ∙ F ^ [ rF , ι l ] ⊢ G ≡ E       ∷ (Univ rG l) ^ [ ! , next l ]
+                → Γ     ⊢ Π F ^ rF ▹ G ≡ Π H ^ rF ▹ E ∷ (Univ rG l) ^ [ ! , next l ]
     ∃-cong      : ∀ {E F G H l}
-                → Γ     ⊢ F ^ %
-                → Γ     ⊢ F ≡ H       ∷ SProp l ^ !
-                → Γ ∙ F ^ % ⊢ G ≡ E       ∷ SProp l ^ !
-                → Γ     ⊢ ∃ F ▹ G ≡ ∃ H ▹ E ∷ SProp l ^ !
-    app-cong    : ∀ {a b f g F G rF}
-                → Γ ⊢ f ≡ g ∷ Π F ^ rF ▹ G ^ !
-                → Γ ⊢ a ≡ b ∷ F ^ rF
-                → Γ ⊢ f ∘ a ≡ g ∘ b ∷ G [ a ] ^ !
-    β-red       : ∀ {a t F rF G}
-                → Γ     ⊢ F ^ rF
-                → Γ ∙ F ^ rF ⊢ t ∷ G ^ !
-                → Γ     ⊢ a ∷ F ^ rF
-                → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ !
-    η-eq        : ∀ {f g F rF G}
-                → Γ     ⊢ F ^ rF
-                → Γ     ⊢ f ∷ Π F ^ rF ▹ G ^ !
-                → Γ     ⊢ g ∷ Π F ^ rF ▹ G ^ !
-                → Γ ∙ F ^ rF ⊢ wk1 f ∘ var Nat.zero ≡ wk1 g ∘ var Nat.zero ∷ G ^ !
-                → Γ     ⊢ f ≡ g ∷ Π F ^ rF ▹ G ^ !
+                → Γ     ⊢ F ^ [ % , ι l ]
+                → Γ     ⊢ F ≡ H       ∷ SProp l ^ [ ! , next l ]
+                → Γ ∙ F ^ [ % , ι l ] ⊢ G ≡ E       ∷ SProp l ^ [ ! , next l ]
+                → Γ     ⊢ ∃ F ▹ G ≡ ∃ H ▹ E ∷ SProp l ^ [ ! , next l ]
+    app-cong    : ∀ {a b f g F G rF l}
+                → Γ ⊢ f ≡ g ∷ Π F ^ rF ▹ G ^ [ ! , l ]
+                → Γ ⊢ a ≡ b ∷ F ^ [ rF , l ]
+                → Γ ⊢ f ∘ a ≡ g ∘ b ∷ G [ a ] ^ [ ! , l ]
+    β-red       : ∀ {a t F rF G l}
+                → Γ     ⊢ F ^ [ rF , l ]
+                → Γ ∙ F ^ [ rF , l ] ⊢ t ∷ G ^ [ ! , l ]
+                → Γ     ⊢ a ∷ F ^ [ rF , l ]
+                → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ [ ! , l ]
+    η-eq        : ∀ {f g F rF l G}
+                → Γ     ⊢ F ^ [ rF , l ]
+                → Γ     ⊢ f ∷ Π F ^ rF ▹ G ^ [ ! , l ]
+                → Γ     ⊢ g ∷ Π F ^ rF ▹ G ^ [ ! , l ]
+                → Γ ∙ F ^ [ rF , l ] ⊢ wk1 f ∘ var Nat.zero ≡ wk1 g ∘ var Nat.zero ∷ G ^ [ ! , l ]
+                → Γ     ⊢ f ≡ g ∷ Π F ^ rF ▹ G ^ [ ! , l ]
     suc-cong    : ∀ {m n}
-                → Γ ⊢ m ≡ n ∷ ℕ ^ !
-                → Γ ⊢ suc m ≡ suc n ∷ ℕ ^ !
-    natrec-cong : ∀ {z z′ s s′ n n′ F F′}
-                → Γ ∙ ℕ ^ ! ⊢ F ≡ F′ ^ !
-                → Γ     ⊢ z ≡ z′ ∷ F [ zero ] ^ !
-                → Γ     ⊢ s ≡ s′ ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ !
-                → Γ     ⊢ n ≡ n′ ∷ ℕ ^ !
-                → Γ     ⊢ natrec F z s n ≡ natrec F′ z′ s′ n′ ∷ F [ n ] ^ !
-    natrec-zero : ∀ {z s F}
-                → Γ ∙ ℕ ^ ! ⊢ F ^ !
-                → Γ     ⊢ z ∷ F [ zero ] ^ !
-                → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ !
-                → Γ     ⊢ natrec F z s zero ≡ z ∷ F [ zero ] ^ !
-    natrec-suc  : ∀ {n z s F}
-                → Γ     ⊢ n ∷ ℕ ^ !
-                → Γ ∙ ℕ ^ ! ⊢ F ^ !
-                → Γ     ⊢ z ∷ F [ zero ] ^ !
-                → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ !
+                → Γ ⊢ m ≡ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
+                → Γ ⊢ suc m ≡ suc n ∷ ℕ ^ [ ! ,  ι ⁰ ]
+    natrec-cong : ∀ {z z′ s s′ n n′ F F′ l}
+                → Γ ∙ ℕ ^ [ ! ,  ι ⁰ ] ⊢ F ≡ F′ ^ [ ! , l ]
+                → Γ     ⊢ z ≡ z′ ∷ F [ zero ] ^ [ ! , l ]
+                → Γ     ⊢ s ≡ s′ ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ [ ! , l ]
+                → Γ     ⊢ n ≡ n′ ∷ ℕ ^ [ ! ,  ι ⁰ ]
+                → Γ     ⊢ natrec F z s n ≡ natrec F′ z′ s′ n′ ∷ F [ n ] ^ [ ! , l ]
+    natrec-zero : ∀ {z s F l}
+                → Γ ∙ ℕ ^ [ ! ,  ι ⁰ ] ⊢ F ^ [ ! , l ]
+                → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , l ]
+                → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ [ ! , l ]
+                → Γ     ⊢ natrec F z s zero ≡ z ∷ F [ zero ] ^ [ ! , l ]
+    natrec-suc  : ∀ {n z s F l}
+                → Γ     ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
+                → Γ ∙ ℕ ^ [ ! ,  ι ⁰ ] ⊢ F ^ [ ! , l ]
+                → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , l ]
+                → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ [ ! , l ]
                 → Γ     ⊢ natrec F z s (suc n) ≡ (s ∘ n) ∘ (natrec F z s n)
-                        ∷ F [ suc n ] ^ !
-    Emptyrec-cong : ∀ {A A' e e'}
-                → Γ ⊢ A ≡ A' ^ !
-                → Γ ⊢ e ≡ e' ∷ Empty ^ %
-                → Γ ⊢ Emptyrec A e ≡ Emptyrec A' e' ∷ A ^ !
-    proof-irrelevance : ∀ {t u A}
-                      → Γ ⊢ t ∷ A ^ %
-                      → Γ ⊢ u ∷ A ^ %
-                      → Γ ⊢ t ≡ u ∷ A ^ %
+                        ∷ F [ suc n ] ^ [ ! , l ]
+    Emptyrec-cong : ∀ {A A' l e e'}
+                → Γ ⊢ A ≡ A' ^ [ ! , l ]
+                → Γ ⊢ Emptyrec A e ≡ Emptyrec A' e' ∷ A ^ [ ! , l ]
+    proof-irrelevance : ∀ {t u A l}
+                      → Γ ⊢ t ∷ A ^ [ % , l ]
+                      → Γ ⊢ u ∷ A ^ [ % , l ]
+                      → Γ ⊢ t ≡ u ∷ A ^ [ % , l ]
     Id-cong : ∀ {A A' l t t' u u'}
-              → Γ ⊢ A ≡ A' ∷ U l ^ !
-              → Γ ⊢ t ≡ t' ∷ A ^ !
-              → Γ ⊢ u ≡ u' ∷ A ^ !
-              → Γ ⊢ Id A t u ≡ Id A' t' u' ∷ SProp l ^ !
+              → Γ ⊢ A ≡ A' ∷ U l ^ [ ! , next l ]
+              → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
+              → Γ ⊢ u ≡ u' ∷ A ^ [ ! , ι l ]
+              → Γ ⊢ Id A t u ≡ Id A' t' u' ∷ SProp l ^ [ ! , next l ]
     Id-Π : ∀ {A rA l B t u}
-           → Γ ⊢ A ∷ Univ rA l ^ !
-           → Γ ∙ A ^ rA ⊢ B ∷ Univ ! l ^ !
-           → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
-           → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
+           → Γ ⊢ A ∷ Univ rA l ^ [ ! , next l ]
+           → Γ ∙ A ^ [ rA , ι l ] ⊢ B ∷ Univ ! l ^ [ ! , next l ]
+           → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ [ ! , ι l ]
+           → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ [ ! , ι l ]
            → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
                  ≡ Π A ^ rA ▹ (Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0)))
-                 ∷ SProp l ^ !
+                 ∷ SProp l ^ [ ! , next l ]
     Id-ℕ-00 : ⊢ Γ
            → Γ ⊢ (Id ℕ zero zero)
                   ≡ Unit
-                  ∷ SProp ⁰ ^ !
+                  ∷ SProp ⁰ ^ [ ! , next ⁰ ]
     Id-ℕ-SS : ∀ {m n}
-              → Γ ⊢ m ∷ ℕ ^ !
-              → Γ ⊢ n ∷ ℕ ^ !
+              → Γ ⊢ m ∷ ℕ ^ [ ! ,  ι ⁰ ]
+              → Γ ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
               → Γ ⊢ (Id ℕ (suc m) (suc n))
                     ≡ (Id ℕ m n)
-                    ∷ SProp ⁰ ^ !
-    Id-U-ΠΠ : ∀ {A A' rA B B' l l'}
-              → l < l'
-              → Γ ⊢ A ∷ (Univ rA l) ^ !
-              → Γ ∙ A ^ rA ⊢ B ∷ U l ^ !
-              → Γ ⊢ A' ∷ (Univ rA l) ^ !
-              → Γ ∙ A' ^ rA ⊢ B' ∷ U l ^ !
-              → Γ ⊢ (Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
-                    ≡ ∃ (Id (Univ rA l) A A') ▹
-                      (Π (wk1 A') ^ rA ▹ Id (U l)
-                        ((wk (lift (step id)) B) [ cast l (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                    ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+    Id-U-ΠΠ : ∀ {A A' rA B B'}
+              → Γ ⊢ A ∷ (Univ rA ⁰) ^ [ ! , next ⁰ ]
+              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+              → Γ ⊢ A' ∷ (Univ rA ⁰) ^ [ ! , next ⁰ ]
+              → Γ ∙ A' ^ [ rA , ι ⁰ ] ⊢ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
+              → Γ ⊢ (Id (U ⁰) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
+                    ≡ ∃ (Id (Univ rA ⁰) A A') ▹
+                      (Π (wk1 A') ^ rA ▹ Id (U ⁰)
+                        ((wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk (lift (step id)) B'))
-                  ∷ SProp l' ^ !
+                  ∷ SProp ¹ ^ [ ! , next ¹ ]
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ Id (U ⁰) ℕ ℕ
                   ≡ Unit
-                  ∷ (SProp ¹) ^ !
-    Id-SProp : ∀ {A B l l'}
-               → l < l'
-               → Γ ⊢ A ∷ SProp l ^ !
-               → Γ ⊢ B ∷ SProp l ^ !
-               → Γ ⊢ (Id (SProp l) A B)
+                  ∷ (SProp ¹) ^ [ ! , next ¹ ] -- there is an issue here as (U ⁰) and Unit do not live at the same level 
+    Id-SProp : ∀ {A B}
+               → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+               → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+               → Γ ⊢ (Id (SProp ⁰) A B)
                      ≡ (∃ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
-                     ∷ SProp l' ^ !
+                     ∷ SProp ¹ ^ [ ! , next ¹ ]
     Id-ℕ-0S : ∀ {t}
-            → Γ ⊢ t ∷ ℕ ^ !
-            → Γ ⊢ Id ℕ zero (suc t) ≡ Empty ∷ (SProp ⁰) ^ !
+            → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+            → Γ ⊢ Id ℕ zero (suc t) ≡ Empty ∷ (SProp ⁰) ^ [ ! , next ⁰ ]
     Id-ℕ-S0 : ∀ {t}
-            → Γ ⊢ t ∷ ℕ ^ !
-            → Γ ⊢ Id ℕ (suc t) zero ≡ Empty ∷ (SProp ⁰) ^ !
+            → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+            → Γ ⊢ Id ℕ (suc t) zero ≡ Empty ∷ (SProp ⁰) ^ [ ! , next ⁰ ]
     Id-U-ℕΠ : ∀ {A rA B}
-            → Γ ⊢ A ∷ Univ rA ⁰ ^ !
-            → Γ ∙ A ^ rA ⊢ B ∷ U ⁰ ^ !
-            → Γ ⊢ Id (U ⁰) ℕ (Π A ^ rA ▹ B) ≡ Empty ∷ SProp ¹ ^ !
+            → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
+            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢ Id (U ⁰) ℕ (Π A ^ rA ▹ B) ≡ Empty ∷ SProp ¹ ^ [ ! , next ¹ ]
     Id-U-Πℕ : ∀ {A rA B}
-            → Γ ⊢ A ∷ Univ rA ⁰ ^ !
-            → Γ ∙ A ^ rA ⊢ B ∷ U ⁰ ^ !
-            → Γ ⊢ Id (U ⁰) (Π A ^ rA ▹ B) ℕ ≡ Empty ∷ SProp ¹ ^ !
+            → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
+            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢ Id (U ⁰) (Π A ^ rA ▹ B) ℕ ≡ Empty ∷ SProp ¹ ^ [ ! , next ¹ ]
     cast-cong : ∀ {A A' B B' l e e' t t'}
-                → Γ ⊢ A ≡ A' ∷ U l ^ !
-                → Γ ⊢ B ≡ B' ∷ U l ^ !
-                → Γ ⊢ t ≡ t' ∷ A ^ !
-                → Γ ⊢ cast l A B e t ≡ cast l A' B' e' t' ∷ B ^ !
+                → Γ ⊢ A ≡ A' ∷ U l ^ [ ! , next l ]
+                → Γ ⊢ B ≡ B' ∷ U l ^ [ ! , next l ]
+                → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
+                → Γ ⊢ cast l A B e t ≡ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]
     cast-Π : ∀ {A A' rA l B B' e f}
-             → Γ ⊢ A ∷ (Univ rA l) ^ !
-             → Γ ∙ A ^ rA ⊢ B ∷ U l ^ !
-             → Γ ⊢ A' ∷ (Univ rA l) ^ !
-             → Γ ∙ A' ^ rA ⊢ B' ∷ U l ^ !
-             → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ %
-             → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
+             → Γ ⊢ A ∷ (Univ rA l) ^ [ ! , next l ]
+             → Γ ∙ A ^ [ rA , ι l ] ⊢ B ∷ U l ^ [ ! , next l ]
+             → Γ ⊢ A' ∷ (Univ rA l) ^ [ ! , next l ]
+             → Γ ∙ A' ^ [ rA , ι l ] ⊢ B' ∷ U l ^ [ ! , next l ]
+             → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ [ % , next l ]
+             → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ [ ! , ι l ]
              → Γ ⊢ (cast l (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
                ≡ (lam A' ▹
                  let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
                  cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
-                   ∷ Π A' ^ rA ▹ B' ^ !
+                   ∷ Π A' ^ rA ▹ B' ^ [ ! , ι l ]
     cast-ℕ-0 : ∀ {e}
-               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
+               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]
                → Γ ⊢ cast ⁰ ℕ ℕ e zero
                    ≡ zero
-                   ∷ ℕ ^ !
+                   ∷ ℕ ^ [ ! , ι ⁰ ]
     cast-ℕ-S : ∀ {e n}
-               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
-               → Γ ⊢ n ∷ ℕ ^ !
+               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]
+               → Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
                → Γ ⊢ cast ⁰ ℕ ℕ e (suc n)
                    ≡ suc (cast ⁰ ℕ ℕ e n)
-                   ∷ ℕ ^ !
+                   ∷ ℕ ^ [ ! , ι ⁰ ]
 
 mutual
-  data _⊢_⇒_∷_ (Γ : Con Term) : Term → Term → Term → Set where
-    conv         : ∀ {A B t u}
-                 → Γ ⊢ t ⇒ u ∷ A
-                 → Γ ⊢ A ≡ B ^ !
-                 → Γ ⊢ t ⇒ u ∷ B
-    app-subst    : ∀ {A B t u a rA}
-                 → Γ ⊢ t ⇒ u ∷ Π A ^ rA ▹ B
-                 → Γ ⊢ a ∷ A ^ rA
-                 → Γ ⊢ t ∘ a ⇒ u ∘ a ∷ B [ a ]
-    β-red        : ∀ {A B a t rA}
-                 → Γ     ⊢ A ^ rA
-                 → Γ ∙ A ^ rA ⊢ t ∷ B ^ !
-                 → Γ     ⊢ a ∷ A ^ rA
-                 → Γ     ⊢ (lam A ▹ t) ∘ a ⇒ t [ a ] ∷ B [ a ]
-    natrec-subst : ∀ {z s n n′ F}
-                 → Γ ∙ ℕ ^ ! ⊢ F ^ !
-                 → Γ     ⊢ z ∷ F [ zero ] ^ !
-                 → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ !
-                 → Γ     ⊢ n ⇒ n′ ∷ ℕ
-                 → Γ     ⊢ natrec F z s n ⇒ natrec F z s n′ ∷ F [ n ]
-    natrec-zero  : ∀ {z s F}
-                 → Γ ∙ ℕ ^ ! ⊢ F ^ !
-                 → Γ     ⊢ z ∷ F [ zero ] ^ !
-                 → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ !
-                 → Γ     ⊢ natrec F z s zero ⇒ z ∷ F [ zero ]
-    natrec-suc   : ∀ {n z s F}
-                 → Γ     ⊢ n ∷ ℕ ^ !
-                 → Γ ∙ ℕ ^ ! ⊢ F ^ !
-                 → Γ     ⊢ z ∷ F [ zero ] ^ !
-                 → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ !
+  data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeLevel → Set where
+    conv         : ∀ {A B l t u}
+                 → Γ ⊢ t ⇒ u ∷ A ^ l
+                 → Γ ⊢ A ≡ B ^ [ ! , l ]
+                 → Γ ⊢ t ⇒ u ∷ B ^ l
+    app-subst    : ∀ {A B t u a rA l}
+                 → Γ ⊢ t ⇒ u ∷ Π A ^ rA ▹ B ^ l
+                 → Γ ⊢ a ∷ A ^ [ rA , l ]
+                 → Γ ⊢ t ∘ a ⇒ u ∘ a ∷ B [ a ] ^ l
+    β-red        : ∀ {A B l a t rA}
+                 → Γ     ⊢ A ^ [ rA , l ]
+                 → Γ ∙ A ^ [ rA , l ] ⊢ t ∷ B ^ [ ! , l ]
+                 → Γ     ⊢ a ∷ A ^ [ rA , l ]
+                 → Γ     ⊢ (lam A ▹ t) ∘ a ⇒ t [ a ] ∷ B [ a ] ^ l
+    natrec-subst : ∀ {z s n n′ F l}
+                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , l ]
+                 → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , l ]
+                 → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ [ ! , l ]
+                 → Γ     ⊢ n ⇒ n′ ∷ ℕ ^ ι ⁰
+                 → Γ     ⊢ natrec F z s n ⇒ natrec F z s n′ ∷ F [ n ] ^ l
+    natrec-zero  : ∀ {z s F l }
+                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , l ]
+                 → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , l ]
+                 → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ [ ! , l ]
+                 → Γ     ⊢ natrec F z s zero ⇒ z ∷ F [ zero ] ^ l
+    natrec-suc   : ∀ {n z s F l}
+                 → Γ     ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
+                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , l ]
+                 → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , l ]
+                 → Γ     ⊢ s ∷ Π ℕ ^ ! ▹ (F ^ ! ▹▹ F [ suc (var Nat.zero) ]↑) ^ [ ! , l ]
                  → Γ     ⊢ natrec F z s (suc n) ⇒ (s ∘ n) ∘ (natrec F z s n)
-                         ∷ F [ suc n ]
+                         ∷ F [ suc n ] ^ l
     Id-subst : ∀ {A A' l t u}
-              → Γ ⊢ A ⇒ A' ∷ U l
-              → Γ ⊢ t ∷ A ^ !
-              → Γ ⊢ u ∷ A ^ !
-              → Γ ⊢ Id A t u ⇒ Id A' t u ∷ SProp l
+              → Γ ⊢ A ⇒ A' ∷ U l ^ next l
+              → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+              → Γ ⊢ u ∷ A ^ [ ! , ι l ]
+              → Γ ⊢ Id A t u ⇒ Id A' t u ∷ SProp l ^ next l
     Id-ℕ-subst : ∀ {m m' n}
-              → Γ ⊢ m ⇒ m' ∷ ℕ
-              → Γ ⊢ n ∷ ℕ ^ !
-              → Γ ⊢ Id ℕ m n ⇒ Id ℕ m' n ∷ SProp ⁰
+              → Γ ⊢ m ⇒ m' ∷ ℕ ^ ι ⁰
+              → Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
+              → Γ ⊢ Id ℕ m n ⇒ Id ℕ m' n ∷ SProp ⁰ ^ next ⁰
     Id-ℕ-0-subst : ∀ {n n'}
-              → Γ ⊢ n ⇒ n' ∷ ℕ
-              → Γ ⊢ Id ℕ zero n ⇒ Id ℕ zero n' ∷ SProp ⁰
+              → Γ ⊢ n ⇒ n' ∷ ℕ ^ ι ⁰
+              → Γ ⊢ Id ℕ zero n ⇒ Id ℕ zero n' ∷ SProp ⁰ ^ next ⁰
     Id-ℕ-S-subst : ∀ {m n n'}
-              → Γ ⊢ m ∷ ℕ ^ !
-              → Γ ⊢ n ⇒ n' ∷ ℕ
-              → Γ ⊢ Id ℕ (suc m) n ⇒ Id ℕ (suc m) n' ∷ SProp ⁰
-    Id-U-subst : ∀ {A A' B l l'}
-              → l < l'
-              → Γ ⊢ A ⇒ A' ∷ U l
-              → Γ ⊢ B ∷ U l ^ !
-              → Γ ⊢ Id (U l) A B ⇒ Id (U l) A' B ∷ SProp l'
+              → Γ ⊢ m ∷ ℕ ^ [ ! , ι ⁰ ]
+              → Γ ⊢ n ⇒ n' ∷ ℕ ^ ι ⁰
+              → Γ ⊢ Id ℕ (suc m) n ⇒ Id ℕ (suc m) n' ∷ SProp ⁰ ^ next ⁰
+    Id-U-subst : ∀ {A A' B}
+              → Γ ⊢ A ⇒ A' ∷ U ⁰  ^ next ⁰ 
+              → Γ ⊢ B ∷ U ⁰  ^ [ ! , next ⁰  ]
+              → Γ ⊢ Id (U ⁰ ) A B ⇒ Id (U ⁰) A' B ∷ SProp ¹ ^ next ¹
     Id-U-ℕ-subst : ∀ {B B'}
-              → Γ ⊢ B ⇒ B' ∷ U ⁰
-              → Γ ⊢ Id (U ⁰) ℕ B ⇒ Id (U ⁰) ℕ B' ∷ SProp ¹
-    Id-U-Π-subst : ∀ {A rA l l' P B B'}
-              → l < l'
-              → Γ ⊢ A ∷ (Univ rA l) ^ !
-              → Γ ∙ A ^ rA ⊢ P ∷ U l ^ !
-              → Γ ⊢ B ⇒ B' ∷ U l
-              → Γ ⊢ Id (U l) (Π A ^ rA ▹ P) B ⇒ Id (U l) (Π A ^ rA ▹ P) B' ∷ SProp l'
+              → Γ ⊢ B ⇒ B' ∷ U ⁰ ^ next ⁰
+              → Γ ⊢ Id (U ⁰) ℕ B ⇒ Id (U ⁰) ℕ B' ∷ SProp ¹ ^ next ¹
+    Id-U-Π-subst : ∀ {A rA P B B'}
+              → Γ ⊢ A ∷ (Univ rA ⁰) ^ [ ! , next ⁰ ]
+              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
+              → Γ ⊢ B ⇒ B' ∷ U ⁰ ^ next ⁰
+              → Γ ⊢ Id (U ⁰) (Π A ^ rA ▹ P) B ⇒ Id (U ⁰) (Π A ^ rA ▹ P) B' ∷ SProp ¹ ^ next ¹
     Id-Π : ∀ {A rA l B t u}
-           → Γ ⊢ A ∷ Univ rA l ^ !
-           → Γ ∙ A ^ rA ⊢ B  ∷ Univ ! l ^ !
-           → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ !
-           → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ !
+           → Γ ⊢ A ∷ Univ rA l ^ [ ! , next l ]
+           → Γ ∙ A ^ [ rA , ι l ] ⊢ B  ∷ Univ ! l ^ [ ! , next l ]
+           → Γ ⊢ t ∷ (Π A ^ rA ▹ B) ^ [ ! , ι l ]
+           → Γ ⊢ u ∷ (Π A ^ rA ▹ B) ^ [ ! , ι l ]
            → Γ ⊢ (Id (Π A ^ rA ▹ B) t u)
                  ⇒ Π A ^ rA ▹ (Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0)))
-                 ∷ SProp l
+                 ∷ SProp l ^ next l 
     Id-ℕ-00 : ⊢ Γ
             → Γ ⊢ (Id ℕ zero zero)
                   ⇒ Unit
-                  ∷ SProp ⁰
+                  ∷ SProp ⁰ ^ next ⁰
     Id-ℕ-SS : ∀ {m n}
-              → Γ ⊢ m ∷ ℕ ^ !
-              → Γ ⊢ n ∷ ℕ ^ !
+              → Γ ⊢ m ∷ ℕ ^ [ ! , ι ⁰ ]
+              → Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
               → Γ ⊢ (Id ℕ (suc m) (suc n))
                     ⇒ (Id ℕ m n)
-                    ∷ SProp ⁰
-    Id-U-ΠΠ : ∀ {A A' rA l l' B B'}
-              → l < l'
-              → Γ ⊢ A ∷ (Univ rA l) ^ !
-              → Γ ∙ A ^ rA ⊢ B ∷ U l ^ !
-              → Γ ⊢ A' ∷ (Univ rA l) ^ !
-              → Γ ∙ A' ^ rA ⊢ B' ∷ U l ^ !
-              → Γ ⊢ (Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
-                    ⇒ ∃ (Id (Univ rA l) A A') ▹
-                      (Π (wk1 A') ^ rA ▹ Id (U l)
-                        ((wk1d B) [ cast l (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                    ∷ SProp ⁰ ^ next ⁰
+    Id-U-ΠΠ : ∀ {A A' rA B B'}
+              → Γ ⊢ A ∷ (Univ rA ⁰) ^ [ ! , next ⁰ ]
+              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+              → Γ ⊢ A' ∷ (Univ rA ⁰) ^ [ ! , next ⁰ ]
+              → Γ ∙ A' ^ [ rA , ι ⁰ ] ⊢ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
+              → Γ ⊢ (Id (U ⁰) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B'))
+                    ⇒ ∃ (Id (Univ rA ⁰) A A') ▹
+                      (Π (wk1 A') ^ rA ▹ Id (U ⁰)
+                        ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
                         (wk1d B'))
-                    ∷ SProp l'
+                    ∷ SProp ¹ ^ next ¹
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ (Id (U ⁰) ℕ ℕ)
                   ⇒ Unit
-                  ∷ SProp ¹
-    Id-SProp : ∀ {A B l l'}
-               → l < l'
-               → Γ ⊢ A ∷ SProp l ^ !
-               → Γ ⊢ B ∷ SProp l ^ !
-               → Γ ⊢ (Id (SProp l) A B)
+                  ∷ SProp ¹ ^ next ¹
+    Id-SProp : ∀ {A B}
+               → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+               → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+               → Γ ⊢ (Id (SProp ⁰) A B)
                      ⇒ (∃ (A ^ % ▹▹ B) ▹ ((wk1 B) ^ % ▹▹ (wk1 A)))
-                     ∷ SProp l'
+                     ∷ SProp ¹ ^ next ¹
     Id-ℕ-0S : ∀ {t}
-            → Γ ⊢ t ∷ ℕ ^ !
-            → Γ ⊢ Id ℕ zero (suc t) ⇒ Empty ∷ SProp ⁰
+            → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+            → Γ ⊢ Id ℕ zero (suc t) ⇒ Empty ∷ SProp ⁰ ^ next ⁰
     Id-ℕ-S0 : ∀ {t}
-            → Γ ⊢ t ∷ ℕ ^ !
-            → Γ ⊢ Id ℕ (suc t) zero ⇒ Empty ∷ SProp ⁰
+            → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+            → Γ ⊢ Id ℕ (suc t) zero ⇒ Empty ∷ SProp ⁰ ^ next ⁰
     Id-U-ℕΠ : ∀ {A rA B}
-            → Γ ⊢ A ∷ Univ rA ⁰ ^ !
-            → Γ ∙ A ^ rA ⊢ B ∷ U ⁰ ^ !
-            → Γ ⊢ Id (U ⁰) ℕ (Π A ^ rA ▹ B) ⇒ Empty ∷ SProp ¹
+            → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
+            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢ Id (U ⁰) ℕ (Π A ^ rA ▹ B) ⇒ Empty ∷ SProp ¹ ^ next ¹
     Id-U-Πℕ : ∀ {A rA B}
-            → Γ ⊢ A ∷ Univ rA ⁰ ^ !
-            → Γ ∙ A ^ rA ⊢ B ∷ U ⁰ ^ !
-            → Γ ⊢ Id (U ⁰) (Π A ^ rA ▹ B) ℕ ⇒ Empty ∷ SProp ¹
+            → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
+            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢ Id (U ⁰) (Π A ^ rA ▹ B) ℕ ⇒ Empty ∷ SProp ¹ ^ next ¹
     cast-subst : ∀ {A A' B l e t}
-                  → Γ ⊢ A ⇒ A' ∷ U l
-                  → Γ ⊢ B ∷ U l ^ !
-                  → Γ ⊢ e ∷ Id (U l) A B ^ %
-                  → Γ ⊢ t ∷ A ^ !
-                  → Γ ⊢ cast l A B e t ⇒ cast l A' B e t ∷ B
+                  → Γ ⊢ A ⇒ A' ∷ U l ^ next l
+                  → Γ ⊢ B ∷ U l ^ [ ! , next l ]
+                  → Γ ⊢ e ∷ Id (U l) A B ^ [ % , next l ]
+                  → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+                  → Γ ⊢ cast l A B e t ⇒ cast l A' B e t ∷ B ^ ι l
     cast-ℕ-subst : ∀ {B B' e t}
-                  → Γ ⊢ B ⇒ B' ∷ U ⁰
-                  → Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ %
-                  → Γ ⊢ t ∷ ℕ ^ !
-                  → Γ ⊢ cast ⁰ ℕ B e t ⇒ cast ⁰ ℕ B' e t ∷ B
+                  → Γ ⊢ B ⇒ B' ∷ U ⁰ ^ next ⁰
+                  → Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ [ % , next ⁰ ]
+                  → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+                  → Γ ⊢ cast ⁰ ℕ B e t ⇒ cast ⁰ ℕ B' e t ∷ B ^ ι ⁰
     cast-Π-subst : ∀ {A rA l P B B' e t}
-                  → Γ ⊢ A ∷ (Univ rA l) ^ !
-                  → Γ ∙ A ^ rA ⊢ P ∷ U l ^ !
-                  → Γ ⊢ B ⇒ B' ∷ U l
-                  → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ P) B ^ %
-                  → Γ ⊢ t ∷ (Π A ^ rA ▹ P) ^ !
-                  → Γ ⊢ cast l (Π A ^ rA ▹ P) B e t ⇒ cast l (Π A ^ rA ▹ P) B' e t ∷ B
+                  → Γ ⊢ A ∷ (Univ rA l) ^ [ ! , next l ]
+                  → Γ ∙ A ^ [ rA , ι l ] ⊢ P ∷ U l ^ [ ! , next l ]
+                  → Γ ⊢ B ⇒ B' ∷ U l ^ next l
+                  → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ P) B ^ [ % , next l ]
+                  → Γ ⊢ t ∷ (Π A ^ rA ▹ P) ^ [ ! , ι l ]
+                  → Γ ⊢ cast l (Π A ^ rA ▹ P) B e t ⇒ cast l (Π A ^ rA ▹ P) B' e t ∷ B ^ ι l
     cast-Π : ∀ {A A' rA l B B' e f}
-             → Γ ⊢ A ∷ (Univ rA l) ^ !
-             → Γ ∙ A ^ rA ⊢ B ∷ U l ^ !
-             → Γ ⊢ A' ∷ (Univ rA l) ^ !
-             → Γ ∙ A' ^ rA ⊢ B' ∷ U l ^ !
-             → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ %
-             → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ !
+             → Γ ⊢ A ∷ (Univ rA l) ^ [ ! , next l ]
+             → Γ ∙ A ^ [ rA , ι l ] ⊢ B ∷ U l ^ [ ! , next l ]
+             → Γ ⊢ A' ∷ (Univ rA l) ^ [ ! , next l ]
+             → Γ ∙ A' ^ [ rA , ι l ] ⊢ B' ∷ U l ^ [ ! , next l ]
+             → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') ^ [ % , next l ]
+             → Γ ⊢ f ∷ (Π A ^ rA ▹ B) ^ [ ! , ι l ]
              → Γ ⊢ (cast l (Π A ^ rA ▹ B) (Π A' ^ rA ▹ B') e f)
                ⇒ (lam A' ▹
                  let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
                  cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
-                   ∷ Π A' ^ rA ▹ B'
+                   ∷ Π A' ^ rA ▹ B' ^ ι l
     cast-ℕ-0 : ∀ {e}
-               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
+               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]
                → Γ ⊢ cast ⁰ ℕ ℕ e zero
                    ⇒ zero
-                   ∷ ℕ
+                   ∷ ℕ ^ ι ⁰
     cast-ℕ-S : ∀ {e n}
-               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ %
-               → Γ ⊢ n ∷ ℕ ^ !
+               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]
+               → Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
                → Γ ⊢ cast ⁰ ℕ ℕ e (suc n)
                    ⇒ suc (cast ⁰ ℕ ℕ e n)
-                   ∷ ℕ
+                   ∷ ℕ ^ ι ⁰
 
   -- Type reduction
-  data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
+  data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ : ∀ {A B r l}
-         → Γ ⊢ A ⇒ B ∷ (Univ r l)
-         → Γ ⊢ A ⇒ B ^ r
+         → Γ ⊢ A ⇒ B ∷ (Univ r l) ^ next l
+         → Γ ⊢ A ⇒ B ^ [ r , ι l ]
 
 -- Term reduction closure
-data _⊢_⇒*_∷_ (Γ : Con Term) : Term → Term → Term → Set where
-  id  : ∀ {A t}
-      → Γ ⊢ t ∷ A ^ !
-      → Γ ⊢ t ⇒* t ∷ A
-  _⇨_ : ∀ {A t t′ u}
-      → Γ ⊢ t  ⇒  t′ ∷ A
-      → Γ ⊢ t′ ⇒* u  ∷ A
-      → Γ ⊢ t  ⇒* u  ∷ A
+data _⊢_⇒*_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeLevel → Set where
+  id  : ∀ {A l t}
+      → Γ ⊢ t ∷ A ^ [ ! , l ]
+      → Γ ⊢ t ⇒* t ∷ A ^ l
+  _⇨_ : ∀ {A l t t′ u}
+      → Γ ⊢ t  ⇒  t′ ∷ A ^ l
+      → Γ ⊢ t′ ⇒* u  ∷ A ^ l
+      → Γ ⊢ t  ⇒* u  ∷ A ^ l
 
 -- Type reduction closure
-data _⊢_⇒*_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
+data _⊢_⇒*_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
   id  : ∀ {A r}
       → Γ ⊢ A ^ r
       → Γ ⊢ A ⇒* A ^ r
@@ -503,24 +497,24 @@ data _⊢_⇒*_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
       → Γ ⊢ A  ⇒* B  ^ r
 
 -- Type reduction to whnf
-_⊢_↘_^_ : (Γ : Con Term) → Term → Term → Relevance → Set
+_⊢_↘_^_ : (Γ : Con Term) → Term → Term → TypeInfo → Set
 Γ ⊢ A ↘ B ^ r = Γ ⊢ A ⇒* B ^ r × Whnf B
 
 -- Term reduction to whnf
-_⊢_↘_∷_ : (Γ : Con Term) → Term → Term → Term → Set
-Γ ⊢ t ↘ u ∷ A = Γ ⊢ t ⇒* u ∷ A × Whnf u
+_⊢_↘_∷_^_ : (Γ : Con Term) → Term → Term → Term → TypeLevel → Set
+Γ ⊢ t ↘ u ∷ A ^ l = Γ ⊢ t ⇒* u ∷ A ^ l × Whnf u
 
 -- Type equality with well-formed types
-_⊢_:≡:_^_ : (Γ : Con Term) → Term → Term → Relevance → Set
+_⊢_:≡:_^_ : (Γ : Con Term) → Term → Term → TypeInfo → Set
 Γ ⊢ A :≡: B ^ r = Γ ⊢ A ^ r × Γ ⊢ B ^ r × (Γ ⊢ A ≡ B ^ r)
 
 -- Term equality with well-formed terms
-_⊢_:≡:_∷_^_ : (Γ : Con Term) → Term → Term → Term → Relevance → Set
+_⊢_:≡:_∷_^_ : (Γ : Con Term) → Term → Term → Term → TypeInfo → Set
 Γ ⊢ t :≡: u ∷ A ^ r = Γ ⊢ t ∷ A ^ r × Γ ⊢ u ∷ A ^ r × (Γ ⊢ t ≡ u ∷ A ^ r)
 
 -- Type reduction closure with well-formed types
-record _⊢_:⇒*:_^_ (Γ : Con Term) (A B : Term) (r : Relevance) : Set where
-  constructor [_,_,_]
+record _⊢_:⇒*:_^_ (Γ : Con Term) (A B : Term) (r : TypeInfo) : Set where
+  constructor [[_,_,_]]
   field
     ⊢A : Γ ⊢ A ^ r
     ⊢B : Γ ⊢ B ^ r
@@ -529,14 +523,14 @@ record _⊢_:⇒*:_^_ (Γ : Con Term) (A B : Term) (r : Relevance) : Set where
 open _⊢_:⇒*:_^_ using () renaming (D to red) public
 
 -- Term reduction closure with well-formed terms
-record _⊢_:⇒*:_∷_ (Γ : Con Term) (t u A : Term) : Set where
-  constructor [_,_,_]
+record _⊢_:⇒*:_∷_^_ (Γ : Con Term) (t u A : Term) (l : TypeLevel) : Set where
+  constructor [[_,_,_]]
   field
-    ⊢t : Γ ⊢ t ∷ A ^ !
-    ⊢u : Γ ⊢ u ∷ A ^ !
-    d  : Γ ⊢ t ⇒* u ∷ A
+    ⊢t : Γ ⊢ t ∷ A ^ [ ! , l ]
+    ⊢u : Γ ⊢ u ∷ A ^ [ ! , l ]
+    d  : Γ ⊢ t ⇒* u ∷ A ^ l
 
-open _⊢_:⇒*:_∷_ using () renaming (d to redₜ) public
+open _⊢_:⇒*:_∷_^_ using () renaming (d to redₜ) public
 
 -- Well-formed substitutions.
 data _⊢ˢ_∷_ (Δ : Con Term) (σ : Subst) : (Γ : Con Term) → Set where
@@ -556,3 +550,17 @@ data _⊢ˢ_≡_∷_ (Δ : Con Term) (σ σ′ : Subst) : (Γ : Con Term) → Se
 
 -- Note that we cannot use the well-formed substitutions.
 -- For that, we need to prove the fundamental theorem for substitutions.
+
+toLevelInj : ∀ {l₁ l₁′ : TypeLevel} {l<₁ : l₁′ <∞ l₁} {l₂ l₂′ : TypeLevel} {l<₂ : l₂′ <∞ l₂} →
+               toLevel l₁′ PE.≡ toLevel l₂′ → l₁′ PE.≡ l₂′
+toLevelInj {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} e = PE.refl
+toLevelInj {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} {Fin.suc (Fin.suc a′)} {Fin.zero} {Nat.s≤s c′} e = PE.refl
+toLevelInj {Fin.suc (Fin.suc a)} {Fin.zero} {c} {Fin.suc a′} {Fin.zero} {c′} e = PE.refl
+toLevelInj {Fin.suc a} {Fin.suc Fin.zero} {c} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e = PE.refl
+toLevelInj {Fin.suc a} {Fin.suc Fin.zero} {c} {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc b′)} {Nat.s≤s (Nat.s≤s (Nat.s≤s c′))} e
+toLevelInj {Fin.suc Fin.zero} {Fin.suc (Fin.suc b)} {Nat.s≤s ()} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
+toLevelInj {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s ())} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
+toLevelInj {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s (Nat.s≤s c))} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
+toLevelInj {Fin.suc Fin.zero} {Fin.suc (Fin.suc b)} {Nat.s≤s ()} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
+toLevelInj {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s ())} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
+toLevelInj {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s (Nat.s≤s Nat.z≤n))} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e

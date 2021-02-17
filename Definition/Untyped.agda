@@ -9,6 +9,8 @@ open import Tools.Product
 open import Tools.List
 import Tools.PropositionalEquality as PE
 
+import Data.Fin as Fin
+import Data.Nat as Nat
 
 infixl 30 _∙_^_
 infix 30 Π_^_▹_
@@ -36,11 +38,40 @@ data Level : Set where
 data _<_ : (i j : Level) → Set where
   0<1 : ⁰ < ¹
 
+-- Type levels
+
+TypeLevel : Set
+TypeLevel = Fin.Fin 3
+
+∞ : TypeLevel 
+∞ = Fin.suc (Fin.suc Fin.zero)
+
+_<∞_ : (i j : TypeLevel) → Set
+i <∞ j = i Fin.< j
+
+ι : Level → TypeLevel
+ι ⁰ = Fin.zero
+ι ¹ = Fin.suc Fin.zero
+
+next : Level → TypeLevel
+next ⁰ = ι ¹
+next ¹ = ∞
+
+toLevel : TypeLevel → Level
+toLevel Fin.zero = ⁰
+toLevel (Fin.suc l') = ¹
+
+record TypeInfo : Set where
+  constructor [_,_]
+  field 
+    r : Relevance
+    l : TypeLevel
+
 -- Typing contexts (snoc-lists, isomorphic to lists).
 
 data Con (A : Set) : Set where
   ε   : Con A               -- Empty context.
-  _∙_^_ : Con A → A → Relevance → Con A  -- Context extension.
+  _∙_^_ : Con A → A → TypeInfo → Con A  -- Context extension.
 
 record GenT (A : Set) : Set where
   inductive
