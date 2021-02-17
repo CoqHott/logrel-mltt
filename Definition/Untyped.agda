@@ -61,6 +61,11 @@ toLevel (ι ⁰) = ⁰
 toLevel (ι ¹) = ¹
 toLevel ∞ = ¹
 
+predLevel : TypeLevel → Level
+predLevel (ι ⁰) = ⁰
+predLevel (ι ¹) = ⁰
+predLevel ∞ = ¹
+
 record TypeInfo : Set where
   constructor [_,_]
   field 
