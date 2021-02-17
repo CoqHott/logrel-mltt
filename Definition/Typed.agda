@@ -74,17 +74,17 @@ mutual
            → x ∷ A ^ rl ∈ Γ
            → Γ ⊢ var x ∷ A ^ rl
     lamⱼ    : ∀ {F l rF G rG t}
-           → Γ     ⊢ F ^ [ rF , l ]
-           → Γ ∙ F ^ [ rF , l ] ⊢ t ∷ G ^ [ rG , l ]
-           → Γ     ⊢ lam F ▹ t ∷ Π F ^ rF ▹ G ^ [ rG , l ]
+           → Γ     ⊢ F ^ [ rF , ι l ]
+           → Γ ∙ F ^ [ rF , ι l ] ⊢ t ∷ G ^ [ rG , ι l ]
+           → Γ     ⊢ lam F ▹ t ∷ Π F ^ rF ▹ G ^ [ rG , ι l ]
     _∘ⱼ_    : ∀ {g a F rF l G rG}
            → Γ ⊢     g ∷ Π F ^ rF ▹ G ^ [ rG , l ]
            → Γ ⊢     a ∷ F ^ [ rF , l ]
            → Γ ⊢ g ∘ a ∷ G [ a ] ^ [ rG , l ]
     ⦅_,_⦆ⱼ : ∀ {l F G t u}
-             → Γ ⊢ t ∷ F ^ [ % , l ]
-             → Γ ⊢ u ∷ G [ t ] ^ [ % , l ]
-             → Γ ⊢ ⦅ t , u ⦆ ∷ ∃ F ▹ G ^ [ % , l ]
+             → Γ ⊢ t ∷ F ^ [ % , ι l ]
+             → Γ ⊢ u ∷ G [ t ] ^ [ % , ι l ]
+             → Γ ⊢ ⦅ t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι l ]
     fstⱼ : ∀ {F G t l}
            → Γ ⊢ F ∷ SProp l ^ [ ! , next l ]
            → Γ ∙ F ^ [ % , ι l ] ⊢ G ∷ SProp l ^ [ ! , next l ]
@@ -189,10 +189,10 @@ mutual
                 → Γ ⊢ a ≡ b ∷ F ^ [ rF , l ]
                 → Γ ⊢ f ∘ a ≡ g ∘ b ∷ G [ a ] ^ [ ! , l ]
     β-red       : ∀ {a t F rF G l}
-                → Γ     ⊢ F ^ [ rF , l ]
-                → Γ ∙ F ^ [ rF , l ] ⊢ t ∷ G ^ [ ! , l ]
-                → Γ     ⊢ a ∷ F ^ [ rF , l ]
-                → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ [ ! , l ]
+                → Γ     ⊢ F ^ [ rF , ι l ]
+                → Γ ∙ F ^ [ rF , ι l ] ⊢ t ∷ G ^ [ ! , ι l ]
+                → Γ     ⊢ a ∷ F ^ [ rF , ι l ]
+                → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ [ ! , ι l ]
     η-eq        : ∀ {f g F rF l G}
                 → Γ     ⊢ F ^ [ rF , l ]
                 → Γ     ⊢ f ∷ Π F ^ rF ▹ G ^ [ ! , l ]
@@ -325,10 +325,10 @@ mutual
                  → Γ ⊢ a ∷ A ^ [ rA , l ]
                  → Γ ⊢ t ∘ a ⇒ u ∘ a ∷ B [ a ] ^ l
     β-red        : ∀ {A B l a t rA}
-                 → Γ     ⊢ A ^ [ rA , l ]
-                 → Γ ∙ A ^ [ rA , l ] ⊢ t ∷ B ^ [ ! , l ]
-                 → Γ     ⊢ a ∷ A ^ [ rA , l ]
-                 → Γ     ⊢ (lam A ▹ t) ∘ a ⇒ t [ a ] ∷ B [ a ] ^ l
+                 → Γ     ⊢ A ^ [ rA , ι l ]
+                 → Γ ∙ A ^ [ rA , ι l ] ⊢ t ∷ B ^ [ ! , ι l ]
+                 → Γ     ⊢ a ∷ A ^ [ rA , ι l ]
+                 → Γ     ⊢ (lam A ▹ t) ∘ a ⇒ t [ a ] ∷ B [ a ] ^ ι l
     natrec-subst : ∀ {z s n n′ F l}
                  → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , l ]
                  → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , l ]
