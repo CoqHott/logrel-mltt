@@ -11,6 +11,8 @@ open import Tools.Product
 open import Tools.Sum hiding (id ; sym)
 import Tools.PropositionalEquality as PE
 
+import Data.Fin as Fin
+import Data.Nat as Nat
 
 -- Escape context extraction
 
@@ -588,3 +590,16 @@ genVar {r = !} = refl
 genVar {r = %} d = proof-irrelevance d d
 
 
+toLevelInj : ∀ {l₁ l₁′ : TypeLevel} {l<₁ : l₁′ <∞ l₁} {l₂ l₂′ : TypeLevel} {l<₂ : l₂′ <∞ l₂} →
+               toLevel l₁′ PE.≡ toLevel l₂′ → l₁′ PE.≡ l₂′
+toLevelInj {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} e = PE.refl
+toLevelInj {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} {Fin.suc (Fin.suc a′)} {Fin.zero} {Nat.s≤s c′} e = PE.refl
+toLevelInj {Fin.suc (Fin.suc a)} {Fin.zero} {c} {Fin.suc a′} {Fin.zero} {c′} e = PE.refl
+toLevelInj {Fin.suc a} {Fin.suc Fin.zero} {c} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e = PE.refl
+toLevelInj {Fin.suc a} {Fin.suc Fin.zero} {c} {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc b′)} {Nat.s≤s (Nat.s≤s (Nat.s≤s c′))} e
+toLevelInj {Fin.suc Fin.zero} {Fin.suc (Fin.suc b)} {Nat.s≤s ()} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
+toLevelInj {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s ())} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
+toLevelInj {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s (Nat.s≤s c))} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
+toLevelInj {Fin.suc Fin.zero} {Fin.suc (Fin.suc b)} {Nat.s≤s ()} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
+toLevelInj {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s ())} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
+toLevelInj {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s (Nat.s≤s Nat.z≤n))} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
