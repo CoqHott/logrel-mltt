@@ -40,26 +40,26 @@ data _<_ : (i j : Level) → Set where
 
 -- Type levels
 
-TypeLevel : Set
-TypeLevel = Fin.Fin 3
+data TypeLevel : Set where
+  ι : Level → TypeLevel
+  ∞ : TypeLevel
 
-∞ : TypeLevel 
-∞ = Fin.suc (Fin.suc Fin.zero)
+toFin : TypeLevel → Fin.Fin 3
+toFin (ι ⁰) = Fin.zero
+toFin (ι ¹) = Fin.suc Fin.zero
+toFin ∞ = Fin.suc (Fin.suc Fin.zero)
 
 _<∞_ : (i j : TypeLevel) → Set
-i <∞ j = i Fin.< j
-
-ι : Level → TypeLevel
-ι ⁰ = Fin.zero
-ι ¹ = Fin.suc Fin.zero
+i <∞ j = (toFin i) Fin.< (toFin j)
 
 next : Level → TypeLevel
 next ⁰ = ι ¹
 next ¹ = ∞
 
 toLevel : TypeLevel → Level
-toLevel Fin.zero = ⁰
-toLevel (Fin.suc l') = ¹
+toLevel (ι ⁰) = ⁰
+toLevel (ι ¹) = ¹
+toLevel ∞ = ¹
 
 record TypeInfo : Set where
   constructor [_,_]

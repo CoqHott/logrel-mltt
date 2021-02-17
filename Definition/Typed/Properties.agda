@@ -592,14 +592,13 @@ genVar {r = %} d = proof-irrelevance d d
 
 toLevelInj : ∀ {l₁ l₁′ : TypeLevel} {l<₁ : l₁′ <∞ l₁} {l₂ l₂′ : TypeLevel} {l<₂ : l₂′ <∞ l₂} →
                toLevel l₁′ PE.≡ toLevel l₂′ → l₁′ PE.≡ l₂′
-toLevelInj {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} e = PE.refl
-toLevelInj {Fin.suc Fin.zero} {Fin.zero} {Nat.s≤s Nat.z≤n} {Fin.suc (Fin.suc a′)} {Fin.zero} {Nat.s≤s c′} e = PE.refl
-toLevelInj {Fin.suc (Fin.suc a)} {Fin.zero} {c} {Fin.suc a′} {Fin.zero} {c′} e = PE.refl
-toLevelInj {Fin.suc a} {Fin.suc Fin.zero} {c} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e = PE.refl
-toLevelInj {Fin.suc a} {Fin.suc Fin.zero} {c} {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc b′)} {Nat.s≤s (Nat.s≤s (Nat.s≤s c′))} e
-toLevelInj {Fin.suc Fin.zero} {Fin.suc (Fin.suc b)} {Nat.s≤s ()} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
-toLevelInj {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s ())} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
-toLevelInj {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s (Nat.s≤s c))} {Fin.suc a′} {Fin.suc Fin.zero} {c′} e
-toLevelInj {Fin.suc Fin.zero} {Fin.suc (Fin.suc b)} {Nat.s≤s ()} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
-toLevelInj {Fin.suc (Fin.suc Fin.zero)} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s ())} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
-toLevelInj {Fin.suc (Fin.suc (Fin.suc ()))} {Fin.suc (Fin.suc Fin.zero)} {Nat.s≤s (Nat.s≤s (Nat.s≤s Nat.z≤n))} {Fin.suc a′} {Fin.suc (Fin.suc b′)} {c′} e
+toLevelInj {ι ¹} {ι ⁰} {Nat.s≤s Nat.z≤n} {ι ¹} {ι ⁰} {Nat.s≤s Nat.z≤n} e = PE.refl
+toLevelInj {ι ¹} {ι ⁰} {Nat.s≤s Nat.z≤n} {∞} {ι ⁰} {Nat.s≤s c′} e = PE.refl
+toLevelInj {∞} {ι ⁰} {c} {∞} {ι ⁰} {c′} e = PE.refl
+toLevelInj {∞} {ι ¹} {c} {∞} {ι ¹} {c′} e = PE.refl
+toLevelInj {∞} {ι ⁰} {c} {ι x₁} {ι ⁰} e = PE.refl
+toLevelInj {∞} {ι ¹} {c} {ι x₁} {ι ¹} e = PE.refl
+toLevelInj {∞} {ι ¹} {c} {ι ¹} {∞} {Nat.s≤s ()} e
+toLevelInj {∞} {ι ¹} {c} {∞} {∞} {Nat.s≤s (Nat.s≤s ())} e
+toLevelInj {ι ¹} {∞} {Nat.s≤s ()} e
+toLevelInj {∞} {∞} {Nat.s≤s (Nat.s≤s ())}  e
