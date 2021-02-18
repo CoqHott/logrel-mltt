@@ -19,19 +19,20 @@ reflEq : ∀ {l Γ A r} ([A] : Γ ⊩⟨ l ⟩ A ^ r) → Γ ⊩⟨ l ⟩ A ≡ 
 reflEq (Uᵣ′ _ l′ l< ⊢Γ) = PE.refl
 reflEq (ℕᵣ D) = red D
 reflEq (Emptyᵣ D) = red D
-reflEq (ne′ l K [ ⊢A , ⊢B , D ] neK K≡K) =
-  ne₌ _ [ ⊢A , ⊢B , D ] neK K≡K
-reflEq (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
+reflEq (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) =
+  ne₌ _ [[ ⊢A , ⊢B , D ]] neK K≡K
+reflEq (Πᵣ′ rF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
   Π₌ _ _ D A≡A
      (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
      (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
-reflEq (∃ᵣ′ F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
+reflEq (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
   ∃₌ _ _ D A≡A
     (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
     (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
-reflEq {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEq [A]
-reflEq {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEq [A]
-reflEq {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEq [A]
+reflEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEq [A]
+reflEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEq [A]
+reflEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEq [A]
+reflEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) 
 
 reflNatural-prop : ∀ {Γ n}
                  → Natural-prop Γ n
@@ -51,24 +52,25 @@ reflEmpty-prop (ne x) = ne x x
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
            → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ l ⟩ t ≡ t ∷ A ^ r / [A]
-reflEqTerm {Fin.suc Fin.zero} (Uᵣ′ _ Fin.zero <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
-reflEqTerm {Fin.suc (Fin.suc l)} (Uᵣ′ _ Fin.zero <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
-reflEqTerm {Fin.suc (Fin.suc Fin.zero)} (Uᵣ′ _ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s <l)) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
-reflEqTerm {Fin.suc Fin.zero} (Uᵣ′ _ (Fin.suc l) (Nat.s≤s ()) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA)
-reflEqTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
-  ℕₜ₌ n n [ ⊢t , ⊢u , d ] [ ⊢t , ⊢u , d ] t≡t
+reflEqTerm {ι ¹} (Uᵣ′ _ ⁰ <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
+reflEqTerm {∞} (Uᵣ′ _ ⁰ <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
+reflEqTerm {∞} (Uᵣ′ _ ¹ (Nat.s≤s (Nat.s≤s <l)) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
+reflEqTerm {ι ¹} (Uᵣ′ _ ¹ (Nat.s≤s ()) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA)
+reflEqTerm (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
+  ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
       (reflNatural-prop prop)
 reflEqTerm (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
-reflEqTerm {r = !} (ne′ l K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
+reflEqTerm {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
   neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
-reflEqTerm {r = %} (ne′ l K D neK K≡K) (neₜ d) = neₜ₌ d d
-reflEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+reflEqTerm {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
+reflEqTerm {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
   Πₜ₌ f f d d funcF funcF f≡f
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm ([F] ρ ⊢Δ) [a]))
-reflEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
 reflEqTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
-reflEqTerm {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEqTerm [A]
-reflEqTerm {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) [A]) = reflEqTerm [A]
-reflEqTerm {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEqTerm [A]
+reflEqTerm {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEqTerm [A]
+reflEqTerm {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEqTerm [A]
+reflEqTerm {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEqTerm [A]
+reflEqTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) 

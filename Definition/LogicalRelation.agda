@@ -117,7 +117,7 @@ mutual
   data Natural-prop (Γ : Con Term) : (n : Term) → Set where
     sucᵣ  : ∀ {n} → Γ ⊩ℕ n ∷ℕ → Natural-prop Γ (suc n)
     zeroᵣ : Natural-prop Γ zero
-    ne    : ∀ {l n} → Γ ⊩neNf n ∷ ℕ ^ [ ! , l ] → Natural-prop Γ n
+    ne    : ∀ {n} → Γ ⊩neNf n ∷ ℕ ^ [ ! , ι ⁰ ] → Natural-prop Γ n
 
 mutual
   -- Natural number term equality
@@ -402,7 +402,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
             ([A] : Γ ⊩ A ^ r) → Γ ⊩¹ A ^ r
 
     _⊩¹_≡_^_/_ : (Γ : Con Term) (A B : Term) (r : TypeInfo) → Γ ⊩¹ A ^ r  → Set
-    Γ ⊩¹ A ≡ B ^ [ .! , l ] / Uᵣ {r = r'} UA = Γ ⊩¹U[ r' , predLevel l ]≡ B 
+    Γ ⊩¹ A ≡ B ^ [ .! , l ] / Uᵣ {r = r'} {l = l′} UA = Γ ⊩¹U[ r' , l′ ]≡ B 
     Γ ⊩¹ A ≡ B ^ [ .! , .ι ⁰ ] / ℕᵣ D = Γ ⊩ℕ A ≡ B
     Γ ⊩¹ A ≡ B ^ [ .% , .ι ⁰ ] / Emptyᵣ D = Γ ⊩Empty A ≡ B
     Γ ⊩¹ A ≡ B ^ [ r , ι l ] / ne neA = Γ ⊩ne A ≡ B ^[ r , l ]/ neA
@@ -445,8 +445,8 @@ open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ ; ∃ᵣ ; emb; Uₜ
 pattern Πₜ a b c d e f = a , b , c , d , e , f
 pattern Πₜ₌ a b c d e f g h i j = a , b , c , d , e , f , g , h , i , j
 
-pattern Uᵣ′ r a b c = Uᵣ {r = r} (Uᵣ a b c)
-pattern ne′ a b c d e = ne (ne a b c d e)
+pattern Uᵣ′ r l a b = Uᵣ {r = r} {l = l} (Uᵣ a b)
+pattern ne′ b c d e = ne (ne b c d e)
 pattern Πᵣ′  a b c d e f g h i j = Πᵣ (Πᵣ a b c d e f g h i j)
 pattern ∃ᵣ′  a b c d e f g h i = ∃ᵣ (∃ᵣ a b c d e f g h i)
 

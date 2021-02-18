@@ -19,26 +19,28 @@ import Data.Nat as Nat
 
 -- Reducible types are well-formed.
 escape : ∀ {l Γ A r} → Γ ⊩⟨ l ⟩ A ^ r → Γ ⊢ A ^ r
-escape {Fin.suc Fin.zero} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) = univ (univ 0<1 ⊢Γ)
-escape {Fin.suc (Fin.suc l)} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) = univ (univ 0<1 ⊢Γ)
-escape {Fin.suc (Fin.suc Fin.zero)} (Uᵣ′ _ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s l<)) ⊢Γ) = Uⱼ ⊢Γ
-escape (ℕᵣ [ ⊢A , ⊢B , D ]) = ⊢A
-escape (Emptyᵣ [ ⊢A , ⊢B , D ]) = ⊢A
-escape (ne′ l K [ ⊢A , ⊢B , D ] neK K≡K) = ⊢A
-escape (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
-escape (∃ᵣ′ F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
-escape {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) = escape A
-escape {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) = escape A
-escape {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) = escape A
+escape {ι ¹} (Uᵣ′ _ ⁰ X ⊢Γ) = univ (univ 0<1 ⊢Γ)
+escape {∞} (Uᵣ′ _ ⁰ X ⊢Γ) = univ (univ 0<1 ⊢Γ)
+escape {ι ¹} (Uᵣ′ _ ¹ (Nat.s≤s ()) ⊢Γ)
+escape {∞} (Uᵣ′ _ ¹ X ⊢Γ) = Uⱼ ⊢Γ
+escape (ℕᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
+escape (Emptyᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
+escape (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) = ⊢A
+escape (Πᵣ′ rF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
+escape (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
+escape {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) = escape A
+escape {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) = escape A
+escape {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) = escape A
+escape {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A)
 
 -- Reducible type equality respect the equality relation.
 escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
             → Γ ⊩⟨ l ⟩ A ≡ B ^ r / [A]
             → Γ ⊢ A ≅ B ^ r
-escapeEq (Uᵣ′ _ l′ l< ⊢Γ) PE.refl = ≅-Urefl ⊢Γ
-escapeEq (ℕᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-ℕrefl (wf ⊢A))
-escapeEq (Emptyᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-Emptyrefl (wf ⊢A))
-escapeEq (ne′ l K D neK K≡K) (ne₌ M D′ neM K≡M) =
+escapeEq (Uᵣ′ _ _ l< ⊢Γ) PE.refl = ≅-Urefl ⊢Γ
+escapeEq (ℕᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-ℕrefl (wf ⊢A))
+escapeEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-Emptyrefl (wf ⊢A))
+escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
   ≅-red (red D) (red D′) (ne neK) (ne neM) (~-to-≅ K≡M)
 escapeEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
@@ -46,40 +48,42 @@ escapeEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
 escapeEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ ∃ₙ ∃ₙ A≡B
-escapeEq {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
-escapeEq {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
-escapeEq {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) A≡B = escapeEq A A≡B
+escapeEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
+escapeEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
+escapeEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) A≡B = escapeEq A A≡B
+escapeEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) A≡B
 
 -- Reducible terms are well-formed.
 escapeTerm : ∀ {l Γ A t r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
               → Γ ⊢ t ∷ A ^ r
-escapeTerm (Uᵣ′ _ l′ l< ⊢Γ) (Uₜ A [ ⊢t , ⊢u , d ] typeA A≡A [A] IdA castA) = ⊢t
-escapeTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
+escapeTerm (Uᵣ′ _ _ l< ⊢Γ) (Uₜ A [[ ⊢t , ⊢u , d ]] typeA A≡A [A] IdA castA) = ⊢t
+escapeTerm (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm {r = !} (ne′ l K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] nf) =
+escapeTerm {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k [[ ⊢t , ⊢u , d ]] nf) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm {r = %} (ne′ l K D neK K≡K) (neₜ d) = d
-escapeTerm {r = ! } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-               (f , [ ⊢t , ⊢u , d ] , funcF , f≡f , [f] , [f]₁) =
+escapeTerm {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = d
+escapeTerm {r = [ ! , l ] } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+               (f , [[ ⊢t , ⊢u , d ]] , funcF , f≡f , [f] , [f]₁) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
+escapeTerm {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
 escapeTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
-escapeTerm {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t = escapeTerm A t
-escapeTerm {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t = escapeTerm A t
-escapeTerm {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) t = escapeTerm A t
+escapeTerm {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t = escapeTerm A t
+escapeTerm {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t = escapeTerm A t
+escapeTerm {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) t = escapeTerm A t
+escapeTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) t
 
 -- Reducible term equality respect the equality relation.
 escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
-escapeTermEq {Fin.suc Fin.zero} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+escapeTermEq {ι ¹} (Uᵣ′ _ ⁰ (Nat.s≤s l<) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
   ≅ₜ-red (id (univ (univ 0<1 ⊢Γ))) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
-escapeTermEq {Fin.suc (Fin.suc l)} (Uᵣ′ _ Fin.zero (Nat.s≤s l<) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+escapeTermEq {∞} (Uᵣ′ _ ⁰ (Nat.s≤s l<) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
   ≅ₜ-red (id (univ (univ 0<1 ⊢Γ))) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
-escapeTermEq {Fin.suc (Fin.suc Fin.zero)} (Uᵣ′ _ (Fin.suc Fin.zero) (Nat.s≤s (Nat.s≤s l<)) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+escapeTermEq {∞} (Uᵣ′ _ ¹ (Nat.s≤s (Nat.s≤s l<)) ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
   ≅ₜ-red (id (Uⱼ ⊢Γ)) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B               
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
@@ -87,17 +91,18 @@ escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
              (naturalWhnf natK) (naturalWhnf natK′) k≡k′
 escapeTermEq (Emptyᵣ D) (Emptyₜ₌ (ne ⊢t ⊢u)) =
   ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D)))))  ((conv ⊢u (sym (subset* (red D))))))
-escapeTermEq {r = !} (ne′ l K D neK K≡K)
+escapeTermEq {r = [ ! , l ]} (ne′ K D neK K≡K)
                  (neₜ₌ k m d d′ (neNfₜ₌ neT neU t≡u)) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) (ne neK) (ne neT) (ne neU)
          (~-to-≅ₜ t≡u)
-escapeTermEq {r = %} (ne′ l K D neK K≡K)
+escapeTermEq {r = [ % , l ]} (ne′ K D neK K≡K)
                  (neₜ₌ d d′) = ~-to-≅ₜ (~-irrelevance d d′)
-escapeTermEq {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+escapeTermEq {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
-escapeTermEq {r = % } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
+escapeTermEq {r = [ % , l ] } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
-escapeTermEq {Fin.suc Fin.zero} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
-escapeTermEq {Fin.suc (Fin.suc l)} (emb {l′ = Fin.zero} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
-escapeTermEq {Fin.suc (Fin.suc Fin.zero)} (emb {l′ = Fin.suc Fin.zero} (Nat.s≤s (Nat.s≤s X)) A) t≡u = escapeTermEq A t≡u
+escapeTermEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
+escapeTermEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
+escapeTermEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) t≡u = escapeTermEq A t≡u
+escapeTermEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) t≡u
