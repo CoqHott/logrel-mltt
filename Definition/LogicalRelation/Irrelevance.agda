@@ -14,6 +14,8 @@ open import Definition.LogicalRelation.ShapeView
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+import Data.Fin as Fin
+import Data.Nat as Nat
 
 -- Irrelevance for propositionally equal types
 irrelevance′ : ∀ {A A′ Γ r l}
@@ -42,9 +44,9 @@ mutual
   irrelevanceEq p q A≡B = irrelevanceEqT (goodCasesRefl p q) A≡B
 
   -- Irrelevance for type equality with propositionally equal first types
-  irrelevanceEq′ : ∀ {Γ A A′ B r r' l l′} (eq : A PE.≡ A′) (eqr : r PE.≡ r')
-                   (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩⟨ l′ ⟩ A′ ^ r')
-                 → Γ ⊩⟨ l ⟩ A ≡ B ^ r / p → Γ ⊩⟨ l′ ⟩ A′ ≡ B ^ r' / q
+  irrelevanceEq′ : ∀ {Γ A A′ B r r' l l′ ll} (eq : A PE.≡ A′) (eqr : r PE.≡ r')
+                   (p : Γ ⊩⟨ l ⟩ A ^ [ r , ll ]) (q : Γ ⊩⟨ l′ ⟩ A′ ^ [ r' , ll ])
+                 → Γ ⊩⟨ l ⟩ A ≡ B ^ [ r , ll ] / p → Γ ⊩⟨ l′ ⟩ A′ ≡ B ^ [ r' , ll ] / q
   irrelevanceEq′ PE.refl PE.refl p q A≡B = irrelevanceEq p q A≡B
 
   -- Irrelevance for type equality with propositionally equal types
@@ -109,9 +111,13 @@ mutual
                                          [a]₁
               in  irrelevanceEq′ (PE.cong (λ y → wk (lift ρ) y [ _ ]) G≡G₁) PE.refl
                                  ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([G≡G′] [ρ] ⊢Δ [a]))
-  irrelevanceEqT (Uᵥ (Uᵣ _ _ _) (Uᵣ _ _ _)) A≡B = A≡B
+  irrelevanceEqT (Uᵥ (Uᵣ _ _) (Uᵣ _ _)) A≡B = A≡B
   irrelevanceEqT (emb⁰¹ x) A≡B = irrelevanceEqT x A≡B
   irrelevanceEqT (emb¹⁰ x) A≡B = irrelevanceEqT x A≡B
+  irrelevanceEqT (emb⁰∞ x) A≡B = irrelevanceEqT x A≡B
+  irrelevanceEqT (emb∞⁰ x) A≡B = irrelevanceEqT x A≡B
+  irrelevanceEqT (emb¹∞ x) A≡B = irrelevanceEqT x A≡B
+  irrelevanceEqT (emb∞¹ x) A≡B = irrelevanceEqT x A≡B
 
 --------------------------------------------------------------------------------
 
@@ -121,9 +127,9 @@ mutual
   irrelevanceTerm p q t = irrelevanceTermT (goodCasesRefl p q) t
 
   -- Irrelevance for terms with propositionally equal types
-  irrelevanceTerm′ : ∀ {Γ A A′ t r r' l l′} (eq : A PE.≡ A′) (req : r PE.≡ r')
-                     (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩⟨ l′ ⟩ A′ ^ r')
-                   → Γ ⊩⟨ l ⟩ t ∷ A ^ r / p → Γ ⊩⟨ l′ ⟩ t ∷ A′ ^ r' / q
+  irrelevanceTerm′ : ∀ {Γ A A′ t r r' l l′ ll} (eq : A PE.≡ A′) (req : r PE.≡ r')
+                     (p : Γ ⊩⟨ l ⟩ A ^ [ r , ll ]) (q : Γ ⊩⟨ l′ ⟩ A′ ^ [ r' , ll ])
+                   → Γ ⊩⟨ l ⟩ t ∷ A ^ [ r , ll ] / p → Γ ⊩⟨ l′ ⟩ t ∷ A′ ^ [ r' , ll ] / q
   irrelevanceTerm′ PE.refl PE.refl p q t = irrelevanceTerm p q t
 
   -- Irrelevance for terms with propositionally equal types and terms
@@ -150,21 +156,21 @@ mutual
                          → Γ ⊩⟨ l ⟩ t ∷ A ^ r / p → Γ ⊩⟨ l′ ⟩ t ∷ A ^ r / q
   irrelevanceTermT (ℕᵥ D D′) t = t
   irrelevanceTermT (Emptyᵥ D D′) t = t
-  irrelevanceTermT { r = ! } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ k d nf)
+  irrelevanceTermT { r = [ ! , ll ]  } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ k d nf)
                    with whrDet* (red D₁ , ne neK₁) (red D , ne neK)
-  irrelevanceTermT {r = !} (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ k d nf)
+  irrelevanceTermT {r = [ ! , ll ]} (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ k d nf)
     | PE.refl = neₜ k d nf
-  irrelevanceTermT { r = % } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ d)
+  irrelevanceTermT { r = [ % , ll ] } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ d)
                    with whrDet* (red D₁ , ne neK₁) (red D , ne neK)
-  irrelevanceTermT {r = %} (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ d)
+  irrelevanceTermT {r = [ % , ll ]} (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ d)
     | PE.refl = neₜ d
-  irrelevanceTermT {Γ} {t = t} {r = !} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+  irrelevanceTermT {Γ} {t = t} {r = [ ! , ll ]} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                    (Πᵣ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                    (Πₜ f d funcF f≡f [f] [f]₁) =
     let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
         F≡F₁ , rF≡rF₁ , G≡G₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
-    in  Πₜ f (PE.subst (λ x → Γ ⊢ t :⇒*: f ∷ x) ΠFG≡ΠF₁G₁ d) funcF
-           (PE.subst (λ x → Γ ⊢ f ≅ f ∷ x ^ !) ΠFG≡ΠF₁G₁ f≡f)
+    in  Πₜ f (PE.subst (λ x → Γ ⊢ t :⇒*: f ∷ x ^ ll) ΠFG≡ΠF₁G₁ d) funcF
+           (PE.subst (λ x → Γ ⊢ f ≅ f ∷ x ^ [ ! , ll ]) ΠFG≡ΠF₁G₁ f≡f)
            (λ {ρ} [ρ] ⊢Δ [a]₁ [b]₁ [a≡b]₁ →
               let [a]   = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F≡F₁)) (PE.sym rF≡rF₁)
                                            ([F]₁ [ρ] ⊢Δ)
@@ -188,17 +194,27 @@ mutual
                                         [a]₁
              in  irrelevanceTerm′ (PE.cong (λ G → wk (lift ρ) G [ _ ]) G≡G₁) PE.refl
                                   ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([f]₁ [ρ] ⊢Δ [a]))
-  irrelevanceTermT {Γ} {t = t} {r = %} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+  irrelevanceTermT {Γ} {t = t} {r = [ % , ll ]} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                    (Πᵣ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                    d = let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
-                       in PE.subst (λ x → Γ ⊢ t ∷ x ^ %) ΠFG≡ΠF₁G₁ d
-  irrelevanceTermT {Γ} {t = t} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                       in PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ΠFG≡ΠF₁G₁ d
+  irrelevanceTermT {Γ} {t = t} {r = [ % , ll ]} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                    (∃ᵣ  F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                    d = let ∃FG≡∃F₁G₁   = whrDet* (red D , ∃ₙ) (red D₁ , ∃ₙ)
-                       in PE.subst (λ x → Γ ⊢ t ∷ x ^ %) ∃FG≡∃F₁G₁ d
-  irrelevanceTermT (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) t = t
+                       in PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ∃FG≡∃F₁G₁ d
+  irrelevanceTermT {l = ι ¹} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t = t
+  irrelevanceTermT {l = ι ¹} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ A d typeA A≡A [t] [IdA] [castA]) = Uₜ A d typeA A≡A [t] [IdA] [castA]
+  irrelevanceTermT {l = ∞} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ A d typeA A≡A [t] [IdA] [castA]) = Uₜ A d typeA A≡A [t] [IdA] [castA] 
+  irrelevanceTermT {l = ∞} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t = t
+  irrelevanceTermT {l = ι ¹} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s ()) ⊢Γ) (Uᵣ l<' ⊢Γ₁)) t
+  irrelevanceTermT {l = ∞} {ι ¹} (Uᵥ {lA = ¹} (Uᵣ l< ⊢Γ) (Uᵣ (Nat.s≤s ()) ⊢Γ₁)) t
+  irrelevanceTermT {l = ∞} {∞} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ) (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ₁)) t = t
   irrelevanceTermT (emb⁰¹ x) t = irrelevanceTermT x t
   irrelevanceTermT (emb¹⁰ x) t = irrelevanceTermT x t
+  irrelevanceTermT (emb⁰∞ x) t = irrelevanceTermT x t
+  irrelevanceTermT (emb∞⁰ x) t = irrelevanceTermT x t
+  irrelevanceTermT (emb¹∞ x) t = irrelevanceTermT x t
+  irrelevanceTermT (emb∞¹ x) t = irrelevanceTermT x t
 
 --------------------------------------------------------------------------------
 
@@ -208,9 +224,9 @@ mutual
   irrelevanceEqTerm p q t≡u = irrelevanceEqTermT (goodCasesRefl p q) t≡u
 
   -- Irrelevance for term equality with propositionally equal types
-  irrelevanceEqTerm′ : ∀ {Γ A A′ t u r r' l l′} (eq : A PE.≡ A′) (req : r PE.≡ r')
-                       (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩⟨ l′ ⟩ A′ ^ r')
-                     → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / p → Γ ⊩⟨ l′ ⟩ t ≡ u ∷ A′ ^ r' / q
+  irrelevanceEqTerm′ : ∀ {Γ A A′ t u r r' l l′ ll} (eq : A PE.≡ A′) (req : r PE.≡ r')
+                       (p : Γ ⊩⟨ l ⟩ A ^ [ r , ll ]) (q : Γ ⊩⟨ l′ ⟩ A′ ^ [ r' , ll ])
+                     → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ r , ll ] / p → Γ ⊩⟨ l′ ⟩ t ≡ u ∷ A′ ^ [ r' , ll ] / q
   irrelevanceEqTerm′ PE.refl PE.refl p q t≡u = irrelevanceEqTerm p q t≡u
 
   -- Irrelevance for term equality with propositionally equal types and terms
@@ -226,15 +242,15 @@ mutual
                            → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / p → Γ ⊩⟨ l′ ⟩ t ≡ u ∷ A ^ r / q
   irrelevanceEqTermT (ℕᵥ D D′) t≡u = t≡u
   irrelevanceEqTermT (Emptyᵥ D D′) t≡u = t≡u
-  irrelevanceEqTermT { r = ! } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ₌ k m d d′ nf)
+  irrelevanceEqTermT { r = [ ! , ll ] } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ₌ k m d d′ nf)
                      with whrDet* (red D₁ , ne neK₁) (red D , ne neK)
   irrelevanceEqTermT (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ₌ k m d d′ nf)
     | PE.refl = neₜ₌ k m d d′ nf
-  irrelevanceEqTermT { r = % } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ₌ d d′)
+  irrelevanceEqTermT { r = [ % , ll ] } (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ₌ d d′)
                      with whrDet* (red D₁ , ne neK₁) (red D , ne neK)
   irrelevanceEqTermT (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ₌ d d′)
     | PE.refl = neₜ₌ d d′
-  irrelevanceEqTermT {Γ} {t = t} {u = u} {r = !}
+  irrelevanceEqTermT {Γ} {t = t} {u = u} {r = [ ! , ll ]}
                      (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (Πᵣ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                      (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
@@ -242,9 +258,9 @@ mutual
         F≡F₁ , rF≡rF₁ , G≡G₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
         [A]         = Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext
         [A]₁        = Πᵣ′ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
-    in  Πₜ₌ f g (PE.subst (λ x → Γ ⊢ t :⇒*: f ∷ x) ΠFG≡ΠF₁G₁ d)
-            (PE.subst (λ x → Γ ⊢ u :⇒*: g ∷ x) ΠFG≡ΠF₁G₁ d′) funcF funcG
-            (PE.subst (λ x → Γ ⊢ f ≅ g ∷ x ^ !) ΠFG≡ΠF₁G₁ f≡g)
+    in  Πₜ₌ f g (PE.subst (λ x → Γ ⊢ t :⇒*: f ∷ x ^ ll) ΠFG≡ΠF₁G₁ d)
+            (PE.subst (λ x → Γ ⊢ u :⇒*: g ∷ x ^ ll) ΠFG≡ΠF₁G₁ d′) funcF funcG
+            (PE.subst (λ x → Γ ⊢ f ≅ g ∷ x ^ [ ! , ll ]) ΠFG≡ΠF₁G₁ f≡g)
             (irrelevanceTerm [A] [A]₁ [f]) (irrelevanceTerm [A] [A]₁ [g])
             (λ {ρ} [ρ] ⊢Δ [a]₁ →
                let [a] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F≡F₁)) (PE.sym rF≡rF₁)
@@ -253,16 +269,28 @@ mutual
                                           [a]₁
                in  irrelevanceEqTerm′ (PE.cong (λ G → wk (lift ρ) G [ _ ]) G≡G₁) PE.refl
                                      ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([f≡g] [ρ] ⊢Δ [a]))
-  irrelevanceEqTermT {Γ} {t = t} {u = u} {r = %}
+  irrelevanceEqTermT {Γ} {t = t} {u = u} {r = [ % , ll ]}
                      (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (Πᵣ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                      (d , d′) = let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ) in
-                                (PE.subst (λ x → Γ ⊢ t ∷ x ^ %) ΠFG≡ΠF₁G₁ d , PE.subst (λ x → Γ ⊢ u ∷ x ^ %) ΠFG≡ΠF₁G₁ d′)
-  irrelevanceEqTermT {Γ} {t = t} {u = u}
+                                (PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ΠFG≡ΠF₁G₁ d , PE.subst (λ x → Γ ⊢ u ∷ x ^ [ % , ll ]) ΠFG≡ΠF₁G₁ d′)
+  irrelevanceEqTermT {Γ} {t = t} {u = u} {r = [ % , ll ]}
                      (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                      (d , d′) = let ∃FG≡∃F₁G₁   = whrDet* (red D , ∃ₙ) (red D₁ , ∃ₙ) in
-                                (PE.subst (λ x → Γ ⊢ t ∷ x ^ %) ∃FG≡∃F₁G₁ d , PE.subst (λ x → Γ ⊢ u ∷ x ^ %) ∃FG≡∃F₁G₁ d′)
-  irrelevanceEqTermT (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) t≡u = t≡u
+                                (PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ∃FG≡∃F₁G₁ d , PE.subst (λ x → Γ ⊢ u ∷ x ^ [ % , ll ]) ∃FG≡∃F₁G₁ d′)
+  irrelevanceEqTermT {l = ι ¹} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t≡u = t≡u
+  irrelevanceEqTermT {l = ι ¹} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) =
+                                                                                                    (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u])
+  irrelevanceEqTermT {l = ∞} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) =
+                                                                                                    (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u])
+  irrelevanceEqTermT {l = ∞} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t≡u = t≡u
+  irrelevanceEqTermT {l = ι ¹} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s ()) ⊢Γ) (Uᵣ l<' ⊢Γ₁)) t≡u
+  irrelevanceEqTermT {l = ∞} {ι ¹} (Uᵥ {lA = ¹} (Uᵣ l< ⊢Γ) (Uᵣ (Nat.s≤s ()) ⊢Γ₁)) t≡u
+  irrelevanceEqTermT {l = ∞} {∞} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ) (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ₁)) t≡u = t≡u
   irrelevanceEqTermT (emb⁰¹ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb¹⁰ x) t≡u = irrelevanceEqTermT x t≡u
+  irrelevanceEqTermT (emb⁰∞ x) t≡u = irrelevanceEqTermT x t≡u
+  irrelevanceEqTermT (emb∞⁰ x) t≡u = irrelevanceEqTermT x t≡u
+  irrelevanceEqTermT (emb¹∞ x) t≡u = irrelevanceEqTermT x t≡u
+  irrelevanceEqTermT (emb∞¹ x) t≡u = irrelevanceEqTermT x t≡u
