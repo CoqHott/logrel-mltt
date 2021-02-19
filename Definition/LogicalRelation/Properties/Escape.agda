@@ -19,7 +19,7 @@ import Data.Nat as Nat
 
 -- Reducible types are well-formed.
 escape : ∀ {l Γ A r} → Γ ⊩⟨ l ⟩ A ^ r → Γ ⊢ A ^ r
-escape (Uᵣ′ _ _ _ _ [[ ⊢A , ⊢B , D ]]) = ⊢A
+escape (Uᵣ′ _ _ _ _ _ PE.refl [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (ℕᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (Emptyᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) = ⊢A
@@ -34,7 +34,7 @@ escape {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A)
 escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
             → Γ ⊩⟨ l ⟩ A ≡ B ^ r / [A]
             → Γ ⊢ A ≅ B ^ r
-escapeEq (Uᵣ′ _ _ _ _ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-Urefl (wf ⊢A))
+escapeEq (Uᵣ′ _ _ _ _ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-Urefl (wf ⊢A))
 escapeEq (ℕᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-ℕrefl (wf ⊢A))
 escapeEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-Emptyrefl (wf ⊢A))
 escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
@@ -54,7 +54,7 @@ escapeEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) A≡B
 escapeTerm : ∀ {l Γ A t r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
               → Γ ⊢ t ∷ A ^ r
-escapeTerm (Uᵣ′ _ _ _ l< D) (Uₜ A [[ ⊢t , ⊢u , d ]] typeA A≡A [A] IdA castA) = conv ⊢t (sym (subset* (red D)))
+escapeTerm (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ A [[ ⊢t , ⊢u , d ]] typeA A≡A [A] IdA castA) = conv ⊢t (sym (subset* (red D)))
 escapeTerm (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) =
@@ -76,7 +76,7 @@ escapeTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) t
 escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
-escapeTermEq (Uᵣ′ _ _ _ l< D) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+escapeTermEq (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop

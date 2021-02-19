@@ -5,6 +5,8 @@ open import Definition.Typed.EqualityRelation
 module Definition.LogicalRelation.Irrelevance {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
+open import Tools.Empty using (⊥; ⊥-elim)
+
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Properties
@@ -32,6 +34,33 @@ irrelevanceΓ′ : ∀ {l A A′ r Γ Γ′}
               → Γ′ ⊩⟨ l ⟩ A′ ^ r
 irrelevanceΓ′ PE.refl PE.refl [A] = [A]
 
+-- helper function to deal with relevance
+
+reduction-irrelevant-Univ : ∀ {Γ A t l l' ll ll' l< l<' r r' el el' D D'}
+        (e : r PE.≡ r') (e' : ll PE.≡ ll') →
+        Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< el D) →
+        Γ ⊩⟨ l' ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' D')
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl PE.refl _
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl PE.refl _
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {∞} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {ι ¹} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {⁰} {.⁰} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {¹} {.¹} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+
+reduction-irrelevant-Univ= : ∀ {Γ A t u l l' ll ll' l< l<' r r' el el' D D'}
+        (e : r PE.≡ r') (e' : ll PE.≡ ll') →
+        Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< el D) →
+        Γ ⊩⟨ l' ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' D')
+reduction-irrelevant-Univ= {l = ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) = Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]
+reduction-irrelevant-Univ= {l = l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl PE.refl _
+reduction-irrelevant-Univ= {l = ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl PE.refl _
+reduction-irrelevant-Univ= {l = ι ¹} {∞} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) = Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]
+reduction-irrelevant-Univ= {l = ∞} {ι ¹} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) = Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]
+reduction-irrelevant-Univ= {l = ∞} {∞} {⁰} {.⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) = Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]
+reduction-irrelevant-Univ= {l = ∞} {∞} {¹} {.¹} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) = Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]
+
+      
 -- NB: for Pi cases it seems like it would be cleaner to do
 -- irrelevanceFoo (Pi ...) rewrite whrDet* ...
 -- instead of messing with PE.subst and irrelevanceEq′ etc
@@ -111,7 +140,9 @@ mutual
                                          [a]₁
               in  irrelevanceEq′ (PE.cong (λ y → wk (lift ρ) y [ _ ]) G≡G₁) PE.refl
                                  ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([G≡G′] [ρ] ⊢Δ [a]))
-  irrelevanceEqT (Uᵥ (Uᵣ _ _) (Uᵣ _ _)) A≡B = A≡B
+  irrelevanceEqT (Uᵥ (Uᵣ _ _ _ PE.refl D) (Uᵣ _ _ _ e D')) A≡B = let U≡U  = whrDet* (red D , Uₙ) (red D' , Uₙ) in
+                                                                let r≡r , l≡l = Univ-PE-injectivity U≡U in
+                                                                 PE.subst _ l≡l (PE.subst _ r≡r A≡B)
   irrelevanceEqT (emb⁰¹ x) A≡B = irrelevanceEqT x A≡B
   irrelevanceEqT (emb¹⁰ x) A≡B = irrelevanceEqT x A≡B
   irrelevanceEqT (emb⁰∞ x) A≡B = irrelevanceEqT x A≡B
@@ -196,19 +227,16 @@ mutual
                                   ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([f]₁ [ρ] ⊢Δ [a]))
   irrelevanceTermT {Γ} {t = t} {r = [ % , ll ]} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                    (Πᵣ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
-                   d = let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
+                  d = let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
                        in PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ΠFG≡ΠF₁G₁ d
   irrelevanceTermT {Γ} {t = t} {r = [ % , ll ]} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                    (∃ᵣ  F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                    d = let ∃FG≡∃F₁G₁   = whrDet* (red D , ∃ₙ) (red D₁ , ∃ₙ)
                        in PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ∃FG≡∃F₁G₁ d
-  irrelevanceTermT {l = ι ¹} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t = t
-  irrelevanceTermT {l = ι ¹} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ A d typeA A≡A [t] [IdA] [castA]) = Uₜ A d typeA A≡A [t] [IdA] [castA]
-  irrelevanceTermT {l = ∞} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ A d typeA A≡A [t] [IdA] [castA]) = Uₜ A d typeA A≡A [t] [IdA] [castA] 
-  irrelevanceTermT {l = ∞} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t = t
-  irrelevanceTermT {l = ι ¹} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s ()) ⊢Γ) (Uᵣ l<' ⊢Γ₁)) t
-  irrelevanceTermT {l = ∞} {ι ¹} (Uᵥ {lA = ¹} (Uᵣ l< ⊢Γ) (Uᵣ (Nat.s≤s ()) ⊢Γ₁)) t
-  irrelevanceTermT {l = ∞} {∞} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ) (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ₁)) t = t
+  irrelevanceTermT (Uᵥ (Uᵣ r ll l< PE.refl D) (Uᵣ r' ll' l<' _ D')) t =
+    let U≡U   = whrDet* (red D , Uₙ) (red D' , Uₙ)
+        r≡r , l≡l = Univ-PE-injectivity U≡U
+    in reduction-irrelevant-Univ r≡r l≡l t 
   irrelevanceTermT (emb⁰¹ x) t = irrelevanceTermT x t
   irrelevanceTermT (emb¹⁰ x) t = irrelevanceTermT x t
   irrelevanceTermT (emb⁰∞ x) t = irrelevanceTermT x t
@@ -279,15 +307,10 @@ mutual
                          (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                      (d , d′) = let ∃FG≡∃F₁G₁   = whrDet* (red D , ∃ₙ) (red D₁ , ∃ₙ) in
                                 (PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ∃FG≡∃F₁G₁ d , PE.subst (λ x → Γ ⊢ u ∷ x ^ [ % , ll ]) ∃FG≡∃F₁G₁ d′)
-  irrelevanceEqTermT {l = ι ¹} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t≡u = t≡u
-  irrelevanceEqTermT {l = ι ¹} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) =
-                                                                                                    (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u])
-  irrelevanceEqTermT {l = ∞} {ι ¹} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) =
-                                                                                                    (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u])
-  irrelevanceEqTermT {l = ∞} {∞} (Uᵥ {lA = ⁰} (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ) (Uᵣ (Nat.s≤s Nat.z≤n) ⊢Γ₁)) t≡u = t≡u
-  irrelevanceEqTermT {l = ι ¹} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s ()) ⊢Γ) (Uᵣ l<' ⊢Γ₁)) t≡u
-  irrelevanceEqTermT {l = ∞} {ι ¹} (Uᵥ {lA = ¹} (Uᵣ l< ⊢Γ) (Uᵣ (Nat.s≤s ()) ⊢Γ₁)) t≡u
-  irrelevanceEqTermT {l = ∞} {∞} (Uᵥ {lA = ¹} (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ) (Uᵣ (Nat.s≤s (Nat.s≤s Nat.z≤n)) ⊢Γ₁)) t≡u = t≡u
+  irrelevanceEqTermT (Uᵥ (Uᵣ r ll l< PE.refl D) (Uᵣ r' ll' l<' _ D')) t =
+    let U≡U   = whrDet* (red D , Uₙ) (red D' , Uₙ)
+        r≡r , l≡l = Univ-PE-injectivity U≡U
+    in reduction-irrelevant-Univ= r≡r l≡l t 
   irrelevanceEqTermT (emb⁰¹ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb¹⁰ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb⁰∞ x) t≡u = irrelevanceEqTermT x t≡u
