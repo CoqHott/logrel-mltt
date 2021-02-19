@@ -40,13 +40,13 @@ reduction-irrelevant-Univ : ∀ {Γ A t l l' ll ll' l< l<' r r' el el' D D'}
         (e : r PE.≡ r') (e' : ll PE.≡ ll') →
         Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< el D) →
         Γ ⊩⟨ l' ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' D')
-reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
 reduction-irrelevant-Univ {Γ} {A} {t} {l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl PE.refl _
 reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl PE.refl _
-reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {∞} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
-reduction-irrelevant-Univ {Γ} {A} {t} {∞} {ι ¹} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
-reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {⁰} {.⁰} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
-reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {¹} {.¹} {l<} {l<'} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {∞} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {⁰} {.⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {¹} {.¹} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] [castK]) = Uₜ K d typeK K≡K [t] [IdK] [castK]
 
 reduction-irrelevant-Univ= : ∀ {Γ A t u l l' ll ll' l< l<' r r' el el' D D'}
         (e : r PE.≡ r') (e' : ll PE.≡ ll') →
