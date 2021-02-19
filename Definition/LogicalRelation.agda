@@ -449,7 +449,7 @@ open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ ; ∃ᵣ ; emb; Uₜ
 pattern Πₜ a b c d e f = a , b , c , d , e , f
 pattern Πₜ₌ a b c d e f g h i j = a , b , c , d , e , f , g , h , i , j
 
-pattern Uᵣ′ r l A a d = Uᵣ {A = A} {r = r} {l = l} (Uᵣ a d)
+pattern Uᵣ′ A r l a d = Uᵣ {A = A} (Uᵣ r l a d)
 pattern ne′ b c d e = ne (ne b c d e)
 pattern Πᵣ′  a b c d e f g h i j = Πᵣ (Πᵣ a b c d e f g h i j)
 pattern ∃ᵣ′  a b c d e f g h i = ∃ᵣ (∃ᵣ a b c d e f g h i)

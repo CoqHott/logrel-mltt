@@ -16,7 +16,7 @@ import Data.Nat as Nat
 
 -- Reflexivity of reducible types.
 reflEq : ∀ {l Γ A r} ([A] : Γ ⊩⟨ l ⟩ A ^ r) → Γ ⊩⟨ l ⟩ A ≡ A ^ r / [A]
-reflEq (Uᵣ′ _ l′ l< ⊢Γ) = PE.refl
+reflEq (Uᵣ′ _ _ _ l< D) = red D
 reflEq (ℕᵣ D) = red D
 reflEq (Emptyᵣ D) = red D
 reflEq (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) =
@@ -52,10 +52,10 @@ reflEmpty-prop (ne x) = ne x x
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
            → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ l ⟩ t ≡ t ∷ A ^ r / [A]
-reflEqTerm {ι ¹} (Uᵣ′ _ ⁰ <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
-reflEqTerm {∞} (Uᵣ′ _ ⁰ <l ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
-reflEqTerm {∞} (Uᵣ′ _ ¹ (Nat.s≤s (Nat.s≤s <l)) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
-reflEqTerm {ι ¹} (Uᵣ′ _ ¹ (Nat.s≤s ()) ⊢Γ) (Uₜ A d typeA A≡A [A] IdA castA)
+reflEqTerm {∞} (Uᵣ′ _ _ ⁰ <l D) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A]) 
+reflEqTerm {∞} (Uᵣ′ _ _ ¹ <l D) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A]) 
+reflEqTerm {ι ¹} (Uᵣ′ _ _ ⁰ <l D) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A]) 
+reflEqTerm {ι ¹} (Uᵣ′ _ _ ¹ (Nat.s≤s ()) _) (Uₜ A d typeA A≡A [A] IdA castA)
 reflEqTerm (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
       (reflNatural-prop prop)
