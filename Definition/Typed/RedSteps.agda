@@ -12,22 +12,22 @@ id ⊢B ⇨* B⇒C = B⇒C
 (A⇒A′ ⇨ A′⇒B) ⇨* B⇒C = A⇒A′ ⇨ (A′⇒B ⇨* B⇒C)
 
 -- Concatenation of term reduction closures
-_⇨∷*_ : ∀ {Γ A t u v} → Γ ⊢ t ⇒* u ∷ A → Γ ⊢ u ⇒* v ∷ A → Γ ⊢ t ⇒* v ∷ A
+_⇨∷*_ : ∀ {Γ A t u v l} → Γ ⊢ t ⇒* u ∷ A ^ l → Γ ⊢ u ⇒* v ∷ A ^ l → Γ ⊢ t ⇒* v ∷ A ^ l
 id ⊢u ⇨∷* u⇒v = u⇒v
 (t⇒t′ ⇨ t′⇒u) ⇨∷* u⇒v = t⇒t′ ⇨ (t′⇒u ⇨∷* u⇒v)
 
 -- Conversion of reduction closures
-conv* : ∀ {Γ A B t u} → Γ ⊢ t ⇒* u ∷ A → Γ ⊢ A ≡ B ^ ! → Γ ⊢ t ⇒* u ∷ B 
+conv* : ∀ {Γ A B t u l } → Γ ⊢ t ⇒* u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t ⇒* u ∷ B ^ l
 conv* (id x) A≡B = id (conv x A≡B)
 conv* (x ⇨ d) A≡B = conv x A≡B ⇨ conv* d A≡B
 
 -- Universe of reduction closures
-univ* : ∀ {Γ A B r l} → Γ ⊢ A ⇒* B ∷ (Univ r l) → Γ ⊢ A ⇒* B ^ r
+univ* : ∀ {Γ A B r l} → Γ ⊢ A ⇒* B ∷ (Univ r l) ^ next l → Γ ⊢ A ⇒* B ^ [ r , ι l ]
 univ* (id x) = id (univ x)
 univ* (x ⇨ A⇒B) = univ x ⇨ univ* A⇒B
 
 -- Application substitution of reduction closures
-app-subst* : ∀ {Γ A B t t′ a rA} → Γ ⊢ t ⇒* t′ ∷ Π A ^ rA ▹ B → Γ ⊢ a ∷ A ^ rA
-           → Γ ⊢ t ∘ a ⇒* t′ ∘ a ∷ B [ a ] 
+app-subst* : ∀ {Γ A B t t′ a rA l} → Γ ⊢ t ⇒* t′ ∷ Π A ^ rA ▹ B ^ l → Γ ⊢ a ∷ A ^ [ rA , l ]
+           → Γ ⊢ t ∘ a ⇒* t′ ∘ a ∷ B [ a ] ^ l
 app-subst* (id x) a₁ = id (x ∘ⱼ a₁)
 app-subst* (x ⇨ t⇒t′) a₁ = app-subst x a₁ ⇨ app-subst* t⇒t′ a₁
