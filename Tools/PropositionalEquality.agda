@@ -52,6 +52,9 @@ cong₄ f refl refl refl refl = refl
 subst : {A : Set} {a b : A} (F : A → Set) → a ≡ b → F a → F b
 subst F refl f = f
 
+J : {A : Set} {a : A} (F : ( b : A) (e : a ≡ b) → Set) (b : A) (e : a ≡ b) → F a refl → F b e
+J F b refl f = f
+
 -- Two substitutions simultaneously.
 
 subst₂ : ∀ {A B : Set} {a a′ b b′} (F : A → B → Set)

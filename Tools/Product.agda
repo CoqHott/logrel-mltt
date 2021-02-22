@@ -3,6 +3,8 @@
 
 {-# OPTIONS --without-K --safe #-}
 
+import Tools.PropositionalEquality as PE
+
 module Tools.Product where
 
 infixr 4 _,_
@@ -31,3 +33,6 @@ open Σ public
 
 _×_ : (A B : Set) → Set
 A × B = Σ A (λ x → B)
+
+×-eq : ∀ {A B : Set} {x x' : A} {y y' : B} → x PE.≡ x' × y PE.≡ y' → (x , y) PE.≡ ( x' , y' )
+×-eq ( PE.refl , PE.refl ) = PE.refl

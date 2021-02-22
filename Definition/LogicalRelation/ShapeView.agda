@@ -109,7 +109,7 @@ U-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | noemb x₁ 
 U-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
 U-elim′ {∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
 
-U-elim : ∀ {l Γ r l′} → Γ ⊩⟨ l ⟩ Univ r l′ ^ [ ! , next l′ ] → Γ ⊩⟨ l ⟩U Univ r l′ ^ next l′
+U-elim : ∀ {l Γ r l′ ll′} → Γ ⊩⟨ l ⟩ Univ r l′ ^ [ ! , ll′ ] → Γ ⊩⟨ l ⟩U Univ r l′ ^ ll′
 U-elim [U] = U-elim′ (id (escape [U])) [U]
 
 ℕ-elim′ : ∀ {l A Γ ll} → Γ ⊢ A ⇒* ℕ ^ [ ! , ll ]  → Γ ⊩⟨ l ⟩ A ^ [ ! , ll ] → Γ ⊩⟨ l ⟩ℕ A
