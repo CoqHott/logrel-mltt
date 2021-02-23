@@ -61,61 +61,6 @@ Unitᵗᵛ {Γ} [Γ] =
   in Πᵗᵛ {Empty} {Empty} [Γ] [Empty] (λ {Δ} {σ} → [SProp]₁ {Δ} {σ})
            [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ})
 
-IdRed*Term′ : ∀ {Γ A B t u}
-         (⊢t : Γ ⊢ t ∷ A ^ !)
-         (⊢u : Γ ⊢ u ∷ A ^ !)
-         (D : Γ ⊢ A ⇒* B ^ !)
-       → Γ ⊢ Id A t u ⇒* Id B t u ∷ SProp
-IdRed*Term′ ⊢t ⊢u (id ⊢A) = id (Idⱼ ⊢A ⊢t ⊢u)
-IdRed*Term′ ⊢t ⊢u (d ⇨ D) = Id-subst d ⊢t ⊢u
-  ⇨ IdRed*Term′ (conv ⊢t (subset d)) (conv ⊢u (subset d)) D
-
-IdRed*Term : ∀ {Γ A B t u}
-          (⊢t : Γ ⊢ t ∷ A ^ !)
-          (⊢u : Γ ⊢ u ∷ A ^ !)
-          (D : Γ ⊢ A :⇒*: B ^ !)
-        → Γ ⊢ Id A t u :⇒*: Id B t u ∷ SProp
-IdRed*Term {Γ} {A} {B} ⊢t ⊢u [ ⊢A , ⊢B , D ] =
-  [ Idⱼ ⊢A ⊢t ⊢u
-  , Idⱼ ⊢B (conv ⊢t (subset* D)) (conv ⊢u (subset* D))
-  , IdRed*Term′ ⊢t ⊢u D ]
-
-IdℕRed*Term′ : ∀ {Γ t t′ u}
-               (⊢t : Γ ⊢ t ∷ ℕ ^ !)
-               (⊢t′ : Γ ⊢ t′ ∷ ℕ ^ !)
-               (d : Γ ⊢ t ⇒* t′ ∷ ℕ)
-               (⊢u : Γ ⊢ u ∷ ℕ ^ !)
-             → Γ ⊢ Id ℕ t u ⇒* Id ℕ t′ u ∷ SProp
-IdℕRed*Term′ ⊢t ⊢t′ (id x) ⊢u = id (Idⱼ (ℕⱼ (wfTerm ⊢u)) ⊢t ⊢u)
-IdℕRed*Term′ ⊢t ⊢t′ (x ⇨ d) ⊢u = _⇨_ (Id-ℕ-subst x ⊢u) (IdℕRed*Term′ (redFirst*Term d) ⊢t′ d ⊢u)
-
-Idℕ0Red*Term′ : ∀ {Γ t t′}
-                (⊢t : Γ ⊢ t ∷ ℕ ^ !)
-                (⊢t′ : Γ ⊢ t′ ∷ ℕ ^ !)
-                (d : Γ ⊢ t ⇒* t′ ∷ ℕ)
-              → Γ ⊢ Id ℕ zero t ⇒* Id ℕ zero t′ ∷ SProp
-Idℕ0Red*Term′ ⊢t ⊢t′ (id x) = id (Idⱼ (ℕⱼ (wfTerm ⊢t)) (zeroⱼ (wfTerm ⊢t)) ⊢t)
-Idℕ0Red*Term′ ⊢t ⊢t′ (x ⇨ d) = Id-ℕ-0-subst x ⇨ Idℕ0Red*Term′ (redFirst*Term d) ⊢t′ d
-
-IdℕSRed*Term′ : ∀ {Γ t u u′}
-                (⊢t : Γ ⊢ t ∷ ℕ ^ !)
-                (⊢u : Γ ⊢ u ∷ ℕ ^ !)
-                (⊢u′ : Γ ⊢ u′ ∷ ℕ ^ !)
-                (d : Γ ⊢ u ⇒* u′ ∷ ℕ)
-              → Γ ⊢ Id ℕ (suc t) u ⇒* Id ℕ (suc t) u′ ∷ SProp
-IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (id x) = id (Idⱼ (ℕⱼ (wfTerm ⊢t)) (sucⱼ ⊢t) ⊢u)
-IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (x ⇨ d) = Id-ℕ-S-subst ⊢t x ⇨ IdℕSRed*Term′ ⊢t (redFirst*Term d) ⊢u′ d
-
-redSProp′ : ∀ {Γ A B}
-           (D : Γ ⊢ A ⇒* B ∷ SProp)
-         → Γ ⊢ A ⇒* B ^ %
-redSProp′ (id x) = id (univ x)
-redSProp′ (x ⇨ D) = univ x ⇨ redSProp′ D
-
-redSProp : ∀ {Γ A B}
-           (D : Γ ⊢ A :⇒*: B ∷ SProp)
-         → Γ ⊢ A :⇒*: B ^ %
-redSProp [ ⊢t , ⊢u , d ] = [ (univ ⊢t) , (univ ⊢u) , redSProp′ d ]
 
 IdTerm : ∀ {A t u Γ l}
          (⊢Γ : ⊢ Γ)

@@ -5,6 +5,7 @@ module Definition.Typed.Properties where
 open import Definition.Untyped
 open import Definition.Untyped.Properties
 open import Definition.Typed
+open import Definition.Typed.RedSteps
 
 open import Tools.Empty using (⊥; ⊥-elim)
 open import Tools.Product
@@ -605,3 +606,78 @@ toLevelInj {∞} {ι ¹} {c} {ι ¹} {∞} {Nat.s≤s ()} e
 toLevelInj {∞} {ι ¹} {c} {∞} {∞} {Nat.s≤s (Nat.s≤s ())} e
 toLevelInj {ι ¹} {∞} {Nat.s≤s ()} e
 toLevelInj {∞} {∞} {Nat.s≤s (Nat.s≤s ())}  e
+
+
+IdRed*Term′ : ∀ {Γ A B t u r l}
+         (⊢t : Γ ⊢ t ∷ A ^ [ r , ι l ])
+         (⊢u : Γ ⊢ u ∷ A ^ [ r , ι l ])
+         (D : Γ ⊢ A ⇒* B ^ [ r , ι l ])
+       → Γ ⊢ Id A t u ⇒* Id B t u ∷ SProp l ^ next l
+IdRed*Term′ ⊢t ⊢u (id (univ ⊢A)) = id (Idⱼ ⊢A ⊢t ⊢u)
+IdRed*Term′ ⊢t ⊢u (univ d ⇨ D) = Id-subst d ⊢t ⊢u ⇨ IdRed*Term′ (conv ⊢t (subset (univ d))) (conv ⊢u (subset (univ d))) D
+
+IdRed*Term : ∀ {Γ A B t u r l}
+          (⊢t : Γ ⊢ t ∷ A ^ [ r , ι l ])
+          (⊢u : Γ ⊢ u ∷ A ^ [ r , ι l ])
+          (D : Γ ⊢ A :⇒*: B ^ [ r , ι l ])
+        → Γ ⊢ Id A t u :⇒*: Id B t u ∷ SProp l ^ next l
+IdRed*Term {Γ} {A} {B} ⊢t ⊢u [[ univ ⊢A , univ ⊢B , D ]] =
+  [[ Idⱼ ⊢A ⊢t ⊢u , Idⱼ ⊢B (conv ⊢t (subset* D)) (conv ⊢u (subset* D)) ,
+     IdRed*Term′ ⊢t ⊢u D ]]
+
+CastRed*Term′ : ∀ {Γ A B X e t}
+         (⊢X : Γ ⊢ X ^ [ ! , ι ⁰ ])
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) A X ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ])
+         (D : Γ ⊢ A ⇒* B ^ [ ! , ι ⁰ ])
+       → Γ ⊢ cast ⁰ A X e t ⇒* cast ⁰ B X e t ∷ X ^ ι ⁰
+CastRed*Term′ (univ ⊢X) ⊢e ⊢t  (id (univ ⊢A)) = id (castⱼ ⊢A ⊢X ⊢e ⊢t)
+CastRed*Term′ (univ ⊢X) ⊢e ⊢t  (univ d ⇨ D) = cast-subst d ⊢X ⊢e ⊢t ⇨
+              CastRed*Term′ (univ ⊢X) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢t))) (subsetTerm d) (refl ⊢X)) )) (conv ⊢t (subset (univ d))) D
+
+CastRed*Term : ∀ {Γ A B X t e}
+         (⊢X : Γ ⊢ X ^ [ ! , ι ⁰ ])
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) A X ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ])
+         (D : Γ ⊢ A :⇒*: B ∷ U ⁰ ^ next ⁰)
+       → Γ ⊢ cast ⁰ A X e t :⇒*: cast ⁰ B X e t ∷ X ^ ι ⁰
+CastRed*Term {Γ} {A} {B} (univ ⊢X) ⊢e ⊢t [[ ⊢A , ⊢B , D ]] = 
+  [[ castⱼ ⊢A ⊢X ⊢e ⊢t , castⱼ ⊢B ⊢X (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢t))) (subset*Term D) (refl ⊢X)) )) (conv ⊢t (univ (subset*Term D))) ,
+     CastRed*Term′ (univ ⊢X) ⊢e ⊢t (univ* D) ]]
+
+IdℕRed*Term′ : ∀ {Γ t t′ u}
+               (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
+               (⊢t′ : Γ ⊢ t′ ∷ ℕ ^ [ ! , ι ⁰ ])
+               (d : Γ ⊢ t ⇒* t′ ∷ ℕ ^ ι ⁰)
+               (⊢u : Γ ⊢ u ∷ ℕ ^ [ ! , ι ⁰ ])
+             → Γ ⊢ Id ℕ t u ⇒* Id ℕ t′ u ∷ SProp ⁰ ^ next ⁰
+IdℕRed*Term′ ⊢t ⊢t′ (id x) ⊢u = id (Idⱼ (ℕⱼ (wfTerm ⊢u)) ⊢t ⊢u)
+IdℕRed*Term′ ⊢t ⊢t′ (x ⇨ d) ⊢u = _⇨_ (Id-ℕ-subst x ⊢u) (IdℕRed*Term′ (redFirst*Term d) ⊢t′ d ⊢u)
+
+Idℕ0Red*Term′ : ∀ {Γ t t′}
+                (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
+                (⊢t′ : Γ ⊢ t′ ∷ ℕ ^ [ ! , ι ⁰ ])
+                (d : Γ ⊢ t ⇒* t′ ∷ ℕ ^ ι ⁰)
+              → Γ ⊢ Id ℕ zero t ⇒* Id ℕ zero t′ ∷ SProp ⁰ ^ next ⁰
+Idℕ0Red*Term′ ⊢t ⊢t′ (id x) = id (Idⱼ (ℕⱼ (wfTerm ⊢t)) (zeroⱼ (wfTerm ⊢t)) ⊢t)
+Idℕ0Red*Term′ ⊢t ⊢t′ (x ⇨ d) = Id-ℕ-0-subst x ⇨ Idℕ0Red*Term′ (redFirst*Term d) ⊢t′ d
+
+IdℕSRed*Term′ : ∀ {Γ t u u′}
+                (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
+                (⊢u : Γ ⊢ u ∷ ℕ ^ [ ! , ι ⁰ ])
+                (⊢u′ : Γ ⊢ u′ ∷ ℕ ^ [ ! , ι ⁰ ])
+                (d : Γ ⊢ u ⇒* u′ ∷ ℕ ^ ι ⁰)
+              → Γ ⊢ Id ℕ (suc t) u ⇒* Id ℕ (suc t) u′ ∷ SProp ⁰ ^ next ⁰
+IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (id x) = id (Idⱼ (ℕⱼ (wfTerm ⊢t)) (sucⱼ ⊢t) ⊢u)
+IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (x ⇨ d) = Id-ℕ-S-subst ⊢t x ⇨ IdℕSRed*Term′ ⊢t (redFirst*Term d) ⊢u′ d
+
+redSProp′ : ∀ {Γ A B l}
+           (D : Γ ⊢ A ⇒* B ∷ SProp l ^ next l )
+         → Γ ⊢ A ⇒* B ^ [ % , ι l ]
+redSProp′ (id x) = id (univ x)
+redSProp′ (x ⇨ D) = univ x ⇨ redSProp′ D
+
+redSProp : ∀ {Γ A B l}
+           (D : Γ ⊢ A :⇒*: B ∷ SProp l ^ next l )
+         → Γ ⊢ A :⇒*: B ^ [ % , ι l ]
+redSProp [[ ⊢t , ⊢u , d ]] = [[ (univ ⊢t) , (univ ⊢u) , redSProp′ d ]]
