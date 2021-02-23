@@ -101,20 +101,12 @@ record EqRelSet : Set₁ where
     ≅-Urefl   : ∀ {r l Γ} → ⊢ Γ → Γ ⊢ (Univ r l) ≅ (Univ r l) ^ [ ! , next l ]
 
     -- Natural number type reflexivity
-    ≅-ℕrefl   : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ^ [ ! , ι ⁰ ]
     ≅ₜ-ℕrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ∷ U ⁰ ^ [ ! , next ⁰ ]
 
     -- Empty type reflexivity
-    ≅-Emptyrefl   : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ^ [ % , ι ⁰ ]
     ≅ₜ-Emptyrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ∷ SProp ⁰ ^ [ ! , next ⁰ ]
 
     -- Π-congruence
-
-    ≅-Π-cong  : ∀ {F G H E rF rG l Γ}
-              → Γ ⊢ F ^ [ rF , l ]
-              → Γ ⊢ F ≅ H ^ [ rF , l ]
-              → Γ ∙ F ^ [ rF , l ] ⊢ G ≅ E ^ [ rG , l ]
-              → Γ ⊢ Π F ^ rF ▹ G ≅ Π H ^ rF ▹ E ^ [ rG , l ]
 
     ≅ₜ-Π-cong : ∀ {F G H E rF rG l Γ}
               → Γ ⊢ F ^ [ rF , ι l ]
@@ -166,14 +158,13 @@ record EqRelSet : Set₁ where
     -- Empty recursion congurence
     ~-Emptyrec : ∀ {n n′ F F′ l Γ}
              → Γ ⊢ F ≅ F′ ^ [ ! , l ]
-             → Γ     ⊢ n ~ n′ ∷ Empty ^ [ % , ι ⁰ ]
              → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ [ ! , l ]
 
     -- Id congruences
-    ~-Id  : ∀ {A A' l t t' u u' Γ}
-          → Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
-          → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
-          → Γ ⊢ u ≅ u' ∷ A ^ [ ! , ι l ]
+    ~-Id  : ∀ {A A' r l t t' u u' Γ}
+          → Γ ⊢ A ~ A' ∷ Univ r l ^ [ ! , next l ]
+          → Γ ⊢ t ≅ t' ∷ A ^ [ r , ι l ]
+          → Γ ⊢ u ≅ u' ∷ A ^ [ r , ι l ]
           → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp l ^ [ ! , next l ]
 
     ~-Idℕ : ∀ {t t' u u' Γ}
@@ -199,7 +190,7 @@ record EqRelSet : Set₁ where
             ⊢ Γ
           → Γ ⊢ t ~ t' ∷ U l ^ [ ! , next l ]
           → Γ ⊢ u ≅ u' ∷ U l ^ [ ! , next l ]
-          → Γ ⊢ Id (U l) t u ~ Id (U l) t' u' ∷ SProp l' ^ [ ! , next l ]
+          → Γ ⊢ Id (U l) t u ~ Id (U l) t' u' ∷ SProp l' ^ [ ! , next l' ]
 
     ~-IdUℕ : ∀ {u u' Γ}
            → ⊢ Γ
@@ -217,8 +208,9 @@ record EqRelSet : Set₁ where
 
     -- cast congruences
 
-    ~-cast : ∀ {A A' B B' l e e' t t' Γ}
-           → Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
+    ~-cast : ∀ {A A' B B' e e' t t' Γ} →
+           let l = ⁰ in
+             Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ B ≅ B' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
            → Γ ⊢ cast l A B e t ~ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]
@@ -226,22 +218,20 @@ record EqRelSet : Set₁ where
     ~-castℕ : ∀ {B B' e e' t t' Γ}
             → ⊢ Γ
             → Γ ⊢ B ~ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
-            → Γ ⊢ e ≅ e' ∷ Id (U ⁰) ℕ B ^ [ % , next ⁰ ]
             → Γ ⊢ t ≅ t' ∷ ℕ ^ [ ! , ι ⁰ ]
             → Γ ⊢ cast ⁰ ℕ B e t ~ cast ⁰ ℕ B' e' t' ∷ B ^ [ ! , ι ⁰ ]
 
     ~-castℕℕ : ∀ {e e' t t' Γ}
              → ⊢ Γ
-             → Γ ⊢ e ≅ e' ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]
              → Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ]
              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 
-    ~-castΠ : ∀ {A A' rA l P P' B B' e e' t t' Γ}
-           → Γ ⊢ A ^ [ rA , ι l ]
+    ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ} →
+           let l = ⁰ in
+             Γ ⊢ A ^ [ rA , ι l ]
            → Γ ⊢ A ≅ A' ∷ Univ rA l ^ [ ! , next l ]
            → Γ ∙ A ^ [ rA , ι l ] ⊢ P ≅ P' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ B ~ B' ∷ U l ^ [ ! , next l ]
-           → Γ ⊢ e ≅ e' ∷ Id (U l) (Π A ^ rA ▹ P) B ^ [ % , next l ]
            → Γ ⊢ t ≅ t' ∷ Π A ^ rA ▹ P ^ [ ! , ι l ]
            → Γ ⊢ cast l (Π A ^ rA ▹ P) B e t ~ cast l (Π A' ^ rA ▹ P') B' e' t' ∷ B ^ [ ! , ι l ]
 
@@ -250,16 +240,15 @@ record EqRelSet : Set₁ where
              → Γ ⊢ A ≅ A' ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ P ≅ P' ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ e ≅ e' ∷ Empty ^ [ % , ι ⁰ ]
              → Γ ⊢ t ≅ t' ∷ ℕ ^ [ ! , ι ⁰ ]
              → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ▹ P) e t ~ cast ⁰ ℕ (Π A' ^ rA ▹ P') e' t' ∷ (Π A ^ rA ▹ P) ^ [ ! , ι ⁰ ]
 
-    ~-castΠℕ : ∀ {A A' rA l P P' e e' t t' Γ}
-             → Γ ⊢ A ∷ Univ rA l ^ [ ! , next l ]
+    ~-castΠℕ : ∀ {A A' rA P P' e e' t t' Γ} →
+             let l = ⁰ in
+               Γ ⊢ A ∷ Univ rA l ^ [ ! , next l ]
              → Γ ⊢ A ≅ A' ∷ Univ rA l ^ [ ! , next l ]
              → Γ ∙ A ^ [ rA , ι l ] ⊢ P ∷ U l ^ [ ! , next l ]
              → Γ ∙ A ^ [ rA , ι l ] ⊢ P ≅ P' ∷ U l ^ [ ! , next l ]
-             → Γ ⊢ e ≅ e' ∷ Empty ^ [ % , ι ⁰ ]
              → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ▹ P) ^ [ ! , ι l ]
              → Γ ⊢ cast l (Π A ^ rA ▹ P) ℕ e t ~ cast l (Π A' ^ rA ▹ P') ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 
