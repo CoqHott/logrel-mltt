@@ -104,11 +104,12 @@ redSubst*Term {l = ι ¹} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ l< PE.refl D) (U�
       t⇒u′ = conv* t⇒u A≡U
       [t] , [tu]  = redSubst* {l = ι ⁰} (univ* t⇒u′) [u]
       in Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
-            (λ a a' X Y → let  q , _ = redSubst* (univ* (IdRed*Term′ (escapeTerm [t] X) (escapeTerm [t] Y) (univ* t⇒u′))) ([IdA] a a' (convTerm₁ [t] [u] [tu] X) (convTerm₁ [t] [u] [tu] Y)) in q)
-            (λ { el PE.refl B a e [B] ⊢e [a] → let ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u′) (refl (un-univ (escape [B]))))) 
-                                                   d , _ = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e (escapeTerm [t] [a]) (univ* t⇒u′)) [B]
-                                                                        ([castA] el PE.refl B a e [B] ⊢e' (convTerm₁ [t] [u] [tu] [a])) in d }
-                                       ) , Uₜ₌  K K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] [[ ⊢u , ⊢K , d ]] typeA typeA A≡A [t] [u] [tu] 
+            (λ [a] [a'] → let  q , _ = redSubst* (univ* (IdRed*Term′ (escapeTerm [t] [a]) (escapeTerm [t] [a']) (univ* t⇒u′))) ([IdA] (convTerm₁ [t] [u] [tu] [a]) (convTerm₁ [t] [u] [tu] [a'])) in q)
+            (λ { el PE.refl [B] ⊢e [a] → let ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u′) (refl (un-univ (escape [B]))))) 
+                                             d , _ = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e (escapeTerm [t] [a]) (univ* t⇒u′)) [B]
+                                                                    ([castA] el PE.refl [B] ⊢e' (convTerm₁ [t] [u] [tu] [a]))
+                                         in d })
+         , Uₜ₌  K K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] [[ ⊢u , ⊢K , d ]] typeA typeA A≡A [t] [u] [tu] 
 redSubst*Term {l = ι ¹} t⇒u (Uᵣ′ A .(next ¹) rU ¹ (Nat.s≤s ()) PE.refl D) X
 redSubst*Term {l = ∞} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ l< PE.refl D) (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] [castA]) =
   let A≡U  = subset* (red D)
@@ -116,19 +117,20 @@ redSubst*Term {l = ∞} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ l< PE.refl D) (Uₜ 
       t⇒u′ = conv* t⇒u A≡U
       [t] , [tu]  = redSubst* {l = ι ⁰} (univ* t⇒u′) [u]
       in Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
-            (λ a a' X Y → let  q , _ = redSubst* (univ* (IdRed*Term′ (escapeTerm [t] X) (escapeTerm [t] Y) (univ* t⇒u′))) ([IdA] a a' (convTerm₁ [t] [u] [tu] X) (convTerm₁ [t] [u] [tu] Y)) in q)
-            (λ { el PE.refl B a e [B] ⊢e [a] → let ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u′) (refl (un-univ (escape [B]))))) 
-                                                   d , _ = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e (escapeTerm [t] [a]) (univ* t⇒u′)) [B]
-                                                                        ([castA] el PE.refl B a e [B] ⊢e' (convTerm₁ [t] [u] [tu] [a])) in d }
-                                       ) , Uₜ₌  K K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] [[ ⊢u , ⊢K , d ]] typeA typeA A≡A [t] [u] [tu] 
+            (λ [a] [a'] → let  q , _ = redSubst* (univ* (IdRed*Term′ (escapeTerm [t] [a]) (escapeTerm [t] [a']) (univ* t⇒u′))) ([IdA] (convTerm₁ [t] [u] [tu] [a]) (convTerm₁ [t] [u] [tu] [a'])) in q)
+            (λ { el PE.refl [B] ⊢e [a] → let ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u′) (refl (un-univ (escape [B]))))) 
+                                             d , _ = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e (escapeTerm [t] [a]) (univ* t⇒u′)) [B]
+                                                                    ([castA] el PE.refl [B] ⊢e' (convTerm₁ [t] [u] [tu] [a]))
+                                         in d })
+         , Uₜ₌  K K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] [[ ⊢u , ⊢K , d ]] typeA typeA A≡A [t] [u] [tu] 
 redSubst*Term {l = ∞} t⇒u (Uᵣ′ A .(next ¹) rU ¹ l< PE.refl D) (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] [castA]) = 
   let A≡U  = subset* (red D)
       ⊢t   = conv (redFirst*Term t⇒u) A≡U
       t⇒u′ = conv* t⇒u A≡U
       [t] , [tu]  = redSubst* {l = ι ¹} (univ* t⇒u′) [u]
       in Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
-            (λ a a' X Y → let  q , _ = redSubst* (univ* (IdRed*Term′ (escapeTerm [t] X) (escapeTerm [t] Y) (univ* t⇒u′))) ([IdA] a a' (convTerm₁ [t] [u] [tu] X) (convTerm₁ [t] [u] [tu] Y)) in q)
-            (λ { () PE.refl B a e [B] ⊢e [a] }) , Uₜ₌  K K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] [[ ⊢u , ⊢K , d ]] typeA typeA A≡A [t] [u] [tu] 
+            (λ [a] [a'] → let  q , _ = redSubst* (univ* (IdRed*Term′ (escapeTerm [t] [a]) (escapeTerm [t] [a']) (univ* t⇒u′))) ([IdA] (convTerm₁ [t] [u] [tu] [a]) (convTerm₁ [t] [u] [tu] [a'])) in q)
+            (λ { () }) , Uₜ₌  K K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] [[ ⊢u , ⊢K , d ]] typeA typeA A≡A [t] [u] [tu] 
 redSubst*Term t⇒u (ℕᵣ D) (ℕₜ n [[ ⊢u , ⊢n , d ]] n≡n prop) =
   let A≡ℕ  = subset* (red D)
       ⊢t   = conv (redFirst*Term t⇒u) A≡ℕ
