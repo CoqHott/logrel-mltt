@@ -222,11 +222,11 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       typeK : Type K
       K≡K   : Γ ⊢ K ≅ K ∷ Univ r l′ ^ [ ! , next l′ ]
       [t]   : Γ ⊩ t ^ [ r , ι l′ ]
-      [IdK] : (a a' : Term)
+      [IdK] : {a a' : Term}
             → Γ ⊩ a ∷ t ^ [ r , ι l′ ] / [t]
             → Γ ⊩ a' ∷ t ^ [ r , ι l′ ] / [t]
             → Γ ⊩ Id t a a' ^ [ % , ι l′ ]
-      [castK] : l′ PE.≡ ⁰ → r PE.≡ ! → (B a e : Term)
+      [castK] : {B a e : Term} → l′ PE.≡ ⁰ → r PE.≡ ! 
             → ([B] : Γ ⊩ B ^ [ ! , ι l′ ])
             → Γ ⊢ e ∷ Id (U ⁰) t B ^ [ % , next ⁰ ]
             → Γ ⊩ a ∷ t ^ [ r , ι l′ ] / [t]
