@@ -226,10 +226,10 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
             → Γ ⊩ a ∷ t ^ [ r , ι l′ ] / [t]
             → Γ ⊩ a' ∷ t ^ [ r , ι l′ ] / [t]
             → Γ ⊩ Id t a a' ^ [ % , ι l′ ]
-      [castK] : (B a e : Term)
-            → ([B] : Γ ⊩ B ^ [ r , ι l′ ])
+      [castK] : l′ PE.≡ ⁰ → r PE.≡ ! → (B a e : Term)
+            → ([B] : Γ ⊩ B ^ [ ! , ι l′ ])
             → Γ ⊩ a ∷ t ^ [ r , ι l′ ] / [t]
-            → Γ ⊩ cast l′ t B a e ∷ B ^ [ r , ι l′ ] / [B]
+            → Γ ⊩ cast l′ t B e a ∷ B ^ [ ! , ι l′ ] / [B]
 
   -- Universe term equality
   record _⊩¹U_≡_∷_^_/_ (Γ : Con Term) (t u : Term) (X : Term) (ll : TypeLevel) ([X] : Γ ⊩¹U X ^ ll) : Set where
