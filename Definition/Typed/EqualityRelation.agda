@@ -47,6 +47,10 @@ record EqRelSet : Set₁ where
            → Γ ⊢ A ≅ B ∷ (Univ r l) ^ [ ! , next l ]
            → Γ ⊢ A ≅ B ^ [ r , ι l ]
 
+    ≅-un-univ : ∀ {A B r l Γ}
+           → Γ ⊢ A ≅ B ^ [ r , ι l ]
+           → Γ ⊢ A ≅ B ∷ (Univ r l) ^ [ ! , next l ]
+
     -- Symmetry
     ≅-sym  : ∀ {A B Γ r} → Γ ⊢ A ≅ B ^ r → Γ ⊢ B ≅ A ^ r
     ≅ₜ-sym : ∀ {t u A r Γ} → Γ ⊢ t ≅ u ∷ A ^ r → Γ ⊢ u ≅ t ∷ A ^ r

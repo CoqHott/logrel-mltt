@@ -685,3 +685,8 @@ redSProp [[ ⊢t , ⊢u , d ]] = [[ (univ ⊢t) , (univ ⊢u) , redSProp′ d ]]
 un-univ : ∀ {A r Γ l} → Γ ⊢ A ^ [ r , ι l ] → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
 un-univ (univ x) = x
 
+un-univ≡ : ∀ {A B r Γ l} → Γ ⊢ A ≡ B ^ [ r , ι l ] → Γ ⊢ A ≡ B ∷ Univ r l ^ [ ! , next l ]
+un-univ≡ (univ x) = x
+un-univ≡ (refl x) = refl (un-univ x)
+un-univ≡ (sym X) = sym (un-univ≡ X)
+un-univ≡ (trans X Y) = trans (un-univ≡ X) (un-univ≡ Y)

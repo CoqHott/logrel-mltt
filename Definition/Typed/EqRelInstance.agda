@@ -18,7 +18,7 @@ Urefl {l = ¹} ⊢Γ = refl (Uⱼ ⊢Γ)
 
 instance eqRelInstance : EqRelSet
 eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
-                      idᶠ idᶠ idᶠ univ
+                      idᶠ idᶠ idᶠ univ un-univ≡
                       sym genSym genSym trans genTrans genTrans
                       conv conv wkEq wkEqTerm wkEqTerm
                       reduction reductionₜ
