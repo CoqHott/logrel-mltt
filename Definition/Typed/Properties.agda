@@ -681,3 +681,7 @@ redSProp : ∀ {Γ A B l}
            (D : Γ ⊢ A :⇒*: B ∷ SProp l ^ next l )
          → Γ ⊢ A :⇒*: B ^ [ % , ι l ]
 redSProp [[ ⊢t , ⊢u , d ]] = [[ (univ ⊢t) , (univ ⊢u) , redSProp′ d ]]
+
+un-univ : ∀ {A r Γ l} → Γ ⊢ A ^ [ r , ι l ] → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
+un-univ (univ x) = x
+

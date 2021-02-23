@@ -228,6 +228,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
             → Γ ⊩ Id t a a' ^ [ % , ι l′ ]
       [castK] : l′ PE.≡ ⁰ → r PE.≡ ! → (B a e : Term)
             → ([B] : Γ ⊩ B ^ [ ! , ι l′ ])
+            → Γ ⊢ e ∷ Id (U ⁰) t B ^ [ % , next ⁰ ]
             → Γ ⊩ a ∷ t ^ [ r , ι l′ ] / [t]
             → Γ ⊩ cast l′ t B e a ∷ B ^ [ ! , ι l′ ] / [B]
 
