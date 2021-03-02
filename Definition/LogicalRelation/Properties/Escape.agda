@@ -54,7 +54,7 @@ escapeEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) A≡B
 escapeTerm : ∀ {l Γ A t r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
               → Γ ⊢ t ∷ A ^ r
-escapeTerm (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ A [[ ⊢t , ⊢u , d ]] typeA A≡A [A] IdA castA) = conv ⊢t (sym (subset* (red D)))
+escapeTerm (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ A [[ ⊢t , ⊢u , d ]] typeA A≡A [A] [IdA] IdAExt [castA] castAExt) = conv ⊢t (sym (subset* (red D)))
 escapeTerm (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) =
@@ -76,7 +76,7 @@ escapeTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) t
 escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
-escapeTermEq (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
+escapeTermEq (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B] IdHo castHo) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
