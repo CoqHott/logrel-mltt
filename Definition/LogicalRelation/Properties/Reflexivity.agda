@@ -9,7 +9,9 @@ open import Definition.Typed
 open import Definition.LogicalRelation
 
 open import Tools.Product
+open import Tools.Empty
 import Tools.PropositionalEquality as PE
+
 
 import Data.Fin as Fin
 import Data.Nat as Nat
@@ -32,7 +34,7 @@ reflEq (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
 reflEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEq [A]
 reflEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEq [A]
 reflEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEq [A]
-reflEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) 
+reflEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A])
 
 reflNatural-prop : ∀ {Γ n}
                  → Natural-prop Γ n
@@ -49,28 +51,68 @@ reflEmpty-prop : ∀ {Γ n}
 reflEmpty-prop (ne x) = ne x x
 
 -- Reflexivity of reducible terms.
-reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
-           → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
-           → Γ ⊩⟨ l ⟩ t ≡ t ∷ A ^ r / [A]
-reflEqTerm {∞} (Uᵣ′ _ _ _ ⁰ <l PE.refl D) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A]) 
-reflEqTerm {∞} (Uᵣ′ _ _ _ ¹ <l PE.refl D) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A]) 
-reflEqTerm {ι ¹} (Uᵣ′ _ _ _ ⁰ <l PE.refl D) (Uₜ A d typeA A≡A [A] IdA castA) = Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A]) 
-reflEqTerm {ι ¹} (Uᵣ′ _ _ _ ¹ (Nat.s≤s ()) PE.refl _) (Uₜ A d typeA A≡A [A] IdA castA)
-reflEqTerm (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
+-- We proceed in a layered way because agda does not understand our recursions are well founded
+reflEqTerm⁰ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ r)
+           → Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ r / [A]
+           → Γ ⊩⟨ ι ⁰ ⟩ t ≡ t ∷ A ^ r / [A]
+reflEqTerm⁰ (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
       (reflNatural-prop prop)
-reflEqTerm (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
-reflEqTerm {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
+reflEqTerm⁰ (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
+reflEqTerm⁰ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
   neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
-reflEqTerm {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
-reflEqTerm {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+reflEqTerm⁰ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
+reflEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
   Πₜ₌ f f d d funcF funcF f≡f
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
-      (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm ([F] ρ ⊢Δ) [a]))
-reflEqTerm {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
-reflEqTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
-reflEqTerm {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEqTerm [A]
-reflEqTerm {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEqTerm [A]
-reflEqTerm {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEqTerm [A]
-reflEqTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) 
+      (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm⁰ ([F] ρ ⊢Δ) [a]))
+reflEqTerm⁰ {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm⁰ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+
+reflEqTerm¹ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
+           → Γ ⊩⟨ ι ¹ ⟩ t ∷ A ^ r / [A]
+           → Γ ⊩⟨ ι ¹ ⟩ t ≡ t ∷ A ^ r / [A]
+reflEqTerm¹ (Uᵣ (Uᵣ r ⁰ (Nat.s≤s Nat.z≤n) PE.refl D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) =
+  Uₜ₌ A A d d typeA typeA A≡A (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ [ρ] ⊢Δ [a] [b] → reflEq ([IdA] [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → reflEqTerm⁰ [B] ([castA] x x₁ [ρ] ⊢Δ [B] [e] [a]))
+reflEqTerm¹ (Uᵣ (Uᵣ r ¹ (Nat.s≤s ()) PE.refl D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt)
+reflEqTerm¹ (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
+  ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
+      (reflNatural-prop prop)
+reflEqTerm¹ (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
+reflEqTerm¹ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
+  neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
+reflEqTerm¹ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
+reflEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+  Πₜ₌ f f d d funcF funcF f≡f
+      (Πₜ f d funcF f≡f [f] [f]₁)
+      (Πₜ f d funcF f≡f [f] [f]₁)
+      (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm¹ ([F] ρ ⊢Δ) [a]))
+reflEqTerm¹ {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm¹ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm¹ (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEqTerm⁰ [A]
+
+reflEqTerm∞ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
+           → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ r / [A]
+           → Γ ⊩⟨ ∞ ⟩ t ≡ t ∷ A ^ r / [A]
+reflEqTerm∞ (Uᵣ (Uᵣ r ⁰ (Nat.s≤s Nat.z≤n) eq D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) =
+  Uₜ₌ A A d d typeA typeA A≡A (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ [ρ] ⊢Δ [a] [b] → reflEq ([IdA] [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → reflEqTerm⁰ [B] ([castA] x x₁ [ρ] ⊢Δ [B] [e] [a]))
+reflEqTerm∞ (Uᵣ (Uᵣ r ¹ (Nat.s≤s (Nat.s≤s Nat.z≤n)) eq D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) =
+  Uₜ₌ A A d d typeA typeA A≡A (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ [ρ] ⊢Δ [a] [b] → reflEq ([IdA] [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → ⊥-elim (⁰≢¹ (PE.sym x)))
+reflEqTerm∞ (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
+  ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
+      (reflNatural-prop prop)
+reflEqTerm∞ (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
+reflEqTerm∞ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
+  neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
+reflEqTerm∞ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
+reflEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+  Πₜ₌ f f d d funcF funcF f≡f
+      (Πₜ f d funcF f≡f [f] [f]₁)
+      (Πₜ f d funcF f≡f [f] [f]₁)
+      (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm∞ ([F] ρ ⊢Δ) [a]))
+reflEqTerm∞ {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm∞ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm∞ (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) = reflEqTerm⁰ [A]
+reflEqTerm∞ (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) [A]) = reflEqTerm¹ [A]
+reflEqTerm∞ (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A])
