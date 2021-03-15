@@ -76,7 +76,6 @@ escapeTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) t
 escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
--- escapeTermEq (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ₌ [A] [B] A≡B [A≡B] IdHo castHo) =
 escapeTermEq (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ₌ (Uₜ A d typeA A≡A [t] [IdA] IdAExt [castA] castAext) (Uₜ B d′ typeB B≡B [u] [IdB] IdBExt [castB] castBext) A≡B [A≡B] IdHo castHo) = ≅ₜ-red (red D) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
