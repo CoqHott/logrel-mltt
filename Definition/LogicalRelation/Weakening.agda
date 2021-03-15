@@ -239,8 +239,130 @@ wkTerm : ∀ {ρ Γ Δ A t r l} ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
          ([A] : Γ ⊩⟨ l ⟩ A ^ r)
        → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
        → Δ ⊩⟨ l ⟩ U.wk ρ t ∷ U.wk ρ A ^ r / wk [ρ] ⊢Δ [A]
-wkTerm {ρ} [ρ] ⊢Δ (Uᵣ (Uᵣ r l′ l< eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] [castK]) =
-  Uₜ (U.wk ρ K) (wkRed:*:Term [ρ] ⊢Δ d₁) (wkType ρ typeK) (≅ₜ-wk [ρ] ⊢Δ K≡K) {!wk [ρ] ⊢Δ [t]!} {!!} {!!}
+wkTerm {ρ} {Δ = Δ} {t = t} {l = ι ¹} [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ l< eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
+  let
+    -- this code is a bit of a mess tbh
+    -- it is mostly about using irrelevance to back and forth between proofs of
+    -- reducibility using U.wk ρ′ (U.wk ρ t) and proofs using U.wk (ρ′ • ρ) t
+    [t]′ = λ {ρ′} {Δ′} [ρ′] (⊢Δ′ : ⊢ Δ′) →
+      irrelevance′ (PE.sym (wk-comp ρ′ ρ t)) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′)
+    [t]′_to_[t] = λ {ρ′} {Δ′} {a} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      ([a] : Δ′ ⊩⟨ ι ⁰ ⟩ a ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′) →
+      irrelevanceTerm′ (wk-comp ρ′ ρ t) PE.refl ([t]′ [ρ′] ⊢Δ′) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′) [a]
+    [t]′_to_[t]_eq = λ {ρ′} {Δ′} {a} {a′} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      (a≡a′ : Δ′ ⊩⟨ ι ⁰ ⟩ a ≡ a′ ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′) →
+      irrelevanceEqTerm′ (wk-comp ρ′ ρ t) PE.refl ([t]′ [ρ′] ⊢Δ′) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′) a≡a′
+    [t]′_to_[t]_id = λ {ρ′} {Δ′} {e} {B} [e] →
+      (PE.subst (λ X → Δ′ ⊢ e ∷ Id (U ⁰) X B ^ [ % , ι ¹ ]) (wk-comp ρ′ ρ t) [e])
+    [IdK•] = λ {ρ′} {Δ′} {a} {b} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      ([a] : Δ′ ⊩⟨ ι ⁰ ⟩ a ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′)
+      ([b] : Δ′ ⊩⟨ ι ⁰ ⟩ b ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′) →
+      ([IdK] ([ρ′] •ₜ [ρ]) ⊢Δ′ ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [b]))
+    [IdK]′ = λ {ρ′} {Δ′} {a} {b} [ρ′] (⊢Δ′ : ⊢ Δ′) [a] [b] →
+      irrelevance′ (PE.cong (λ x → Id x a b) (PE.sym (wk-comp ρ′ ρ t)))
+        ([IdK•] [ρ′] ⊢Δ′ [a] [b])
+    IdKExt′ = λ {ρ′} {Δ′} {a} {a′} {b} {b′}
+      [ρ′] (⊢Δ′ : ⊢ Δ′) [a] [a′] a≡a′ [b] [b′] b≡b′ →
+      irrelevanceEq″ (PE.cong (λ x → Id x a b) (PE.sym (wk-comp ρ′ ρ t)))
+        (PE.cong (λ x → Id x a′ b′) (PE.sym (wk-comp ρ′ ρ t)))
+        ([IdK•] [ρ′] ⊢Δ′ [a] [b]) ([IdK]′ [ρ′] ⊢Δ′ [a] [b])
+        (IdKExt ([ρ′] •ₜ [ρ]) ⊢Δ′ ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a′])
+          ([t]′_to_[t]_eq [ρ′] ⊢Δ′ a≡a′) ([t]′_to_[t] [ρ′] ⊢Δ′ [b])
+          ([t]′_to_[t] [ρ′] ⊢Δ′ [b′]) ([t]′_to_[t]_eq [ρ′] ⊢Δ′ b≡b′))
+    [castK]′ = λ {ρ′} {Δ′} {B} {a} {e} l′≡⁰ r≡! [ρ′] (⊢Δ′ : ⊢ Δ′) [B] [e] [a] →
+      PE.subst (λ X → Δ′ ⊩⟨ ι ⁰ ⟩ cast ⁰ X B e a ∷ B ^ [ ! , ι ⁰ ] / [B])
+        (PE.sym (wk-comp ρ′ ρ t))
+        ([castK] l′≡⁰ r≡! ([ρ′] •ₜ [ρ]) ⊢Δ′ [B] ([t]′_to_[t]_id [e]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a]))
+    castKExt′ = λ {ρ′} {Δ′} {B} {B′} {a} {a′} {e} {e′}
+      x x₁ [ρ′] (⊢Δ′ : ⊢ Δ′) [B] [B′] B≡B′ [e] [e′] [a] [a′] a≡a′ →
+      PE.subst (λ X → Δ′ ⊩⟨ ι ⁰ ⟩ cast ⁰ X B e a ≡ cast ⁰ X B′ e′ a′ ∷ B ^ [ ! , ι ⁰ ] / [B])
+        (PE.sym (wk-comp ρ′ ρ t))
+        (castKExt x x₁ ([ρ′] •ₜ [ρ]) ⊢Δ′ [B] [B′] B≡B′ ([t]′_to_[t]_id [e]) ([t]′_to_[t]_id [e′])
+          ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a′]) ([t]′_to_[t]_eq [ρ′] ⊢Δ′ a≡a′))
+  in
+  Uₜ (U.wk ρ K) (wkRed:*:Term [ρ] ⊢Δ d₁) (wkType ρ typeK) (≅ₜ-wk [ρ] ⊢Δ K≡K)
+    [t]′ [IdK]′ IdKExt′ [castK]′ castKExt′
+wkTerm {ρ} {Δ = Δ} {t = t} {l = ι ¹} [ρ] ⊢Δ (Uᵣ (Uᵣ r ¹ (Nat.s≤s ()) eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt)
+wkTerm {ρ} {Δ = Δ} {t = t} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ l< eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
+  let
+    [t]′ = λ {ρ′} {Δ′} [ρ′] (⊢Δ′ : ⊢ Δ′) →
+      irrelevance′ (PE.sym (wk-comp ρ′ ρ t)) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′)
+    [t]′_to_[t] = λ {ρ′} {Δ′} {a} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      ([a] : Δ′ ⊩⟨ ι ⁰ ⟩ a ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′) →
+      irrelevanceTerm′ (wk-comp ρ′ ρ t) PE.refl ([t]′ [ρ′] ⊢Δ′) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′) [a]
+    [t]′_to_[t]_eq = λ {ρ′} {Δ′} {a} {a′} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      (a≡a′ : Δ′ ⊩⟨ ι ⁰ ⟩ a ≡ a′ ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′) →
+      irrelevanceEqTerm′ (wk-comp ρ′ ρ t) PE.refl ([t]′ [ρ′] ⊢Δ′) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′) a≡a′
+    [t]′_to_[t]_id = λ {ρ′} {Δ′} {e} {B} [e] →
+      (PE.subst (λ X → Δ′ ⊢ e ∷ Id (U ⁰) X B ^ [ % , ι ¹ ]) (wk-comp ρ′ ρ t) [e])
+    [IdK•] = λ {ρ′} {Δ′} {a} {b} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      ([a] : Δ′ ⊩⟨ ι ⁰ ⟩ a ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′)
+      ([b] : Δ′ ⊩⟨ ι ⁰ ⟩ b ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ⁰ ] / [t]′ [ρ′] ⊢Δ′) →
+      ([IdK] ([ρ′] •ₜ [ρ]) ⊢Δ′ ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [b]))
+    [IdK]′ = λ {ρ′} {Δ′} {a} {b} [ρ′] (⊢Δ′ : ⊢ Δ′) [a] [b] →
+      irrelevance′ (PE.cong (λ x → Id x a b) (PE.sym (wk-comp ρ′ ρ t)))
+        ([IdK•] [ρ′] ⊢Δ′ [a] [b])
+    IdKExt′ = λ {ρ′} {Δ′} {a} {a′} {b} {b′}
+      [ρ′] (⊢Δ′ : ⊢ Δ′) [a] [a′] a≡a′ [b] [b′] b≡b′ →
+      irrelevanceEq″ (PE.cong (λ x → Id x a b) (PE.sym (wk-comp ρ′ ρ t)))
+        (PE.cong (λ x → Id x a′ b′) (PE.sym (wk-comp ρ′ ρ t)))
+        ([IdK•] [ρ′] ⊢Δ′ [a] [b]) ([IdK]′ [ρ′] ⊢Δ′ [a] [b])
+        (IdKExt ([ρ′] •ₜ [ρ]) ⊢Δ′ ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a′])
+          ([t]′_to_[t]_eq [ρ′] ⊢Δ′ a≡a′) ([t]′_to_[t] [ρ′] ⊢Δ′ [b])
+          ([t]′_to_[t] [ρ′] ⊢Δ′ [b′]) ([t]′_to_[t]_eq [ρ′] ⊢Δ′ b≡b′))
+    [castK]′ = λ {ρ′} {Δ′} {B} {a} {e} l′≡⁰ r≡! [ρ′] (⊢Δ′ : ⊢ Δ′) [B] [e] [a] →
+      PE.subst (λ X → Δ′ ⊩⟨ ι ⁰ ⟩ cast ⁰ X B e a ∷ B ^ [ ! , ι ⁰ ] / [B])
+        (PE.sym (wk-comp ρ′ ρ t))
+        ([castK] l′≡⁰ r≡! ([ρ′] •ₜ [ρ]) ⊢Δ′ [B] ([t]′_to_[t]_id [e]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a]))
+    castKExt′ = λ {ρ′} {Δ′} {B} {B′} {a} {a′} {e} {e′}
+      x x₁ [ρ′] (⊢Δ′ : ⊢ Δ′) [B] [B′] B≡B′ [e] [e′] [a] [a′] a≡a′ →
+      PE.subst (λ X → Δ′ ⊩⟨ ι ⁰ ⟩ cast ⁰ X B e a ≡ cast ⁰ X B′ e′ a′ ∷ B ^ [ ! , ι ⁰ ] / [B])
+        (PE.sym (wk-comp ρ′ ρ t))
+        (castKExt x x₁ ([ρ′] •ₜ [ρ]) ⊢Δ′ [B] [B′] B≡B′ ([t]′_to_[t]_id [e]) ([t]′_to_[t]_id [e′])
+          ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a′]) ([t]′_to_[t]_eq [ρ′] ⊢Δ′ a≡a′))
+  in
+  Uₜ (U.wk ρ K) (wkRed:*:Term [ρ] ⊢Δ d₁) (wkType ρ typeK) (≅ₜ-wk [ρ] ⊢Δ K≡K)
+    [t]′ [IdK]′ IdKExt′ [castK]′ castKExt′
+wkTerm {ρ} {Δ = Δ} {t = t} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ r ¹ l< eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
+  let
+    [t]′ = λ {ρ′} {Δ′} [ρ′] (⊢Δ′ : ⊢ Δ′) →
+      irrelevance′ (PE.sym (wk-comp ρ′ ρ t)) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′)
+    [t]′_to_[t] = λ {ρ′} {Δ′} {a} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      ([a] : Δ′ ⊩⟨ ι ¹ ⟩ a ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ¹ ] / [t]′ [ρ′] ⊢Δ′) →
+      irrelevanceTerm′ (wk-comp ρ′ ρ t) PE.refl ([t]′ [ρ′] ⊢Δ′) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′) [a]
+    [t]′_to_[t]_eq = λ {ρ′} {Δ′} {a} {a′} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      (a≡a′ : Δ′ ⊩⟨ ι ¹ ⟩ a ≡ a′ ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ¹ ] / [t]′ [ρ′] ⊢Δ′) →
+      irrelevanceEqTerm′ (wk-comp ρ′ ρ t) PE.refl ([t]′ [ρ′] ⊢Δ′) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′) a≡a′
+    [t]′_to_[t]_id = λ {ρ′} {Δ′} {e} {B} [e] →
+      (PE.subst (λ X → Δ′ ⊢ e ∷ Id (U ⁰) X B ^ [ % , ι ¹ ]) (wk-comp ρ′ ρ t) [e])
+    [IdK•] = λ {ρ′} {Δ′} {a} {b} [ρ′] (⊢Δ′ : ⊢ Δ′)
+      ([a] : Δ′ ⊩⟨ ι ¹ ⟩ a ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ¹ ] / [t]′ [ρ′] ⊢Δ′)
+      ([b] : Δ′ ⊩⟨ ι ¹ ⟩ b ∷ U.wk ρ′ (U.wk ρ t) ^ [ r , ι ¹ ] / [t]′ [ρ′] ⊢Δ′) →
+      ([IdK] ([ρ′] •ₜ [ρ]) ⊢Δ′ ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [b]))
+    [IdK]′ = λ {ρ′} {Δ′} {a} {b} [ρ′] (⊢Δ′ : ⊢ Δ′) [a] [b] →
+      irrelevance′ (PE.cong (λ x → Id x a b) (PE.sym (wk-comp ρ′ ρ t)))
+        ([IdK•] [ρ′] ⊢Δ′ [a] [b])
+    IdKExt′ = λ {ρ′} {Δ′} {a} {a′} {b} {b′}
+      [ρ′] (⊢Δ′ : ⊢ Δ′) [a] [a′] a≡a′ [b] [b′] b≡b′ →
+      irrelevanceEq″ (PE.cong (λ x → Id x a b) (PE.sym (wk-comp ρ′ ρ t)))
+        (PE.cong (λ x → Id x a′ b′) (PE.sym (wk-comp ρ′ ρ t)))
+        ([IdK•] [ρ′] ⊢Δ′ [a] [b]) ([IdK]′ [ρ′] ⊢Δ′ [a] [b])
+        (IdKExt ([ρ′] •ₜ [ρ]) ⊢Δ′ ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a′])
+          ([t]′_to_[t]_eq [ρ′] ⊢Δ′ a≡a′) ([t]′_to_[t] [ρ′] ⊢Δ′ [b])
+          ([t]′_to_[t] [ρ′] ⊢Δ′ [b′]) ([t]′_to_[t]_eq [ρ′] ⊢Δ′ b≡b′))
+    [castK]′ = λ {ρ′} {Δ′} {B} {a} {e} l′≡⁰ r≡! [ρ′] (⊢Δ′ : ⊢ Δ′) [B] [e] [a] → -- here l′≡⁰ is actually false
+      PE.subst (λ X → Δ′ ⊩⟨ ι ¹ ⟩ cast ¹ X B e a ∷ B ^ [ ! , ι ¹ ] / [B])
+        (PE.sym (wk-comp ρ′ ρ t))
+        ([castK] l′≡⁰ r≡! ([ρ′] •ₜ [ρ]) ⊢Δ′ [B] ([t]′_to_[t]_id [e]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a]))
+    castKExt′ = λ {ρ′} {Δ′} {B} {B′} {a} {a′} {e} {e′}
+      x x₁ [ρ′] (⊢Δ′ : ⊢ Δ′) [B] [B′] B≡B′ [e] [e′] [a] [a′] a≡a′ → -- here x is actually false. whatever
+      PE.subst (λ X → Δ′ ⊩⟨ ι ¹ ⟩ cast ¹ X B e a ≡ cast ¹ X B′ e′ a′ ∷ B ^ [ ! , ι ¹ ] / [B])
+        (PE.sym (wk-comp ρ′ ρ t))
+        (castKExt x x₁ ([ρ′] •ₜ [ρ]) ⊢Δ′ [B] [B′] B≡B′ ([t]′_to_[t]_id [e]) ([t]′_to_[t]_id [e′])
+          ([t]′_to_[t] [ρ′] ⊢Δ′ [a]) ([t]′_to_[t] [ρ′] ⊢Δ′ [a′]) ([t]′_to_[t]_eq [ρ′] ⊢Δ′ a≡a′))
+  in
+  Uₜ (U.wk ρ K) (wkRed:*:Term [ρ] ⊢Δ d₁) (wkType ρ typeK) (≅ₜ-wk [ρ] ⊢Δ K≡K)
+    [t]′ [IdK]′ IdKExt′ [castK]′ castKExt′
 wkTerm ρ ⊢Δ (ℕᵣ D) [t] = wkTermℕ ρ ⊢Δ [t]
 wkTerm ρ ⊢Δ (Emptyᵣ D) [t] = wkTermEmpty ρ ⊢Δ [t]
 wkTerm {ρ} {r = [ ! , l′ ]} [ρ] ⊢Δ (ne′ K D neK K≡K) (neₜ k d nf) =
@@ -286,7 +408,7 @@ wkEqTerm : ∀ {ρ Γ Δ A t u r l} ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
            ([A] : Γ ⊩⟨ l ⟩ A ^ r)
          → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
          → Δ ⊩⟨ l ⟩ U.wk ρ t ≡ U.wk ρ u ∷ U.wk ρ A ^ r / wk [ρ] ⊢Δ [A]
-wkEqTerm {ρ} [ρ] ⊢Δ (Uᵣ (Uᵣ r l′ l< eq d)) (Uₜ₌ A B d₁ d′ typeA typeB A≡B [t] [u] [t≡u]) = {!!}
+wkEqTerm {ρ} [ρ] ⊢Δ (Uᵣ (Uᵣ r l′ l< eq d)) (Uₜ₌ A B d₁ d′ typeA typeB A≡B [t] [u] [t≡u] IdHo castHo) = {!!}
 -- wkEqTerm {ρ} [ρ] ⊢Δ (Uᵣ′ _ .⁰ 0<1 ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u]) =
 --   Uₜ₌ (U.wk ρ A) (U.wk ρ B) (wkRed:*:Term [ρ] ⊢Δ d) (wkRed:*:Term [ρ] ⊢Δ d′)
 --       (wkType ρ typeA) (wkType ρ typeB) (≅ₜ-wk [ρ] ⊢Δ A≡B)
