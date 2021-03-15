@@ -264,14 +264,9 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     open _⊩¹U_^_ [X]
     open LogRelKit (rec l<)
     field
-      A B   : Term
-      d     : Γ ⊢ t :⇒*: A ∷ Univ r l′ ^ next l′
-      d′    : Γ ⊢ u :⇒*: B ∷ Univ r l′ ^ next l′
-      typeA : Type A
-      typeB : Type B
-      A≡B   : Γ ⊢ A ≅ B ∷ Univ r l′ ^ [ ! , next l′ ]
       [t]   : Γ ⊩¹U t ∷ X ^ ll / [X]
       [u]   : Γ ⊩¹U u ∷ X ^ ll / [X]
+      A≡B   : Γ ⊢ _⊩¹U_∷_^_/_.K [t] ≅ _⊩¹U_∷_^_/_.K [u] ∷ Univ r l′ ^ [ ! , next l′ ]
       [t≡u] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ≡ U.wk ρ u ^ [ r , ι l′ ] / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ
       IdHo : ∀ {ρ Δ a b}
            → ([ρ] : ρ ∷ Δ ⊆ Γ)
