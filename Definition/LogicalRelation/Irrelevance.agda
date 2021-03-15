@@ -52,13 +52,13 @@ reduction-irrelevant-Univ= : ∀ {Γ A t u l l' ll ll' l< l<' r r' el el' D D'}
         (e : r PE.≡ r') (e' : ll PE.≡ ll') →
         Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< el D) →
         Γ ⊩⟨ l' ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' D')
-reduction-irrelevant-Univ= {l = ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u] IdHo castHo) = Uₜ₌ A B d d′ typeA typeB A≡B (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
 reduction-irrelevant-Univ= {l = l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl PE.refl _
 reduction-irrelevant-Univ= {l = ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl PE.refl _
-reduction-irrelevant-Univ= {l = ι ¹} {∞} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u] IdHo castHo) = Uₜ₌ A B d d′ typeA typeB A≡B (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) [t≡u] IdHo castHo
-reduction-irrelevant-Univ= {l = ∞} {ι ¹} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u] IdHo castHo) = Uₜ₌ A B d d′ typeA typeB A≡B (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) [t≡u] IdHo castHo
-reduction-irrelevant-Univ= {l = ∞} {∞} {⁰} {.⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u] IdHo castHo) = Uₜ₌ A B d d′ typeA typeB A≡B (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) [t≡u] IdHo castHo
-reduction-irrelevant-Univ= {l = ∞} {∞} {¹} {.¹} {l<} {l<'} PE.refl PE.refl (Uₜ₌ A B d d′ typeA typeB A≡B [t] [u] [t≡u] IdHo castHo) = Uₜ₌ A B d d′ typeA typeB A≡B (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ι ¹} {∞} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ∞} {ι ¹} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ∞} {∞} {⁰} {.⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ∞} {∞} {¹} {.¹} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
 
 
 -- NB: for Pi cases it seems like it would be cleaner to do
