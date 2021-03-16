@@ -264,26 +264,57 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     open _⊩¹U_^_ [X]
     open LogRelKit (rec l<)
     field
-      [t]   : Γ ⊩¹U t ∷ X ^ ll / [X]
-      [u]   : Γ ⊩¹U u ∷ X ^ ll / [X]
-      A≡B   : Γ ⊢ _⊩¹U_∷_^_/_.K [t] ≅ _⊩¹U_∷_^_/_.K [u] ∷ Univ r l′ ^ [ ! , next l′ ]
-      [t≡u] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ≡ U.wk ρ u ^ [ r , ι l′ ] / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ
+      A B    : Term
+      d      : Γ ⊢ t :⇒*: A ∷ Univ r l′ ^ next l′
+      d′     : Γ ⊢ u :⇒*: B ∷ Univ r l′ ^ next l′
+      typeA : Type A
+      typeB : Type B
+      A≡B   : Γ ⊢ A ≅ B ∷ Univ r l′ ^ [ ! , next l′ ]
+      [t]   : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ^ [ r , ι l′ ]
+      [u]   : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ u ^ [ r , ι l′ ]
+      [t≡u] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ≡ U.wk ρ u ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
+      [IdA] : ∀ {ρ Δ a b}
+            → ([ρ] : ρ ∷ Δ ⊆ Γ)
+            → (⊢Δ : ⊢ Δ)
+            → Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
+            → Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
+            → Δ ⊩ Id (U.wk ρ t) a b ^ [ % , ι l′ ]
+      [IdB] : ∀ {ρ Δ a b}
+            → ([ρ] : ρ ∷ Δ ⊆ Γ)
+            → (⊢Δ : ⊢ Δ)
+            → Δ ⊩ a ∷ U.wk ρ u ^ [ r , ι l′ ] / [u] [ρ] ⊢Δ
+            → Δ ⊩ b ∷ U.wk ρ u ^ [ r , ι l′ ] / [u] [ρ] ⊢Δ
+            → Δ ⊩ Id (U.wk ρ u) a b ^ [ % , ι l′ ]            
       IdHo : ∀ {ρ Δ a b}
            → ([ρ] : ρ ∷ Δ ⊆ Γ)
            → (⊢Δ : ⊢ Δ)
            → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ)
+                      / [t] [ρ] ⊢Δ)
            → ([b] : Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ)
+                      / [t] [ρ] ⊢Δ)
            → Δ ⊩ Id (U.wk ρ t) a b ≡ Id (U.wk ρ u) a b ^ [ % , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[IdK] [t] [ρ] ⊢Δ [a] [b]
+                      / [IdA] [ρ] ⊢Δ [a] [b]
+      [castA] : ∀ {ρ Δ C a e} → l′ PE.≡ ⁰ → r PE.≡ !
+            → ([ρ] : ρ ∷ Δ ⊆ Γ)
+            → (⊢Δ : ⊢ Δ)
+            → ([C] : Δ ⊩ C ^ [ ! , ι l′ ])
+            → Δ ⊢ e ∷ Id (U ⁰) (U.wk ρ t) C ^ [ % , next ⁰ ]
+            → Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
+            → Δ ⊩ cast l′ (U.wk ρ t) C e a ∷ C ^ [ ! , ι l′ ] / [C]
+      [castB] : ∀ {ρ Δ C a e} → l′ PE.≡ ⁰ → r PE.≡ !
+            → ([ρ] : ρ ∷ Δ ⊆ Γ)
+            → (⊢Δ : ⊢ Δ)
+            → ([C] : Δ ⊩ C ^ [ ! , ι l′ ])
+            → Δ ⊢ e ∷ Id (U ⁰) (U.wk ρ u) C ^ [ % , next ⁰ ]
+            → Δ ⊩ a ∷ U.wk ρ u ^ [ r , ι l′ ] / [u] [ρ] ⊢Δ
+            → Δ ⊩ cast l′ (U.wk ρ u) C e a ∷ C ^ [ ! , ι l′ ] / [C]
       castHo : ∀ {ρ Δ B a e} → l′ PE.≡ ⁰ → r PE.≡ !
            → ([ρ] : ρ ∷ Δ ⊆ Γ)
            → (⊢Δ : ⊢ Δ)
            → ([B] : Δ ⊩ B ^ [ ! , ι l′ ])
            → ([e] : Δ ⊢ e ∷ Id (U ⁰) (U.wk ρ t) B ^ [ % , next ⁰ ])
            → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ)
+                      / [t] [ρ] ⊢Δ)
            → Δ ⊩ cast l′ (U.wk ρ t) B e a ≡ cast l′ (U.wk ρ u) B e a ∷ B ^ [ ! , ι l′ ] / [B]
 
   mutual
