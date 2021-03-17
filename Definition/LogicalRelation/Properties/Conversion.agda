@@ -9,6 +9,7 @@ open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.RedSteps
 open import Definition.Typed.Reduction
+import Definition.Typed.Weakening as W
 open import Definition.Typed.Properties
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.ShapeView
@@ -17,6 +18,8 @@ open import Definition.LogicalRelation.Irrelevance
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+import Data.Fin as Fin
+import Data.Nat as Nat
 
 -- Conversion of syntactic reduction closures.
 convRed:*: : ∀ {t u A B Γ l} → Γ ⊢ t :⇒*: u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t :⇒*: u ∷ B ^ l
@@ -91,17 +94,25 @@ mutual
                      ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ]) (PE.sym ∃F₁G₁≡∃F′G′)
                                           (≅-eq A≡B)
                  in conv d ∃FG≡∃F₁G₁
-  convTermT₁ (Uᵥ (Uᵣ r l l< PE.refl d) (Uᵣ r' l' l<₁ el' d')) A≡B (Uₜ K d₁ typeK K≡K [t] [IdK] [castK]) =
+  convTermT₁ (Uᵥ (Uᵣ r l l< PE.refl d) (Uᵣ r' l' l<' el' d')) A≡B X = 
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity U≡U
-    in reduction-irrelevant-Univ {l< = l<} {el = PE.refl} {D = [[ (let X = _⊢_:⇒*:_^_.⊢A d' in PE.subst _ (PE.sym l≡l) X) ,  _⊢_:⇒*:_^_.⊢B d , A≡B ]]} {D' = d'}
-                                 r≡r l≡l (Uₜ K d₁ typeK K≡K [t] [IdK] [castK])
+    in convTermT₁Univ r≡r X
   convTermT₁ (emb⁰¹ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb¹⁰ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb⁰∞ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb∞⁰ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb¹∞ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb∞¹ X) A≡B t = convTermT₁ X A≡B t
+
+  convTermT₁Univ :  ∀ {Γ A B t l l' r ll l< d r' ll' l<' el' d'}
+                      (er : r PE.≡ r') 
+                      (X : Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d)) →
+                      Γ ⊩⟨ l' ⟩ t ∷ B ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' d')
+  convTermT₁Univ {l< = l<} {l<' = l<'} {el' = el'} {d' = d'} er (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
+                 let ellll' = next-PE-injectivity _ _ el' 
+                     dd = PE.subst (λ x → _ ⊢ _ :⇒*: Univ x _ ^ _) (PE.sym er) (PE.subst (λ x → _ ⊢ _ :⇒*: Univ _ x ^ [ ! , next x ]) ellll' d') in
+                 reduction-irrelevant-Univ {l< = l<} {l<' = l<'} {el = PE.refl} {el' = el'} {D = dd} {D' = d'} er (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt)
 
   -- Helper function for conversion of terms converting from right to left.
   convTermT₂ : ∀ {l l′ Γ A B r t} {[A] : Γ ⊩⟨ l ⟩ A ^ r} {[B] : Γ ⊩⟨ l′ ⟩ B ^ r}
@@ -170,13 +181,13 @@ mutual
                      ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ])
                                           (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
                  in  conv d (sym ∃FG≡∃F₁G₁)
-  convTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) A≡B (Uₜ K d₁ typeK K≡K [t] [IdK] [castK]) =
+  convTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) A≡B (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity (PE.sym U≡U)
     in reduction-irrelevant-Univ {l< = l<'} {el = PE.refl}
                                  {D = [[ (let X = _⊢_:⇒*:_^_.⊢A d in PE.subst _ (PE.sym l≡l) X) , _⊢_:⇒*:_^_.⊢B d' ,
                                          PE.subst _ (PE.sym l≡l) (PE.subst _ (PE.sym r≡r) (red d)) ]] } {D' = d} 
-                                 r≡r l≡l (Uₜ K d₁ typeK K≡K [t] [IdK] [castK])
+                                 r≡r (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt)
   convTermT₂ (emb⁰¹ X) A≡B t = convTermT₂ X A≡B t
   convTermT₂ (emb¹⁰ X) A≡B t = convTermT₂ X A≡B t
   convTermT₂ (emb⁰∞ X) A≡B t = convTermT₂ X A≡B t
@@ -269,19 +280,19 @@ mutual
                (d , d′) = let ΠF₁G₁≡ΠF′G′ = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
                               ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ▹ G ≡ x ^ [ % , ll ])
                                                    (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
-                          in (conv d ΠFG≡ΠF₁G₁) , conv d′ ΠFG≡ΠF₁G₁
+                          in conv d ΠFG≡ΠF₁G₁ , conv d′ ΠFG≡ΠF₁G₁
   convEqTermT₁ {Γ = Γ} {r = [ % , ll ]} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                            (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
                (d , d′) = let ∃F₁G₁≡∃F′G′ = whrDet* (red D₁ , ∃ₙ) (D′ , ∃ₙ)
                               ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ])
                                                    (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
-                          in (conv d ∃FG≡∃F₁G₁) , conv d′ ∃FG≡∃F₁G₁
-  convEqTermT₁ (Uᵥ (Uᵣ r l l< PE.refl d) (Uᵣ r' l' l<' el' d')) A≡B (Uₜ₌ A B d₁ d′ typeA typeB A≡B₁ [t] [u] [t≡u]) =
+                          in (conv d ∃FG≡∃F₁G₁) , conv d′ ∃FG≡∃F₁G₁                         
+  convEqTermT₁ (Uᵥ (Uᵣ r ll l< PE.refl d) (Uᵣ r' ll' l<' el' d')) A≡B X =
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity U≡U
-    in reduction-irrelevant-Univ= {l< = l<} {el = PE.refl} {D = [[ (let X = _⊢_:⇒*:_^_.⊢A d' in PE.subst _ (PE.sym l≡l) X) ,  _⊢_:⇒*:_^_.⊢B d , A≡B ]]} {D' = d'}
-                                  r≡r l≡l (Uₜ₌ A B d₁ d′ typeA typeB A≡B₁ [t] [u] [t≡u])
+        dd = PE.subst (λ x → _ ⊢ _ :⇒*: Univ x _ ^ _) (PE.sym r≡r) (PE.subst (λ x → _ ⊢ _ :⇒*: Univ _ x ^ [ ! , next x ]) (PE.sym l≡l) d') 
+    in reduction-irrelevant-Univ= {l< = l<} {l<' = l<'} {el = PE.refl} {el' = el'} {D = dd} {D' = d'} r≡r (convEqTermT₁Univ dd X)
   convEqTermT₁ (emb⁰¹ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb¹⁰ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb⁰∞ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
@@ -289,6 +300,17 @@ mutual
   convEqTermT₁ (emb¹∞ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb∞¹ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
 
+  convEqTermT₁Univ : ∀ {Γ A B t u l r ll l< d} → ∀ dd
+                      (X : Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d)) →
+                      Γ ⊩⟨ l ⟩  t ≡ u ∷ B ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl dd)
+  convEqTermT₁Univ {l = ι ¹} {r = r} {⁰} dd (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
+                   Uₜ₌ (convTermT₁Univ PE.refl [t]) (convTermT₁Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
+  convEqTermT₁Univ {l = ι ¹} {r = r} {¹} {l< = Nat.s≤s ()} dd (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo)
+  convEqTermT₁Univ {l = ∞} {r = r} {⁰} dd (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
+                   Uₜ₌ (convTermT₁Univ PE.refl [t]) (convTermT₁Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
+  convEqTermT₁Univ {l = ∞} {r = r} {¹} dd (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
+                   Uₜ₌ (convTermT₁Univ PE.refl [t]) (convTermT₁Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
+  
   -- Helper function for conversion of term equality converting from right to left.
   convEqTermT₂ : ∀ {l l′ Γ A B t u r} {[A] : Γ ⊩⟨ l ⟩ A ^ r} {[B] : Γ ⊩⟨ l′ ⟩ B ^ r}
              → ShapeView Γ l l′ A B r r [A] [B]
@@ -351,13 +373,13 @@ mutual
                    ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ])
                                         (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
                in (conv d (sym ∃FG≡∃F₁G₁)) , (conv d′ (sym ∃FG≡∃F₁G₁))
-  convEqTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) A≡B (Uₜ₌ A B d₁ d′ typeA typeB A≡B₁ [t] [u] [t≡u]) =
+  convEqTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) A≡B (Uₜ₌ [t] [u] A≡B₁ [t≡u] IdHo castHo) =
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity (PE.sym U≡U)
     in reduction-irrelevant-Univ= {l< = l<'} {el = PE.refl}
                                   {D = [[ (let X = _⊢_:⇒*:_^_.⊢A d in PE.subst _ (PE.sym l≡l) X) , _⊢_:⇒*:_^_.⊢B d' ,
                                           PE.subst _ (PE.sym l≡l) (PE.subst _ (PE.sym r≡r) (red d)) ]] } {D' = d} 
-                                  r≡r l≡l (Uₜ₌ A B d₁ d′ typeA typeB A≡B₁ [t] [u] [t≡u])
+                                  r≡r (Uₜ₌ {!!} {!!} {!!} {!!} {!!} {!!}) -- [t] [u] [t≡u] IdHo castHo)
   convEqTermT₂ (emb⁰¹ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
   convEqTermT₂ (emb¹⁰ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
   convEqTermT₂ (emb⁰∞ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
