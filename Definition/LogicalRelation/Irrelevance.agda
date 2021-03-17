@@ -37,28 +37,42 @@ irrelevanceΓ′ PE.refl PE.refl [A] = [A]
 -- helper function to deal with relevance
 
 reduction-irrelevant-Univ : ∀ {Γ A t l l' ll ll' l< l<' r r' el el' D D'}
-        (e : r PE.≡ r') (e' : ll PE.≡ ll') →
+        (e : r PE.≡ r') →
         Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< el D) →
         Γ ⊩⟨ l' ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' D')
-reduction-irrelevant-Univ {Γ} {A} {t} {l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl PE.refl _
-reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl PE.refl _
-reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
-reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {∞} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
-reduction-irrelevant-Univ {Γ} {A} {t} {∞} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
-reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {⁰} {.⁰} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
-reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {¹} {.¹} PE.refl PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
+reduction-irrelevant-Univ {Γ} {A} {t} {l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl _ 
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl _
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {ι ¹} {⁰} {⁰} PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
+reduction-irrelevant-Univ {Γ} {A} {t} {ι ¹} {∞} {⁰} {⁰} PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {ι ¹} {⁰} {⁰} PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {⁰} {⁰} PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
+reduction-irrelevant-Univ {Γ} {A} {t} {∞} {∞} {¹} {¹} PE.refl (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) = Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt
+
+{-
+reduction-irrelevant-Univ-K : ∀ {Γ A t l l' ll ll' l< l<' r r' el el' D D' e e'} →
+                                (X : Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< el D)) →
+                                LogRel._⊩¹U_∷_^_/_.K (reduction-irrelevant-Univ {l' = l'} {ll' = ll'} {l<' = l<'} {r' = r'} {el' = el'} {D' = D'} e e' X) PE.≡
+                                LogRel._⊩¹U_∷_^_/_.K X
+reduction-irrelevant-Univ-K {l = l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} {e = PE.refl} {PE.refl} _
+reduction-irrelevant-Univ-K {l = ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} {e = PE.refl} {PE.refl} _
+reduction-irrelevant-Univ-K {l = ι ¹} {ι ¹} {⁰} {⁰} {e = PE.refl} {PE.refl} (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKext) = PE.refl
+reduction-irrelevant-Univ-K {l = ι ¹} {∞} {⁰} {⁰} {e = PE.refl} {PE.refl} (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKext) = PE.refl
+reduction-irrelevant-Univ-K {l = ∞} {ι ¹} {⁰} {⁰} {e = PE.refl} {PE.refl} (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKext) = PE.refl
+reduction-irrelevant-Univ-K {l = ∞} {∞} {⁰} {.⁰} {e = PE.refl} {PE.refl} (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKext) = PE.refl
+reduction-irrelevant-Univ-K {l = ∞} {∞} {¹} {.¹} {e = PE.refl} {PE.refl} (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKext) = PE.refl
+-}
 
 reduction-irrelevant-Univ= : ∀ {Γ A t u l l' ll ll' l< l<' r r' el el' D D'}
-        (e : r PE.≡ r') (e' : ll PE.≡ ll') →
+        (e : r PE.≡ r') →
         Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< el D) →
         Γ ⊩⟨ l' ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' D')
-reduction-irrelevant-Univ= {l = ι ¹} {ι ¹} {⁰} {⁰} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
-reduction-irrelevant-Univ= {l = l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl PE.refl _
-reduction-irrelevant-Univ= {l = ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl PE.refl _
-reduction-irrelevant-Univ= {l = ι ¹} {∞} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
-reduction-irrelevant-Univ= {l = ∞} {ι ¹} {⁰} {⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
-reduction-irrelevant-Univ= {l = ∞} {∞} {⁰} {.⁰} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
-reduction-irrelevant-Univ= {l = ∞} {∞} {¹} {.¹} {l<} {l<'} PE.refl PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl PE.refl [t]) (reduction-irrelevant-Univ PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ι ¹} {ι ¹} {⁰} {⁰} PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl [t]) (reduction-irrelevant-Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = l} {ι ¹} {ll} {¹} {l<} {Nat.s≤s ()} PE.refl _
+reduction-irrelevant-Univ= {l = ι ¹} {l} {¹} {ll} {Nat.s≤s ()} {l<'} PE.refl  _
+reduction-irrelevant-Univ= {l = ι ¹} {∞} {⁰} {⁰} {l<} {l<'} PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl [t]) (reduction-irrelevant-Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ∞} {ι ¹} {⁰} {⁰} {l<} {l<'} PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl [t]) (reduction-irrelevant-Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ∞} {∞} {⁰} {⁰} {l<} {l<'} PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl [t]) (reduction-irrelevant-Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
+reduction-irrelevant-Univ= {l = ∞} {∞} {¹} {¹} {l<} {l<'} PE.refl (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) = Uₜ₌ (reduction-irrelevant-Univ PE.refl [t]) (reduction-irrelevant-Univ PE.refl [u]) A≡B [t≡u] IdHo castHo
 
 
 -- NB: for Pi cases it seems like it would be cleaner to do
@@ -236,7 +250,7 @@ mutual
   irrelevanceTermT (Uᵥ (Uᵣ r ll l< PE.refl D) (Uᵣ r' ll' l<' _ D')) t =
     let U≡U   = whrDet* (red D , Uₙ) (red D' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity U≡U
-    in reduction-irrelevant-Univ r≡r l≡l t
+    in reduction-irrelevant-Univ r≡r t
   irrelevanceTermT (emb⁰¹ x) t = irrelevanceTermT x t
   irrelevanceTermT (emb¹⁰ x) t = irrelevanceTermT x t
   irrelevanceTermT (emb⁰∞ x) t = irrelevanceTermT x t
@@ -310,7 +324,7 @@ mutual
   irrelevanceEqTermT (Uᵥ (Uᵣ r ll l< PE.refl D) (Uᵣ r' ll' l<' _ D')) t =
     let U≡U   = whrDet* (red D , Uₙ) (red D' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity U≡U
-    in reduction-irrelevant-Univ= r≡r l≡l t
+    in reduction-irrelevant-Univ= r≡r t
   irrelevanceEqTermT (emb⁰¹ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb¹⁰ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb⁰∞ x) t≡u = irrelevanceEqTermT x t≡u
