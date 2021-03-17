@@ -283,6 +283,8 @@ wkTerm {ρ} {Δ = Δ} {t = t} {l = ι ¹} [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ l< eq d))
   Uₜ (U.wk ρ K) (wkRed:*:Term [ρ] ⊢Δ d₁) (wkType ρ typeK) (≅ₜ-wk [ρ] ⊢Δ K≡K)
     [t]′ [IdK]′ IdKExt′ [castK]′ castKExt′
 wkTerm {ρ} {Δ = Δ} {t = t} {l = ι ¹} [ρ] ⊢Δ (Uᵣ (Uᵣ r ¹ (Nat.s≤s ()) eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt)
+-- this is a duplicate of the above code (because we need logRelRec to compute)
+-- surely there is a way to avoid this redundancy
 wkTerm {ρ} {Δ = Δ} {t = t} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ l< eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
   let
     [t]′ = λ {ρ′} {Δ′} [ρ′] (⊢Δ′ : ⊢ Δ′) →
@@ -323,6 +325,8 @@ wkTerm {ρ} {Δ = Δ} {t = t} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ l< eq d)) (
   in
   Uₜ (U.wk ρ K) (wkRed:*:Term [ρ] ⊢Δ d₁) (wkType ρ typeK) (≅ₜ-wk [ρ] ⊢Δ K≡K)
     [t]′ [IdK]′ IdKExt′ [castK]′ castKExt′
+-- this is a duplicate of the above code (because we need logRelRec to compute)
+-- surely there is a way to avoid this redundancy
 wkTerm {ρ} {Δ = Δ} {t = t} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ r ¹ l< eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
   let
     [t]′ = λ {ρ′} {Δ′} [ρ′] (⊢Δ′ : ⊢ Δ′) →
@@ -436,6 +440,8 @@ wkEqTerm {ρ} {Γ} {Δ} {A} {t} {u} {r} {l = ι ¹} [ρ] ⊢Δ (Uᵣ (Uᵣ ti �
   in
   Uₜ₌ (wkTerm [ρ] ⊢Δ (Uᵣ (Uᵣ ti ⁰ l< eq d)) [t]) (wkTerm [ρ] ⊢Δ (Uᵣ (Uᵣ ti ⁰ l< eq d)) [u])
     (≅ₜ-wk [ρ] ⊢Δ A≡B) [t≡u]′ IdHo′ castHo′
+-- this is a duplicate of the above code (because we need logRelRec to compute)
+-- surely there is a way to avoid this redundancy
 wkEqTerm {ρ} {Γ} {Δ} {A} {t} {u} {r} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ ti ⁰ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
   let
     [t]′ = λ {ρ′} {Δ′} ([ρ′] : ρ′ ∷ Δ′ ⊆ Δ) (⊢Δ′ : ⊢ Δ′) →
@@ -465,6 +471,8 @@ wkEqTerm {ρ} {Γ} {Δ} {A} {t} {u} {r} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ ti ⁰ 
   Uₜ₌ (wkTerm [ρ] ⊢Δ (Uᵣ (Uᵣ ti ⁰ l< eq d)) [t]) (wkTerm [ρ] ⊢Δ (Uᵣ (Uᵣ ti ⁰ l< eq d)) [u])
     (≅ₜ-wk [ρ] ⊢Δ A≡B) [t≡u]′ IdHo′ castHo′
 wkEqTerm {ρ} {l = ι ¹} [ρ] ⊢Δ (Uᵣ (Uᵣ r ¹ (Nat.s≤s ()) eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo)
+-- this is a duplicate of the above code (because we need logRelRec to compute)
+-- surely there is a way to avoid this redundancy
 wkEqTerm {ρ} {Γ} {Δ} {A} {t} {u} {r} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ ti ¹ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
   let
     [t]′ = λ {ρ′} {Δ′} ([ρ′] : ρ′ ∷ Δ′ ⊆ Δ) (⊢Δ′ : ⊢ Δ′) →
