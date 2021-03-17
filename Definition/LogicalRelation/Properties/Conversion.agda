@@ -28,16 +28,16 @@ convRed:*: [[ ⊢t , ⊢u , d ]] A≡B = [[ conv ⊢t  A≡B , conv ⊢u  A≡B 
 
 -- helper functions for the universe
 convTermTUniv :  ∀ {Γ A B t l l' r ll l< d r' ll' l<' el' d'}
-                      (er : r PE.≡ r') (ellll' : ll PE.≡ ll')
-                      (X : Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d)) →
+                      (er : r PE.≡ r') (ellll' : ll PE.≡ ll') →
+                      Γ ⊩⟨ l ⟩  t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d) →
                       Γ ⊩⟨ l' ⟩ t ∷ B ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' d')
 convTermTUniv {l< = l<} {l<' = l<'} {d' = d'} er ellll' (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
     let dd = PE.subst (λ x → _ ⊢ _ :⇒*: Univ x _ ^ _) (PE.sym er) (PE.subst (λ x → _ ⊢ _ :⇒*: Univ _ x ^ [ ! , next x ]) (PE.sym ellll') d') in
     reduction-irrelevant-Univ {l< = l<} {l<' = l<'} {el = PE.refl} {D = dd} {D' = d'} er (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt)
 
-convEqTermTUniv : ∀ {Γ A B t u l r ll l< d dd}
-                      (X : Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d)) →
-                      Γ ⊩⟨ l ⟩  t ≡ u ∷ B ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl dd)
+convEqTermTUniv : ∀ {Γ A B t u l r ll l< d dd} →
+                    Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d) →
+                    Γ ⊩⟨ l ⟩ t ≡ u ∷ B ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl dd)
 convEqTermTUniv {l = ι ¹} {r = r} {⁰} (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
                    Uₜ₌ (convTermTUniv PE.refl PE.refl [t]) (convTermTUniv PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
 convEqTermTUniv {l = ι ¹} {r = r} {¹} {l< = Nat.s≤s ()} (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo)
