@@ -6,7 +6,9 @@ module Definition.LogicalRelation.Properties.Universe {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
 open import Definition.Untyped
+open import Definition.Untyped.Properties
 open import Definition.Typed
+open import Definition.Typed.Weakening
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Irrelevance
@@ -27,7 +29,13 @@ toTypeInfo ( r , l ) = [ r , ι l ]
 
 -- Helper function for reducible terms of type U for specific type derivations.
 univEq′ : ∀ {l ll Γ A t} ([U] : Γ ⊩⟨ l ⟩U A ^ ll) → Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ll ] / U-intr [U] → Γ ⊩⟨ l ⟩ t ^ toTypeInfo (U-Relevance-Level [U])
-univEq′ (noemb (Uᵣ r l′ l< eq d)) (Uₜ K d₁ typeK K≡K [t] [IdK] [castK]) = emb l< [t]
+univEq′ {l} {ll} {Γ} {A} {t} (noemb (Uᵣ r l′ l< eq [[ ⊢A , ⊢B , D ]]))
+  (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
+  let
+    ⊢Γ = wf ⊢A
+    [t]′ = PE.subst (λ X → LogRelKit._⊩_^_ (logRelRec l l<) Γ X ([ r , ι l′ ])) (Definition.Untyped.Properties.wk-id t) ([t] Definition.Typed.Weakening.id ⊢Γ)
+  in
+  emb l< [t]′
 univEq′ {ι ¹} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) X) [A] = emb (Nat.s≤s Nat.z≤n) (univEq′ X [A])
 univEq′ {ι ¹} (emb {ι ¹} (Nat.s≤s ()) X) [A]
 univEq′ {ι ¹} (emb {∞} (Nat.s≤s ()) X) [A]
@@ -48,8 +56,12 @@ univEqEq′ : ∀ {l ll l′ Γ X A B} ([U] : Γ ⊩⟨ l ⟩U X ^ ll) →
               ([A] : Γ ⊩⟨ l′ ⟩ A ^ r)
               → Γ ⊩⟨ l ⟩ A ≡ B ∷ X ^ [ ! , ll ] / U-intr [U]
               → Γ ⊩⟨ l′ ⟩ A ≡ B  ^ r / [A]
-univEqEq′ (noemb (Uᵣ r l′ l< eq D)) [A]
-          (Uₜ₌ A₁ B₁ d d′ typeA typeB A≡B [t] [u] [t≡u]) = irrelevanceEq (emb l< [t]) [A] [t≡u]
+univEqEq′ {l} {ll} {l″} {Γ} {X} {A} {B} (noemb (Uᵣ r l′ l< eq [[ ⊢A , ⊢B , D ]])) [A]
+          (Uₜ₌ (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKext) [u] A≡B [t≡u] IdHo castHo) =
+  let ⊢Γ = wf ⊢A in
+  irrelevanceEq″ (Definition.Untyped.Properties.wk-id A) (Definition.Untyped.Properties.wk-id B)
+    (emb l< ([t] Definition.Typed.Weakening.id ⊢Γ)) [A]
+    ([t≡u] Definition.Typed.Weakening.id ⊢Γ)
 univEqEq′ {ι ¹} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
 univEqEq′ {ι ¹} (emb {ι ¹} (Nat.s≤s ()) X) [A] [A≡B]
 univEqEq′ {ι ¹} (emb {∞} (Nat.s≤s ()) X) [A] [A≡B]
@@ -100,4 +112,3 @@ univEqEq {l} {l′} {Γ} {A} {B} {r} {ll} [U] [A] [A≡B] =
   let [A≡B]′ = irrelevanceEqTerm [U] (U-intr (U-elim [U])) [A≡B]
       X = univEqEq′ (U-elim [U]) (PE.subst (λ r → Γ ⊩⟨ l′ ⟩ A ^ r) (PE.sym (PE.cong toTypeInfo (U-Relevance-Level-eq [U]))) [A]) [A≡B]′
   in helper-eq (PE.sym (PE.cong toTypeInfo (U-Relevance-Level-eq [U]))) X
-  
