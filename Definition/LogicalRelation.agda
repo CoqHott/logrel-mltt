@@ -222,13 +222,13 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       typeK : Type K
       K≡K   : Γ ⊢ K ≅ K ∷ Univ r l′ ^ [ ! , next l′ ]
       [t]   : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ^ [ r , ι l′ ]
-      [IdK] : ∀ {ρ Δ a b}
+      [IdK] : ∀ {ρ Δ a b} → r PE.≡ !
             → ([ρ] : ρ ∷ Δ ⊆ Γ)
             → (⊢Δ : ⊢ Δ)
             → Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
             → Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
             → Δ ⊩ Id (U.wk ρ t) a b ^ [ % , ι l′ ]
-      IdKExt : ∀ {ρ Δ a a′ b b′}
+      IdKExt : ∀ {ρ Δ a a′ b b′} → (r≡! : r PE.≡ !)
             → ([ρ] : ρ ∷ Δ ⊆ Γ)
             → (⊢Δ : ⊢ Δ)
             → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
@@ -237,7 +237,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
             → ([b] : Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
             → ([b′] : Δ ⊩ b′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
             → Δ ⊩ b ≡ b′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
-            → Δ ⊩ Id (U.wk ρ t) a b ≡ Id (U.wk ρ t) a′ b′ ^ [ % , ι l′ ] / [IdK] [ρ] ⊢Δ [a] [b]
+            → Δ ⊩ Id (U.wk ρ t) a b ≡ Id (U.wk ρ t) a′ b′ ^ [ % , ι l′ ] / [IdK] r≡! [ρ] ⊢Δ [a] [b]
       [castK] : ∀ {ρ Δ B a e} → l′ PE.≡ ⁰ → r PE.≡ !
             → ([ρ] : ρ ∷ Δ ⊆ Γ)
             → (⊢Δ : ⊢ Δ)
@@ -268,7 +268,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       [u]   : Γ ⊩¹U u ∷ X ^ ll / [X]
       A≡B   : Γ ⊢ _⊩¹U_∷_^_/_.K [t] ≅ _⊩¹U_∷_^_/_.K [u] ∷ Univ r l′ ^ [ ! , next l′ ]
       [t≡u] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ≡ U.wk ρ u ^ [ r , ι l′ ] / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ
-      IdHo : ∀ {ρ Δ a b}
+      IdHo : ∀ {ρ Δ a b} → (r≡! : r PE.≡ !)
            → ([ρ] : ρ ∷ Δ ⊆ Γ)
            → (⊢Δ : ⊢ Δ)
            → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ]
@@ -276,7 +276,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
            → ([b] : Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ]
                       / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ)
            → Δ ⊩ Id (U.wk ρ t) a b ≡ Id (U.wk ρ u) a b ^ [ % , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[IdK] [t] [ρ] ⊢Δ [a] [b]
+                      / _⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
       castHo : ∀ {ρ Δ B a e} → l′ PE.≡ ⁰ → r PE.≡ !
            → ([ρ] : ρ ∷ Δ ⊆ Γ)
            → (⊢Δ : ⊢ Δ)

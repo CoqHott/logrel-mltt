@@ -74,7 +74,9 @@ reflEqTerm¹ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
            → Γ ⊩⟨ ι ¹ ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ ι ¹ ⟩ t ≡ t ∷ A ^ r / [A]
 reflEqTerm¹ (Uᵣ (Uᵣ r ⁰ (Nat.s≤s Nat.z≤n) PE.refl D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) =
-  Uₜ₌ (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ [ρ] ⊢Δ [a] [b] → reflEq ([IdA] [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → reflEqTerm⁰ [B] ([castA] x x₁ [ρ] ⊢Δ [B] [e] [a]))
+  Uₜ₌ (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt)
+    A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ x [ρ] ⊢Δ [a] [b] → reflEq ([IdA] x [ρ] ⊢Δ [a] [b]))
+      (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → reflEqTerm⁰ [B] ([castA] x x₁ [ρ] ⊢Δ [B] [e] [a]))
 reflEqTerm¹ (Uᵣ (Uᵣ r ¹ (Nat.s≤s ()) PE.refl D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt)
 reflEqTerm¹ (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
@@ -96,9 +98,9 @@ reflEqTerm∞ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
            → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ ∞ ⟩ t ≡ t ∷ A ^ r / [A]
 reflEqTerm∞ (Uᵣ (Uᵣ r ⁰ (Nat.s≤s Nat.z≤n) eq D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) =
-  Uₜ₌ (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ [ρ] ⊢Δ [a] [b] → reflEq ([IdA] [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → reflEqTerm⁰ [B] ([castA] x x₁ [ρ] ⊢Δ [B] [e] [a]))
+  Uₜ₌ (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ x [ρ] ⊢Δ [a] [b] → reflEq ([IdA] x [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → reflEqTerm⁰ [B] ([castA] x x₁ [ρ] ⊢Δ [B] [e] [a]))
 reflEqTerm∞ (Uᵣ (Uᵣ r ¹ (Nat.s≤s (Nat.s≤s Nat.z≤n)) eq D)) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) =
-  Uₜ₌ (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ [ρ] ⊢Δ [a] [b] → reflEq ([IdA] [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → ⊥-elim (⁰≢¹ (PE.sym x)))
+  Uₜ₌ (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) (Uₜ A d typeA A≡A [A] [IdA] IdAExt [castA] castAExt) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) (λ x [ρ] ⊢Δ [a] [b] → reflEq ([IdA] x [ρ] ⊢Δ [a] [b])) (λ x x₁ [ρ] ⊢Δ [B] [e] [a] → ⊥-elim (⁰≢¹ (PE.sym x)))
 reflEqTerm∞ (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
       (reflNatural-prop prop)
