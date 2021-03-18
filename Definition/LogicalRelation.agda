@@ -252,7 +252,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
             → ([B′] : Δ ⊩ B′ ^ [ ! , ι l′ ])
             → Δ ⊩ B ≡ B′ ^ [ ! , ι l′ ] / [B]
             → ([e] : Δ ⊢ e ∷ Id (U ⁰) (U.wk ρ t) B ^ [ % , next ⁰ ])
-            → ([e′] : Δ ⊢ e′ ∷ Id (U ⁰) (U.wk ρ t) B ^ [ % , next ⁰ ])
+            → ([e′] : Δ ⊢ e′ ∷ Id (U ⁰) (U.wk ρ t) B′ ^ [ % , next ⁰ ])
             → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
             → ([a′] : Δ ⊩ a′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
             → Δ ⊩ a ≡ a′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
