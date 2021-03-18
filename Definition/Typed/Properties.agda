@@ -97,8 +97,7 @@ subsetTerm (app-subst {rA = !} t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
 subsetTerm (app-subst {rA = %} t⇒u a) = app-cong (subsetTerm t⇒u) (proof-irrelevance a a)
 subsetTerm (β-red A t a) = β-red A t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
-subsetTerm (Id-subst {r = !} A t u) = Id-cong (subsetTerm A) (refl t) (refl u)
-subsetTerm (Id-subst {r = %} A t u) = Id-cong (subsetTerm A) (proof-irrelevance t t) (proof-irrelevance u u)
+subsetTerm (Id-subst A t u) = Id-cong (subsetTerm A) (refl t) (refl u)
 subsetTerm (Id-ℕ-subst m n) = Id-cong (refl (ℕⱼ (wfTerm n))) (subsetTerm m) (refl n)
 subsetTerm (Id-ℕ-0-subst n) = let ⊢Γ = wfEqTerm (subsetTerm n) in Id-cong (refl (ℕⱼ ⊢Γ)) (refl (zeroⱼ ⊢Γ)) (subsetTerm n)
 subsetTerm (Id-ℕ-S-subst m n) = Id-cong (refl (ℕⱼ (wfTerm m))) (refl (sucⱼ m)) (subsetTerm n)
@@ -608,18 +607,18 @@ toLevelInj {ι ¹} {∞} {Nat.s≤s ()} e
 toLevelInj {∞} {∞} {Nat.s≤s (Nat.s≤s ())}  e
 
 
-IdRed*Term′ : ∀ {Γ A B t u r l}
-         (⊢t : Γ ⊢ t ∷ A ^ [ r , ι l ])
-         (⊢u : Γ ⊢ u ∷ A ^ [ r , ι l ])
-         (D : Γ ⊢ A ⇒* B ^ [ r , ι l ])
+IdRed*Term′ : ∀ {Γ A B t u l}
+         (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι l ])
+         (⊢u : Γ ⊢ u ∷ A ^ [ ! , ι l ])
+         (D : Γ ⊢ A ⇒* B ^ [ ! , ι l ])
        → Γ ⊢ Id A t u ⇒* Id B t u ∷ SProp l ^ next l
 IdRed*Term′ ⊢t ⊢u (id (univ ⊢A)) = id (Idⱼ ⊢A ⊢t ⊢u)
 IdRed*Term′ ⊢t ⊢u (univ d ⇨ D) = Id-subst d ⊢t ⊢u ⇨ IdRed*Term′ (conv ⊢t (subset (univ d))) (conv ⊢u (subset (univ d))) D
 
-IdRed*Term : ∀ {Γ A B t u r l}
-          (⊢t : Γ ⊢ t ∷ A ^ [ r , ι l ])
-          (⊢u : Γ ⊢ u ∷ A ^ [ r , ι l ])
-          (D : Γ ⊢ A :⇒*: B ^ [ r , ι l ])
+IdRed*Term : ∀ {Γ A B t u l}
+          (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι l ])
+          (⊢u : Γ ⊢ u ∷ A ^ [ ! , ι l ])
+          (D : Γ ⊢ A :⇒*: B ^ [ ! , ι l ])
         → Γ ⊢ Id A t u :⇒*: Id B t u ∷ SProp l ^ next l
 IdRed*Term {Γ} {A} {B} ⊢t ⊢u [[ univ ⊢A , univ ⊢B , D ]] =
   [[ Idⱼ ⊢A ⊢t ⊢u , Idⱼ ⊢B (conv ⊢t (subset* D)) (conv ⊢u (subset* D)) ,
