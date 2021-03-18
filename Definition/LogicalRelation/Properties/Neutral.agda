@@ -176,48 +176,145 @@ mutual
   neuTerm {ι ¹} (Uᵣ′ A .(next ⁰) r ⁰ (Nat.s≤s Nat.z≤n) PE.refl [[ ⊢A , ⊢U , D ]]) neN n n~n = 
     let n' = (conv n (subset* D))
         n~n' = ~-conv  n~n (subset* D)
-        [n] = neu neN (univ n') n~n'
-    in Uₜ _ (idRedTerm:*: n') (ne neN) (~-to-≅ₜ n~n') [n]
-          (λ [a] [a'] →
-             let a = escapeTerm [n] [a]
-                 a' = escapeTerm [n] [a']
-                 a≡a = escapeTermEq [n] (reflEqTerm [n] [a])
-                 a'≡a' = escapeTermEq [n] (reflEqTerm [n] [a'])
-             in neu (Idₙ neN) (univ (Idⱼ n' a a')) (~-Id n~n' a≡a a'≡a'))
-          (λ {_ PE.refl [B] ⊢e [a] →
-             let a = escapeTerm [n] [a]
-                 a≡a = escapeTermEq [n] (reflEqTerm [n] [a])
+        [n] = neu {l = ι ¹} neN (univ n') n~n'
+    in Uₜ _ (idRedTerm:*: n') (ne neN) (~-to-≅ₜ n~n')
+            (λ {ρ} [ρ] ⊢Δ → let n'ρ = wkTerm [ρ] ⊢Δ n'
+                                n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                                [nρ] = neu (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                            in [nρ])
+            (λ { {ρ} PE.refl [ρ] ⊢Δ [a] [a'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ι ¹} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
+                 a'≡a' = escapeTermEq [nρ] (reflEqTerm [nρ] [a'])
+             in neu (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a a')) (~-Id n~n'ρ a≡a a'≡a') })
+            (λ { {ρ} PE.refl [ρ] ⊢Δ [a] [a'] [a≡a'] [b] [b'] [b≡b'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ι ¹} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 b = escapeTerm [nρ] [b]
+                 b' = escapeTerm [nρ] [b']
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
+                 a'≡a' = escapeTermEq [nρ] (reflEqTerm [nρ] [a'])
+                 b≡b = escapeTermEq [nρ] (reflEqTerm [nρ] [b])
+                 b'≡b' = escapeTermEq [nρ] (reflEqTerm [nρ] [b'])
+                 a≡a' = escapeTermEq [nρ] [a≡a']
+                 b≡b' = escapeTermEq [nρ] [b≡b']
+              in neuEq {l = ι ¹} (neu (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a b)) (~-Id n~n'ρ a≡a b≡b))
+                       (Idₙ (wkNeutral ρ neN)) (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a b)) (univ (Idⱼ n'ρ a' b')) (~-Id n~n'ρ a≡a' b≡b')  })
+            (λ { {ρ} PE.refl PE.refl [ρ] ⊢Δ [B] ⊢e [a] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ι ¹} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
                  B≡B = ≅-un-univ (escapeEq [B] (reflEq [B]))
-             in neuTerm⁰ [B] (castₙ neN) (castⱼ n' (un-univ (escape [B])) ⊢e a) (~-cast n~n' B≡B a≡a)})
+             in neuTerm⁰ [B] (castₙ (wkNeutral ρ neN)) (castⱼ n'ρ (un-univ (escape [B])) ⊢e a) (~-cast n~n'ρ B≡B a≡a) } )
+            (λ { {ρ} PE.refl PE.refl [ρ] ⊢Δ [B] [B'] [B≡B'] ⊢e ⊢e' [a] [a'] [a≡a'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ι ¹} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 a≡a' = escapeTermEq [nρ] [a≡a']
+                 B≡B' = escapeEq [B] [B≡B']
+             in neuEqTerm⁰ [B] (castₙ (wkNeutral ρ neN)) (castₙ (wkNeutral ρ neN))
+                           (castⱼ n'ρ (un-univ (escape [B])) ⊢e a) (conv (castⱼ n'ρ (un-univ (escape [B'])) ⊢e' a') (≅-eq (≅-sym B≡B')))
+                           (~-cast n~n'ρ (≅-un-univ B≡B') a≡a') } ) 
   neuTerm {∞} (Uᵣ′ A .(next ⁰) r ⁰ (Nat.s≤s Nat.z≤n) PE.refl [[ ⊢A , ⊢U , D ]]) neN n n~n =
     let n' = (conv n (subset* D))
         n~n' = ~-conv  n~n (subset* D)
-        [n] = neu neN (univ n') n~n'
-    in Uₜ _ (idRedTerm:*: n') (ne neN) (~-to-≅ₜ n~n') [n]
-          (λ [a] [a'] →
-             let a = escapeTerm [n] [a]
-                 a' = escapeTerm [n] [a']
-                 a≡a = escapeTermEq [n] (reflEqTerm [n] [a])
-                 a'≡a' = escapeTermEq [n] (reflEqTerm [n] [a'])
-             in neu (Idₙ neN) (univ (Idⱼ n' a a')) (~-Id n~n' a≡a a'≡a'))
-          (λ {_ PE.refl [B] ⊢e [a] →
-             let a = escapeTerm [n] [a]
-                 a≡a = escapeTermEq [n] (reflEqTerm [n] [a])
+        [n] = neu {l = ∞} neN (univ n') n~n'
+    in Uₜ _ (idRedTerm:*: n') (ne neN) (~-to-≅ₜ n~n')
+            (λ {ρ} [ρ] ⊢Δ → let n'ρ = wkTerm [ρ] ⊢Δ n'
+                                n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                                [nρ] = neu (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                            in [nρ])
+            (λ { {ρ} PE.refl [ρ] ⊢Δ [a] [a'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ι ¹} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
+                 a'≡a' = escapeTermEq [nρ] (reflEqTerm [nρ] [a'])
+             in neu (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a a')) (~-Id n~n'ρ a≡a a'≡a') })
+            (λ { {ρ} PE.refl [ρ] ⊢Δ [a] [a'] [a≡a'] [b] [b'] [b≡b'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ∞} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 b = escapeTerm [nρ] [b]
+                 b' = escapeTerm [nρ] [b']
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
+                 a'≡a' = escapeTermEq [nρ] (reflEqTerm [nρ] [a'])
+                 b≡b = escapeTermEq [nρ] (reflEqTerm [nρ] [b])
+                 b'≡b' = escapeTermEq [nρ] (reflEqTerm [nρ] [b'])
+                 a≡a' = escapeTermEq [nρ] [a≡a']
+                 b≡b' = escapeTermEq [nρ] [b≡b']
+              in neuEq {l = ∞} (neu (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a b)) (~-Id n~n'ρ a≡a b≡b))
+                       (Idₙ (wkNeutral ρ neN)) (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a b)) (univ (Idⱼ n'ρ a' b')) (~-Id n~n'ρ a≡a' b≡b')  })
+            (λ { {ρ} PE.refl PE.refl [ρ] ⊢Δ [B] ⊢e [a] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ι ¹} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
                  B≡B = ≅-un-univ (escapeEq [B] (reflEq [B]))
-             in neuTerm⁰ [B] (castₙ neN) (castⱼ n' (un-univ (escape [B])) ⊢e a) (~-cast n~n' B≡B a≡a)})
+             in neuTerm⁰ [B] (castₙ (wkNeutral ρ neN)) (castⱼ n'ρ (un-univ (escape [B])) ⊢e a) (~-cast n~n'ρ B≡B a≡a) } )
+            (λ { {ρ} PE.refl PE.refl [ρ] ⊢Δ [B] [B'] [B≡B'] ⊢e ⊢e' [a] [a'] [a≡a'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ∞} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 a≡a' = escapeTermEq [nρ] [a≡a']
+                 B≡B' = escapeEq [B] [B≡B']
+             in neuEqTerm⁰ [B] (castₙ (wkNeutral ρ neN)) (castₙ (wkNeutral ρ neN))
+                           (castⱼ n'ρ (un-univ (escape [B])) ⊢e a) (conv (castⱼ n'ρ (un-univ (escape [B'])) ⊢e' a') (≅-eq (≅-sym B≡B')))
+                           (~-cast n~n'ρ (≅-un-univ B≡B') a≡a') } ) 
   neuTerm {ι ¹} (Uᵣ′ A .(next ¹) r ¹ (Nat.s≤s ()) PE.refl [[ ⊢A , ⊢U , D ]]) 
   neuTerm {∞} (Uᵣ′ A .(next ¹) r ¹ (Nat.s≤s (Nat.s≤s Nat.z≤n)) PE.refl [[ ⊢A , ⊢U , D ]]) neN n n~n =
     let n' = (conv n (subset* D))
         n~n' = ~-conv  n~n (subset* D)
-        [n] = neu neN (univ n') n~n'
-    in Uₜ _ (idRedTerm:*: n') (ne neN) (~-to-≅ₜ n~n') [n]
-          (λ [a] [a'] →
-             let a = escapeTerm [n] [a]
-                 a' = escapeTerm [n] [a']
-                 a≡a = escapeTermEq [n] (reflEqTerm [n] [a])
-                 a'≡a' = escapeTermEq [n] (reflEqTerm [n] [a'])
-             in neu (Idₙ neN) (univ (Idⱼ n' a a')) (~-Id n~n' a≡a a'≡a'))
-          (λ {()})
+        [n] = neu {l = ∞} neN (univ n') n~n'
+    in Uₜ _ (idRedTerm:*: n') (ne neN) (~-to-≅ₜ n~n')
+            (λ {ρ} [ρ] ⊢Δ → let n'ρ = wkTerm [ρ] ⊢Δ n'
+                                n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                                [nρ] = neu (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                            in [nρ])
+            (λ { {ρ} PE.refl [ρ] ⊢Δ [a] [a'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ι ¹} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
+                 a'≡a' = escapeTermEq [nρ] (reflEqTerm [nρ] [a'])
+             in neu (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a a')) (~-Id n~n'ρ a≡a a'≡a') })
+            (λ { {ρ} PE.refl [ρ] ⊢Δ [a] [a'] [a≡a'] [b] [b'] [b≡b'] →
+             let n'ρ = wkTerm [ρ] ⊢Δ n'
+                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
+                 [nρ] = neu {l = ∞} (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
+                 a = escapeTerm [nρ] [a]
+                 a' = escapeTerm [nρ] [a']
+                 b = escapeTerm [nρ] [b]
+                 b' = escapeTerm [nρ] [b']
+                 a≡a = escapeTermEq [nρ] (reflEqTerm [nρ] [a])
+                 a'≡a' = escapeTermEq [nρ] (reflEqTerm [nρ] [a'])
+                 b≡b = escapeTermEq [nρ] (reflEqTerm [nρ] [b])
+                 b'≡b' = escapeTermEq [nρ] (reflEqTerm [nρ] [b'])
+                 a≡a' = escapeTermEq [nρ] [a≡a']
+                 b≡b' = escapeTermEq [nρ] [b≡b']
+              in neuEq {l = ∞} (neu (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a b)) (~-Id n~n'ρ a≡a b≡b))
+                       (Idₙ (wkNeutral ρ neN)) (Idₙ (wkNeutral ρ neN)) (univ (Idⱼ n'ρ a b)) (univ (Idⱼ n'ρ a' b')) (~-Id n~n'ρ a≡a' b≡b')  })
+            (λ {()}) (λ {()}) 
   neuTerm (ℕᵣ [[ ⊢A , ⊢B , D ]]) neN n n~n =
     let A≡ℕ  = subset* D
         n~n′ = ~-conv n~n A≡ℕ
@@ -282,7 +379,7 @@ mutual
         n~n' = ~-conv n~n (subset* (red D))
         [n]  = neu neN  (univ n') (~-trans n~n' (~-sym n~n'))
         [n′] = neu neN′ (univ n′') (~-trans (~-sym n~n') n~n')
-    in Uₜ₌ _ _ (idRedTerm:*: n') (idRedTerm:*: n′') (ne neN) (ne neN′) (~-to-≅ₜ n~n') [n] [n′] (neuEq [n] neN neN′ (univ n') (univ n′') n~n') 
+    in Uₜ₌ {!!} {!!} {!!} {!!} {!!} {!!} -- [n] [n′] (neuEq [n] neN neN′ (univ n') (univ n′') n~n') 
   neuEqTerm {ι ¹} (Uᵣ′ a _ r ¹ (Nat.s≤s ()) e D)
   neuEqTerm {∞} (Uᵣ′ A _ r ⁰ (Nat.s≤s Nat.z≤n) PE.refl D) neN neN′ n n′ n~n =
     let n' = conv n (subset* (red D))
@@ -290,14 +387,14 @@ mutual
         n~n' = ~-conv n~n (subset* (red D))
         [n]  = neu neN  (univ n') (~-trans n~n' (~-sym n~n'))
         [n′] = neu neN′ (univ n′') (~-trans (~-sym n~n') n~n')
-    in Uₜ₌ _ _ (idRedTerm:*: n') (idRedTerm:*: n′') (ne neN) (ne neN′) (~-to-≅ₜ n~n') [n] [n′] (neuEq [n] neN neN′ (univ n') (univ n′') n~n') 
+    in Uₜ₌ {!!} {!!} {!!} {!!} {!!} {!!} -- _ _ (idRedTerm:*: n') (idRedTerm:*: n′') (ne neN) (ne neN′) (~-to-≅ₜ n~n') [n] [n′] (neuEq [n] neN neN′ (univ n') (univ n′') n~n') 
   neuEqTerm {∞} (Uᵣ′ A _ r ¹ (Nat.s≤s (Nat.s≤s Nat.z≤n)) PE.refl D) neN neN′ n n′ n~n =
     let n' = conv n (subset* (red D))
         n′' = conv n′ (subset* (red D))
         n~n' = ~-conv n~n (subset* (red D))
         [n]  = neu neN  (univ n') (~-trans n~n' (~-sym n~n'))
         [n′] = neu neN′ (univ n′') (~-trans (~-sym n~n') n~n')
-    in Uₜ₌ _ _ (idRedTerm:*: n') (idRedTerm:*: n′') (ne neN) (ne neN′) (~-to-≅ₜ n~n') [n] [n′] (neuEq [n] neN neN′ (univ n') (univ n′') n~n') 
+    in Uₜ₌ {!!} {!!} {!!} {!!} {!!} {!!} -- _ _ (idRedTerm:*: n') (idRedTerm:*: n′') (ne neN) (ne neN′) (~-to-≅ₜ n~n') [n] [n′] (neuEq [n] neN neN′ (univ n') (univ n′') n~n') 
   neuEqTerm (ℕᵣ [[ ⊢A , ⊢B , D ]]) neN neN′ n n′ n~n′ =
     let A≡ℕ = subset* D
         n~n′₁ = ~-conv n~n′ A≡ℕ
