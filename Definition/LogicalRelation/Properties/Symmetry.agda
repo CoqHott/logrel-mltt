@@ -7,13 +7,17 @@ open EqRelSet {{...}}
 
 open import Definition.Untyped
 open import Definition.Typed
+open import Definition.Typed.Weakening hiding (wk)
 open import Definition.Typed.Properties
+open import Definition.Typed.EqualityRelation
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Irrelevance
+open import Definition.LogicalRelation.Properties.Escape
 open import Definition.LogicalRelation.Properties.Conversion
 
 open import Tools.Product
+open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
 import Data.Fin as Fin
@@ -124,29 +128,131 @@ symEmpty-prop : ∀ {Γ k k′}
                 → [Empty]-prop Γ k′ k
 symEmpty-prop (ne t u ) = ne u t
 
+
+symEqTerm⁰ : ∀ {Γ A t u r} ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ r)
+          → Γ ⊩⟨ ι ⁰ ⟩ t ≡ u ∷ A ^ r / [A]
+          → Γ ⊩⟨ ι ⁰ ⟩ u ≡ t ∷ A ^ r / [A]
+symEqTerm⁰ (ℕᵣ D) (ℕₜ₌ k k′ d d′ t≡u prop) =
+  ℕₜ₌ k′ k d′ d (≅ₜ-sym t≡u) (symNatural-prop prop)
+symEqTerm⁰ (Emptyᵣ D) (Emptyₜ₌ prop) = Emptyₜ₌ (symEmpty-prop prop)
+symEqTerm⁰ {r = [ ! , ll ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ nf) =
+  neₜ₌ m k d′ d (symNeutralTerm nf)
+symEqTerm⁰ {r = [ % , ll ]} (ne′ K D neK K≡K) (neₜ₌ d d′) = neₜ₌ d′ d
+symEqTerm⁰ {r = [ ! , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
+  Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
+      (λ ρ ⊢Δ [a] → symEqTerm⁰ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
+symEqTerm⁰ {r = [ % , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
+symEqTerm⁰ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
+
+
+symEqTerm¹ : ∀ {Γ A t u r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
+          → Γ ⊩⟨ ι ¹ ⟩ t ≡ u ∷ A ^ r / [A]
+          → Γ ⊩⟨ ι ¹ ⟩ u ≡ t ∷ A ^ r / [A]
+symEqTerm¹ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ [A] [B] A≡B [A≡B] IdHo castHo) =
+  let
+    [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+      symEq (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ)
+    u_to_t : ∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
+      → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
+      → Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ t ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ)
+    u_to_t = λ [ρ] ⊢Δ [a] → convTerm₂ (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ) [a]
+    IdHo′ = λ {ρ} {Δ} {a} {b} x ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ
+      ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
+      ([b] : Δ ⊩⟨ ι ⁰ ⟩ b ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ)) →
+      symEq (LogRel._⊩¹U_∷_^_/_.[IdK] [A] x [ρ] ⊢Δ (u_to_t [ρ] ⊢Δ [a]) (u_to_t [ρ] ⊢Δ [b]))
+        (LogRel._⊩¹U_∷_^_/_.[IdK] [B] x [ρ] ⊢Δ [a] [b]) (IdHo x [ρ] ⊢Δ (u_to_t [ρ] ⊢Δ [a]) (u_to_t [ρ] ⊢Δ [b]))
+--    castHo′ = ?
+  in
+  Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A] IdHo′ (λ {ρ} {Δ} {P} {a} {e} x x₁ [ρ] ⊢Δ [P] [e] [a] →
+    let
+      ⊢P = un-univ (escape [P])
+      wku≡wkt = un-univ≡ (≅-eq (escapeEq (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([B≡A] [ρ] ⊢Δ)))
+      wku≡wkt′ = PE.subst (λ X → Δ ⊢ wk ρ u ≡ wk ρ t ∷ Univ X ⁰ ^ [ ! , ι ¹ ]) x₁ wku≡wkt
+      [e]′ = (conv [e] (univ (Id-cong (refl (univ 0<1 ⊢Δ)) wku≡wkt′ (refl ⊢P))))
+    in
+    symEqTerm⁰ [P] (castHo x x₁ [ρ] ⊢Δ [P] [e]′ (u_to_t [ρ] ⊢Δ [a])))
+symEqTerm¹ (Uᵣ (Uᵣ r ¹ (Nat.s≤s ()) el D)) (Uₜ₌ [A] [B] A≡B [A≡B] IdHo castHo)
+symEqTerm¹ (ℕᵣ D) (ℕₜ₌ k k′ d d′ t≡u prop) =
+  ℕₜ₌ k′ k d′ d (≅ₜ-sym t≡u) (symNatural-prop prop)
+symEqTerm¹ (Emptyᵣ D) (Emptyₜ₌ prop) = Emptyₜ₌ (symEmpty-prop prop)
+symEqTerm¹ {r = [ ! , ll ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ nf) =
+  neₜ₌ m k d′ d (symNeutralTerm nf)
+symEqTerm¹ {r = [ % , ll ]} (ne′ K D neK K≡K) (neₜ₌ d d′) = neₜ₌ d′ d
+symEqTerm¹ {r = [ ! , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
+  Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
+      (λ ρ ⊢Δ [a] → symEqTerm¹ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
+symEqTerm¹ {r = [ % , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
+symEqTerm¹ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
+symEqTerm¹ (emb <l x) t≡u = symEqTerm⁰ x t≡u
+
 -- Symmetry of term equality.
+symEqTerm∞ : ∀ {Γ A t u r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
+          → Γ ⊩⟨ ∞ ⟩ t ≡ u ∷ A ^ r / [A]
+          → Γ ⊩⟨ ∞ ⟩ u ≡ t ∷ A ^ r / [A]
+symEqTerm∞ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ [A] [B] A≡B [A≡B] IdHo castHo) =
+  let
+    [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+      symEq (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ)
+    u_to_t : ∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
+      → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
+      → Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ t ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ)
+    u_to_t = λ [ρ] ⊢Δ [a] → convTerm₂ (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ) [a]
+    IdHo′ = λ {ρ} {Δ} {a} {b} x ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ
+      ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
+      ([b] : Δ ⊩⟨ ι ⁰ ⟩ b ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ)) →
+      symEq (LogRel._⊩¹U_∷_^_/_.[IdK] [A] x [ρ] ⊢Δ (u_to_t [ρ] ⊢Δ [a]) (u_to_t [ρ] ⊢Δ [b]))
+        (LogRel._⊩¹U_∷_^_/_.[IdK] [B] x [ρ] ⊢Δ [a] [b]) (IdHo x [ρ] ⊢Δ (u_to_t [ρ] ⊢Δ [a]) (u_to_t [ρ] ⊢Δ [b]))
+  in
+  Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A] IdHo′ (λ {ρ} {Δ} {P} {a} {e} x x₁ [ρ] ⊢Δ [P] [e] [a] →
+    let
+      ⊢P = un-univ (escape [P])
+      wku≡wkt = un-univ≡ (≅-eq (escapeEq (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([B≡A] [ρ] ⊢Δ)))
+      wku≡wkt′ = PE.subst (λ X → Δ ⊢ wk ρ u ≡ wk ρ t ∷ Univ X ⁰ ^ [ ! , ι ¹ ]) x₁ wku≡wkt
+      [e]′ = (conv [e] (univ (Id-cong (refl (univ 0<1 ⊢Δ)) wku≡wkt′ (refl ⊢P))))
+    in
+    symEqTerm⁰ [P] (castHo x x₁ [ρ] ⊢Δ [P] [e]′ (u_to_t [ρ] ⊢Δ [a])))
+symEqTerm∞ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ¹ l< el D)) (Uₜ₌ [A] [B] A≡B [A≡B] IdHo castHo) =
+  let
+    [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+      symEq (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ)
+    u_to_t : ∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
+      → ([a] : Δ ⊩⟨ ι ¹ ⟩ a ∷ wk ρ u ^ [ r , ι ¹ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
+      → Δ ⊩⟨ ι ¹ ⟩ a ∷ wk ρ t ^ [ r , ι ¹ ] / (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ)
+    u_to_t = λ [ρ] ⊢Δ [a] → convTerm₂ (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ) [a]
+    IdHo′ = λ {ρ} {Δ} {a} {b} x ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ
+      ([a] : Δ ⊩⟨ ι ¹ ⟩ a ∷ wk ρ u ^ [ r , ι ¹ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
+      ([b] : Δ ⊩⟨ ι ¹ ⟩ b ∷ wk ρ u ^ [ r , ι ¹ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ)) →
+      symEq (LogRel._⊩¹U_∷_^_/_.[IdK] [A] x [ρ] ⊢Δ (u_to_t [ρ] ⊢Δ [a]) (u_to_t [ρ] ⊢Δ [b]))
+        (LogRel._⊩¹U_∷_^_/_.[IdK] [B] x [ρ] ⊢Δ [a] [b]) (IdHo x [ρ] ⊢Δ (u_to_t [ρ] ⊢Δ [a]) (u_to_t [ρ] ⊢Δ [b]))
+  in
+  Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A] IdHo′ (λ {ρ} {Δ} {P} {a} {e} x x₁ [ρ] ⊢Δ [P] [e] [a] → ⊥-elim (⁰≢¹ (PE.sym x)))
+symEqTerm∞ (ℕᵣ D) (ℕₜ₌ k k′ d d′ t≡u prop) =
+  ℕₜ₌ k′ k d′ d (≅ₜ-sym t≡u) (symNatural-prop prop)
+symEqTerm∞ (Emptyᵣ D) (Emptyₜ₌ prop) = Emptyₜ₌ (symEmpty-prop prop)
+symEqTerm∞ {r = [ ! , ll ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ nf) =
+  neₜ₌ m k d′ d (symNeutralTerm nf)
+symEqTerm∞ {r = [ % , ll ]} (ne′ K D neK K≡K) (neₜ₌ d d′) = neₜ₌ d′ d
+symEqTerm∞ {r = [ ! , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
+  Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
+      (λ ρ ⊢Δ [a] → symEqTerm∞ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
+symEqTerm∞ {r = [ % , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
+symEqTerm∞ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+          (d , d′) = d′ , d
+symEqTerm∞ (emb {l′ = ι ⁰} <l x) t≡u = symEqTerm⁰ x t≡u
+symEqTerm∞ (emb {l′ = ι ¹} <l x) t≡u = symEqTerm¹ x t≡u
+symEqTerm∞ (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x) t≡u
+
 symEqTerm : ∀ {l Γ A t u r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
           → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
           → Γ ⊩⟨ l ⟩ u ≡ t ∷ A ^ r / [A]
-symEqTerm {ι ¹} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) = Uₜ₌ B A d′ d typeB typeA (≅ₜ-sym A≡B) [B] [A] (symEq [A] [B] [A≡B])
-symEqTerm {∞} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) = Uₜ₌ B A d′ d typeB typeA (≅ₜ-sym A≡B) [B] [A] (symEq [A] [B] [A≡B])
-symEqTerm {ι ¹} (Uᵣ (Uᵣ r ¹ l< el D)) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) = Uₜ₌ B A d′ d typeB typeA (≅ₜ-sym A≡B) [B] [A] (symEq [A] [B] [A≡B])
-symEqTerm {∞} (Uᵣ (Uᵣ r ¹ l< el D)) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) = Uₜ₌ B A d′ d typeB typeA (≅ₜ-sym A≡B) [B] [A] (symEq [A] [B] [A≡B])
-symEqTerm (ℕᵣ D) (ℕₜ₌ k k′ d d′ t≡u prop) =
-  ℕₜ₌ k′ k d′ d (≅ₜ-sym t≡u) (symNatural-prop prop)
-symEqTerm (Emptyᵣ D) (Emptyₜ₌ prop) = Emptyₜ₌ (symEmpty-prop prop)
-symEqTerm {r = [ ! , ll ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ nf) =
-  neₜ₌ m k d′ d (symNeutralTerm nf)
-symEqTerm {r = [ % , ll ]} (ne′ K D neK K≡K) (neₜ₌ d d′) = neₜ₌ d′ d
-symEqTerm {r = [ ! , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-          (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
-  Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
-      (λ ρ ⊢Δ [a] → symEqTerm ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
-symEqTerm {r = [ % , ll ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-          (d , d′) = d′ , d
-symEqTerm {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-          (d , d′) = d′ , d
-symEqTerm {ι ¹} (emb <l x) t≡u = symEqTerm x t≡u 
-symEqTerm {∞} (emb {l′ = ι ⁰} <l x) t≡u = symEqTerm x t≡u 
-symEqTerm {∞} (emb {l′ = ι ¹} <l x) t≡u = symEqTerm x t≡u 
-symEqTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x) t≡u
+symEqTerm {l = ι ⁰} = symEqTerm⁰
+symEqTerm {l = ι ¹} = symEqTerm¹
+symEqTerm {l = ∞} = symEqTerm∞
