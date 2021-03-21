@@ -6,15 +6,21 @@ module Definition.LogicalRelation.Properties.Transitivity {{eqrel : EqRelSet}} w
 open EqRelSet {{...}}
 
 open import Definition.Untyped
+open import Definition.Untyped.Properties
 open import Definition.Typed
 open import Definition.Typed.Properties
+open import Definition.Typed.Weakening renaming (wk to TWwk)
 open import Definition.LogicalRelation
+open import Definition.LogicalRelation.Properties.Escape
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties.Conversion
 
 open import Tools.Product
+open import Tools.Empty
 import Tools.PropositionalEquality as PE
+
+import Data.Nat as Nat
 
 mutual
   -- Helper function for transitivity of type equality using shape views.
@@ -219,42 +225,212 @@ transEqTermEmpty : ∀ {Γ n n′ n″}
 transEqTermEmpty (Emptyₜ₌ (ne a b)) (Emptyₜ₌ (ne c d)) = Emptyₜ₌ (ne a d)
 
 
--- Transitivty of term equality.
+-- Transitivity of term equality.
+transEqTerm⁰ : ∀ {Γ A t u v r}
+               ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ r)
+             → Γ ⊩⟨ ι ⁰ ⟩ t ≡ u ∷ A ^ r / [A]
+             → Γ ⊩⟨ ι ⁰ ⟩ u ≡ v ∷ A ^ r / [A]
+             → Γ ⊩⟨ ι ⁰ ⟩ t ≡ v ∷ A ^ r / [A]
+transEqTerm⁰ (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
+transEqTerm⁰ (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
+transEqTerm⁰ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
+                              (neₜ₌ k₁ m₁ d₁ d″ (neNfₜ₌ neK₂ neM₁ k≡m₁)) =
+  let k₁≡m = whrDet*Term (redₜ d₁ , ne neK₂) (redₜ d′ , ne neM)
+  in  neₜ₌ k m₁ d d″
+           (neNfₜ₌ neK₁ neM₁
+                   (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
+transEqTerm⁰ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ₌ d d′)
+                              (neₜ₌ d₁ d″) = neₜ₌ d d″
+transEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
+            (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
+            rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)
+                            (redₜ d₁ , functionWhnf funcF₁) =
+  Πₜ₌ f g₁ d d₁′ funcF funcG₁ (≅ₜ-trans f≡g f≡g₁) [f] [g]₁
+      (λ ρ ⊢Δ [a] → transEqTerm⁰ ([G] ρ ⊢Δ [a])
+                                ([f≡g] ρ ⊢Δ [a])
+                                ([f≡g]₁ ρ ⊢Δ [a]))
+transEqTerm⁰ {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
+transEqTerm⁰ {r = [ % , l ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
+
+transEqTerm¹ : ∀ {Γ A t u v r}
+               ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
+             → Γ ⊩⟨ ι ¹ ⟩ t ≡ u ∷ A ^ r / [A]
+             → Γ ⊩⟨ ι ¹ ⟩ u ≡ v ∷ A ^ r / [A]
+             → Γ ⊩⟨ ι ¹ ⟩ t ≡ v ∷ A ^ r / [A]
+transEqTerm¹ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB)
+  (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C) =
+  let
+    ti = LogRel._⊩¹U_∷_^_/_.[t]
+    ⊢Γ = wf (_⊢_:⇒*:_^_.⊢A d)
+    B≡B′ = whrDet*Term (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]))
+      (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]′) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]′))
+    A≡C = ≅ₜ-trans (PE.subst (λ X → EqRelSet._⊢_≅_∷_^_ eqrel Γ (LogRel._⊩¹U_∷_^_/_.K [t]) X (Univ rU ⁰) ([ ! , ι ¹ ])) B≡B′ A≡B) B′≡C
+    [t≡v] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+      transEq (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)
+        (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
+  in
+  Uₜ₌ [t] [v] A≡C [t≡v]
+    (λ r≡! [ρ] ⊢Δ [a] [b] →
+      let
+        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
+        [b:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]
+        [a:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [a]
+        [b:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [b]
+        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
+        [b:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [b:B]
+        [IdA] = LogRel._⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
+        [IdB] = LogRel._⊩¹U_∷_^_/_.[IdK] [u] r≡! [ρ] ⊢Δ [a:B] [b:B]
+        [IdC] = LogRel._⊩¹U_∷_^_/_.[IdK] [v] r≡! [ρ] ⊢Δ [a:C] [b:C]
+        [IdB′] = LogRel._⊩¹U_∷_^_/_.[IdK] [u]′ r≡! [ρ] ⊢Δ [a:B′] [b:B′]
+      in
+      transEq [IdA] [IdB] [IdC] (IdHoAB r≡! [ρ] ⊢Δ [a] [b]) (irrelevanceEq [IdB′] [IdB] (IdHoB′C r≡! [ρ] ⊢Δ [a:B′] [b:B′])))
+    (λ {ρ} {Δ} x r≡! [ρ] ⊢Δ [B] [e] [a] →
+      let
+        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
+        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
+        ⊢B = un-univ (escape [B])
+        wkt≡wku = un-univ≡ (≅-eq (escapeEq (ti [t] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)))
+        wkt≡wku = PE.subst (λ X → Δ ⊢ wk ρ t ≡ wk ρ u ∷ Univ X ⁰ ^ [ ! , ι ¹ ]) r≡! wkt≡wku
+        [e]′ = (conv [e] (univ (Id-cong (refl (univ 0<1 ⊢Δ)) wkt≡wku (refl ⊢B))))
+      in
+      transEqTerm⁰ [B] (castHoAB x r≡! [ρ] ⊢Δ [B] [e] [a]) (castHoB′C x r≡! [ρ] ⊢Δ [B] [e]′ [a:B′]))
+transEqTerm¹ (Uᵣ (Uᵣ rU ¹ (Nat.s≤s ()) eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB) (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C)
+transEqTerm¹ (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
+transEqTerm¹ (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
+transEqTerm¹ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
+                              (neₜ₌ k₁ m₁ d₁ d″ (neNfₜ₌ neK₂ neM₁ k≡m₁)) =
+  let k₁≡m = whrDet*Term (redₜ d₁ , ne neK₂) (redₜ d′ , ne neM)
+  in  neₜ₌ k m₁ d d″
+           (neNfₜ₌ neK₁ neM₁
+                   (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
+transEqTerm¹ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ₌ d d′)
+                              (neₜ₌ d₁ d″) = neₜ₌ d d″
+transEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
+            (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
+            rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)
+                            (redₜ d₁ , functionWhnf funcF₁) =
+  Πₜ₌ f g₁ d d₁′ funcF funcG₁ (≅ₜ-trans f≡g f≡g₁) [f] [g]₁
+      (λ ρ ⊢Δ [a] → transEqTerm¹ ([G] ρ ⊢Δ [a])
+                                ([f≡g] ρ ⊢Δ [a])
+                                ([f≡g]₁ ρ ⊢Δ [a]))
+transEqTerm¹ {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
+transEqTerm¹ {r = [ % , l ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
+transEqTerm¹ (emb l< [A]) [t≡u] [u≡v] = transEqTerm⁰ [A] [t≡u] [u≡v]
+
+transEqTerm∞ : ∀ {Γ A t u v r}
+               ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
+             → Γ ⊩⟨ ∞ ⟩ t ≡ u ∷ A ^ r / [A]
+             → Γ ⊩⟨ ∞ ⟩ u ≡ v ∷ A ^ r / [A]
+             → Γ ⊩⟨ ∞ ⟩ t ≡ v ∷ A ^ r / [A]
+transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB)
+  (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C) =
+  let
+    ti = LogRel._⊩¹U_∷_^_/_.[t]
+    ⊢Γ = wf (_⊢_:⇒*:_^_.⊢A d)
+    B≡B′ = whrDet*Term (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]))
+      (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]′) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]′))
+    A≡C = ≅ₜ-trans (PE.subst (λ X → EqRelSet._⊢_≅_∷_^_ eqrel Γ (LogRel._⊩¹U_∷_^_/_.K [t]) X (Univ rU ⁰) ([ ! , ι ¹ ])) B≡B′ A≡B) B′≡C
+    [t≡v] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+      transEq (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)
+        (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
+  in
+  Uₜ₌ [t] [v] A≡C [t≡v]
+    (λ r≡! [ρ] ⊢Δ [a] [b] →
+      let
+        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
+        [b:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]
+        [a:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [a]
+        [b:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [b]
+        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
+        [b:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [b:B]
+        [IdA] = LogRel._⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
+        [IdB] = LogRel._⊩¹U_∷_^_/_.[IdK] [u] r≡! [ρ] ⊢Δ [a:B] [b:B]
+        [IdC] = LogRel._⊩¹U_∷_^_/_.[IdK] [v] r≡! [ρ] ⊢Δ [a:C] [b:C]
+        [IdB′] = LogRel._⊩¹U_∷_^_/_.[IdK] [u]′ r≡! [ρ] ⊢Δ [a:B′] [b:B′]
+      in
+      transEq [IdA] [IdB] [IdC] (IdHoAB r≡! [ρ] ⊢Δ [a] [b]) (irrelevanceEq [IdB′] [IdB] (IdHoB′C r≡! [ρ] ⊢Δ [a:B′] [b:B′])))
+    (λ {ρ} {Δ} x r≡! [ρ] ⊢Δ [B] [e] [a] →
+      let
+        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
+        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
+        ⊢B = un-univ (escape [B])
+        wkt≡wku = un-univ≡ (≅-eq (escapeEq (ti [t] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)))
+        wkt≡wku = PE.subst (λ X → Δ ⊢ wk ρ t ≡ wk ρ u ∷ Univ X ⁰ ^ [ ! , ι ¹ ]) r≡! wkt≡wku
+        [e]′ = (conv [e] (univ (Id-cong (refl (univ 0<1 ⊢Δ)) wkt≡wku (refl ⊢B))))
+      in
+      transEqTerm⁰ [B] (castHoAB x r≡! [ρ] ⊢Δ [B] [e] [a]) (castHoB′C x r≡! [ρ] ⊢Δ [B] [e]′ [a:B′]))
+transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ¹ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB)
+  (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C) =
+  let
+    ti = LogRel._⊩¹U_∷_^_/_.[t]
+    ⊢Γ = wf (_⊢_:⇒*:_^_.⊢A d)
+    B≡B′ = whrDet*Term (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]))
+      (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]′) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]′))
+    A≡C = ≅ₜ-trans (PE.subst (λ X → EqRelSet._⊢_≅_∷_^_ eqrel Γ (LogRel._⊩¹U_∷_^_/_.K [t]) X (Univ rU ¹) ([ ! , ∞ ])) B≡B′ A≡B) B′≡C
+    [t≡v] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+      transEq (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)
+        (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
+  in
+  Uₜ₌ [t] [v] A≡C [t≡v]
+    (λ r≡! [ρ] ⊢Δ [a] [b] →
+      let
+        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
+        [b:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]
+        [a:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [a]
+        [b:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [b]
+        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
+        [b:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [b:B]
+        [IdA] = LogRel._⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
+        [IdB] = LogRel._⊩¹U_∷_^_/_.[IdK] [u] r≡! [ρ] ⊢Δ [a:B] [b:B]
+        [IdC] = LogRel._⊩¹U_∷_^_/_.[IdK] [v] r≡! [ρ] ⊢Δ [a:C] [b:C]
+        [IdB′] = LogRel._⊩¹U_∷_^_/_.[IdK] [u]′ r≡! [ρ] ⊢Δ [a:B′] [b:B′]
+      in
+      transEq [IdA] [IdB] [IdC] (IdHoAB r≡! [ρ] ⊢Δ [a] [b]) (irrelevanceEq [IdB′] [IdB] (IdHoB′C r≡! [ρ] ⊢Δ [a:B′] [b:B′])))
+    (λ {ρ} {Δ} ¹≡⁰ r≡! [ρ] ⊢Δ [B] [e] [a] → ⊥-elim (⁰≢¹ (PE.sym ¹≡⁰)))
+transEqTerm∞ (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
+transEqTerm∞ (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
+transEqTerm∞ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
+                              (neₜ₌ k₁ m₁ d₁ d″ (neNfₜ₌ neK₂ neM₁ k≡m₁)) =
+  let k₁≡m = whrDet*Term (redₜ d₁ , ne neK₂) (redₜ d′ , ne neM)
+  in  neₜ₌ k m₁ d d″
+           (neNfₜ₌ neK₁ neM₁
+                   (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
+transEqTerm∞ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ₌ d d′)
+                              (neₜ₌ d₁ d″) = neₜ₌ d d″
+transEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
+            (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
+            rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)
+                            (redₜ d₁ , functionWhnf funcF₁) =
+  Πₜ₌ f g₁ d d₁′ funcF funcG₁ (≅ₜ-trans f≡g f≡g₁) [f] [g]₁
+      (λ ρ ⊢Δ [a] → transEqTerm∞ ([G] ρ ⊢Δ [a])
+                                ([f≡g] ρ ⊢Δ [a])
+                                ([f≡g]₁ ρ ⊢Δ [a]))
+transEqTerm∞ {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
+transEqTerm∞ {r = [ % , l ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+            (d , d′)
+            (d₁ , d₁′) = d , d₁′
+transEqTerm∞ (emb {l′ = ι ⁰} l< [A]) [t≡u] [u≡v] = transEqTerm⁰ [A] [t≡u] [u≡v]
+transEqTerm∞ (emb {l′ = ι ¹} l< [A]) [t≡u] [u≡v] = transEqTerm¹ [A] [t≡u] [u≡v]
+transEqTerm∞ (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) [t≡u] [u≡v]
+
 transEqTerm : ∀ {l Γ A t u v r}
               ([A] : Γ ⊩⟨ l ⟩ A ^ r)
             → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
             → Γ ⊩⟨ l ⟩ u ≡ v ∷ A ^ r / [A]
             → Γ ⊩⟨ l ⟩ t ≡ v ∷ A ^ r / [A]
-transEqTerm = {!!}
--- transEqTerm (Uᵣ′ rU .⁰ 0<1 ⊢Γ)
---             (Uₜ₌ A B d d′ typeA typeB t≡u [t] [u] [t≡u])
---             (Uₜ₌ A₁ B₁ d₁ d₁′ typeA₁ typeB₁ t≡u₁ [t]₁ [u]₁ [t≡u]₁)
---             rewrite whrDet*Term (redₜ d′ , typeWhnf typeB) (redₜ d₁ , typeWhnf typeA₁) =
---   Uₜ₌ A B₁ d d₁′ typeA typeB₁ (≅ₜ-trans t≡u t≡u₁) [t] [u]₁
---       (transEq [t] [u] [u]₁ [t≡u] (irrelevanceEq [t]₁ [u] [t≡u]₁))
--- transEqTerm (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
--- transEqTerm (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
--- transEqTerm {r = !} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
---                               (neₜ₌ k₁ m₁ d₁ d″ (neNfₜ₌ neK₂ neM₁ k≡m₁)) =
---   let k₁≡m = whrDet*Term (redₜ d₁ , ne neK₂) (redₜ d′ , ne neM)
---   in  neₜ₌ k m₁ d d″
---            (neNfₜ₌ neK₁ neM₁
---                    (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
--- transEqTerm {r = %} (ne′ K D neK K≡K) (neₜ₌ d d′)
---                               (neₜ₌ d₁ d″) = neₜ₌ d d″
--- transEqTerm {r = !} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
---             (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
---             (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
---             rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)
---                             (redₜ d₁ , functionWhnf funcF₁) =
---   Πₜ₌ f g₁ d d₁′ funcF funcG₁ (≅ₜ-trans f≡g f≡g₁) [f] [g]₁
---       (λ ρ ⊢Δ [a] → transEqTerm ([G] ρ ⊢Δ [a])
---                                 ([f≡g] ρ ⊢Δ [a])
---                                 ([f≡g]₁ ρ ⊢Δ [a]))
--- transEqTerm {r = %} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
---             (d , d′)
---             (d₁ , d₁′) = d , d₁′
--- transEqTerm {r = %} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
---             (d , d′)
---             (d₁ , d₁′) = d , d₁′
--- transEqTerm (emb 0<1 x) t≡u u≡v = transEqTerm x t≡u u≡v
+transEqTerm {l = ι ⁰} = transEqTerm⁰
+transEqTerm {l = ι ¹} = transEqTerm¹
+transEqTerm {l = ∞} = transEqTerm∞
