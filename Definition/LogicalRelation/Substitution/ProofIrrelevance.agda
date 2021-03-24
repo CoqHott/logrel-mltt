@@ -21,6 +21,7 @@ open import Tools.Empty
 open import Tools.Nat
 
 import Tools.PropositionalEquality as PE
+import Data.Nat as Nat
 
 ~-quasirefl : ∀ {Γ n n′ A r} → Γ ⊢ n ~ n′ ∷ A ^ r → Γ ⊢ n ~ n ∷ A ^ r
 ~-quasirefl p = ~-trans p (~-sym p)
@@ -28,10 +29,10 @@ import Tools.PropositionalEquality as PE
 ≅-quasirefl : ∀ {Γ n n′ A r} → Γ ⊢ n ≅ n′ ∷ A ^ r → Γ ⊢ n ≅ n ∷ A ^ r
 ≅-quasirefl p = ≅ₜ-trans p (≅ₜ-sym p)
 
-proof-irrelevanceRel : ∀ {Γ A t u l} ([A] : Γ ⊩⟨ l ⟩ A ^ %)
-                   → Γ ⊩⟨ l ⟩ t ∷ A ^ % / [A]
-                   → Γ ⊩⟨ l ⟩ u ∷ A ^ % / [A]
-                   → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ % / [A]
+proof-irrelevanceRel : ∀ {Γ A t u l l′} ([A] : Γ ⊩⟨ l ⟩ A ^ [ % , l′ ])
+                   → Γ ⊩⟨ l ⟩ t ∷ A ^ [ % , l′ ] / [A]
+                   → Γ ⊩⟨ l ⟩ u ∷ A ^ [ % , l′ ] / [A]
+                   → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ % , l′ ] / [A]
 proof-irrelevanceRel (Emptyᵣ x)
                    (Emptyₜ (ne ⊢t))
                    (Emptyₜ (ne ⊢t₁)) = Emptyₜ₌ (ne ⊢t ⊢t₁)
@@ -45,11 +46,16 @@ proof-irrelevanceRel {Γ} {l = l} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-e
 proof-irrelevanceRel {Γ} {l = l} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
   [f] , [f₁]
 
-proof-irrelevanceRel (emb 0<1 [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
+proof-irrelevanceRel {l = ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s l<) [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
+proof-irrelevanceRel {l = ι ¹} (emb {l′ = ι ¹} (Nat.s≤s ()) [A]) [t] [u]
+proof-irrelevanceRel {l = ι ¹} (emb {l′ = ∞} (Nat.s≤s ()) [A]) [t] [u]
+proof-irrelevanceRel {l = ∞} (emb {l′ = ι ⁰} (Nat.s≤s l<) [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
+proof-irrelevanceRel {l = ∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s l<)) [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
+proof-irrelevanceRel {l = ∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) [t] [u]
 
-proof-irrelevanceᵛ : ∀ {Γ A t u l} ([Γ] : ⊩ᵛ Γ) ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ % / [Γ])
-                   → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ % / [Γ] / [A]
-                   → Γ ⊩ᵛ⟨ l ⟩ u ∷ A ^ % / [Γ] / [A]
-                   → Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ % / [Γ] / [A]
+proof-irrelevanceᵛ : ∀ {Γ A t u l l′} ([Γ] : ⊩ᵛ Γ) ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ [ % , l′ ] / [Γ])
+                   → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ [ % , l′ ] / [Γ] / [A]
+                   → Γ ⊩ᵛ⟨ l ⟩ u ∷ A ^ [ % , l′ ] / [Γ] / [A]
+                   → Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ [ % , l′ ] / [Γ] / [A]
 proof-irrelevanceᵛ [Γ] [A] [t] [u] {σ = σ} ⊢Δ [σ] =
   proof-irrelevanceRel (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ]))
