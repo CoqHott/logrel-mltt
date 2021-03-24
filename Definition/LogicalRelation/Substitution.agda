@@ -23,7 +23,7 @@ mutual
         → ⊩ᵛ Γ ∙ A ^ rA
 
   -- Validity of types
-  _⊩ᵛ⟨_⟩_^_/_ : (Γ : Con Term) (l : TypeLevel) (A : Term) → Relevance → ⊩ᵛ Γ → Set
+  _⊩ᵛ⟨_⟩_^_/_ : (Γ : Con Term) (l : TypeLevel) (A : Term) → TypeInfo → ⊩ᵛ Γ → Set
   Γ ⊩ᵛ⟨ l ⟩ A ^ r / [Γ] = ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
                    → Σ (Δ ⊩⟨ l ⟩ subst σ A ^ r)
                        (λ [Aσ] → ∀ {σ′} ([σ′] : Δ ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ)
@@ -48,7 +48,7 @@ mutual
 
 
 -- Validity of terms
-_⊩ᵛ⟨_⟩_∷_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (t A : Term) (rA : Relevance) ([Γ] : ⊩ᵛ Γ)
+_⊩ᵛ⟨_⟩_∷_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (t A : Term) (rA : TypeInfo) ([Γ] : ⊩ᵛ Γ)
                  ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ]) → Set
 Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ rA / [Γ] / [A] =
   ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ) →
@@ -57,14 +57,14 @@ _⊩ᵛ⟨_⟩_∷_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (t A : Term) (rA : R
     → Δ ⊩⟨ l ⟩ subst σ t ≡ subst σ′ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ])
 
 -- Validity of type equality
-_⊩ᵛ⟨_⟩_≡_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (A B : Term) (rA : Relevance) ([Γ] : ⊩ᵛ Γ)
+_⊩ᵛ⟨_⟩_≡_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (A B : Term) (rA : TypeInfo) ([Γ] : ⊩ᵛ Γ)
                 ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ]) → Set
 Γ ⊩ᵛ⟨ l ⟩ A ≡ B ^ rA / [Γ] / [A] =
   ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
   → Δ ⊩⟨ l ⟩ subst σ A ≡ subst σ B ^ rA / proj₁ ([A] ⊢Δ [σ])
 
 -- Validity of term equality
-_⊩ᵛ⟨_⟩_≡_∷_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (t u A : Term) (rA : Relevance) ([Γ] : ⊩ᵛ Γ)
+_⊩ᵛ⟨_⟩_≡_∷_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (t u A : Term) (rA : TypeInfo) ([Γ] : ⊩ᵛ Γ)
                     ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ]) → Set
 Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ rA / [Γ] / [A] =
   ∀ {Δ σ} → (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
@@ -72,7 +72,7 @@ _⊩ᵛ⟨_⟩_≡_∷_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (t u A : Term) (
 
 -- Valid term equality with validity of its type and terms
 record [_⊩ᵛ⟨_⟩_≡_∷_^_/_] (Γ : Con Term) (l : TypeLevel)
-                       (t u A : Term) (rA : Relevance) ([Γ] : ⊩ᵛ Γ) : Set where
+                       (t u A : Term) (rA : TypeInfo) ([Γ] : ⊩ᵛ Γ) : Set where
   constructor modelsTermEq
   field
     [A]   : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ]
@@ -81,6 +81,6 @@ record [_⊩ᵛ⟨_⟩_≡_∷_^_/_] (Γ : Con Term) (l : TypeLevel)
     [t≡u] : Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ rA / [Γ] / [A]
 
 -- Validity of reduction of terms
-_⊩ᵛ_⇒_∷_/_ : (Γ : Con Term) (t u A : Term) ([Γ] : ⊩ᵛ Γ) → Set
-Γ ⊩ᵛ t ⇒ u ∷ A / [Γ] = ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-                       → Δ ⊢ subst σ t ⇒ subst σ u ∷ subst σ A
+_⊩ᵛ_⇒_∷_^_/_ : (Γ : Con Term) (t u A : Term) (r : TypeLevel) ([Γ] : ⊩ᵛ Γ) → Set
+Γ ⊩ᵛ t ⇒ u ∷ A ^ r / [Γ] = ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+                       → Δ ⊢ subst σ t ⇒ subst σ u ∷ subst σ A ^ r
