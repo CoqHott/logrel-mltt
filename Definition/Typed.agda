@@ -60,7 +60,7 @@ mutual
          → ⊢ Γ
          → Γ ⊢ (Univ r l) ∷ (Univ ! l') ^ [ ! , next l' ]
     ℕⱼ      : ⊢ Γ → Γ ⊢ ℕ ∷ U ⁰ ^ [ ! , ι ¹ ]
-    Emptyⱼ :  ⊢ Γ → Γ ⊢ Empty ∷ SProp ⁰ ^ [ ! , ι ¹ ]
+    Emptyⱼ : ∀ {l} → ⊢ Γ → Γ ⊢ Empty ∷ SProp l ^ [ ! , next l ]
     Πⱼ_▹_   : ∀ {F rF G rG l}
            → Γ     ⊢ F ∷ (Univ rF l) ^ [ ! , next l ]
            → Γ ∙ F ^ [ rF , ι l ] ⊢ G ∷ (Univ rG l) ^ [ ! , next l ]
@@ -106,8 +106,8 @@ mutual
            → Γ       ⊢ s ∷ Π ℕ ^ ! ▹ (G ^ TypeInfo.r rG ▹▹ G [ suc (var Nat.zero) ]↑) ^ rG
            → Γ       ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ       ⊢ natrec G z s n ∷ G [ n ] ^ rG
-    Emptyrecⱼ : ∀ {A rA e}
-           → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty ^ [ % ,  ι ⁰ ] -> Γ ⊢ Emptyrec A e ∷ A ^ rA
+    Emptyrecⱼ : ∀ {A l rA e}
+           → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty ^ [ % ,  ι l ] -> Γ ⊢ Emptyrec A e ∷ A ^ rA
     Idⱼ : ∀ {A l t u}
           → Γ ⊢ A ∷ U l ^ [ ! , next l ]
           → Γ ⊢ t ∷ A ^ [ ! , ι l ]
