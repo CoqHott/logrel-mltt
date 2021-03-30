@@ -22,7 +22,7 @@ eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       sym genSym genSym trans genTrans genTrans
                       conv conv wkEq wkEqTerm wkEqTerm
                       reduction reductionₜ
-                      Urefl (refl ∘ᶠ ℕⱼ) (refl ∘ᶠ Emptyⱼ)
+                      Urefl (refl ∘ᶠ univ 0<1) (refl ∘ᶠ ℕⱼ) (refl ∘ᶠ Emptyⱼ)
                       Π-cong ∃-cong (refl ∘ᶠ zeroⱼ) suc-cong
                       (λ x x₁ x₂ x₃ x₄ x₅ → η-eq x x₁ x₂ x₅)
                       genVar app-cong natrec-cong Emptyrec-cong

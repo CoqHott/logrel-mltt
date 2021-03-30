@@ -34,7 +34,8 @@ escape {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A)
 escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
             → Γ ⊩⟨ l ⟩ A ≡ B ^ r / [A]
             → Γ ⊢ A ≅ B ^ r
-escapeEq (Uᵣ′ _ _ _ _ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-Urefl (wf ⊢A))
+escapeEq (Uᵣ′ _ _ _ ⁰ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-univ (≅-U⁰refl (wf ⊢A)))
+escapeEq (Uᵣ′ _ _ _ ¹ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-U¹refl (wf ⊢A))
 escapeEq (ℕᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-univ (≅ₜ-ℕrefl (wf ⊢A)))
 escapeEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-univ (≅ₜ-Emptyrefl (wf ⊢A)))
 escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =

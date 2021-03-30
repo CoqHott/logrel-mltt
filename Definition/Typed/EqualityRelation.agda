@@ -94,15 +94,18 @@ record EqRelSet : Set₁ where
     ≅ₜ-red : ∀ {a a′ b b′ A B l Γ}
            → Γ ⊢ A ⇒* B ^ [ ! , l ]
            → Γ ⊢ a ⇒* a′ ∷ B ^ l
-           → Γ ⊢ b ⇒* b′ ∷ B ^ l 
+           → Γ ⊢ b ⇒* b′ ∷ B ^ l
            → Whnf B
            → Whnf a′
            → Whnf b′
            → Γ ⊢ a′ ≅ b′ ∷ B ^ [ ! , l ]
            → Γ ⊢ a  ≅ b  ∷ A ^ [ ! , l ]
 
-    -- Universe type reflexivity
-    ≅-Urefl   : ∀ {r l Γ} → ⊢ Γ → Γ ⊢ (Univ r l) ≅ (Univ r l) ^ [ ! , next l ]
+    -- Large universe type reflexivity
+    ≅-U¹refl   : ∀ {r Γ} → ⊢ Γ → Γ ⊢ (Univ r ¹) ≅ (Univ r ¹) ^ [ ! , ∞ ]
+
+    -- Small universe type reflexivity
+    ≅-U⁰refl   : ∀ {r Γ} → ⊢ Γ → Γ ⊢ (Univ r ⁰) ≅ (Univ r ⁰) ∷ U ¹ ^ [ ! , ∞ ]
 
     -- Natural number type reflexivity
     ≅ₜ-ℕrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ∷ U ⁰ ^ [ ! , next ⁰ ]
@@ -111,7 +114,6 @@ record EqRelSet : Set₁ where
     ≅ₜ-Emptyrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ∷ SProp ⁰ ^ [ ! , next ⁰ ]
 
     -- Π-congruence
-
     ≅ₜ-Π-cong : ∀ {F G H E rF rG l Γ}
               → Γ ⊢ F ^ [ rF , ι l ]
               → Γ ⊢ F ≅ H ∷ (Univ rF l) ^ [ ! , next l ]
@@ -165,10 +167,10 @@ record EqRelSet : Set₁ where
              → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ [ ! , l ]
 
     -- Id congruences
-    ~-Id  : ∀ {A A' r l t t' u u' Γ}
-          → Γ ⊢ A ~ A' ∷ Univ r l ^ [ ! , next l ]
-          → Γ ⊢ t ≅ t' ∷ A ^ [ r , ι l ]
-          → Γ ⊢ u ≅ u' ∷ A ^ [ r , ι l ]
+    ~-Id  : ∀ {A A' l t t' u u' Γ}
+          → Γ ⊢ A ~ A' ∷ Univ ! l ^ [ ! , next l ]
+          → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
+          → Γ ⊢ u ≅ u' ∷ A ^ [ ! , ι l ]
           → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp l ^ [ ! , next l ]
 
     ~-Idℕ : ∀ {t t' u u' Γ}
