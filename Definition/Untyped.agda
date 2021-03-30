@@ -1,5 +1,3 @@
--- Raw terms, weakening (renaming) and substitution.
-
 {-# OPTIONS --without-K --safe #-}
 
 module Definition.Untyped where
@@ -68,7 +66,7 @@ predLevel ∞ = ¹
 
 record TypeInfo : Set where
   constructor [_,_]
-  field 
+  field
     r : Relevance
     l : TypeLevel
 
@@ -324,10 +322,11 @@ data Natural : Term → Set where
   sucₙ  : ∀ {t}             → Natural (suc t)
   ne    : ∀ {n} → Neutral n → Natural n
 
--- A (small) type in whnf is either Π A B, ℕ, or neutral.
--- Large types could also be U.
+-- A (small) type in whnf is either SProp⁰, U⁰, Π A B, ℕ, or neutral.
+-- Large types could also be SProp¹, U¹.
 
 data Type : Term → Set where
+  Uₙ : ∀ {r} → Type (Univ r ⁰)
   Πₙ : ∀ {A r B} → Type (Π A ^ r ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
@@ -349,6 +348,7 @@ naturalWhnf zeroₙ = zeroₙ
 naturalWhnf (ne x) = ne x
 
 typeWhnf : ∀ {A} → Type A → Whnf A
+typeWhnf Uₙ = Uₙ
 typeWhnf Πₙ = Πₙ
 typeWhnf ℕₙ = ℕₙ
 typeWhnf ∃ₙ = ∃ₙ
@@ -463,6 +463,7 @@ wkNatural ρ zeroₙ   = zeroₙ
 wkNatural ρ (ne x) = ne (wkNeutral ρ x)
 
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
+wkType ρ Uₙ      = Uₙ
 wkType ρ Πₙ      = Πₙ
 wkType ρ ℕₙ      = ℕₙ
 wkType ρ ∃ₙ      = ∃ₙ
