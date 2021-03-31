@@ -27,27 +27,61 @@ U-Relevance-Level (emb x X) = U-Relevance-Level X
 toTypeInfo : Relevance × Level → TypeInfo
 toTypeInfo ( r , l ) = [ r , ι l ]
 
--- Helper function for reducible terms of type U for specific type derivations.
-univEq′ : ∀ {l ll Γ A t} ([U] : Γ ⊩⟨ l ⟩U A ^ ll) → Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ll ] / U-intr [U] → Γ ⊩⟨ l ⟩ t ^ toTypeInfo (U-Relevance-Level [U])
-univEq′ {l} {ll} {Γ} {A} {t} (noemb (Uᵣ r l′ l< eq [[ ⊢A , ⊢B , D ]]))
-  (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
-  let
-    ⊢Γ = wf ⊢A
-    [t]′ = PE.subst (λ X → LogRelKit._⊩_^_ (logRelRec l l<) Γ X ([ r , ι l′ ])) (Definition.Untyped.Properties.wk-id t) ([t] Definition.Typed.Weakening.id ⊢Γ)
-  in
-  emb l< [t]′
-univEq′ {ι ¹} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) X) [A] = emb (Nat.s≤s Nat.z≤n) (univEq′ X [A])
-univEq′ {ι ¹} (emb {ι ¹} (Nat.s≤s ()) X) [A]
-univEq′ {ι ¹} (emb {∞} (Nat.s≤s ()) X) [A]
-univEq′ {∞} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) X) [A] = emb (Nat.s≤s Nat.z≤n) (univEq′ X [A])
-univEq′ {∞} (emb {ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) X) [A] = emb {l′ =  ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) (univEq′ X [A])
-univEq′ {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) X) [A]
+univRedTerm : ∀ {Γ r l u t ti}
+        → Γ ⊢ Univ r l ⇒ u ∷ t ^ ti
+        → ⊥
+univRedTerm (conv d′ A≡t) = univRedTerm d′
 
+univRed* : ∀ {Γ r l r′ l′ ti}
+         → Γ ⊢ Univ r l ⇒* Univ r′ l′ ^ ti
+         → (r PE.≡ r′) × (l PE.≡ l′)
+univRed* (id x) = PE.refl , PE.refl
+univRed* (univ x ⇨ D) = ⊥-elim (univRedTerm x)
 
 -- Reducible terms of type U are reducible types.
-univEq : ∀ {l Γ A r l′ ll′} ([U] : Γ ⊩⟨ l ⟩ Univ r l′ ^ [ ! , ll′ ] ) → Γ ⊩⟨ l ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U] → Γ ⊩⟨ l ⟩ A ^ toTypeInfo (U-Relevance-Level (U-elim [U]))
-univEq [U] [A] = univEq′ (U-elim [U]) (irrelevanceTerm [U] (U-intr (U-elim [U])) [A])
-
+univEq : ∀ {l Γ A r l′ ll′}
+       → ([U] : Γ ⊩⟨ l ⟩ Univ r l′ ^ [ ! , ll′ ] )
+       → Γ ⊩⟨ l ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U]
+       → Γ ⊩⟨ ι l′ ⟩ A ^ [ r , ι l′ ]
+univEq {ι ⁰} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ l′₁ () eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext)
+univEq {ι ¹} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ (Nat.s≤s ()) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext)
+univEq {ι ¹} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ (Nat.s≤s Nat.z≤n) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext) =
+  let
+    ⊢Γ = wf ⊢A
+    r≡r₁ , l′≡l′₁ = univRed* D
+    [t]′ : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r₁ , ι ⁰ ]
+    [t]′ = PE.subst (λ X → Γ ⊩⟨ _ ⟩ X ^ [ _ , _ ])
+      (Definition.Untyped.Properties.wk-id A) ([t] Definition.Typed.Weakening.id ⊢Γ)
+  in
+  PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
+univEq {∞} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ (Nat.s≤s Nat.z≤n) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext) =
+  let
+    ⊢Γ = wf ⊢A
+    r≡r₁ , l′≡l′₁ = univRed* D
+    [t]′ : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r₁ , ι ⁰ ]
+    [t]′ = PE.subst (λ X → Γ ⊩⟨ _ ⟩ X ^ [ _ , _ ])
+      (Definition.Untyped.Properties.wk-id A) ([t] Definition.Typed.Weakening.id ⊢Γ)
+  in
+  PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
+univEq {∞} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ (Nat.s≤s (Nat.s≤s Nat.z≤n)) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext) =
+  let
+    ⊢Γ = wf ⊢A
+    r≡r₁ , l′≡l′₁ = univRed* D
+    [t]′ : Γ ⊩⟨ ι ¹ ⟩ A ^ [ r₁ , ι ¹ ]
+    [t]′ = PE.subst (λ X → Γ ⊩⟨ _ ⟩ X ^ [ _ , _ ])
+      (Definition.Untyped.Properties.wk-id A) ([t] Definition.Typed.Weakening.id ⊢Γ)
+  in
+  PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
+univEq (ℕᵣ [[ ⊢A , ⊢B , univ x ⇨ D ]]) [A] = ⊥-elim (univRedTerm x)
+univEq (ne′ K [[ ⊢A , ⊢B , univ x ⇨ D ]] neK K≡K) [A] = ⊥-elim (univRedTerm x)
+univEq (Πᵣ′ rF F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A≡A [F] [G] G-ext) [A] =
+  ⊥-elim (univRedTerm x)
+univEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) [U]′) [A] = univEq [U]′ [A]
+univEq {ι ¹} (emb {l′ = ι ¹} (Nat.s≤s ()) [U]′) [A]
+univEq {ι ¹} (emb {l′ = ∞} (Nat.s≤s ()) [U]′) [A]
+univEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) [U]′) [A] = univEq [U]′ [A]
+univEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) [U]′) [A] = univEq [U]′ [A]
+univEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [U]′) [A]
 
 -- Helper function for reducible term equality of type U for specific type derivations.
 univEqEq′ : ∀ {l ll l′ Γ X A B} ([U] : Γ ⊩⟨ l ⟩U X ^ ll) →
