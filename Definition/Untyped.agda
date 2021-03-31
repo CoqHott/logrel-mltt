@@ -38,6 +38,10 @@ data Level : Set where
 data _<_ : (i j : Level) → Set where
   0<1 : ⁰ < ¹
 
+data _≤_ (i j : Level) : Set where
+  <is≤  : i < j → i ≤ j
+  ≡is≤ : i PE.≡ j → i ≤ j
+
 -- Type levels
 
 data TypeLevel : Set where
