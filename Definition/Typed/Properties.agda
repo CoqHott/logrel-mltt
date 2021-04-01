@@ -21,7 +21,7 @@ wfTerm : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → ⊢ Γ
 wfTerm (univ <l ⊢Γ) = ⊢Γ
 wfTerm (ℕⱼ ⊢Γ) = ⊢Γ
 wfTerm (Emptyⱼ ⊢Γ) = ⊢Γ
-wfTerm (Πⱼ F ▹ G) = wfTerm F
+wfTerm (Πⱼ <l ▹ F ▹ G) = wfTerm F
 wfTerm (∃ⱼ F ▹ G) = wfTerm F
 wfTerm (var ⊢Γ x₁) = ⊢Γ
 wfTerm (lamⱼ F t) with wfTerm t
@@ -103,7 +103,7 @@ subsetTerm (Id-ℕ-0-subst n) = let ⊢Γ = wfEqTerm (subsetTerm n) in Id-cong (
 subsetTerm (Id-ℕ-S-subst m n) = Id-cong (refl (ℕⱼ (wfTerm m))) (refl (sucⱼ m)) (subsetTerm n)
 subsetTerm (Id-U-subst A B) = Id-cong (refl (univ 0<1 (wfTerm B))) (subsetTerm A) (refl B)
 subsetTerm (Id-U-ℕ-subst B) = let ⊢Γ = wfEqTerm (subsetTerm B) in Id-cong (refl (univ 0<1 ⊢Γ)) (refl (ℕⱼ ⊢Γ)) (subsetTerm B)
-subsetTerm (Id-U-Π-subst A P B) = Id-cong (refl (univ 0<1 (wfTerm A))) (refl (Πⱼ A ▹ P)) (subsetTerm B)
+subsetTerm (Id-U-Π-subst A P B) = Id-cong (refl (univ 0<1 (wfTerm A))) (refl (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B)
 subsetTerm (Id-Π A B t u) = Id-Π A B t u
 subsetTerm (Id-ℕ-00 ⊢Γ) = Id-ℕ-00 ⊢Γ
 subsetTerm (Id-ℕ-SS m n) = Id-ℕ-SS m n
@@ -116,7 +116,7 @@ subsetTerm (Id-U-ℕΠ A B) = Id-U-ℕΠ A B
 subsetTerm (Id-U-Πℕ A B) = Id-U-Πℕ A B
 subsetTerm (cast-subst A B e t) = cast-cong (subsetTerm A) (refl B) (refl t)
 subsetTerm (cast-ℕ-subst B e t) = cast-cong (refl (ℕⱼ (wfTerm t))) (subsetTerm B) (refl t)
-subsetTerm (cast-Π-subst A P B e t) = cast-cong (refl (Πⱼ A ▹ P)) (subsetTerm B) (refl t)
+subsetTerm (cast-Π-subst A P B e t) = cast-cong (refl (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B) (refl t)
 subsetTerm (cast-Π A B A' B' e f) = cast-Π A B A' B' e f
 subsetTerm (cast-ℕ-0 e) = cast-ℕ-0 e
 subsetTerm (cast-ℕ-S e n) = cast-ℕ-S e n
@@ -149,21 +149,21 @@ redFirstTerm (Id-ℕ-0-subst n) = Idⱼ (ℕⱼ (wfEqTerm (subsetTerm n))) (zero
 redFirstTerm (Id-ℕ-S-subst m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (redFirstTerm n)
 redFirstTerm (Id-U-subst A B) = Idⱼ (univ 0<1 (wfTerm B)) (redFirstTerm A) B
 redFirstTerm (Id-U-ℕ-subst B) = let ⊢Γ = (wfEqTerm (subsetTerm B)) in Idⱼ (univ 0<1 ⊢Γ) (ℕⱼ ⊢Γ) (redFirstTerm B)
-redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ A ▹ P) (redFirstTerm B)
-redFirstTerm (Id-Π {rA = rA} A B t u) = Idⱼ (Πⱼ A ▹ B) t u
+redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P) (redFirstTerm B)
+redFirstTerm (Id-Π {rA = rA} A B t u) = Idⱼ (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) t u
 redFirstTerm (Id-ℕ-00 ⊢Γ) = Idⱼ (ℕⱼ ⊢Γ) (zeroⱼ ⊢Γ) (zeroⱼ ⊢Γ)
 redFirstTerm (Id-ℕ-SS m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (sucⱼ n)
-redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ A ▹ B) (Πⱼ A' ▹ B')
+redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ A' ▹ B')
 redFirstTerm (Id-U-ℕℕ ⊢Γ) = Idⱼ (univ 0<1 ⊢Γ) (ℕⱼ ⊢Γ) (ℕⱼ ⊢Γ)
 redFirstTerm (Id-SProp A B) = Idⱼ (univ 0<1 (wfTerm A)) A B
 redFirstTerm (Id-ℕ-0S n) = Idⱼ (ℕⱼ (wfTerm n)) (zeroⱼ (wfTerm n)) (sucⱼ n)
 redFirstTerm (Id-ℕ-S0 n) = Idⱼ (ℕⱼ (wfTerm n)) (sucⱼ n) (zeroⱼ (wfTerm n))
-redFirstTerm (Id-U-ℕΠ A B) = Idⱼ (univ 0<1 (wfTerm A)) (ℕⱼ (wfTerm A)) (Πⱼ A ▹ B)
-redFirstTerm (Id-U-Πℕ A B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ A ▹ B) (ℕⱼ (wfTerm A))
+redFirstTerm (Id-U-ℕΠ A B) = Idⱼ (univ 0<1 (wfTerm A)) (ℕⱼ (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B)
+redFirstTerm (Id-U-Πℕ A B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) (ℕⱼ (wfTerm A))
 redFirstTerm (cast-subst A B e t) = castⱼ (redFirstTerm A) B e t
 redFirstTerm (cast-ℕ-subst B e t) = castⱼ (ℕⱼ (wfTerm t)) (redFirstTerm B) e t
-redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ A ▹ P) (redFirstTerm B) e t
-redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ A ▹ B) (Πⱼ A' ▹ B') e f
+redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P) (redFirstTerm B) e t
+redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ A' ▹ B') e f
 redFirstTerm (cast-ℕ-0 e) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (zeroⱼ (wfTerm e))
 redFirstTerm (cast-ℕ-S e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (sucⱼ n)
 
@@ -529,7 +529,7 @@ UnotInA[t] : ∀ {A B t a Γ r r' r'' r'''}
 UnotInA[t] () x₁ (univ 0<1 x₂) 
 UnotInA[t] () x₁ (ℕⱼ x₂)
 UnotInA[t] () x₁ (Emptyⱼ x₂)
-UnotInA[t] () x₁ (Πⱼ x₂ ▹ x₃)
+UnotInA[t] () x₁ (Πⱼ _ ▹ x₂ ▹ x₃)
 UnotInA[t] x₁ x₂ (var x₃ here) rewrite x₁ = UnotInA x₂
 UnotInA[t] () x₂ (var x₃ (there x₄))
 UnotInA[t] () x₁ (lamⱼ x₂ x₃)

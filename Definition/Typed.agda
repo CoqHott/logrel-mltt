@@ -9,7 +9,7 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 infixl 30 _∙_
-infix 30 Πⱼ_▹_
+infix 30 Πⱼ_▹_▹_
 
 -- Lemmas that are useful for reduction
 Unit : Term
@@ -61,10 +61,11 @@ mutual
          → Γ ⊢ (Univ r l) ∷ (Univ ! l') ^ [ ! , next l' ]
     ℕⱼ      : ⊢ Γ → Γ ⊢ ℕ ∷ U ⁰ ^ [ ! , ι ¹ ]
     Emptyⱼ : ∀ {l} → ⊢ Γ → Γ ⊢ Empty ∷ SProp l ^ [ ! , next l ]
-    Πⱼ_▹_   : ∀ {F rF G rG l}
+    Πⱼ_▹_▹_ : ∀ {F rF G rG l l'}
+           → l ≤ l'
            → Γ     ⊢ F ∷ (Univ rF l) ^ [ ! , next l ]
            → Γ ∙ F ^ [ rF , ι l ] ⊢ G ∷ (Univ rG l) ^ [ ! , next l ]
-           → Γ     ⊢ Π F ^ rF ▹ G ∷ (Univ rG l) ^ [ ! , next l ]
+           → Γ     ⊢ Π F ^ rF ▹ G ∷ (Univ rG l') ^ [ ! , next l' ]
     ∃ⱼ_▹_ : ∀ {F G l}
             → Γ ⊢ F ∷ SProp l ^ [ ! , next l ]
             → Γ ∙ F ^ [ % , ι l ] ⊢ G ∷ SProp l ^ [ ! , next l ]
