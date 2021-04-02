@@ -47,6 +47,11 @@ cong₄ : ∀ {A B C D E : Set} {a a′ b b′ c c′ d d′}
       → f a b c d ≡ f a′ b′ c′ d′
 cong₄ f refl refl refl refl = refl
 
+cong5 : ∀ {A B C D E F : Set} {a a′ b b′ c c′ d d′ e e'}
+        (f : A → B → C → D → E → F) → a ≡ a′ → b ≡ b′ → c ≡ c′ → d ≡ d′ → e ≡ e' 
+      → f a b c d e ≡ f a′ b′ c′ d′ e'
+cong5 f refl refl refl refl refl = refl
+
 -- Substitution (type-cast).
 
 subst : {A : Set} {a b : A} (F : A → Set) → a ≡ b → F a → F b
@@ -66,3 +71,7 @@ subst₂ F refl refl f = f
 subst₃ : ∀ {A B C : Set} {a a′ b b′ c c′} (F : A → B → C → Set)
        → a ≡ a′ → b ≡ b′ → c ≡ c′ → F a b c → F a′ b′ c′
 subst₃ F refl refl refl f = f
+
+subst₄ : ∀ {A B C D : Set} {a a′ b b′ c c′ d d′} (F : A → B → C → D → Set)
+       → a ≡ a′ → b ≡ b′ → c ≡ c′ → d ≡ d′ → F a b c d → F a′ b′ c′ d′
+subst₄ F refl refl refl refl f = f
