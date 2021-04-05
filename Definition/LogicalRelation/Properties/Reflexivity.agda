@@ -45,9 +45,9 @@ reflNatural-prop (sucᵣ (ℕₜ n d t≡t prop)) =
 reflNatural-prop zeroᵣ = zeroᵣ
 reflNatural-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 
-reflEmpty-prop : ∀ {Γ n}
-                 → Empty-prop Γ n
-                 → [Empty]-prop Γ n n
+reflEmpty-prop : ∀ {Γ n l}
+                 → Empty-prop Γ n l
+                 → [Empty]-prop Γ n n l
 reflEmpty-prop (ne x) = ne x x
 
 -- Reflexivity of reducible terms.

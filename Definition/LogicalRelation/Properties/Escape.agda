@@ -37,7 +37,7 @@ escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
 escapeEq (Uᵣ′ _ _ _ ⁰ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-univ (≅-U⁰refl (wf ⊢A)))
 escapeEq (Uᵣ′ _ _ _ ¹ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-U¹refl (wf ⊢A))
 escapeEq (ℕᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-univ (≅ₜ-ℕrefl (wf ⊢A)))
-escapeEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-univ (≅ₜ-Emptyrefl (wf ⊢A)))
+escapeEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-univ ((≅ₜ-Emptyrefl (wf ⊢A))))
 escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
   ≅-red (red D) (red D′) (ne neK) (ne neM) (~-to-≅ K≡M)
 escapeEq (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)

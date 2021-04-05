@@ -32,8 +32,8 @@ _⊩⟨_⟩U_^_ : (Γ : Con Term) (l : TypeLevel) (A : Term) (ll : TypeLevel) �
 _⊩⟨_⟩ℕ_ : (Γ : Con Term) (l : TypeLevel) (A : Term) → Set
 Γ ⊩⟨ l ⟩ℕ A = MaybeEmb l (λ l′ → Γ ⊩ℕ A)
 
-_⊩⟨_⟩Empty_ : (Γ : Con Term) (l : TypeLevel) (A : Term) → Set
-Γ ⊩⟨ l ⟩Empty A = MaybeEmb l (λ l′ → Γ ⊩Empty A)
+_⊩⟨_⟩Empty_^_ : (Γ : Con Term) (l : TypeLevel) (A : Term) (ll : Level) → Set
+Γ ⊩⟨ l ⟩Empty A ^ ll = MaybeEmb l (λ l′ → Γ ⊩Empty A ^ ll)
 
 _⊩⟨_⟩ne_^[_,_] : (Γ : Con Term) (l : TypeLevel) (A : Term) (r : Relevance) (ll : Level) → Set
 Γ ⊩⟨ l ⟩ne A ^[ r , ll ] = MaybeEmb l (λ l′ → Γ ⊩ne A ^[ r , ll ])
@@ -62,7 +62,7 @@ U-intr {l = ∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
 ℕ-intr {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (ℕ-intr x)
 ℕ-intr {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x₁)
 
-Empty-intr : ∀ {l A Γ} → Γ ⊩⟨ l ⟩Empty A → Γ ⊩⟨ l ⟩ A ^ [ % , ι ⁰ ]
+Empty-intr : ∀ {l A Γ ll} → Γ ⊩⟨ l ⟩Empty A ^ ll → Γ ⊩⟨ l ⟩ A ^ [ % , ι ll ]
 Empty-intr (noemb x) = Emptyᵣ x
 Empty-intr {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (Empty-intr x)
 Empty-intr {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (Empty-intr x)
@@ -134,7 +134,7 @@ U-elim [U] = U-elim′ (id (escape [U])) [U]
 ℕ-elim [ℕ] = ℕ-elim′ (id (escape [ℕ])) [ℕ]
 
 
-Empty-elim′ : ∀ {l A ll Γ} → Γ ⊢ A ⇒* Empty ^ [ % , ll ] → Γ ⊩⟨ l ⟩ A ^ [ % , ll ] → Γ ⊩⟨ l ⟩Empty A
+Empty-elim′ : ∀ {l A ll Γ} → Γ ⊢ A ⇒* Empty ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩ A ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩Empty A ^ ll
 Empty-elim′ D (Emptyᵣ D′) = noemb D′
 Empty-elim′ D (ne′ K D′ neK K≡K) =
   ⊥-elim (Empty≢ne neK (whrDet* (D , Emptyₙ) (red D′ , ne neK)))
@@ -153,7 +153,7 @@ Empty-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | noemb x
 Empty-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
 Empty-elim′ {∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
 
-Empty-elim : ∀ {Γ l ll } → Γ ⊩⟨ l ⟩ Empty ^ [ % , ll ] → Γ ⊩⟨ l ⟩Empty Empty
+Empty-elim : ∀ {Γ l ll } → Γ ⊩⟨ l ⟩ Empty ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩Empty Empty ^ ll
 Empty-elim [Empty] = Empty-elim′ (id (escape [Empty])) [Empty]
 
 ne-elim′ : ∀ {l A Γ K r ll ll'} → Γ ⊢ A ⇒* K ^ [ r , ι ll ] → Neutral K → Γ ⊩⟨ l ⟩ A ^ [ r , ll' ] → ι ll PE.≡  ll' → Γ ⊩⟨ l ⟩ne A ^[ r , ll ]
@@ -236,7 +236,7 @@ extractMaybeEmb (emb <l x) = extractMaybeEmb x
 data ShapeView Γ : ∀ l l′ A B r r' (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩⟨ l′ ⟩ B ^ r') → Set where
   Uᵥ : ∀ {A B l l′ ll ll′} UA UB → ShapeView Γ l l′ A B [ ! , ll ] [ ! , ll′ ] (Uᵣ UA) (Uᵣ UB)
   ℕᵥ : ∀ {A B l l′} ℕA ℕB → ShapeView Γ l l′ A B [ ! , ι ⁰ ] [ ! , ι ⁰ ] (ℕᵣ ℕA) (ℕᵣ ℕB)
-  Emptyᵥ : ∀ {A B l l′} EmptyA EmptyB → ShapeView Γ l l′ A B [ % , ι ⁰ ] [ % , ι ⁰ ] (Emptyᵣ EmptyA) (Emptyᵣ EmptyB)
+  Emptyᵥ : ∀ {A B l l′ ll ll'} EmptyA EmptyB → ShapeView Γ l l′ A B [ % , ι ll ] [ % , ι ll' ] (Emptyᵣ EmptyA) (Emptyᵣ EmptyB)
   ne  : ∀ {A B l l′ r lr r' lr'} neA neB
       → ShapeView Γ l l′ A B [ r , ι lr ] [ r' , ι lr' ] (ne neA) (ne neB)
   Πᵥ : ∀ {A B l l′ r r'} ΠA ΠB
@@ -363,8 +363,8 @@ data ShapeView₃ Γ : ∀ l l′ l″ A B C r1 r2 r3
                                                (Uᵣ UA) (Uᵣ UB) (Uᵣ UC)
   ℕᵥ : ∀ {A B C l l′ l″} ℕA ℕB ℕC
     → ShapeView₃ Γ l l′ l″ A B C [ ! , ι ⁰ ] [ ! , ι ⁰ ] [ ! , ι ⁰ ] (ℕᵣ ℕA) (ℕᵣ ℕB) (ℕᵣ ℕC)
-  Emptyᵥ : ∀ {A B C l l′ l″} EmptyA EmptyB EmptyC
-    → ShapeView₃ Γ l l′ l″ A B C [ % , ι ⁰ ] [ % , ι ⁰ ] [ % , ι ⁰ ] (Emptyᵣ EmptyA) (Emptyᵣ EmptyB) (Emptyᵣ EmptyC)
+  Emptyᵥ : ∀ {A B C l l′ l″ ll ll′ ll″} EmptyA EmptyB EmptyC
+    → ShapeView₃ Γ l l′ l″ A B C [ % , ι ll ] [ % , ι ll′ ] [ % , ι ll″ ] (Emptyᵣ EmptyA) (Emptyᵣ EmptyB) (Emptyᵣ EmptyC)
   ne  : ∀ {A B C r1 r2 r3 l1 l2 l3 l l′ l″} neA neB neC
       → ShapeView₃ Γ l l′ l″ A B C [ r1 , ι l1 ] [ r2 , ι l2 ] [ r3 , ι l3 ] (ne neA) (ne neB) (ne neC)
   Πᵥ : ∀ {A B C r1 r2 r3 l l′ l″} ΠA ΠB ΠC

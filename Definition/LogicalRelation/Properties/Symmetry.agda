@@ -123,9 +123,9 @@ symNatural-prop (sucᵣ (ℕₜ₌ k k′ d d′ t≡u prop)) =
 symNatural-prop zeroᵣ = zeroᵣ
 symNatural-prop (ne prop) = ne (symNeutralTerm prop)
 
-symEmpty-prop : ∀ {Γ k k′}
-                → [Empty]-prop Γ k k′
-                → [Empty]-prop Γ k′ k
+symEmpty-prop : ∀ {Γ k k′ l}
+                → [Empty]-prop Γ k k′ l
+                → [Empty]-prop Γ k′ k l
 symEmpty-prop (ne t u ) = ne u t
 
 

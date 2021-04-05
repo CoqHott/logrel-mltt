@@ -147,31 +147,31 @@ split (ne (neNfₜ₌ neK neM k≡m)) = ne neK , ne neM
 -- Reducibility of Empty
 
 -- Empty type
-_⊩Empty_ : (Γ : Con Term) (A : Term) → Set
-Γ ⊩Empty A = Γ ⊢ A :⇒*: Empty ^ [ % , ι ⁰ ]
+_⊩Empty_^_ : (Γ : Con Term) (A : Term) (l : Level) → Set
+Γ ⊩Empty A ^ l = Γ ⊢ A :⇒*: Empty ^ [ % , ι l ]
 
 -- Empty type equality
-_⊩Empty_≡_ : (Γ : Con Term) (A B : Term) → Set
-Γ ⊩Empty A ≡ B = Γ ⊢ B ⇒* Empty ^ [ % , ι ⁰ ]
+_⊩Empty_≡_^_ : (Γ : Con Term) (A B : Term) (l : Level) → Set
+Γ ⊩Empty A ≡ B ^ l = Γ ⊢ B ⇒* Empty ^ [ % , ι l ]
 
-data Empty-prop (Γ : Con Term) : (n : Term) → Set where
-  ne    : ∀ {n} → Γ ⊢ n ∷ Empty ^ [ % , ι ⁰ ] → Empty-prop Γ n
+data Empty-prop (Γ : Con Term) (n : Term) (l : Level) : Set where
+  ne    : Γ ⊢ n ∷ Empty ^ [ % , ι l ] → Empty-prop Γ n l
 
 -- -- Empty term
 
-data _⊩Empty_∷Empty (Γ : Con Term) (t : Term) : Set where
+data _⊩Empty_∷Empty^_ (Γ : Con Term) (t : Term) (l : Level) : Set where
   Emptyₜ :  -- (n : Term) (d : Γ ⊢ t :⇒*: n ∷ Empty ^ %) (n≡n : Γ ⊢ n ≅ n ∷ Empty ^ %)
-         (prop : Empty-prop Γ t)
-         → Γ ⊩Empty t ∷Empty
+         (prop : Empty-prop Γ t l)
+         → Γ ⊩Empty t ∷Empty^ l
 
-data [Empty]-prop (Γ : Con Term) : (n n′ : Term) → Set where
-  ne    : ∀ {n n′} → Γ ⊢ n ∷ Empty ^ [ % , ι ⁰ ] → Γ ⊢ n′ ∷ Empty ^ [ % , ι ⁰ ]  → [Empty]-prop Γ n n′
+data [Empty]-prop (Γ : Con Term) : (n n′ : Term)  (l : Level) → Set where
+  ne    : ∀ {n n′ l} → Γ ⊢ n ∷ Empty ^ [ % , ι l ] → Γ ⊢ n′ ∷ Empty ^ [ % , ι l ]  → [Empty]-prop Γ n n′ l
 
 -- Empty term equality
-data _⊩Empty_≡_∷Empty (Γ : Con Term) (t u : Term) : Set where
+data _⊩Empty_≡_∷Empty^_ (Γ : Con Term) (t u : Term) (l : Level) : Set where
   Emptyₜ₌ : -- (k k′ : Term) (d : Γ ⊢ t :⇒*: k ∷ Empty ^ %) (d′ : Γ ⊢ u :⇒*: k′ ∷ Empty ^ %)
     -- (k≡k′ : Γ ⊢ k ≅ k′ ∷ Empty ^ %)
-      (prop : [Empty]-prop Γ t u) → Γ ⊩Empty t ≡ u ∷Empty
+      (prop : [Empty]-prop Γ t u l) → Γ ⊩Empty t ≡ u ∷Empty^ l
 
 -- empty : ∀ {Γ n} → Empty-prop Γ n → Neutral n
 -- empty (ne (neNfₜ neK _ _)) = neK
@@ -440,7 +440,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     data _⊩¹_^_ (Γ : Con Term) : Term → TypeInfo → Set where
       Uᵣ  : ∀ {A ll} → (UA : Γ ⊩¹U A ^ ll) → Γ ⊩¹ A ^ [ ! , ll ]
       ℕᵣ  : ∀ {A} → Γ ⊩ℕ A → Γ ⊩¹ A ^ [ ! , ι ⁰ ]
-      Emptyᵣ : ∀ {A} → Γ ⊩Empty A → Γ ⊩¹ A ^ [ % , ι ⁰ ]
+      Emptyᵣ : ∀ {A l} → Γ ⊩Empty A ^ l → Γ ⊩¹ A ^ [ % , ι l ]
       ne  : ∀ {A r l} → Γ ⊩ne A ^[ r , l ] → Γ ⊩¹ A ^ [ r , ι l ]
       Πᵣ  : ∀ {A r} → Γ ⊩¹Π A ^ r → Γ ⊩¹ A ^ r
       ∃ᵣ  : ∀ {A l} → Γ ⊩¹∃ A ^ l → Γ ⊩¹ A ^ [ % , l ]
@@ -450,7 +450,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     _⊩¹_≡_^_/_ : (Γ : Con Term) (A B : Term) (r : TypeInfo) → Γ ⊩¹ A ^ r  → Set
     Γ ⊩¹ A ≡ B ^ [ .! , l ] / Uᵣ UA = Γ ⊩¹U A ≡ B ^ l / UA
     Γ ⊩¹ A ≡ B ^ [ .! , .ι ⁰ ] / ℕᵣ D = Γ ⊩ℕ A ≡ B
-    Γ ⊩¹ A ≡ B ^ [ .% , .ι ⁰ ] / Emptyᵣ D = Γ ⊩Empty A ≡ B
+    Γ ⊩¹ A ≡ B ^ [ .% , .ι l ] / Emptyᵣ D = Γ ⊩Empty A ≡ B ^ l
     Γ ⊩¹ A ≡ B ^ [ r , ι l ] / ne neA = Γ ⊩ne A ≡ B ^[ r , l ]/ neA
     Γ ⊩¹ A ≡ B ^ r / Πᵣ ΠA = Γ ⊩¹Π A ≡ B ^ r / ΠA
     Γ ⊩¹ A ≡ B ^ [ .% , l ] / ∃ᵣ ∃A = Γ ⊩¹∃ A ≡ B ^ l / ∃A
@@ -460,7 +460,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     _⊩¹_∷_^_/_ : (Γ : Con Term) (t A : Term) (r : TypeInfo) → Γ ⊩¹ A ^ r  → Set
     Γ ⊩¹ t ∷ A ^ [ .! , ll ] / Uᵣ UA = Γ ⊩¹U t ∷ A ^ ll / UA
     Γ ⊩¹ t ∷ A ^ .([ ! , ι ⁰ ]) / ℕᵣ x = Γ ⊩ℕ t ∷ℕ
-    Γ ⊩¹ t ∷ A ^ .([ % , ι ⁰ ]) / Emptyᵣ x =  Γ ⊩Empty t ∷Empty
+    Γ ⊩¹ t ∷ A ^ [ .% , ι ll ] / Emptyᵣ x =  Γ ⊩Empty t ∷Empty^ ll
     Γ ⊩¹ t ∷ A ^ .([ ! , ι l ]) / ne {r = !} {l} neA = Γ ⊩ne t ∷ A ^ l / neA
     Γ ⊩¹ t ∷ A ^ .([ % , ι l ]) / ne {r = %} {l} neA = Γ ⊩neIrr t ∷ A ^ l / neA
     Γ ⊩¹ t ∷ A ^ [ ! , l ] / Πᵣ ΠA  = Γ ⊩¹Π t ∷ A ^ l / ΠA
@@ -472,7 +472,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     _⊩¹_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (r : TypeInfo) → Γ ⊩¹ A ^ r → Set
     Γ ⊩¹ t ≡ u ∷ A ^ [ .! , ll ] / Uᵣ UA = Γ ⊩¹U t ≡ u ∷ A ^ ll / UA
     Γ ⊩¹ t ≡ u ∷ A ^ .([ ! , ι ⁰ ]) / ℕᵣ D = Γ ⊩ℕ t ≡ u ∷ℕ
-    Γ ⊩¹ t ≡ u ∷ A ^ .([ % , ι ⁰ ]) / Emptyᵣ D = Γ ⊩Empty t ≡ u ∷Empty
+    Γ ⊩¹ t ≡ u ∷ A ^ [ .% , ι ll ] / Emptyᵣ D = Γ ⊩Empty t ≡ u ∷Empty^ ll
     Γ ⊩¹ t ≡ u ∷ A ^ .([ ! , ι l ]) / ne {r = !} {l} neA = Γ ⊩ne t ≡ u ∷ A ^  l / neA
     Γ ⊩¹ t ≡ u ∷ A ^ .([ % , ι l ]) / ne {r = %} {l} neA = Γ ⊩neIrr t ≡ u ∷ A ^ l / neA
     Γ ⊩¹ t ≡ u ∷ A ^ [ ! , l ] / Πᵣ ΠA = Γ ⊩¹Π t ≡ u ∷ A ^ l  / ΠA
