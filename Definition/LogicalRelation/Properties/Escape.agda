@@ -23,7 +23,7 @@ escape (Uᵣ′ _ _ _ _ _ PE.refl [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (ℕᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (Emptyᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) = ⊢A
-escape (Πᵣ′ rF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
+escape (Πᵣ′ rF lF lG F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) = escape A
 escape {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) = escape A
@@ -37,10 +37,10 @@ escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
 escapeEq (Uᵣ′ _ _ _ ⁰ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-univ (≅-U⁰refl (wf ⊢A)))
 escapeEq (Uᵣ′ _ _ _ ¹ _ PE.refl [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Uₙ Uₙ (≅-U¹refl (wf ⊢A))
 escapeEq (ℕᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-univ (≅ₜ-ℕrefl (wf ⊢A)))
-escapeEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-univ (≅ₜ-Emptyrefl (wf ⊢A)))
+escapeEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-univ ((≅ₜ-Emptyrefl (wf ⊢A))))
 escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
   ≅-red (red D) (red D′) (ne neK) (ne neM) (~-to-≅ K≡M)
-escapeEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+escapeEq (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ Πₙ Πₙ A≡B
 escapeEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
@@ -63,10 +63,10 @@ escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) =
 escapeTerm {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k [[ ⊢t , ⊢u , d ]] nf) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = d
-escapeTerm {r = [ ! , l ] } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+escapeTerm {r = [ ! , l ] } (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                (f , [[ ⊢t , ⊢u , d ]] , funcF , f≡f , [f] , [f]₁) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm {r = [ % , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
+escapeTerm {r = [ % , l ]} (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
 escapeTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
 escapeTerm {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t = escapeTerm A t
 escapeTerm {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t = escapeTerm A t
@@ -90,10 +90,10 @@ escapeTermEq {r = [ ! , l ]} (ne′ K D neK K≡K)
          (~-to-≅ₜ t≡u)
 escapeTermEq {r = [ % , l ]} (ne′ K D neK K≡K)
                  (neₜ₌ d d′) = ~-to-≅ₜ (~-irrelevance d d′)
-escapeTermEq {r = [ ! , l ]} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+escapeTermEq {r = [ ! , l ]} (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
-escapeTermEq {r = [ % , l ] } (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
+escapeTermEq {r = [ % , l ] } (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
 escapeTermEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u

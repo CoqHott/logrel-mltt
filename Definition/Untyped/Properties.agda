@@ -381,16 +381,16 @@ wk-β↑ t = trans (wk-subst t) (sym (trans (subst-wk t)
 
 -- A specific equation on weakenings used for the reduction of natrec.
 
-wk-β-natrec : ∀ ρ G rG
-  → Π ℕ ^ ! ▹ (Π wk (lift ρ) G ^ rG ▹ wk (lift (lift ρ)) (wk1 (G [ suc (var 0) ]↑)))
-  ≡ Π ℕ ^ ! ▹ (wk (lift ρ) G ^ rG ▹▹ wk (lift ρ) G [ suc (var 0) ]↑)
-wk-β-natrec ρ G rG =
-  cong₃ Π_^_▹_ refl refl (cong₃ Π_^_▹_ refl refl
+wk-β-natrec : ∀ ρ G rG lG
+  → Π ℕ ^ ! ° ⁰ ▹ (Π wk (lift ρ) G ^ rG ° lG ▹ wk (lift (lift ρ)) (wk1 (G [ suc (var 0) ]↑)) ° lG) ° lG
+  ≡ Π ℕ ^ ! ° ⁰ ▹ (wk (lift ρ) G ^ rG ° lG ▹▹ wk (lift ρ) G [ suc (var 0) ]↑ ° lG ) ° lG
+wk-β-natrec ρ G rG lG =
+  cong5 Π_^_°_▹_°_ refl refl refl (cong5 Π_^_°_▹_°_ refl refl refl
     (trans (wk-comp (lift (lift ρ)) (step id)
                     (subst (consSubst (wk1Subst var) (suc (var 0))) G))
        (trans (wk-subst G) (sym (trans (wk-subst (wk (lift ρ) G))
          (trans (subst-wk G)
-                (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)))))))
+                (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)))))) refl ) refl
 
 -- Composing a singleton substitution and a lifted substitution.
 -- sg u ∘ lift σ = cons id u ∘ lift σ = cons σ u
@@ -487,18 +487,18 @@ natrecSucCaseLemma {σ} (1+ x) =
            (sym (trans (wk1-wk (step id) _)
                              (wk≡subst (step (step id)) (σ x))))
 
-natrecSucCase : ∀ σ F rF
-  → Π ℕ ^ ! ▹ (Π subst (liftSubst σ) F ^ rF
-                ▹ subst (liftSubst (liftSubst σ)) (wk1 (F [ suc (var 0) ]↑)))
-  ≡ Π ℕ ^ ! ▹ (subst (liftSubst σ) F ^ rF ▹▹ subst (liftSubst σ) F [ suc (var 0) ]↑)
-natrecSucCase σ F rF =
-  cong₃ Π_^_▹_ refl refl
-    (cong₃ Π_^_▹_ refl refl
+natrecSucCase : ∀ σ F rF lF
+  → Π ℕ ^ ! ° ⁰ ▹ (Π subst (liftSubst σ) F ^ rF ° lF
+                ▹ subst (liftSubst (liftSubst σ)) (wk1 (F [ suc (var 0) ]↑)) ° lF) ° lF
+  ≡ Π ℕ ^ ! ° ⁰ ▹ (subst (liftSubst σ) F ^ rF ° lF ▹▹ subst (liftSubst σ) F [ suc (var 0) ]↑ ° lF) ° lF
+natrecSucCase σ F rF lF =
+  cong5 Π_^_°_▹_°_ refl refl refl
+    (cong5 Π_^_°_▹_°_ refl refl refl
        (trans (trans (subst-wk (F [ suc (var 0) ]↑))
                            (substCompEq F))
                  (sym (trans (wk-subst (subst (liftSubst σ) F))
                                    (trans (substCompEq F)
-                                             (substVar-to-subst natrecSucCaseLemma F))))))
+                                             (substVar-to-subst natrecSucCaseLemma F))))) refl ) refl 
 
 natrecIrrelevantSubstLemma : ∀ F z s m σ (x : Nat)
   → (sgSubst (natrec (subst (liftSubst σ) F) (subst σ z) (subst σ s) m)
@@ -597,7 +597,7 @@ subst-Univ-either a (var 0) e = inj₁ (e , refl)
 subst-Univ-either a (Univ x l) refl = inj₂ refl
 subst-Univ-either a (var (1+ x)) ()
 subst-Univ-either a (gen (Ukind x l) (x₁ ∷ y)) ()
-subst-Univ-either a (gen (Pikind x) c) ()
+subst-Univ-either a (gen (Pikind x y z) c) ()
 subst-Univ-either a (gen Natkind c) ()
 subst-Univ-either a (gen Lamkind c) ()
 subst-Univ-either a (gen Appkind c) ()

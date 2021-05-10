@@ -21,11 +21,11 @@ wfTerm : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → ⊢ Γ
 wfTerm (univ <l ⊢Γ) = ⊢Γ
 wfTerm (ℕⱼ ⊢Γ) = ⊢Γ
 wfTerm (Emptyⱼ ⊢Γ) = ⊢Γ
-wfTerm (Πⱼ <l ▹ F ▹ G) = wfTerm F
+wfTerm (Πⱼ <l ▹ <l' ▹ F ▹ G) = wfTerm F
 wfTerm (∃ⱼ F ▹ G) = wfTerm F
 wfTerm (var ⊢Γ x₁) = ⊢Γ
-wfTerm (lamⱼ F t) with wfTerm t
-wfTerm (lamⱼ F t) | ⊢Γ ∙ F′ = ⊢Γ
+wfTerm (lamⱼ _ _ F t) with wfTerm t
+wfTerm (lamⱼ _ _ F t) | ⊢Γ ∙ F′ = ⊢Γ
 wfTerm (g ∘ⱼ a) = wfTerm a
 wfTerm (⦅ t , u ⦆ⱼ) = wfTerm t
 wfTerm (fstⱼ A B t) = wfTerm t
@@ -51,7 +51,7 @@ mutual
   wfEqTerm (sym t≡u) = wfEqTerm t≡u
   wfEqTerm (trans t≡u u≡r) = wfEqTerm t≡u
   wfEqTerm (conv t≡u A≡B) = wfEqTerm t≡u
-  wfEqTerm (Π-cong F F≡H G≡E) = wfEqTerm F≡H
+  wfEqTerm (Π-cong _ _ F F≡H G≡E) = wfEqTerm F≡H
   wfEqTerm (∃-cong F F≡H G≡E) = wfEqTerm F≡H
   wfEqTerm (app-cong f≡g a≡b) = wfEqTerm f≡g
   wfEqTerm (β-red F t a) = wfTerm a
@@ -63,7 +63,7 @@ mutual
   wfEqTerm (Emptyrec-cong A≡A') = wfEq A≡A'
   wfEqTerm (proof-irrelevance t u) = wfTerm t
   wfEqTerm (Id-cong A t u) = wfEqTerm u
-  wfEqTerm (Id-Π A B t u) = wfTerm t
+  wfEqTerm (Id-Π _ _ A B t u) = wfTerm t
   wfEqTerm (Id-ℕ-00 ⊢Γ) = ⊢Γ
   wfEqTerm (Id-ℕ-SS m n) = wfTerm n
   wfEqTerm (Id-U-ΠΠ A B A' B') = wfTerm A
@@ -103,8 +103,8 @@ subsetTerm (Id-ℕ-0-subst n) = let ⊢Γ = wfEqTerm (subsetTerm n) in Id-cong (
 subsetTerm (Id-ℕ-S-subst m n) = Id-cong (refl (ℕⱼ (wfTerm m))) (refl (sucⱼ m)) (subsetTerm n)
 subsetTerm (Id-U-subst A B) = Id-cong (refl (univ 0<1 (wfTerm B))) (subsetTerm A) (refl B)
 subsetTerm (Id-U-ℕ-subst B) = let ⊢Γ = wfEqTerm (subsetTerm B) in Id-cong (refl (univ 0<1 ⊢Γ)) (refl (ℕⱼ ⊢Γ)) (subsetTerm B)
-subsetTerm (Id-U-Π-subst A P B) = Id-cong (refl (univ 0<1 (wfTerm A))) (refl (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B)
-subsetTerm (Id-Π A B t u) = Id-Π A B t u
+subsetTerm (Id-U-Π-subst A P B) = Id-cong (refl (univ 0<1 (wfTerm A))) (refl (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B)
+subsetTerm (Id-Π <l <l' A B t u) = Id-Π <l <l' A B t u
 subsetTerm (Id-ℕ-00 ⊢Γ) = Id-ℕ-00 ⊢Γ
 subsetTerm (Id-ℕ-SS m n) = Id-ℕ-SS m n
 subsetTerm (Id-U-ΠΠ A B A' B') = Id-U-ΠΠ A B A' B'
@@ -116,7 +116,7 @@ subsetTerm (Id-U-ℕΠ A B) = Id-U-ℕΠ A B
 subsetTerm (Id-U-Πℕ A B) = Id-U-Πℕ A B
 subsetTerm (cast-subst A B e t) = cast-cong (subsetTerm A) (refl B) (refl t)
 subsetTerm (cast-ℕ-subst B e t) = cast-cong (refl (ℕⱼ (wfTerm t))) (subsetTerm B) (refl t)
-subsetTerm (cast-Π-subst A P B e t) = cast-cong (refl (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B) (refl t)
+subsetTerm (cast-Π-subst A P B e t) = cast-cong (refl (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B) (refl t)
 subsetTerm (cast-Π A B A' B' e f) = cast-Π A B A' B' e f
 subsetTerm (cast-ℕ-0 e) = cast-ℕ-0 e
 subsetTerm (cast-ℕ-S e n) = cast-ℕ-S e n
@@ -139,7 +139,7 @@ redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 
 redFirstTerm (conv t⇒u A≡B) = conv (redFirstTerm t⇒u) A≡B
 redFirstTerm (app-subst t⇒u a) = (redFirstTerm t⇒u) ∘ⱼ a
-redFirstTerm (β-red A t a) = (lamⱼ A t) ∘ⱼ a
+redFirstTerm (β-red A t a) = (lamⱼ (≡is≤ PE.refl) (≡is≤ PE.refl) A t) ∘ⱼ a
 redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ F z s (redFirstTerm n⇒n′)
 redFirstTerm (natrec-zero F z s) = natrecⱼ F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
@@ -149,21 +149,21 @@ redFirstTerm (Id-ℕ-0-subst n) = Idⱼ (ℕⱼ (wfEqTerm (subsetTerm n))) (zero
 redFirstTerm (Id-ℕ-S-subst m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (redFirstTerm n)
 redFirstTerm (Id-U-subst A B) = Idⱼ (univ 0<1 (wfTerm B)) (redFirstTerm A) B
 redFirstTerm (Id-U-ℕ-subst B) = let ⊢Γ = (wfEqTerm (subsetTerm B)) in Idⱼ (univ 0<1 ⊢Γ) (ℕⱼ ⊢Γ) (redFirstTerm B)
-redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P) (redFirstTerm B)
-redFirstTerm (Id-Π {rA = rA} A B t u) = Idⱼ (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) t u
+redFirstTerm (Id-U-Π-subst A P B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ P) (redFirstTerm B)
+redFirstTerm (Id-Π {rA = rA} <l <l' A B t u) = Idⱼ (Πⱼ <l ▹ <l' ▹ A ▹ B) t u
 redFirstTerm (Id-ℕ-00 ⊢Γ) = Idⱼ (ℕⱼ ⊢Γ) (zeroⱼ ⊢Γ) (zeroⱼ ⊢Γ)
 redFirstTerm (Id-ℕ-SS m n) = Idⱼ (ℕⱼ (wfTerm m)) (sucⱼ m) (sucⱼ n)
-redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ A' ▹ B')
+redFirstTerm (Id-U-ΠΠ A B A' B') = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A' ▹ B')
 redFirstTerm (Id-U-ℕℕ ⊢Γ) = Idⱼ (univ 0<1 ⊢Γ) (ℕⱼ ⊢Γ) (ℕⱼ ⊢Γ)
 redFirstTerm (Id-SProp A B) = Idⱼ (univ 0<1 (wfTerm A)) A B
 redFirstTerm (Id-ℕ-0S n) = Idⱼ (ℕⱼ (wfTerm n)) (zeroⱼ (wfTerm n)) (sucⱼ n)
 redFirstTerm (Id-ℕ-S0 n) = Idⱼ (ℕⱼ (wfTerm n)) (sucⱼ n) (zeroⱼ (wfTerm n))
-redFirstTerm (Id-U-ℕΠ A B) = Idⱼ (univ 0<1 (wfTerm A)) (ℕⱼ (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B)
-redFirstTerm (Id-U-Πℕ A B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) (ℕⱼ (wfTerm A))
+redFirstTerm (Id-U-ℕΠ A B) = Idⱼ (univ 0<1 (wfTerm A)) (ℕⱼ (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B)
+redFirstTerm (Id-U-Πℕ A B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B) (ℕⱼ (wfTerm A))
 redFirstTerm (cast-subst A B e t) = castⱼ (redFirstTerm A) B e t
 redFirstTerm (cast-ℕ-subst B e t) = castⱼ (ℕⱼ (wfTerm t)) (redFirstTerm B) e t
-redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ A ▹ P) (redFirstTerm B) e t
-redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ A' ▹ B') e f
+redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ P) (redFirstTerm B) e t
+redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A' ▹ B') e f
 redFirstTerm (cast-ℕ-0 e) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (zeroⱼ (wfTerm e))
 redFirstTerm (cast-ℕ-S e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (sucⱼ n)
 
@@ -214,7 +214,7 @@ neRedTerm (Id-ℕ-subst tr x) (Idℕ0ₙ tn) = whnfRedTerm tr zeroₙ
 neRedTerm (Id-ℕ-subst tr x) (IdℕSₙ tn) = whnfRedTerm tr sucₙ
 neRedTerm (Id-U-subst tr x) (IdUℕₙ tn) = whnfRedTerm tr ℕₙ
 neRedTerm (Id-U-subst tr x) (IdUΠₙ tn) = whnfRedTerm tr Πₙ
-neRedTerm (Id-Π A B t u) (Idₙ ())
+neRedTerm (Id-Π _ _ A B t u) (Idₙ ())
 neRedTerm (Id-ℕ-00 tr) (Idₙ ())
 neRedTerm (Id-ℕ-00 tr) (Idℕₙ ())
 neRedTerm (Id-ℕ-00 tr) (Idℕ0ₙ ())
@@ -276,7 +276,7 @@ whnfRedTerm (Id-U-subst d x) (ne (IdUℕₙ x₁)) = whnfRedTerm d ℕₙ
 whnfRedTerm (Id-U-subst d x) (ne (IdUΠₙ x₁)) = whnfRedTerm d Πₙ
 whnfRedTerm (Id-U-ℕ-subst d) (ne (IdUℕₙ x)) = neRedTerm d x
 whnfRedTerm (Id-U-Π-subst x x₁ d) (ne (IdUΠₙ x₂)) = neRedTerm d x₂
-whnfRedTerm (Id-Π x x₁ x₂ x₃) (ne (Idₙ ()))
+whnfRedTerm (Id-Π _ _ x x₁ x₂ x₃) (ne (Idₙ ()))
 whnfRedTerm (Id-ℕ-00 x) (ne (Idₙ ()))
 whnfRedTerm (Id-ℕ-00 x) (ne (Idℕₙ ()))
 whnfRedTerm (Id-ℕ-00 x) (ne (Idℕ0ₙ ()))
@@ -338,8 +338,8 @@ whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 -- somehow the cases (cast-Π, cast-Π) and (Id-U-ΠΠ, Id-U-ΠΠ) fail if
 -- I do not introduce a dummy relevance rA'. This is why I need the two
 -- auxiliary functions. What the hell Agda?
-whrDetTerm-aux1 : ∀{Γ t u F lF A A' rA rA' l B B' e f}
-  → (d :  t PE.≡ cast l (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B') e f)
+whrDetTerm-aux1 : ∀{Γ t u F lF A A' rA lA lB rA' l B B' e f}
+  → (d :  t PE.≡ cast l (Π A ^ rA ° lA ▹ B ° lB) (Π A' ^ rA' ° lA ▹ B' ° lB ) e f)
   → (d′ : Γ ⊢ t ⇒ u ∷ F ^ lF)
   → (lam A' ▹ let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a)) PE.≡ u
 whrDetTerm-aux1 d (conv d' x) = whrDetTerm-aux1 d d'
@@ -347,10 +347,10 @@ whrDetTerm-aux1 PE.refl (cast-subst d' x x₁ x₂) = ⊥-elim (whnfRedTerm d' �
 whrDetTerm-aux1 PE.refl (cast-Π-subst x x₁ d' x₂ x₃) = ⊥-elim (whnfRedTerm d' Πₙ)
 whrDetTerm-aux1 PE.refl (cast-Π x x₁ x₂ x₃ x₄ x₅) = PE.refl
 
-whrDetTerm-aux2 : ∀{Γ t u l F lF A rA B A' rA' B'}
-  → (d : t PE.≡ Id (U l) (Π A ^ rA ▹ B) (Π A' ^ rA' ▹ B'))
+whrDetTerm-aux2 : ∀{Γ t u F lF A rA B A' rA' B'}
+  → (d : t PE.≡ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) (Π A' ^ rA' ° ⁰ ▹ B' ° ⁰))
   → (d' : Γ ⊢ t ⇒ u ∷ F ^ lF)
-  → (∃ (Id (Univ rA l) A A') ▹ (Π (wk1 A') ^ rA ▹ Id (U l) ((wk (lift (step id)) B) [ cast l (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B'))) PE.≡ u
+  → (∃ (Id (Univ rA ⁰) A A') ▹ (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰) ((wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B') ° ¹ ) ) PE.≡ u
 whrDetTerm-aux2 d (conv d' x) = whrDetTerm-aux2 d d'
 whrDetTerm-aux2 PE.refl (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
 whrDetTerm-aux2 PE.refl (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' Πₙ)
@@ -379,7 +379,7 @@ whrDetTerm (Id-subst d x x₁) (Id-ℕ-S-subst x₂ d') = ⊥-elim (whnfRedTerm 
 whrDetTerm (Id-subst d x x₁) (Id-U-subst d' x₂) = ⊥-elim (whnfRedTerm d Uₙ)
 whrDetTerm (Id-subst d x x₁) (Id-U-ℕ-subst d') = ⊥-elim (whnfRedTerm d Uₙ)
 whrDetTerm (Id-subst d x x₁) (Id-U-Π-subst x₂ x₃ d') = ⊥-elim (whnfRedTerm d Uₙ)
-whrDetTerm (Id-subst d x x₁) (Id-Π x₂ x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d Πₙ)
+whrDetTerm (Id-subst d x x₁) (Id-Π _ _ x₂ x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d Πₙ)
 whrDetTerm (Id-subst d x x₁) (Id-ℕ-00 x₂) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (Id-subst d x x₁) (Id-ℕ-SS x₂ x₃) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (Id-subst d x x₁) (Id-U-ΠΠ x₂ x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d Uₙ)
@@ -425,8 +425,8 @@ whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-subst d' x₂) = ⊥-elim (whnfRedTerm
 whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-Π-subst x₂ x₃ d') rewrite whrDetTerm d d' = PE.refl
 whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-ΠΠ x₂ x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d Πₙ)
 whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-Πℕ x₂ x₃) = ⊥-elim (whnfRedTerm d ℕₙ)
-whrDetTerm (Id-Π x x₁ x₂ x₃) (Id-subst d' x₄ x₅) = ⊥-elim (whnfRedTerm d' Πₙ)
-whrDetTerm (Id-Π x x₁ x₂ x₃) (Id-Π x₄ x₅ x₆ x₇) = PE.refl
+whrDetTerm (Id-Π _ _ x x₁ x₂ x₃) (Id-subst d' x₄ x₅) = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm (Id-Π _ _ x x₁ x₂ x₃) (Id-Π _ _ x₄ x₅ x₆ x₇) = PE.refl
 whrDetTerm (Id-ℕ-00 x) (Id-subst d' x₁ x₂) = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (Id-ℕ-00 x) (Id-ℕ-subst d' x₁) = ⊥-elim (whnfRedTerm d' zeroₙ)
 whrDetTerm (Id-ℕ-00 x) (Id-ℕ-0-subst d') = ⊥-elim (whnfRedTerm d' zeroₙ)
@@ -529,10 +529,10 @@ UnotInA[t] : ∀ {A B t a Γ r r' r'' r'''}
 UnotInA[t] () x₁ (univ 0<1 x₂) 
 UnotInA[t] () x₁ (ℕⱼ x₂)
 UnotInA[t] () x₁ (Emptyⱼ x₂)
-UnotInA[t] () x₁ (Πⱼ _ ▹ x₂ ▹ x₃)
+UnotInA[t] () x₁ (Πⱼ _ ▹ _ ▹ x₂ ▹ x₃)
 UnotInA[t] x₁ x₂ (var x₃ here) rewrite x₁ = UnotInA x₂
 UnotInA[t] () x₂ (var x₃ (there x₄))
-UnotInA[t] () x₁ (lamⱼ x₂ x₃)
+UnotInA[t] () x₁ (lamⱼ _ _ x₂ x₃)
 UnotInA[t] () x₁ (x₂ ∘ⱼ x₃)
 UnotInA[t] () x₁ (zeroⱼ x₂)
 UnotInA[t] () x₁ (sucⱼ x₂)
