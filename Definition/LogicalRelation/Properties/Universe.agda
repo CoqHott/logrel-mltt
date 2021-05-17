@@ -79,7 +79,7 @@ univEqEq′ : ∀ {l ll l′ Γ X A B} ([U] : Γ ⊩⟨ l ⟩U X ^ ll) →
 univEqEq′ {l} {ll} {l″} {Γ} {X} {A} {B} (noemb (Uᵣ r l′ l< eq [[ ⊢A , ⊢B , D ]])) [A]
           (Uₜ₌ (Uₜ K d typeK K≡K [t]) [u] A≡B [t≡u]) =
   let ⊢Γ = wf ⊢A in
-  irrelevanceEq″ (Definition.Untyped.Properties.wk-id A) (Definition.Untyped.Properties.wk-id B)
+  irrelevanceEq″ (Definition.Untyped.Properties.wk-id A) (Definition.Untyped.Properties.wk-id B) PE.refl PE.refl
     (emb l< ([t] Definition.Typed.Weakening.id ⊢Γ)) [A]
     ([t≡u] Definition.Typed.Weakening.id ⊢Γ)
 univEqEq′ (emb emb< X) [A] [A≡B] = univEqEq′ X [A] [A≡B]

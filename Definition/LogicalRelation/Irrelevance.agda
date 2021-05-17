@@ -26,6 +26,14 @@ irrelevance′ : ∀ {A A′ Γ r l}
              → Γ ⊩⟨ l ⟩ A′ ^ r
 irrelevance′ PE.refl [A] = [A]
 
+irrelevance′′ : ∀ {A A′ Γ r r' ll ll' l}
+             → A PE.≡ A′
+             → r PE.≡ r'
+             → ll PE.≡ ll'
+             → Γ ⊩⟨ l ⟩ A ^ [ r , ll ]
+             → Γ ⊩⟨ l ⟩ A′ ^ [ r' , ll' ] 
+irrelevance′′ PE.refl PE.refl PE.refl [A] = [A]
+
 -- Irrelevance for propositionally equal types and contexts
 irrelevanceΓ′ : ∀ {l A A′ r Γ Γ′}
               → Γ PE.≡ Γ′
@@ -69,10 +77,10 @@ mutual
   irrelevanceEq′ PE.refl PE.refl PE.refl p q A≡B = irrelevanceEq p q A≡B
 
   -- Irrelevance for type equality with propositionally equal types
-  irrelevanceEq″ : ∀ {Γ A A′ B B′ r l l′} (eqA : A PE.≡ A′) (eqB : B PE.≡ B′)
-                    (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩⟨ l′ ⟩ A′ ^ r)
-                  → Γ ⊩⟨ l ⟩ A ≡ B ^ r / p → Γ ⊩⟨ l′ ⟩ A′ ≡ B′ ^ r / q
-  irrelevanceEq″ PE.refl PE.refl p q A≡B = irrelevanceEq p q A≡B
+  irrelevanceEq″ : ∀ {Γ A A′ B B′ r r' ll ll' l l′} (eqA : A PE.≡ A′) (eqB : B PE.≡ B′) (eqr : r PE.≡ r') (eql : ll PE.≡ ll')
+                    (p : Γ ⊩⟨ l ⟩ A ^ [ r , ll ]) (q : Γ ⊩⟨ l′ ⟩ A′ ^ [ r' , ll' ])
+                  → Γ ⊩⟨ l ⟩ A ≡ B ^ [ r , ll ] / p → Γ ⊩⟨ l′ ⟩ A′ ≡ B′ ^ [ r' , ll' ] / q
+  irrelevanceEq″ PE.refl PE.refl PE.refl PE.refl p q A≡B = irrelevanceEq p q A≡B
 
   -- Irrelevance for type equality with propositionally equal second types
   irrelevanceEqR′ : ∀ {Γ A B B′ r l} (eqB : B PE.≡ B′) (p : Γ ⊩⟨ l ⟩ A ^ r)
@@ -152,11 +160,11 @@ mutual
   irrelevanceTerm′ PE.refl PE.refl PE.refl p q t = irrelevanceTerm p q t
 
   -- Irrelevance for terms with propositionally equal types and terms
-  irrelevanceTerm″ : ∀ {Γ A A′ t t′ r l l′}
-                      (eqA : A PE.≡ A′) (eqt : t PE.≡ t′)
-                      (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩⟨ l′ ⟩ A′ ^ r)
-                    → Γ ⊩⟨ l ⟩ t ∷ A ^ r / p → Γ ⊩⟨ l′ ⟩ t′ ∷ A′ ^ r / q
-  irrelevanceTerm″ PE.refl PE.refl p q t = irrelevanceTerm p q t
+  irrelevanceTerm″ : ∀ {Γ A A′ t t′ r r' ll ll' l l′}
+                      (eqA : A PE.≡ A′) (req : r PE.≡ r') (leq : ll PE.≡ ll') (eqt : t PE.≡ t′)
+                      (p : Γ ⊩⟨ l ⟩ A ^ [ r , ll ]) (q : Γ ⊩⟨ l′ ⟩ A′ ^ [ r' , ll' ])
+                    → Γ ⊩⟨ l ⟩ t ∷ A ^ [ r , ll ] / p → Γ ⊩⟨ l′ ⟩ t′ ∷ A′ ^ [ r' , ll' ] / q
+  irrelevanceTerm″ PE.refl PE.refl PE.refl PE.refl p q t = irrelevanceTerm p q t
 
   -- Irrelevance for terms with propositionally equal types, terms and contexts
   irrelevanceTermΓ″ : ∀ {l l′ A A′ t t′ r Γ Γ′}
@@ -244,11 +252,11 @@ mutual
   irrelevanceEqTerm′ PE.refl PE.refl PE.refl p q t≡u = irrelevanceEqTerm p q t≡u
 
   -- Irrelevance for term equality with propositionally equal types and terms
-  irrelevanceEqTerm″ : ∀ {Γ A A′ t t′ u u′ r l l′}
+  irrelevanceEqTerm″ : ∀ {Γ A A′ t t′ u u′ r r' ll ll' l l′} (req : r PE.≡ r') (leq : ll PE.≡ ll')
                         (eqt : t PE.≡ t′) (equ : u PE.≡ u′) (eqA : A PE.≡ A′)
-                        (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩⟨ l′ ⟩ A′ ^ r)
-                      → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / p → Γ ⊩⟨ l′ ⟩ t′ ≡ u′ ∷ A′ ^ r / q
-  irrelevanceEqTerm″ PE.refl PE.refl PE.refl p q t≡u = irrelevanceEqTerm p q t≡u
+                        (p : Γ ⊩⟨ l ⟩ A ^ [ r , ll ]) (q : Γ ⊩⟨ l′ ⟩ A′ ^ [ r' , ll' ])
+                      → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ r , ll ] / p → Γ ⊩⟨ l′ ⟩ t′ ≡ u′ ∷ A′ ^ [ r' , ll' ] / q
+  irrelevanceEqTerm″ PE.refl PE.refl PE.refl PE.refl PE.refl p q t≡u = irrelevanceEqTerm p q t≡u
 
   -- Helper for irrelevance of term equality using shape view
   irrelevanceEqTermT : ∀ {Γ A t u r} {l l′} {p : Γ ⊩⟨ l ⟩ A ^ r} {q : Γ ⊩⟨ l′ ⟩ A ^ r}

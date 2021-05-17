@@ -12,12 +12,15 @@ open import Definition.LogicalRelation
 import Data.Nat as Nat
 
 
+{- not true anymore with the new presentation -}
+
+{- 
 -- Any level can be embedded into the highest level.
 maybeEmb : ∀ {l A r Γ}
          → Γ ⊩⟨ l ⟩ A ^ r
          → Γ ⊩⟨ ∞ ⟩ A ^ r
-maybeEmb {ι ⁰} [A] = emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) [A]
-maybeEmb {ι ¹} [A] = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) [A]
+maybeEmb {ι ⁰} [A] = emb emb< [A]
+maybeEmb {ι ¹} [A] = emb ∞< [A]
 maybeEmb {∞} [A] = [A]
 
 -- The lowest level can be embedded in any level.
@@ -27,3 +30,4 @@ maybeEmb′ : ∀ {l A r Γ}
 maybeEmb′ {ι ⁰} [A] = [A]
 maybeEmb′ {ι ¹} [A] = emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) [A]
 maybeEmb′ {∞} [A] = emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) [A]
+-}
