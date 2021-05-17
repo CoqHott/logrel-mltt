@@ -43,9 +43,8 @@ univEq : ∀ {l Γ A r l′ ll′}
        → ([U] : Γ ⊩⟨ l ⟩ Univ r l′ ^ [ ! , ll′ ] )
        → Γ ⊩⟨ l ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U]
        → Γ ⊩⟨ ι l′ ⟩ A ^ [ r , ι l′ ]
-univEq {ι ⁰} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ l′₁ () eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext)
-univEq {ι ¹} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ (Nat.s≤s ()) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext)
-univEq {ι ¹} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ (Nat.s≤s Nat.z≤n) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext) =
+univEq {ι ⁰} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ l′₁ () eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t])
+univEq {ι ¹} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ emb< eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t]) =
   let
     ⊢Γ = wf ⊢A
     r≡r₁ , l′≡l′₁ = univRed* D
@@ -54,16 +53,7 @@ univEq {ι ¹} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ (Nat.s≤s Nat.z≤n) eq
       (Definition.Untyped.Properties.wk-id A) ([t] Definition.Typed.Weakening.id ⊢Γ)
   in
   PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
-univEq {∞} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ (Nat.s≤s Nat.z≤n) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext) =
-  let
-    ⊢Γ = wf ⊢A
-    r≡r₁ , l′≡l′₁ = univRed* D
-    [t]′ : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r₁ , ι ⁰ ]
-    [t]′ = PE.subst (λ X → Γ ⊩⟨ _ ⟩ X ^ [ _ , _ ])
-      (Definition.Untyped.Properties.wk-id A) ([t] Definition.Typed.Weakening.id ⊢Γ)
-  in
-  PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
-univEq {∞} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ (Nat.s≤s (Nat.s≤s Nat.z≤n)) eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t] [IdK] IdKExt [castK] castKext) =
+univEq {∞} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ _ eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t]) =
   let
     ⊢Γ = wf ⊢A
     r≡r₁ , l′≡l′₁ = univRed* D
@@ -74,14 +64,10 @@ univEq {∞} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ (Nat.s≤s (Nat.s≤s Nat.z
   PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
 univEq (ℕᵣ [[ ⊢A , ⊢B , univ x ⇨ D ]]) [A] = ⊥-elim (univRedTerm x)
 univEq (ne′ K [[ ⊢A , ⊢B , univ x ⇨ D ]] neK K≡K) [A] = ⊥-elim (univRedTerm x)
-univEq (Πᵣ′ rF F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A≡A [F] [G] G-ext) [A] =
+univEq (Πᵣ′ rF lF lG F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A≡A [F] [G] G-ext) [A] =
   ⊥-elim (univRedTerm x)
-univEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) [U]′) [A] = univEq [U]′ [A]
-univEq {ι ¹} (emb {l′ = ι ¹} (Nat.s≤s ()) [U]′) [A]
-univEq {ι ¹} (emb {l′ = ∞} (Nat.s≤s ()) [U]′) [A]
-univEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) [U]′) [A] = univEq [U]′ [A]
-univEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) [U]′) [A] = univEq [U]′ [A]
-univEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [U]′) [A]
+univEq {ι ¹} (emb _ [U]′) [A] = univEq [U]′ [A]
+univEq {∞} (emb _ [U]′) [A] = univEq [U]′ [A]
 
 -- Helper function for reducible term equality of type U for specific type derivations.
 univEqEq′ : ∀ {l ll l′ Γ X A B} ([U] : Γ ⊩⟨ l ⟩U X ^ ll) →
@@ -91,25 +77,21 @@ univEqEq′ : ∀ {l ll l′ Γ X A B} ([U] : Γ ⊩⟨ l ⟩U X ^ ll) →
               → Γ ⊩⟨ l ⟩ A ≡ B ∷ X ^ [ ! , ll ] / U-intr [U]
               → Γ ⊩⟨ l′ ⟩ A ≡ B  ^ r / [A]
 univEqEq′ {l} {ll} {l″} {Γ} {X} {A} {B} (noemb (Uᵣ r l′ l< eq [[ ⊢A , ⊢B , D ]])) [A]
-          (Uₜ₌ (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKext) [u] A≡B [t≡u] IdHo castHo) =
+          (Uₜ₌ (Uₜ K d typeK K≡K [t]) [u] A≡B [t≡u]) =
   let ⊢Γ = wf ⊢A in
   irrelevanceEq″ (Definition.Untyped.Properties.wk-id A) (Definition.Untyped.Properties.wk-id B)
     (emb l< ([t] Definition.Typed.Weakening.id ⊢Γ)) [A]
     ([t≡u] Definition.Typed.Weakening.id ⊢Γ)
-univEqEq′ {ι ¹} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
-univEqEq′ {ι ¹} (emb {ι ¹} (Nat.s≤s ()) X) [A] [A≡B]
-univEqEq′ {ι ¹} (emb {∞} (Nat.s≤s ()) X) [A] [A≡B]
-univEqEq′ {∞} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
-univEqEq′ {∞} (emb {ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
-univEqEq′ {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) X) [A] [A≡B]
+univEqEq′ (emb emb< X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
+univEqEq′ (emb ∞< X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
 
 UnivNotℕ : ∀ {Γ r ll} →  Γ ⊩ℕ Univ r ll → ⊥
 UnivNotℕ {ll = ⁰} [[ ⊢A , ⊢B , D ]] = U≢ℕ (whrDet* (id (univ (univ 0<1 (wf ⊢A))) , Uₙ) (D , ℕₙ))
 UnivNotℕ {ll = ¹} [[ ⊢A , ⊢B , D ]] = U≢ℕ (whrDet* (id (Uⱼ (wf ⊢A)) , Uₙ) (D , ℕₙ))
 
 UnivNotΠ : ∀ {Γ r r' l ll} →  (l LogRel.⊩¹Π logRelRec l ^ Γ) (Univ r ll) r' → ⊥
-UnivNotΠ {ll = ⁰} (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (univ (univ 0<1 (wf ⊢F))) , Uₙ) (red D , Πₙ))
-UnivNotΠ {ll = ¹} (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (Uⱼ (wf ⊢F)) , Uₙ) (red D , Πₙ))
+UnivNotΠ {ll = ⁰} (Πᵣ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (univ (univ 0<1 (wf ⊢F))) , Uₙ) (red D , Πₙ))
+UnivNotΠ {ll = ¹} (Πᵣ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (Uⱼ (wf ⊢F)) , Uₙ) (red D , Πₙ))
 
 U-Relevance-Level-eq : ∀ {l Γ r ll ll'} ([U] : Γ ⊩⟨ l ⟩ Univ r ll ^ [ ! , ll' ]) → U-Relevance-Level (U-elim [U]) PE.≡ (r , ll)
 U-Relevance-Level-eq {ll = ⁰} (Uᵣ (Uᵣ r ⁰ l< eq d)) = ×-eq (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (univ (univ 0<1 (wf (_⊢_:⇒*:_^_.⊢A d)))) , Uₙ)))
@@ -121,19 +103,15 @@ U-Relevance-Level-eq (Πᵣ X) = ⊥-elim (UnivNotΠ X)
 U-Relevance-Level-eq {ι ¹} (emb l< (ℕᵣ X)) = ⊥-elim (UnivNotℕ X)
 U-Relevance-Level-eq {ι ¹} (emb l< (ne′ K D neK K≡K)) = ⊥-elim (U≢ne neK (whnfRed* (red D) Uₙ))
 U-Relevance-Level-eq {ι ¹} (emb l< (Πᵣ X)) = ⊥-elim (UnivNotΠ X)
-U-Relevance-Level-eq {∞} (emb {l′ = ι ⁰} l< (ℕᵣ X)) = ⊥-elim (UnivNotℕ X)
-U-Relevance-Level-eq {∞} (emb {l′ = ι ⁰} l< (ne′ K D neK K≡K)) = ⊥-elim (U≢ne neK (whnfRed* (red D) Uₙ))
-U-Relevance-Level-eq {∞} (emb {l′ = ι ⁰} l< (Πᵣ X)) = ⊥-elim (UnivNotΠ X)
-U-Relevance-Level-eq {∞} {ll = ⁰} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) (Uᵣ (Uᵣ r ⁰ l<₁ eq d))) = ×-eq (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (univ (univ 0<1 (wf (_⊢_:⇒*:_^_.⊢A d)))) , Uₙ)))
-U-Relevance-Level-eq {∞} {ll = ¹} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) (Uᵣ (Uᵣ r ⁰ l<₁ eq d))) = let _ , X = (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (Uⱼ (wf (_⊢_:⇒*:_^_.⊢A d))) , Uₙ))) in ⊥-elim (⁰≢¹ X)
-U-Relevance-Level-eq {∞} {ll = ¹} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) (Uᵣ (Uᵣ r ¹ l<₁ eq d))) = ×-eq (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (Uⱼ (wf (_⊢_:⇒*:_^_.⊢A d))) , Uₙ)))
+U-Relevance-Level-eq {∞} {ll = ⁰} (emb ∞< (Uᵣ (Uᵣ r ⁰ l<₁ eq d))) = ×-eq (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (univ (univ 0<1 (wf (_⊢_:⇒*:_^_.⊢A d)))) , Uₙ)))
+U-Relevance-Level-eq {∞} {ll = ¹} (emb ∞< (Uᵣ (Uᵣ r ⁰ l<₁ eq d))) = let _ , X = (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (Uⱼ (wf (_⊢_:⇒*:_^_.⊢A d))) , Uₙ))) in ⊥-elim (⁰≢¹ X)
+U-Relevance-Level-eq {∞} {ll = ¹} (emb ∞< (Uᵣ (Uᵣ r ¹ l<₁ eq d))) = ×-eq (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (Uⱼ (wf (_⊢_:⇒*:_^_.⊢A d))) , Uₙ)))
 U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (ℕᵣ X)) = ⊥-elim (UnivNotℕ X)
 U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (ne′ K D neK K≡K)) = ⊥-elim (U≢ne neK (whnfRed* (red D) Uₙ))
 U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (Πᵣ x)) = ⊥-elim (UnivNotΠ x)
-U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) (ℕᵣ x))) = ⊥-elim (UnivNotℕ x)
-U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) (ne′ K D neK K≡K))) = ⊥-elim (U≢ne neK (whnfRed* (red D) Uₙ))
-U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) (Πᵣ x))) = ⊥-elim (UnivNotΠ x)
-U-Relevance-Level-eq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A])
+U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (emb {l′ = ι ⁰} emb< (ℕᵣ x))) = ⊥-elim (UnivNotℕ x)
+U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (emb {l′ = ι ⁰} emb< (ne′ K D neK K≡K))) = ⊥-elim (U≢ne neK (whnfRed* (red D) Uₙ))
+U-Relevance-Level-eq {∞} (emb {l′ = ι ¹} l< (emb {l′ = ι ⁰} emb< (Πᵣ x))) = ⊥-elim (UnivNotΠ x)
 
 helper-eq : ∀ {l Γ A B r r'} {[A] : Γ ⊩⟨ l ⟩ A ^ r} (e : r PE.≡ r' ) → Γ ⊩⟨ l ⟩ A ≡ B ^ r' / (PE.subst _ e [A]) → Γ ⊩⟨ l ⟩ A ≡ B ^ r / [A]
 helper-eq PE.refl X = X

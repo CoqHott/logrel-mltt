@@ -44,9 +44,9 @@ redSubst* D (ne′ K [[ ⊢B , ⊢K , D′ ]] neK K≡K) =
   let ⊢A = redFirst* D
   in  (ne′ K [[ ⊢A , ⊢K , D ⇨* D′ ]] neK K≡K)
   ,   (ne₌ _ [[ ⊢B , ⊢K , D′ ]] neK K≡K)
-redSubst* D (Πᵣ′ rF F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
+redSubst* D (Πᵣ′ rF lF lG F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
   let ⊢A = redFirst* D
-  in  (Πᵣ′ rF F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
+  in  (Πᵣ′ rF lF lG F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   ,   (Π₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
         (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
 redSubst* D (∃ᵣ′ F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
@@ -54,15 +54,10 @@ redSubst* D (∃ᵣ′ F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A [F] [G] G
   in  (∃ᵣ′ F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   ,   (∃₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
         (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
-redSubst* {l = ι ¹} D (emb {l′ = ι ⁰} l< X) with redSubst* D X
-redSubst* {l = ι ¹} D (emb {l′ = ι ⁰} l< X) | y , y₁ = emb l< y , y₁
-redSubst* {l = ι ¹} D (emb {l′ = ι ¹} (Nat.s≤s ()) X)
-redSubst* {l = ι ¹} D (emb {l′ = ∞} (Nat.s≤s ()) X)
-redSubst* {l = ∞} D (emb {l′ = ι ⁰} <l X) with redSubst* D X
-redSubst* {l = ∞} D (emb {l′ = ι ⁰} l< X) | y , y₁ = emb l< y , y₁
-redSubst* {l = ∞} D (emb {l′ = ι ¹} <l X) with redSubst* D X
-redSubst* {l = ∞} D (emb {l′ = ι ¹} l< X) | y , y₁ = emb {l′ = ι ¹} l< y , y₁
-redSubst* {l = ∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) X)
+redSubst* {l = ι ¹} D (emb l< X) with redSubst* D X
+redSubst* {l = ι ¹} D (emb l< X) | y , y₁ = emb l< y , y₁
+redSubst* {l = ∞} D (emb l< X) with redSubst* D X
+redSubst* {l = ∞} D (emb ∞< X) | y , y₁ = emb {l′ = ι ¹} ∞< y , y₁
 
 
 redSubst*Term⁰ : ∀ {A t u ll Γ} → let l = ι ⁰ in
@@ -83,7 +78,7 @@ redSubst*Term⁰ t⇒u (ne′ K D neK K≡K) (neₜ k [[ ⊢t , ⊢u , d ]] (neN
       [d]  = [[ ⊢t , ⊢u , d ]]
       [d′] = [[ conv (redFirst*Term t⇒u) A≡K , ⊢u , conv* t⇒u A≡K ⇨∷* d ]]
   in  neₜ k [d′] (neNfₜ neK₁ ⊢k k≡k) , neₜ₌ k k [d′] [d] (neNfₜ₌ neK₁ neK₁ k≡k)
-redSubst*Term⁰ {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+redSubst*Term⁰ {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                   (Πₜ f [[ ⊢t , ⊢u , d ]] funcF f≡f [f] [f]₁) =
   let A≡ΠFG = subset* (red D)
       t⇒u′  = conv* t⇒u A≡ΠFG
@@ -102,238 +97,26 @@ redSubst*Term : ∀ {A t u l ll Γ}
               → Γ ⊩⟨ l ⟩ u ∷ A ^ [ ! , ll ] / [A]
               → Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ll ] / [A]
               × Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , ll ] / [A]
-redSubst*Term {t = t} {l = ι ¹} {Γ = Γ} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ l< PE.refl D) (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] IdAExt [castA] castAExt) =
+redSubst*Term {t = t} {l = ι ¹} {Γ = Γ} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ l< PE.refl D) (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) =
   let
     A≡U  = subset* (red D)
     ⊢t   = conv (redFirst*Term t⇒u) A≡U
     t⇒u′ = conv* t⇒u A≡U
     [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
     [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [[t]] = (Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
-      (λ r≡! [ρ] ⊢Δ [a] [b] →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-          t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! t⇒u′))
-          q , _ = redSubst* (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″))
-            ([IdA] r≡! [ρ] ⊢Δ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-              (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]))
-        in q)
-      (λ r≡! [ρ] ⊢Δ [a] [a′] a≡a′ [b] [b′] b≡b′ →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-          ⊢a′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a′])
-          ⊢b′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b′])
-          t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! t⇒u′))
-          t_to_u_term = λ {x} ([x] : _ ⊩⟨ ι ⁰ ⟩ x ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [x]
-          t_to_u_eqterm = λ {x y} (x≡y : _ ⊩⟨ ι ⁰ ⟩ x ≡ y ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convEqTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) x≡y
-          [Idu] = [IdA] r≡! [ρ] ⊢Δ (t_to_u_term [a]) (t_to_u_term [b])
-          [Idt] , Idt≡Idu = redSubst* {l = ι ⁰} (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″)) [Idu]
-          [Idu]′ = [IdA] r≡! [ρ] ⊢Δ (t_to_u_term [a′]) (t_to_u_term [b′])
-          [Idt]′ , Idt′≡Idu′ = redSubst* {l = ι ⁰} (univ* (IdRed*Term′ ⊢a′ ⊢b′ t⇒u″)) [Idu]′
-          Idu′≡Idt′ = symEq [Idt]′ [Idu]′ Idt′≡Idu′
-          Idu≡Idu′ = IdAExt r≡! [ρ] ⊢Δ (t_to_u_term [a]) (t_to_u_term [a′])
-            (t_to_u_eqterm a≡a′) (t_to_u_term [b]) (t_to_u_term [b′]) (t_to_u_eqterm b≡b′)
-        in
-        transEq [Idt] [Idu]′ [Idt]′ (transEq [Idt] [Idu] [Idu]′ Idt≡Idu Idu≡Idu′) Idu′≡Idt′)
-      (λ x r≡! [ρ] ⊢Δ [B] ⊢e [a] →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          t⇒u″ = (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! (wkRed*Term [ρ] ⊢Δ t⇒u′))
-          ⊢e′ = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u″)
-            (refl (un-univ (escape [B])))))
-          [castu] = [castA] x r≡! [ρ] ⊢Δ [B] ⊢e′ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-          [castt] , _ = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e ⊢a (univ* t⇒u″)) [B] [castu]
-        in [castt])
-      (λ x r≡! [ρ] ⊢Δ [B] [B′] B≡B′ [e] [e′] [a] [a′] a≡a′ →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢a′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a′])
-          t⇒u″ = (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! (wkRed*Term [ρ] ⊢Δ t⇒u′))
-          t_to_u_term = λ {x} ([x] : _ ⊩⟨ ι ⁰ ⟩ x ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [x]
-          t_to_u_eqterm = λ {x y} (x≡y : _ ⊩⟨ ι ⁰ ⟩ x ≡ y ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convEqTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) x≡y
-          ⊢eu = conv [e] (univ (Id-cong (refl (univ 0<1 (wfTerm [e]))) (subset*Term t⇒u″)
-            (refl (un-univ (escape [B])))))
-          ⊢e′u = conv [e′] (univ (Id-cong (refl (univ 0<1 (wfTerm [e′]))) (subset*Term t⇒u″)
-            (refl (un-univ (escape [B′])))))
-          [castu] = [castA] x r≡! [ρ] ⊢Δ [B] ⊢eu (t_to_u_term [a])
-          [castt] , castt≡castu = redSubst*Term⁰
-            (CastRed*Term′ (escape [B]) [e] ⊢a (univ* t⇒u″)) [B] [castu]
-          [castu]′ = [castA] x r≡! [ρ] ⊢Δ [B′] ⊢e′u (t_to_u_term [a′])
-          [castt]′ , castt′≡castu′ = redSubst*Term⁰
-            (CastRed*Term′ (escape [B′]) [e′] ⊢a′ (univ* t⇒u″)) [B′] [castu]′
-          castu′≡castt′ = convEqTerm₂ [B] [B′] B≡B′ (symEqTerm [B′] castt′≡castu′)
-          castu≡castu′ = castAExt x r≡! [ρ] ⊢Δ [B] [B′] B≡B′ ⊢eu ⊢e′u (t_to_u_term [a])
-            (t_to_u_term [a′]) (t_to_u_eqterm a≡a′)
-        in
-        transEqTerm [B] (transEqTerm [B] castt≡castu castu≡castu′) castu′≡castt′))
+    [[t]] = Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
   in
-  ([[t]] , (Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] IdAExt [castA] castAExt) A≡A [t≡u]
-    (λ r≡! [ρ] ⊢Δ [a] [b] →
-      let
-        ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-        ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-        t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! t⇒u′))
-        _ , Idt≡Idu = redSubst* (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″))
-          ([IdA] r≡! [ρ] ⊢Δ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-            (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]))
-      in Idt≡Idu)
-    (λ x r≡! [ρ] ⊢Δ [B] ⊢e [a] →
-      let
-        ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-        t⇒u″ = (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! (wkRed*Term [ρ] ⊢Δ t⇒u′))
-        ⊢e′ = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u″)
-          (refl (un-univ (escape [B])))))
-        [castu] = [castA] x r≡! [ρ] ⊢Δ [B] ⊢e′ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-        _ , castt≡castu = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e ⊢a (univ* t⇒u″)) [B] [castu]
-      in castt≡castu)))
-redSubst*Term {l = ι ¹} t⇒u (Uᵣ′ A .(next ¹) rU ¹ (Nat.s≤s ()) PE.refl D) X
-redSubst*Term {t = t} {l = ∞} {Γ = Γ} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ l< PE.refl D) (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] IdAExt [castA] castAExt) =
-  let
-    A≡U  = subset* (red D)
-    ⊢t   = conv (redFirst*Term t⇒u) A≡U
-    t⇒u′ = conv* t⇒u A≡U
-    [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [[t]] = (Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
-      (λ r≡! [ρ] ⊢Δ [a] [b] →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-          t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! t⇒u′))
-          q , _ = redSubst* (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″))
-            ([IdA] r≡! [ρ] ⊢Δ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-              (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]))
-        in q)
-      (λ r≡! [ρ] ⊢Δ [a] [a′] a≡a′ [b] [b′] b≡b′ →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-          ⊢a′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a′])
-          ⊢b′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b′])
-          t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! t⇒u′))
-          t_to_u_term = λ {x} ([x] : _ ⊩⟨ ι ⁰ ⟩ x ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [x]
-          t_to_u_eqterm = λ {x y} (x≡y : _ ⊩⟨ ι ⁰ ⟩ x ≡ y ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convEqTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) x≡y
-          [Idu] = [IdA] r≡! [ρ] ⊢Δ (t_to_u_term [a]) (t_to_u_term [b])
-          [Idt] , Idt≡Idu = redSubst* {l = ι ⁰} (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″)) [Idu]
-          [Idu]′ = [IdA] r≡! [ρ] ⊢Δ (t_to_u_term [a′]) (t_to_u_term [b′])
-          [Idt]′ , Idt′≡Idu′ = redSubst* {l = ι ⁰} (univ* (IdRed*Term′ ⊢a′ ⊢b′ t⇒u″)) [Idu]′
-          Idu′≡Idt′ = symEq [Idt]′ [Idu]′ Idt′≡Idu′
-          Idu≡Idu′ = IdAExt r≡! [ρ] ⊢Δ (t_to_u_term [a]) (t_to_u_term [a′])
-            (t_to_u_eqterm a≡a′) (t_to_u_term [b]) (t_to_u_term [b′]) (t_to_u_eqterm b≡b′)
-        in
-        transEq [Idt] [Idu]′ [Idt]′ (transEq [Idt] [Idu] [Idu]′ Idt≡Idu Idu≡Idu′) Idu′≡Idt′)
-      (λ x r≡! [ρ] ⊢Δ [B] ⊢e [a] →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          t⇒u″ = (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! (wkRed*Term [ρ] ⊢Δ t⇒u′))
-          ⊢e′ = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u″)
-            (refl (un-univ (escape [B])))))
-          [castu] = [castA] x r≡! [ρ] ⊢Δ [B] ⊢e′ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-          [castt] , _ = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e ⊢a (univ* t⇒u″)) [B] [castu]
-        in [castt])
-      (λ x r≡! [ρ] ⊢Δ [B] [B′] B≡B′ [e] [e′] [a] [a′] a≡a′ →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢a′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a′])
-          t⇒u″ = (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! (wkRed*Term [ρ] ⊢Δ t⇒u′))
-          t_to_u_term = λ {x} ([x] : _ ⊩⟨ ι ⁰ ⟩ x ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [x]
-          t_to_u_eqterm = λ {x y} (x≡y : _ ⊩⟨ ι ⁰ ⟩ x ≡ y ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convEqTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) x≡y
-          ⊢eu = conv [e] (univ (Id-cong (refl (univ 0<1 (wfTerm [e]))) (subset*Term t⇒u″)
-            (refl (un-univ (escape [B])))))
-          ⊢e′u = conv [e′] (univ (Id-cong (refl (univ 0<1 (wfTerm [e′]))) (subset*Term t⇒u″)
-            (refl (un-univ (escape [B′])))))
-          [castu] = [castA] x r≡! [ρ] ⊢Δ [B] ⊢eu (t_to_u_term [a])
-          [castt] , castt≡castu = redSubst*Term⁰
-            (CastRed*Term′ (escape [B]) [e] ⊢a (univ* t⇒u″)) [B] [castu]
-          [castu]′ = [castA] x r≡! [ρ] ⊢Δ [B′] ⊢e′u (t_to_u_term [a′])
-          [castt]′ , castt′≡castu′ = redSubst*Term⁰
-            (CastRed*Term′ (escape [B′]) [e′] ⊢a′ (univ* t⇒u″)) [B′] [castu]′
-          castu′≡castt′ = convEqTerm₂ [B] [B′] B≡B′ (symEqTerm [B′] castt′≡castu′)
-          castu≡castu′ = castAExt x r≡! [ρ] ⊢Δ [B] [B′] B≡B′ ⊢eu ⊢e′u (t_to_u_term [a])
-            (t_to_u_term [a′]) (t_to_u_eqterm a≡a′)
-        in
-        transEqTerm [B] (transEqTerm [B] castt≡castu castu≡castu′) castu′≡castt′))
-  in
-  ([[t]] , (Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] IdAExt [castA] castAExt) A≡A [t≡u]
-    (λ r≡! [ρ] ⊢Δ [a] [b] →
-      let
-        ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-        ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-        t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! t⇒u′))
-        _ , Idt≡Idu = redSubst* (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″))
-          ([IdA] r≡! [ρ] ⊢Δ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-            (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]))
-      in Idt≡Idu)
-    (λ x r≡! [ρ] ⊢Δ [B] ⊢e [a] →
-      let
-        ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ⁰ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-        t⇒u″ = (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ⁰ ^ ι ¹) r≡! (wkRed*Term [ρ] ⊢Δ t⇒u′))
-        ⊢e′ = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (subset*Term t⇒u″)
-          (refl (un-univ (escape [B])))))
-        [castu] = [castA] x r≡! [ρ] ⊢Δ [B] ⊢e′ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-        _ , castt≡castu = redSubst*Term⁰ (CastRed*Term′ (escape [B]) ⊢e ⊢a (univ* t⇒u″)) [B] [castu]
-      in castt≡castu)))
-redSubst*Term {t = t} {l = ∞} {Γ = Γ} t⇒u (Uᵣ′ A .(next ¹) rU ¹ l< PE.refl D) (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] IdAExt [castA] castAExt) =
+  ([[t]] , Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) A≡A [t≡u])
+redSubst*Term {t = t} {l = ∞} {Γ = Γ} t⇒u (Uᵣ′ A .(next ¹) rU ¹ l< PE.refl D) (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) =
   let
     A≡U  = subset* (red D)
     ⊢t   = conv (redFirst*Term t⇒u) A≡U
     t⇒u′ = conv* t⇒u A≡U
     [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
     [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [[t]] = (Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
-      (λ r≡! [ρ] ⊢Δ [a] [b] →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-          t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ¹ ^ ∞) r≡! t⇒u′))
-          q , _ = redSubst* (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″))
-            ([IdA] r≡! [ρ] ⊢Δ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-              (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]))
-        in q)
-      (λ r≡! [ρ] ⊢Δ [a] [a′] a≡a′ [b] [b′] b≡b′ →
-        let
-          ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-          ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-          ⊢a′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a′])
-          ⊢b′ = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b′])
-          t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ¹ ^ ∞) r≡! t⇒u′))
-          t_to_u_term = λ {x} ([x] : _ ⊩⟨ ι ¹ ⟩ x ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [x]
-          t_to_u_eqterm = λ {x y} (x≡y : _ ⊩⟨ ι ¹ ⟩ x ≡ y ∷ _ ^ _ / [t] [ρ] ⊢Δ)
-            → convEqTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) x≡y
-          [Idu] = [IdA] r≡! [ρ] ⊢Δ (t_to_u_term [a]) (t_to_u_term [b])
-          [Idt] , Idt≡Idu = redSubst* {l = ι ¹} (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″)) [Idu]
-          [Idu]′ = [IdA] r≡! [ρ] ⊢Δ (t_to_u_term [a′]) (t_to_u_term [b′])
-          [Idt]′ , Idt′≡Idu′ = redSubst* {l = ι ¹} (univ* (IdRed*Term′ ⊢a′ ⊢b′ t⇒u″)) [Idu]′
-          Idu′≡Idt′ = symEq [Idt]′ [Idu]′ Idt′≡Idu′
-          Idu≡Idu′ = IdAExt r≡! [ρ] ⊢Δ (t_to_u_term [a]) (t_to_u_term [a′])
-            (t_to_u_eqterm a≡a′) (t_to_u_term [b]) (t_to_u_term [b′]) (t_to_u_eqterm b≡b′)
-        in
-        transEq [Idt] [Idu]′ [Idt]′ (transEq [Idt] [Idu] [Idu]′ Idt≡Idu Idu≡Idu′) Idu′≡Idt′)
-      (λ x r≡! [ρ] ⊢Δ [B] ⊢e [a] → ⊥-elim (⁰≢¹ (PE.sym x)))
-      (λ x r≡! [ρ] ⊢Δ [B] [B′] B≡B′ [e] [e′] [a] [a′] a≡a′ → ⊥-elim (⁰≢¹ (PE.sym x))))
+    [[t]] = Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
   in
-  ([[t]] , (Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u] [IdA] IdAExt [castA] castAExt) A≡A [t≡u]
-    (λ r≡! [ρ] ⊢Δ [a] [b] →
-      let
-        ⊢a = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [a])
-        ⊢b = PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ X , ι ¹ ]) r≡! (escapeTerm ([t] [ρ] ⊢Δ) [b])
-        t⇒u″ = wkRed* [ρ] ⊢Δ (univ* (PE.subst (λ X → _ ⊢ _ ⇒* _ ∷ Univ X ¹ ^ ∞) r≡! t⇒u′))
-        _ , Idt≡Idu = redSubst* (univ* (IdRed*Term′ ⊢a ⊢b t⇒u″))
-          ([IdA] r≡! [ρ] ⊢Δ (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a])
-            (convTerm₁ ([t] [ρ] ⊢Δ) ([u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]))
-      in Idt≡Idu)
-    (λ x r≡! [ρ] ⊢Δ [B] ⊢e [a] → ⊥-elim (⁰≢¹ (PE.sym x)))))
+  ([[t]] , Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) A≡A [t≡u])
 redSubst*Term t⇒u (ℕᵣ D) (ℕₜ n [[ ⊢u , ⊢n , d ]] n≡n prop) =
   let A≡ℕ  = subset* (red D)
       ⊢t   = conv (redFirst*Term t⇒u) A≡ℕ
@@ -346,7 +129,7 @@ redSubst*Term t⇒u (ne′ K D neK K≡K) (neₜ k [[ ⊢t , ⊢u , d ]] (neNf�
       [d]  = [[ ⊢t , ⊢u , d ]]
       [d′] = [[ conv (redFirst*Term t⇒u) A≡K , ⊢u , conv* t⇒u A≡K ⇨∷* d ]]
   in  neₜ k [d′] (neNfₜ neK₁ ⊢k k≡k) , neₜ₌ k k [d′] [d] (neNfₜ₌ neK₁ neK₁ k≡k)
-redSubst*Term {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+redSubst*Term {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                   (Πₜ f [[ ⊢t , ⊢u , d ]] funcF f≡f [f] [f]₁) =
   let A≡ΠFG = subset* (red D)
       t⇒u′  = conv* t⇒u A≡ΠFG
@@ -357,12 +140,8 @@ redSubst*Term {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] 
           (Πₜ f [d′] funcF f≡f [f] [f]₁)
           (Πₜ f [d] funcF f≡f [f] [f]₁)
           (λ [ρ] ⊢Δ [a] → reflEqTerm ([G] [ρ] ⊢Δ [a]) ([f]₁ [ρ] ⊢Δ [a]))
-redSubst*Term {l = ι ¹} D (emb {l′ = ι ⁰} l< X) [u] = redSubst*Term D X [u]
-redSubst*Term {l = ι ¹} D (emb {l′ = ι ¹} (Nat.s≤s ()) X)
-redSubst*Term {l = ι ¹} D (emb {l′ = ∞} (Nat.s≤s ()) X)
-redSubst*Term {l = ∞} D (emb {l′ = ι ⁰} l< X) [u] = redSubst*Term D X [u]
-redSubst*Term {l = ∞} D (emb {l′ = ι ¹} l< X) [u] = redSubst*Term D X [u]
-redSubst*Term {l = ∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) X)
+redSubst*Term {l = ι ¹} D (emb l< X) [u] = redSubst*Term D X [u]
+redSubst*Term {l = ∞} D (emb l< X) [u] = redSubst*Term D X [u]
 
 -- Weak head expansion of reducible types with single reduction step.
 redSubst : ∀ {A B r l Γ}

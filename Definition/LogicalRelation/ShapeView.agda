@@ -48,47 +48,33 @@ _⊩⟨_⟩∃_^_ : (Γ : Con Term) (l : TypeLevel) (A : Term) (ll : TypeLevel) 
 
 U-intr : ∀ {l Γ A ll } → (UA : Γ ⊩⟨ l ⟩U A ^ ll) → Γ ⊩⟨ l ⟩ A ^ [ ! , ll ]
 U-intr (noemb UA) = Uᵣ UA
-U-intr {l = ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s l<) x) = emb {l′ = ι ⁰} (Nat.s≤s l<) (U-intr x)
-U-intr {l = ι ¹} (emb {l′ = ∞} (Nat.s≤s ()) x) 
-U-intr {l = ∞} (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) x) = emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) (U-intr x)
-U-intr {l = ∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s l<)) x) = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s l<)) (U-intr x)
-U-intr {l = ∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
-
+U-intr {l = ι ¹} (emb emb< x) = emb emb< (U-intr x)
+U-intr {l = ∞}  (emb ∞< x) = emb ∞< (U-intr x)
 
 ℕ-intr : ∀ {l A Γ} → Γ ⊩⟨ l ⟩ℕ A → Γ ⊩⟨ l ⟩ A ^ [ ! , ι ⁰ ]
 ℕ-intr (noemb x) = ℕᵣ x
-ℕ-intr {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (ℕ-intr x)
-ℕ-intr {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (ℕ-intr x)
-ℕ-intr {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (ℕ-intr x)
-ℕ-intr {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x₁)
+ℕ-intr {l = ι ¹} (emb emb< x) = emb emb< (ℕ-intr x)
+ℕ-intr {l = ∞}  (emb ∞< x) = emb ∞< (ℕ-intr x)
 
 Empty-intr : ∀ {l A Γ ll} → Γ ⊩⟨ l ⟩Empty A ^ ll → Γ ⊩⟨ l ⟩ A ^ [ % , ι ll ]
 Empty-intr (noemb x) = Emptyᵣ x
-Empty-intr {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (Empty-intr x)
-Empty-intr {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (Empty-intr x)
-Empty-intr {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (Empty-intr x)
-Empty-intr {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x₁)
+Empty-intr {l = ι ¹} (emb emb< x) = emb emb< (Empty-intr x)
+Empty-intr {l = ∞}  (emb ∞< x) = emb ∞< (Empty-intr x)
 
 ne-intr : ∀ {l A Γ r ll} → Γ ⊩⟨ l ⟩ne A ^[ r , ll ] → Γ ⊩⟨ l ⟩ A ^ [ r , ι ll ]
 ne-intr (noemb x) = ne x
-ne-intr {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (ne-intr x)
-ne-intr {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (ne-intr x)
-ne-intr {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (ne-intr x)
-ne-intr {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x₁)
+ne-intr {l = ι ¹} (emb emb< x) = emb emb< (ne-intr x)
+ne-intr {l = ∞}  (emb ∞< x) = emb ∞< (ne-intr x)
 
 Π-intr : ∀ {l A Γ r} → Γ ⊩⟨ l ⟩Π A ^ r → Γ ⊩⟨ l ⟩ A ^ r
 Π-intr (noemb x) = Πᵣ x
-Π-intr {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (Π-intr x)
-Π-intr {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (Π-intr x)
-Π-intr {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (Π-intr x)
-Π-intr {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x₁)
+Π-intr {l = ι ¹} (emb emb< x) = emb emb< (Π-intr x)
+Π-intr {l = ∞}  (emb ∞< x) = emb ∞< (Π-intr x)
 
 ∃-intr : ∀ {l A Γ ll} → Γ ⊩⟨ l ⟩∃ A ^ ll → Γ ⊩⟨ l ⟩ A ^ [ % , ll ]
 ∃-intr (noemb x) = ∃ᵣ x
-∃-intr {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (∃-intr x)
-∃-intr {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) x) = emb (Nat.s≤s X) (∃-intr x)
-∃-intr {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (∃-intr x)
-∃-intr {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x₁)
+∃-intr {l = ι ¹} (emb emb< x) = emb emb< (∃-intr x)
+∃-intr {l = ∞}  (emb ∞< x) = emb ∞< (∃-intr x)
 
 
 -- Construct a specific reducible type from a general with some criterion
@@ -98,16 +84,12 @@ U-elim′ D (Uᵣ′ A ll r l l< e D') = noemb (Uᵣ r l l< e D')
 U-elim′ D (ℕᵣ D') =  ⊥-elim (U≢ℕ (whrDet* (D ,  Uₙ) (red D' , ℕₙ)))
 U-elim′ D (ne′ K D' neK K≡K) =  ⊥-elim (U≢ne neK (whrDet* (D ,  Uₙ) (red D' , ne neK))) 
 U-elim′ D (Πᵣ′ rF lF lG F G D' ⊢F ⊢G A≡A [F] [G] G-ext) = ⊥-elim (U≢Π (whrDet* (D , Uₙ) (red D' , Πₙ)))
-U-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with U-elim′ D x
-U-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-U-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-U-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with U-elim′ D x
-U-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-U-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-U-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) with U-elim′ D x
-U-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | noemb x₁ = emb (Nat.s≤s (Nat.s≤s X)) (noemb x₁)
-U-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
-U-elim′ {∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
+U-elim′ {ι ¹} D (emb emb< x) with U-elim′ D x
+U-elim′ {ι ¹} D (emb emb< x) | noemb x₁ = emb emb< (noemb x₁)
+U-elim′ {ι ¹} D (emb emb< x) | emb () x₁
+U-elim′ {∞} D (emb ∞< x) with U-elim′ D x
+U-elim′ {∞} D (emb ∞< x) | noemb x₁ = emb ∞< (noemb x₁)
+U-elim′ {∞} D (emb ∞< x) | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
 U-elim : ∀ {l Γ r l′ ll′} → Γ ⊩⟨ l ⟩ Univ r l′ ^ [ ! , ll′ ] → Γ ⊩⟨ l ⟩U Univ r l′ ^ ll′
 U-elim [U] = U-elim′ (id (escape [U])) [U]
@@ -119,16 +101,12 @@ U-elim [U] = U-elim′ (id (escape [U])) [U]
   ⊥-elim (ℕ≢ne neK (whrDet* (D , ℕₙ) (red D′ , ne neK)))
 ℕ-elim′ D (Πᵣ′ rF lF lG F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
   ⊥-elim (ℕ≢Π (whrDet* (D , ℕₙ) (red D′ , Πₙ)))
-ℕ-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with ℕ-elim′ D x
-ℕ-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-ℕ-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-ℕ-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with ℕ-elim′ D x
-ℕ-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-ℕ-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-ℕ-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) with ℕ-elim′ D x
-ℕ-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | noemb x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (noemb x₁)
-ℕ-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
-ℕ-elim′ {∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
+ℕ-elim′ {ι ¹} D (emb emb< x) with ℕ-elim′ D x
+ℕ-elim′ {ι ¹} D (emb emb< x) | noemb x₁ = emb emb< (noemb x₁)
+ℕ-elim′ {ι ¹} D (emb emb< x) | emb () x₁
+ℕ-elim′ {∞} D (emb ∞< x) with ℕ-elim′ D x
+ℕ-elim′ {∞} D (emb ∞< x) | noemb x₁ = emb ∞< (noemb x₁)
+ℕ-elim′ {∞} D (emb ∞< x) | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
 ℕ-elim : ∀ {Γ l ll } → Γ ⊩⟨ l ⟩ ℕ ^ [ ! , ll ] → Γ ⊩⟨ l ⟩ℕ ℕ
 ℕ-elim [ℕ] = ℕ-elim′ (id (escape [ℕ])) [ℕ]
@@ -142,16 +120,12 @@ Empty-elim′ D (Πᵣ′ rF lF lG F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
   ⊥-elim (Empty≢Π (whrDet* (D , Emptyₙ) (red D′ , Πₙ)))
 Empty-elim′ D (∃ᵣ′  F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
   ⊥-elim (Empty≢∃ (whrDet* (D , Emptyₙ) (red D′ , ∃ₙ)))
-Empty-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with Empty-elim′ D x
-Empty-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-Empty-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-Empty-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with Empty-elim′ D x
-Empty-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-Empty-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-Empty-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) with Empty-elim′ D x
-Empty-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | noemb x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (noemb x₁)
-Empty-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
-Empty-elim′ {∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
+Empty-elim′ {ι ¹} D (emb emb< x) with Empty-elim′ D x
+Empty-elim′ {ι ¹} D (emb emb< x) | noemb x₁ = emb emb< (noemb x₁)
+Empty-elim′ {ι ¹} D (emb emb< x) | emb () x₁
+Empty-elim′ {∞} D (emb ∞< x) with Empty-elim′ D x
+Empty-elim′ {∞} D (emb ∞< x) | noemb x₁ = emb ∞< (noemb x₁)
+Empty-elim′ {∞} D (emb ∞< x) | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
 Empty-elim : ∀ {Γ l ll } → Γ ⊩⟨ l ⟩ Empty ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩Empty Empty ^ ll
 Empty-elim [Empty] = Empty-elim′ (id (escape [Empty])) [Empty]
@@ -165,16 +139,12 @@ ne-elim′ D neK (Πᵣ′ rF lF lG F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) e =
 ne-elim′ D neK (∃ᵣ′ F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) e =
   ⊥-elim (∃≢ne neK (whrDet* (red D′ , ∃ₙ) (D , ne neK)))
 ne-elim′ D neK (Emptyᵣ D′) e = ⊥-elim (Empty≢ne neK (whrDet* (red D′ , Emptyₙ) (D , ne neK)))
-ne-elim′ {ι ¹} D neK (emb {l′ = ι ⁰} (Nat.s≤s X) x) e with ne-elim′ D neK x e
-ne-elim′ {ι ¹} D neK (emb {l′ = ι ⁰} (Nat.s≤s X) x) e | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-ne-elim′ {ι ¹} D neK (emb {l′ = ι ⁰} (Nat.s≤s X) x) e | emb () x₁
-ne-elim′ {∞} D neK (emb {l′ = ι ⁰} (Nat.s≤s X) x) e with ne-elim′ D neK x e
-ne-elim′ {∞} D neK (emb {l′ = ι ⁰} (Nat.s≤s X) x) e | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-ne-elim′ {∞} D neK (emb {l′ = ι ⁰} (Nat.s≤s X) x) e | emb () x₁
-ne-elim′ {∞} D neK (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) e with ne-elim′ D neK x e
-ne-elim′ {∞} D neK (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) e | noemb x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (noemb x₁)
-ne-elim′ {∞} D neK (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) e | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
-ne-elim′ {∞} D neK (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x) e
+ne-elim′ {ι ¹} D neK (emb emb< x) e with ne-elim′ D neK x e
+ne-elim′ {ι ¹} D neK (emb emb< x) e | noemb x₁ = emb emb< (noemb x₁)
+ne-elim′ {ι ¹} D neK (emb emb< x) e | emb () x₁
+ne-elim′ {∞} D neK (emb ∞< x) e with ne-elim′ D neK x e 
+ne-elim′ {∞} D _ (emb ∞< x) e | noemb x₁ = emb ∞< (noemb x₁)
+ne-elim′ {∞} D _ (emb ∞< x) e | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
 ne-elim : ∀ {Γ l K r ll} → Neutral K  → Γ ⊩⟨ l ⟩ K ^ [ r , ι ll ] → Γ ⊩⟨ l ⟩ne K ^[ r , ll ]
 ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
@@ -189,16 +159,12 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
   noemb (Πᵣ rF lF lG F G D′ ⊢F ⊢G A≡A [F] [G] G-ext)
 Π-elim′ D (∃ᵣ′ F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
   ⊥-elim (Π≢∃ (whrDet* (D , Πₙ) (red D′ , ∃ₙ)))
-Π-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with Π-elim′ D x
-Π-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-Π-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-Π-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with Π-elim′ D x
-Π-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-Π-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-Π-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) with Π-elim′ D x
-Π-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | noemb x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (noemb x₁)
-Π-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
-Π-elim′ {∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
+Π-elim′ {ι ¹} D (emb emb< x) with Π-elim′ D x
+Π-elim′ {ι ¹} D (emb emb< x) | noemb x₁ = emb emb< (noemb x₁)
+Π-elim′ {ι ¹} D (emb emb< x) | emb () x₁
+Π-elim′ {∞} D (emb ∞< x) with Π-elim′ D x
+Π-elim′ {∞} D (emb ∞< x) | noemb x₁ = emb ∞< (noemb x₁)
+Π-elim′ {∞} D (emb ∞< x) | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
 Π-elim : ∀ {Γ F G rF lF lG r l} → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ r → Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ^ r
 Π-elim [Π] = Π-elim′ (id (escape [Π])) [Π]
@@ -211,16 +177,12 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
   ⊥-elim (Π≢∃ (whrDet* (red D′ , Πₙ) (D , ∃ₙ)))
 ∃-elim′ D (∃ᵣ′ F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) =
   noemb (∃ᵣ F G D′ ⊢F ⊢G A≡A [F] [G] G-ext)
-∃-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with ∃-elim′ D x
-∃-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-∃-elim′ {ι ¹} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-∃-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) with ∃-elim′ D x
-∃-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | noemb x₁ = emb (Nat.s≤s X) (noemb x₁)
-∃-elim′ {∞} D (emb {l′ = ι ⁰} (Nat.s≤s X) x) | emb () x₁
-∃-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) with ∃-elim′ D x
-∃-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | noemb x₁ = emb (Nat.s≤s (Nat.s≤s X)) (noemb x₁)
-∃-elim′ {∞} D (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) x) | emb <l x₁ = emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) (emb <l x₁)
-∃-elim′ {∞} D (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) x)
+∃-elim′ {ι ¹} D (emb emb< x) with ∃-elim′ D x
+∃-elim′ {ι ¹} D (emb emb< x) | noemb x₁ = emb emb< (noemb x₁)
+∃-elim′ {ι ¹} D (emb emb< x) | emb () x₁
+∃-elim′ {∞} D (emb ∞< x) with ∃-elim′ D x
+∃-elim′ {∞} D (emb ∞< x) | noemb x₁ = emb ∞< (noemb x₁)
+∃-elim′ {∞} D (emb ∞< x) | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
 ∃-elim : ∀ {Γ F G l ll} → Γ ⊩⟨ l ⟩ ∃ F ▹ G ^ [ % , ll ] → Γ ⊩⟨ l ⟩∃ (∃ F ▹ G) ^ ll
 ∃-elim [∃] = ∃-elim′ (id (escape [∃])) [∃]
@@ -245,22 +207,16 @@ data ShapeView Γ : ∀ l l′ A B r r' (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩�
     → ShapeView Γ l l′ A B [ % , ll ] [ % , ll' ] (∃ᵣ ∃A) (∃ᵣ ∃B)
   emb⁰¹ : ∀ {A B r r' l p q} 
         → ShapeView Γ (ι ⁰) l A B r r' p q
-        → ShapeView Γ (ι ¹) l A B r r' (emb (Nat.s≤s Nat.z≤n) p) q
+        → ShapeView Γ (ι ¹) l A B r r' (emb emb< p) q
   emb¹⁰ : ∀ {A B r r' l p q}
         → ShapeView Γ l (ι ⁰) A B r r' p q
-        → ShapeView Γ l (ι ¹) A B r r' p (emb (Nat.s≤s Nat.z≤n) q)
-  emb⁰∞ : ∀ {A B r r' l p q} 
-        → ShapeView Γ (ι ⁰) l A B r r' p q
-        → ShapeView Γ ∞ l A B r r' (emb (Nat.s≤s Nat.z≤n) p) q
-  emb∞⁰ : ∀ {A B r r' l p q}
-        → ShapeView Γ l (ι ⁰) A B r r' p q
-        → ShapeView Γ l ∞ A B r r' p (emb (Nat.s≤s Nat.z≤n) q)
+        → ShapeView Γ l (ι ¹) A B r r' p (emb emb< q)
   emb¹∞ : ∀ {A B r r' l p q} 
         → ShapeView Γ (ι ¹) l A B r r' p q
-        → ShapeView Γ ∞ l A B r r' (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) p) q
+        → ShapeView Γ ∞ l A B r r' (emb ∞< p) q
   emb∞¹ : ∀ {A B r r' l p q}
         → ShapeView Γ l (ι ¹) A B r r' p q
-        → ShapeView Γ l ∞ A B r r' p (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) q)
+        → ShapeView Γ l ∞ A B r r' p (emb ∞< q)
 
 
 -- Construct a shape view from an equality
@@ -339,14 +295,10 @@ goodCases (∃ᵣ′ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext
           (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ⊥-elim (Π≢∃ (whrDet* (red D , Πₙ) (D′ , ∃ₙ)))
 goodCases (∃ᵣ ∃A) (∃ᵣ ∃B) A≡B = ∃ᵥ ∃A ∃B
-goodCases {l} {ι ¹} [A] (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) x) A≡B = emb¹⁰ (goodCases {l} {ι ⁰} [A] x A≡B)
-goodCases {l} {∞} [A] (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) x) A≡B = emb∞⁰ (goodCases {l} {ι ⁰} [A] x A≡B)
-goodCases {l} {∞} [A] (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) x) A≡B = emb∞¹ (goodCases {l} {ι ¹} [A] x A≡B)
-goodCases {ι ¹} {l} (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) x) [B] A≡B = emb⁰¹ (goodCases {ι ⁰} {l} x [B] A≡B)
-goodCases {∞} {l} (emb {l′ = ι ⁰} (Nat.s≤s Nat.z≤n) x) [B] A≡B = emb⁰∞ (goodCases {ι ⁰} {l} x [B] A≡B)
-goodCases {∞} {l} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) x) [B] A≡B = emb¹∞ (goodCases {ι ¹} {l} x [B] A≡B)
-goodCases {l′ = ∞} _ (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) _
-goodCases {l = ∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) _ _
+goodCases {l} {ι ¹} [A] (emb emb< x) A≡B = emb¹⁰ (goodCases {l} {ι ⁰} [A] x A≡B)
+goodCases {l} {∞} [A] (emb ∞< x) A≡B = emb∞¹ (goodCases {l} {ι ¹} [A] x A≡B)
+goodCases {ι ¹} {l} (emb emb< x) [B] A≡B = emb⁰¹ (goodCases {ι ⁰} {l} x [B] A≡B)
+goodCases {∞} {l} (emb ∞< x) [B] A≡B = emb¹∞ (goodCases {ι ¹} {l} x [B] A≡B)
 
 -- Construct an shape view between two derivations of the same type
 goodCasesRefl : ∀ {l l′ Γ A r r'} ([A] : Γ ⊩⟨ l ⟩ A ^ r) ([A′] : Γ ⊩⟨ l′ ⟩ A ^ r')
@@ -373,31 +325,22 @@ data ShapeView₃ Γ : ∀ l l′ l″ A B C r1 r2 r3
     → ShapeView₃ Γ l l′ l″ A B C [ % , ll ] [ % , ll' ] [ % , ll'' ] (∃ᵣ ΠA) (∃ᵣ ΠB) (∃ᵣ ΠC)
   emb⁰¹¹ : ∀ {A B C l l′ r1 r2 r3 p q r}
          → ShapeView₃ Γ (ι ⁰) l l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ (ι ¹) l l′ A B C r1 r2 r3 (emb (Nat.s≤s Nat.z≤n) p) q r
+         → ShapeView₃ Γ (ι ¹) l l′ A B C r1 r2 r3 (emb emb< p) q r
   emb¹⁰¹ : ∀ {A B C l l′ r1 r2 r3  p q r}
          → ShapeView₃ Γ l (ι ⁰) l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l (ι ¹) l′ A B C r1 r2 r3 p (emb (Nat.s≤s Nat.z≤n) q) r
+         → ShapeView₃ Γ l (ι ¹) l′ A B C r1 r2 r3 p (emb emb< q) r
   emb¹¹⁰ : ∀ {A B C l l′ r1 r2 r3 p q r}
          → ShapeView₃ Γ l l′ (ι ⁰) A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l l′ (ι ¹) A B C r1 r2 r3 p q (emb (Nat.s≤s Nat.z≤n) r)
-  emb⁰∞∞ : ∀ {A B C l l′ r1 r2 r3 p q r}
-         → ShapeView₃ Γ (ι ⁰) l l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ ∞ l l′ A B C r1 r2 r3 (emb (Nat.s≤s Nat.z≤n) p) q r
-  emb∞⁰∞ : ∀ {A B C l l′ r1 r2 r3  p q r}
-         → ShapeView₃ Γ l (ι ⁰) l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l ∞ l′ A B C r1 r2 r3 p (emb (Nat.s≤s Nat.z≤n) q) r
-  emb∞∞⁰ : ∀ {A B C l l′ r1 r2 r3 p q r}
-         → ShapeView₃ Γ l l′ (ι ⁰) A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l l′ ∞ A B C r1 r2 r3 p q (emb (Nat.s≤s Nat.z≤n) r)
+         → ShapeView₃ Γ l l′ (ι ¹) A B C r1 r2 r3 p q (emb emb< r)
   emb¹∞∞ : ∀ {A B C l l′ r1 r2 r3 p q r}
          → ShapeView₃ Γ (ι ¹) l l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ ∞ l l′ A B C r1 r2 r3 (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) p) q r
+         → ShapeView₃ Γ ∞ l l′ A B C r1 r2 r3 (emb ∞< p) q r
   emb∞¹∞ : ∀ {A B C l l′ r1 r2 r3  p q r}
          → ShapeView₃ Γ l (ι ¹) l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l ∞ l′ A B C r1 r2 r3 p (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) q) r
+         → ShapeView₃ Γ l ∞ l′ A B C r1 r2 r3 p (emb ∞< q) r
   emb∞∞¹ : ∀ {A B C l l′ r1 r2 r3 p q r}
          → ShapeView₃ Γ l l′ (ι ¹) A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l l′ ∞ A B C r1 r2 r3 p q (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) r)
+         → ShapeView₃ Γ l l′ ∞ A B C r1 r2 r3 p q (emb ∞< r)
 
 
 -- Combines two two-way views into a three-way view
@@ -477,10 +420,6 @@ combine (emb⁰¹ [AB]) [BC] = emb⁰¹¹ (combine [AB] [BC])
 combine (emb¹⁰ [AB]) [BC] = emb¹⁰¹ (combine [AB] [BC])
 combine [AB] (emb⁰¹ [BC]) = combine [AB] [BC]
 combine [AB] (emb¹⁰ [BC]) = emb¹¹⁰ (combine [AB] [BC])
-combine (emb⁰∞ [AB]) [BC] = emb⁰∞∞ (combine [AB] [BC])
-combine (emb∞⁰ [AB]) [BC] = emb∞⁰∞ (combine [AB] [BC])
-combine [AB] (emb⁰∞ [BC]) = combine [AB] [BC]
-combine [AB] (emb∞⁰ [BC]) = emb∞∞⁰ (combine [AB] [BC])
 combine (emb¹∞ [AB]) [BC] = emb¹∞∞ (combine [AB] [BC])
 combine (emb∞¹ [AB]) [BC] = emb∞¹∞ (combine [AB] [BC])
 combine [AB] (emb¹∞ [BC]) = combine [AB] [BC]

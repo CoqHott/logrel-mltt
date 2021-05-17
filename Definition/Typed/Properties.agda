@@ -595,17 +595,9 @@ genVar {r = %} d = proof-irrelevance d d
 
 toLevelInj : ∀ {l₁ l₁′ : TypeLevel} {l<₁ : l₁′ <∞ l₁} {l₂ l₂′ : TypeLevel} {l<₂ : l₂′ <∞ l₂} →
                toLevel l₁′ PE.≡ toLevel l₂′ → l₁′ PE.≡ l₂′
-toLevelInj {ι ¹} {ι ⁰} {Nat.s≤s Nat.z≤n} {ι ¹} {ι ⁰} {Nat.s≤s Nat.z≤n} e = PE.refl
-toLevelInj {ι ¹} {ι ⁰} {Nat.s≤s Nat.z≤n} {∞} {ι ⁰} {Nat.s≤s c′} e = PE.refl
-toLevelInj {∞} {ι ⁰} {c} {∞} {ι ⁰} {c′} e = PE.refl
-toLevelInj {∞} {ι ¹} {c} {∞} {ι ¹} {c′} e = PE.refl
-toLevelInj {∞} {ι ⁰} {c} {ι x₁} {ι ⁰} e = PE.refl
-toLevelInj {∞} {ι ¹} {c} {ι x₁} {ι ¹} e = PE.refl
-toLevelInj {∞} {ι ¹} {c} {ι ¹} {∞} {Nat.s≤s ()} e
-toLevelInj {∞} {ι ¹} {c} {∞} {∞} {Nat.s≤s (Nat.s≤s ())} e
-toLevelInj {ι ¹} {∞} {Nat.s≤s ()} e
-toLevelInj {∞} {∞} {Nat.s≤s (Nat.s≤s ())}  e
-
+toLevelInj {.(ι ¹)} {.(ι ⁰)} {emb<} {.(ι ¹)} {.(ι ⁰)} {emb<} e = PE.refl
+toLevelInj {.∞} {.(ι ¹)} {∞<} {.(ι ¹)} {.(ι ⁰)} {emb<} ()
+toLevelInj {.∞} {.(ι ¹)} {∞<} {.∞} {.(ι ¹)} {∞<} e = PE.refl
 
 IdRed*Term′ : ∀ {Γ A B t u l}
          (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι l ])

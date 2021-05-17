@@ -222,41 +222,6 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       typeK : Type K
       K≡K   : Γ ⊢ K ≅ K ∷ Univ r l′ ^ [ ! , next l′ ]
       [t]   : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ^ [ r , ι l′ ]
-      [IdK] : ∀ {ρ Δ a b} → r PE.≡ !
-            → ([ρ] : ρ ∷ Δ ⊆ Γ)
-            → (⊢Δ : ⊢ Δ)
-            → Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
-            → Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
-            → Δ ⊩ Id (U.wk ρ t) a b ^ [ % , ι l′ ]
-      IdKExt : ∀ {ρ Δ a a′ b b′} → (r≡! : r PE.≡ !)
-            → ([ρ] : ρ ∷ Δ ⊆ Γ)
-            → (⊢Δ : ⊢ Δ)
-            → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
-            → ([a′] : Δ ⊩ a′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
-            → Δ ⊩ a ≡ a′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
-            → ([b] : Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
-            → ([b′] : Δ ⊩ b′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
-            → Δ ⊩ b ≡ b′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
-            → Δ ⊩ Id (U.wk ρ t) a b ≡ Id (U.wk ρ t) a′ b′ ^ [ % , ι l′ ] / [IdK] r≡! [ρ] ⊢Δ [a] [b]
-      [castK] : ∀ {ρ Δ B a e} → l′ PE.≡ ⁰ → r PE.≡ !
-            → ([ρ] : ρ ∷ Δ ⊆ Γ)
-            → (⊢Δ : ⊢ Δ)
-            → ([B] : Δ ⊩ B ^ [ ! , ι l′ ])
-            → Δ ⊢ e ∷ Id (U ⁰) (U.wk ρ t) B ^ [ % , next ⁰ ]
-            → Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
-            → Δ ⊩ cast l′ (U.wk ρ t) B e a ∷ B ^ [ ! , ι l′ ] / [B]
-      castKext : ∀ {ρ Δ B B′ a a′ e e′} → l′ PE.≡ ⁰ → r PE.≡ !
-            → ([ρ] : ρ ∷ Δ ⊆ Γ)
-            → (⊢Δ : ⊢ Δ)
-            → ([B] : Δ ⊩ B ^ [ ! , ι l′ ])
-            → ([B′] : Δ ⊩ B′ ^ [ ! , ι l′ ])
-            → Δ ⊩ B ≡ B′ ^ [ ! , ι l′ ] / [B]
-            → ([e] : Δ ⊢ e ∷ Id (U ⁰) (U.wk ρ t) B ^ [ % , next ⁰ ])
-            → ([e′] : Δ ⊢ e′ ∷ Id (U ⁰) (U.wk ρ t) B′ ^ [ % , next ⁰ ])
-            → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
-            → ([a′] : Δ ⊩ a′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ)
-            → Δ ⊩ a ≡ a′ ∷ U.wk ρ t ^ [ r , ι l′ ] / [t] [ρ] ⊢Δ
-            → Δ ⊩ cast l′ (U.wk ρ t) B e a ≡ cast l′ (U.wk ρ t) B′ e′ a′ ∷ B ^ [ ! , ι l′ ] / [B]
 
   -- Universe term equality
   record _⊩¹U_≡_∷_^_/_ (Γ : Con Term) (t u : Term) (X : Term) (ll : TypeLevel) ([X] : Γ ⊩¹U X ^ ll) : Set where
@@ -268,23 +233,6 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       [u]   : Γ ⊩¹U u ∷ X ^ ll / [X]
       A≡B   : Γ ⊢ _⊩¹U_∷_^_/_.K [t] ≅ _⊩¹U_∷_^_/_.K [u] ∷ Univ r l′ ^ [ ! , next l′ ]
       [t≡u] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ≡ U.wk ρ u ^ [ r , ι l′ ] / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ
-      IdHo : ∀ {ρ Δ a b} → (r≡! : r PE.≡ !)
-           → ([ρ] : ρ ∷ Δ ⊆ Γ)
-           → (⊢Δ : ⊢ Δ)
-           → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ)
-           → ([b] : Δ ⊩ b ∷ U.wk ρ t ^ [ r , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ)
-           → Δ ⊩ Id (U.wk ρ t) a b ≡ Id (U.wk ρ u) a b ^ [ % , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
-      castHo : ∀ {ρ Δ B a e} → l′ PE.≡ ⁰ → r PE.≡ !
-           → ([ρ] : ρ ∷ Δ ⊆ Γ)
-           → (⊢Δ : ⊢ Δ)
-           → ([B] : Δ ⊩ B ^ [ ! , ι l′ ])
-           → ([e] : Δ ⊢ e ∷ Id (U ⁰) (U.wk ρ t) B ^ [ % , next ⁰ ])
-           → ([a] : Δ ⊩ a ∷ U.wk ρ t ^ [ r , ι l′ ]
-                      / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ)
-           → Δ ⊩ cast l′ (U.wk ρ t) B e a ≡ cast l′ (U.wk ρ u) B e a ∷ B ^ [ ! , ι l′ ] / [B]
 
   mutual
 
@@ -499,12 +447,12 @@ pattern ∃ᵣ′  a b c d e f g h i = ∃ᵣ (∃ᵣ a b c d e f g h i)
 
 -- we need to split the LogRelKit into the level part and the general part to convince Agda termination checker
 
+
+
 logRelRec : ∀ l {l′} → l′ <∞ l → LogRelKit
 logRelRec (ι ⁰) = λ ()
-logRelRec (ι ¹) X = LogRel.kit (ι ⁰) (λ ())
-logRelRec ∞ {ι ⁰} X = LogRel.kit (ι ⁰) (λ ())
-logRelRec ∞ {ι ¹} X = LogRel.kit (ι ¹) λ x → LogRel.kit (ι ⁰) (λ ())
-logRelRec ∞ {∞} (Nat.s≤s (Nat.s≤s ()))
+logRelRec (ι ¹) X = LogRel.kit (ι ⁰) λ ()
+logRelRec ∞ X = LogRel.kit (ι ¹) (λ X → LogRel.kit (ι ⁰) λ ())
 
 kit : ∀ (i : TypeLevel) → LogRelKit
 kit l =  LogRel.kit l (logRelRec l)
@@ -539,10 +487,8 @@ logRelIrr (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t = Emptyₜ (ne (conv ⊢t (reduc
 logRelIrr (ne x) ⊢t = neₜ ⊢t
 logRelIrr (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
 logRelIrr (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) ∃ₙ ∃ₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
-logRelIrr {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) ⊢t = logRelIrr [A] ⊢t
-logRelIrr {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) ⊢t = logRelIrr [A] ⊢t
-logRelIrr {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) [A]) ⊢t = logRelIrr [A] ⊢t
-logRelIrr {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) ⊢t
+logRelIrr {ι ¹} (emb X [A]) ⊢t = logRelIrr [A] ⊢t
+logRelIrr {∞} (emb X [A]) ⊢t = logRelIrr [A] ⊢t
 
 
 logRelIrrEq : ∀ {l t u Γ l' A} ([A] : Γ ⊩⟨ l ⟩ A ^ [ % , l' ]) (⊢t : Γ ⊢ t ∷ A ^ [ % , l' ]) (⊢u : Γ ⊢ u ∷ A ^ [ % , l' ]) → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ % , l' ] / [A]
@@ -551,7 +497,5 @@ logRelIrrEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t ⊢u = Emptyₜ₌ (ne ((conv 
 logRelIrrEq (ne x) ⊢t ⊢u = neₜ₌ ⊢t ⊢u
 logRelIrrEq (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) , (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )
 logRelIrrEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) ∃ₙ ∃ₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) , (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) ∃ₙ ∃ₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )
-logRelIrrEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) ⊢t = logRelIrrEq [A] ⊢t
-logRelIrrEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) [A]) ⊢t = logRelIrrEq [A] ⊢t
-logRelIrrEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) [A]) ⊢t = logRelIrrEq [A] ⊢t
-logRelIrrEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) ⊢t
+logRelIrrEq {ι ¹} (emb X [A]) ⊢t = logRelIrrEq [A] ⊢t
+logRelIrrEq {∞} (emb X [A]) ⊢t = logRelIrrEq [A] ⊢t

@@ -31,20 +31,17 @@ convTermTUniv :  ∀ {Γ A B t l l' r ll l< d r' ll' l<' el' d'}
                       (er : r PE.≡ r') (ellll' : ll PE.≡ ll') →
                       Γ ⊩⟨ l ⟩  t ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d) →
                       Γ ⊩⟨ l' ⟩ t ∷ B ^ [ ! , next ll ] / Uᵣ (Uᵣ r' ll' l<' el' d')
-convTermTUniv {l< = l<} {l<' = l<'} {d' = d'} er ellll' (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt) =
+convTermTUniv {l< = l<} {l<' = l<'} {d' = d'} er ellll' (Uₜ K d typeK K≡K [t]) =
     let dd = PE.subst (λ x → _ ⊢ _ :⇒*: Univ x _ ^ _) (PE.sym er) (PE.subst (λ x → _ ⊢ _ :⇒*: Univ _ x ^ [ ! , next x ]) (PE.sym ellll') d') in
-    reduction-irrelevant-Univ {l< = l<} {l<' = l<'} {el = PE.refl} {D = dd} {D' = d'} er (Uₜ K d typeK K≡K [t] [IdK] IdKExt [castK] castKExt)
+    reduction-irrelevant-Univ {l< = l<} {l<' = l<'} {el = PE.refl} {D = dd} {D' = d'} er (Uₜ K d typeK K≡K [t])
 
 convEqTermTUniv : ∀ {Γ A B t u l r ll l< d dd} →
                     Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl d) →
                     Γ ⊩⟨ l ⟩ t ≡ u ∷ B ^ [ ! , next ll ] / Uᵣ (Uᵣ r ll l< PE.refl dd)
-convEqTermTUniv {l = ι ¹} {r = r} {⁰} (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
-                   Uₜ₌ (convTermTUniv PE.refl PE.refl [t]) (convTermTUniv PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
-convEqTermTUniv {l = ι ¹} {r = r} {¹} {l< = Nat.s≤s ()} (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo)
-convEqTermTUniv {l = ∞} {r = r} {⁰} (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
-                   Uₜ₌ (convTermTUniv PE.refl PE.refl [t]) (convTermTUniv PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
-convEqTermTUniv {l = ∞} {r = r} {¹} (Uₜ₌ [t] [u] A≡B [t≡u] IdHo castHo) =
-                   Uₜ₌ (convTermTUniv PE.refl PE.refl [t]) (convTermTUniv PE.refl PE.refl [u]) A≡B [t≡u] IdHo castHo
+convEqTermTUniv {l = ι ¹} {r = r} {⁰} (Uₜ₌ [t] [u] A≡B [t≡u]) =
+                   Uₜ₌ (convTermTUniv PE.refl PE.refl [t]) (convTermTUniv PE.refl PE.refl [u]) A≡B [t≡u]
+convEqTermTUniv {l = ∞} {r = r} {¹} (Uₜ₌ [t] [u] A≡B [t≡u]) =
+                   Uₜ₌ (convTermTUniv PE.refl PE.refl [t]) (convTermTUniv PE.refl PE.refl [u]) A≡B [t≡u] 
 
 
 mutual
@@ -123,8 +120,6 @@ mutual
     in convTermTUniv r≡r l≡l X
   convTermT₁ (emb⁰¹ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb¹⁰ X) A≡B t = convTermT₁ X A≡B t
-  convTermT₁ (emb⁰∞ X) A≡B t = convTermT₁ X A≡B t
-  convTermT₁ (emb∞⁰ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb¹∞ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb∞¹ X) A≡B t = convTermT₁ X A≡B t
 
@@ -201,8 +196,6 @@ mutual
     in convTermTUniv (PE.sym r≡r) (PE.sym l≡l) X
   convTermT₂ (emb⁰¹ X) A≡B t = convTermT₂ X A≡B t
   convTermT₂ (emb¹⁰ X) A≡B t = convTermT₂ X A≡B t
-  convTermT₂ (emb⁰∞ X) A≡B t = convTermT₂ X A≡B t
-  convTermT₂ (emb∞⁰ X) A≡B t = convTermT₂ X A≡B t
   convTermT₂ (emb¹∞ X) A≡B t = convTermT₂ X A≡B t
   convTermT₂ (emb∞¹ X) A≡B t = convTermT₂ X A≡B t
 
@@ -307,8 +300,6 @@ mutual
     in reduction-irrelevant-Univ= {l< = l<} {l<' = l<'} {el = PE.refl} {el' = el'} {D = dd} {D' = d'} r≡r (convEqTermTUniv X)
   convEqTermT₁ (emb⁰¹ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb¹⁰ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
-  convEqTermT₁ (emb⁰∞ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
-  convEqTermT₁ (emb∞⁰ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb¹∞ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb∞¹ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   
@@ -381,8 +372,6 @@ mutual
     in reduction-irrelevant-Univ= {l< = l<'} {el = PE.refl} {D = dd} {D' = d} r≡r (convEqTermTUniv X)
   convEqTermT₂ (emb⁰¹ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
   convEqTermT₂ (emb¹⁰ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
-  convEqTermT₂ (emb⁰∞ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
-  convEqTermT₂ (emb∞⁰ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
   convEqTermT₂ (emb¹∞ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
   convEqTermT₂ (emb∞¹ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
 

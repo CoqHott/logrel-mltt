@@ -48,13 +48,9 @@ data TypeLevel : Set where
   ι : Level → TypeLevel
   ∞ : TypeLevel
 
-toFin : TypeLevel → Fin.Fin 3
-toFin (ι ⁰) = Fin.zero
-toFin (ι ¹) = Fin.suc Fin.zero
-toFin ∞ = Fin.suc (Fin.suc Fin.zero)
-
-_<∞_ : (i j : TypeLevel) → Set
-i <∞ j = (toFin i) Fin.< (toFin j)
+data _<∞_ : (i j : TypeLevel) → Set where
+  emb< : ι ⁰ <∞ ι ¹
+  ∞< : ι ¹ <∞ ∞
 
 next : Level → TypeLevel
 next ⁰ = ι ¹

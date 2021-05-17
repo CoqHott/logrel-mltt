@@ -29,12 +29,8 @@ sucTerm′ (noemb D) (ℕₜ n [[ ⊢t , ⊢u , d ]] n≡n prop) =
          (≅-suc-cong (≅ₜ-red (red D) d d ℕₙ
                              (naturalWhnf natN) (naturalWhnf natN) n≡n))
          (sucᵣ (ℕₜ n [[ ⊢t , ⊢u , d ]] n≡n prop))
-sucTerm′ {ι ¹} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) x) [n] = sucTerm′ x [n]
-sucTerm′ {ι ¹} (emb {ι ¹} (Nat.s≤s ()) x) [n]
-sucTerm′ {ι ¹} (emb {∞} (Nat.s≤s ()) x) [n] 
-sucTerm′ {∞} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) x) [n] = sucTerm′ x [n]
-sucTerm′ {∞} (emb {ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) x) [n] = sucTerm′ x [n]
-sucTerm′ {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x) [n]
+sucTerm′ (emb emb< x) [n] = sucTerm′ x [n]
+sucTerm′ (emb ∞< x) [n] = sucTerm′ x [n]
 
 -- Reducible natural numbers can be used to construct reducible successors.
 sucTerm : ∀ {l Γ n} ([ℕ] : Γ ⊩⟨ l ⟩ ℕ ^ [ ! , ι ⁰ ])
@@ -57,12 +53,8 @@ sucEqTerm′ (noemb D) (ℕₜ₌ k k′ [[ ⊢t , ⊢u , d ]]
   in  ℕₜ₌ _ _ (idRedTerm:*: (sucⱼ ⊢t)) (idRedTerm:*: (sucⱼ ⊢t₁))
         (≅-suc-cong (≅ₜ-red (red D) d d₁ ℕₙ (naturalWhnf natK) (naturalWhnf natK′) t≡u))
         (sucᵣ (ℕₜ₌ k k′ [[ ⊢t , ⊢u , d ]] [[ ⊢t₁ , ⊢u₁ , d₁ ]] t≡u prop))
-sucEqTerm′ {ι ¹} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) x) [n≡n′] = sucEqTerm′ x [n≡n′]
-sucEqTerm′ {ι ¹} (emb {ι ¹} (Nat.s≤s ()) x) [n≡n′]
-sucEqTerm′ {ι ¹} (emb {∞} (Nat.s≤s ()) x) [n≡n′] 
-sucEqTerm′ {∞} (emb {ι ⁰} (Nat.s≤s Nat.z≤n) x) [n≡n′] = sucEqTerm′ x [n≡n′]
-sucEqTerm′ {∞} (emb {ι ¹} (Nat.s≤s (Nat.s≤s Nat.z≤n)) x) [n≡n′] = sucEqTerm′ x [n≡n′]
-sucEqTerm′ {∞} (emb {∞} (Nat.s≤s (Nat.s≤s ())) x) [n≡n′]
+sucEqTerm′ (emb emb< x) [n≡n′] = sucEqTerm′ x [n≡n′]
+sucEqTerm′ (emb ∞< x) [n≡n′] = sucEqTerm′ x [n≡n′]
 
 -- Reducible natural number equality can be used to construct reducible equality
 -- of the successors of the numbers.

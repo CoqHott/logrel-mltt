@@ -25,10 +25,8 @@ escape (Emptyᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) = ⊢A
 escape (Πᵣ′ rF lF lG F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
-escape {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) = escape A
-escape {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) = escape A
-escape {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) = escape A
-escape {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A)
+escape {ι ¹} (emb X A) = escape A
+escape {∞} (emb X A) = escape A
 
 -- Reducible type equality respect the equality relation.
 escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
@@ -46,16 +44,14 @@ escapeEq (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)
 escapeEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ ∃ₙ ∃ₙ A≡B
-escapeEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
-escapeEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) A≡B = escapeEq A A≡B
-escapeEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) A≡B = escapeEq A A≡B
-escapeEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) A≡B
+escapeEq {ι ¹} (emb X A) A≡B = escapeEq A A≡B
+escapeEq {∞} (emb X A) A≡B = escapeEq A A≡B
 
 -- Reducible terms are well-formed.
 escapeTerm : ∀ {l Γ A t r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
               → Γ ⊢ t ∷ A ^ r
-escapeTerm (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ A [[ ⊢t , ⊢u , d ]] typeA A≡A [A] [IdA] IdAExt [castA] castAExt) = conv ⊢t (sym (subset* (red D)))
+escapeTerm (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ A [[ ⊢t , ⊢u , d ]] typeA A≡A [A]) = conv ⊢t (sym (subset* (red D)))
 escapeTerm (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Emptyᵣ D) (Emptyₜ (ne ⊢t)) =
@@ -68,16 +64,14 @@ escapeTerm {r = [ ! , l ] } (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-e
   conv ⊢t (sym (subset* (red D)))
 escapeTerm {r = [ % , l ]} (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
 escapeTerm (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (sym (subset* (red D)))
-escapeTerm {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t = escapeTerm A t
-escapeTerm {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t = escapeTerm A t
-escapeTerm {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) t = escapeTerm A t
-escapeTerm {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) t
+escapeTerm {ι ¹} (emb X A) t = escapeTerm A t
+escapeTerm {∞} (emb X A) t = escapeTerm A t
 
 -- Reducible term equality respect the equality relation.
 escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
-escapeTermEq (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ₌ (Uₜ A d typeA A≡A [t] [IdA] IdAExt [castA] castAext) (Uₜ B d′ typeB B≡B [u] [IdB] IdBExt [castB] castBext) A≡B [A≡B] IdHo castHo) = ≅ₜ-red (red D) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
+escapeTermEq (Uᵣ′ _ _ _ _ l< PE.refl D) (Uₜ₌ (Uₜ A d typeA A≡A [t]) (Uₜ B d′ typeB B≡B [u]) A≡B [A≡B]) = ≅ₜ-red (red D) (redₜ d) (redₜ d′) Uₙ (typeWhnf typeA) (typeWhnf typeB) A≡B
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) ℕₙ
@@ -95,7 +89,5 @@ escapeTermEq {r = [ ! , l ]} (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
 escapeTermEq {r = [ % , l ] } (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
-escapeTermEq {ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
-escapeTermEq {∞} (emb {l′ = ι ⁰} (Nat.s≤s X) A) t≡u = escapeTermEq A t≡u
-escapeTermEq {∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s X)) A) t≡u = escapeTermEq A t≡u
-escapeTermEq {∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) A) t≡u
+escapeTermEq {ι ¹} (emb X A) t≡u = escapeTermEq A t≡u
+escapeTermEq {∞} (emb X A) t≡u = escapeTermEq A t≡u

@@ -153,9 +153,6 @@ mutual
   transEqT (emb⁰¹¹ S) A≡B B≡C = transEqT S A≡B B≡C
   transEqT (emb¹⁰¹ S) A≡B B≡C = transEqT S A≡B B≡C
   transEqT (emb¹¹⁰ S) A≡B B≡C = transEqT S A≡B B≡C
-  transEqT (emb⁰∞∞ S) A≡B B≡C = transEqT S A≡B B≡C
-  transEqT (emb∞⁰∞ S) A≡B B≡C = transEqT S A≡B B≡C
-  transEqT (emb∞∞⁰ S) A≡B B≡C = transEqT S A≡B B≡C
   transEqT (emb¹∞∞ S) A≡B B≡C = transEqT S A≡B B≡C
   transEqT (emb∞¹∞ S) A≡B B≡C = transEqT S A≡B B≡C
   transEqT (emb∞∞¹ S) A≡B B≡C = transEqT S A≡B B≡C
@@ -262,8 +259,8 @@ transEqTerm¹ : ∀ {Γ A t u v r}
              → Γ ⊩⟨ ι ¹ ⟩ t ≡ u ∷ A ^ r / [A]
              → Γ ⊩⟨ ι ¹ ⟩ u ≡ v ∷ A ^ r / [A]
              → Γ ⊩⟨ ι ¹ ⟩ t ≡ v ∷ A ^ r / [A]
-transEqTerm¹ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB)
-  (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C) =
+transEqTerm¹ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u])
+  (Uₜ₌ [u]′ [v] B′≡C [u≡v]) =
   let
     ti = LogRel._⊩¹U_∷_^_/_.[t]
     ⊢Γ = wf (_⊢_:⇒*:_^_.⊢A d)
@@ -275,31 +272,6 @@ transEqTerm¹ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t]
         (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
   in
   Uₜ₌ [t] [v] A≡C [t≡v]
-    (λ r≡! [ρ] ⊢Δ [a] [b] →
-      let
-        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
-        [b:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]
-        [a:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [a]
-        [b:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [b]
-        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
-        [b:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [b:B]
-        [IdA] = LogRel._⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
-        [IdB] = LogRel._⊩¹U_∷_^_/_.[IdK] [u] r≡! [ρ] ⊢Δ [a:B] [b:B]
-        [IdC] = LogRel._⊩¹U_∷_^_/_.[IdK] [v] r≡! [ρ] ⊢Δ [a:C] [b:C]
-        [IdB′] = LogRel._⊩¹U_∷_^_/_.[IdK] [u]′ r≡! [ρ] ⊢Δ [a:B′] [b:B′]
-      in
-      transEq [IdA] [IdB] [IdC] (IdHoAB r≡! [ρ] ⊢Δ [a] [b]) (irrelevanceEq [IdB′] [IdB] (IdHoB′C r≡! [ρ] ⊢Δ [a:B′] [b:B′])))
-    (λ {ρ} {Δ} x r≡! [ρ] ⊢Δ [B] [e] [a] →
-      let
-        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
-        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
-        ⊢B = un-univ (escape [B])
-        wkt≡wku = un-univ≡ (≅-eq (escapeEq (ti [t] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)))
-        wkt≡wku = PE.subst (λ X → Δ ⊢ wk ρ t ≡ wk ρ u ∷ Univ X ⁰ ^ [ ! , ι ¹ ]) r≡! wkt≡wku
-        [e]′ = (conv [e] (univ (Id-cong (refl (univ 0<1 ⊢Δ)) wkt≡wku (refl ⊢B))))
-      in
-      transEqTerm⁰ [B] (castHoAB x r≡! [ρ] ⊢Δ [B] [e] [a]) (castHoB′C x r≡! [ρ] ⊢Δ [B] [e]′ [a:B′]))
-transEqTerm¹ (Uᵣ (Uᵣ rU ¹ (Nat.s≤s ()) eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB) (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C)
 transEqTerm¹ (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
 transEqTerm¹ (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
 transEqTerm¹ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
@@ -332,8 +304,8 @@ transEqTerm∞ : ∀ {Γ A t u v r}
              → Γ ⊩⟨ ∞ ⟩ t ≡ u ∷ A ^ r / [A]
              → Γ ⊩⟨ ∞ ⟩ u ≡ v ∷ A ^ r / [A]
              → Γ ⊩⟨ ∞ ⟩ t ≡ v ∷ A ^ r / [A]
-transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB)
-  (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C) =
+transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u])
+  (Uₜ₌ [u]′ [v] B′≡C [u≡v]) =
   let
     ti = LogRel._⊩¹U_∷_^_/_.[t]
     ⊢Γ = wf (_⊢_:⇒*:_^_.⊢A d)
@@ -345,32 +317,8 @@ transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t
         (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
   in
   Uₜ₌ [t] [v] A≡C [t≡v]
-    (λ r≡! [ρ] ⊢Δ [a] [b] →
-      let
-        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
-        [b:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]
-        [a:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [a]
-        [b:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [b]
-        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
-        [b:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [b:B]
-        [IdA] = LogRel._⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
-        [IdB] = LogRel._⊩¹U_∷_^_/_.[IdK] [u] r≡! [ρ] ⊢Δ [a:B] [b:B]
-        [IdC] = LogRel._⊩¹U_∷_^_/_.[IdK] [v] r≡! [ρ] ⊢Δ [a:C] [b:C]
-        [IdB′] = LogRel._⊩¹U_∷_^_/_.[IdK] [u]′ r≡! [ρ] ⊢Δ [a:B′] [b:B′]
-      in
-      transEq [IdA] [IdB] [IdC] (IdHoAB r≡! [ρ] ⊢Δ [a] [b]) (irrelevanceEq [IdB′] [IdB] (IdHoB′C r≡! [ρ] ⊢Δ [a:B′] [b:B′])))
-    (λ {ρ} {Δ} x r≡! [ρ] ⊢Δ [B] [e] [a] →
-      let
-        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
-        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
-        ⊢B = un-univ (escape [B])
-        wkt≡wku = un-univ≡ (≅-eq (escapeEq (ti [t] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)))
-        wkt≡wku = PE.subst (λ X → Δ ⊢ wk ρ t ≡ wk ρ u ∷ Univ X ⁰ ^ [ ! , ι ¹ ]) r≡! wkt≡wku
-        [e]′ = (conv [e] (univ (Id-cong (refl (univ 0<1 ⊢Δ)) wkt≡wku (refl ⊢B))))
-      in
-      transEqTerm⁰ [B] (castHoAB x r≡! [ρ] ⊢Δ [B] [e] [a]) (castHoB′C x r≡! [ρ] ⊢Δ [B] [e]′ [a:B′]))
-transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ¹ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u] IdHoAB castHoAB)
-  (Uₜ₌ [u]′ [v] B′≡C [u≡v] IdHoB′C castHoB′C) =
+transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ¹ l< eq d)) (Uₜ₌ [t] [u] A≡B [t≡u])
+  (Uₜ₌ [u]′ [v] B′≡C [u≡v]) =
   let
     ti = LogRel._⊩¹U_∷_^_/_.[t]
     ⊢Γ = wf (_⊢_:⇒*:_^_.⊢A d)
@@ -382,21 +330,6 @@ transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ¹ l< eq d)) (Uₜ₌ [t]
         (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
   in
   Uₜ₌ [t] [v] A≡C [t≡v]
-    (λ r≡! [ρ] ⊢Δ [a] [b] →
-      let
-        [a:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [a]
-        [b:B] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ) [b]
-        [a:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [a]
-        [b:C] = convTerm₁ (ti [t] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡v] [ρ] ⊢Δ) [b]
-        [a:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [a:B]
-        [b:B′] = irrelevanceTerm (ti [u] [ρ] ⊢Δ) (ti [u]′ [ρ] ⊢Δ) [b:B]
-        [IdA] = LogRel._⊩¹U_∷_^_/_.[IdK] [t] r≡! [ρ] ⊢Δ [a] [b]
-        [IdB] = LogRel._⊩¹U_∷_^_/_.[IdK] [u] r≡! [ρ] ⊢Δ [a:B] [b:B]
-        [IdC] = LogRel._⊩¹U_∷_^_/_.[IdK] [v] r≡! [ρ] ⊢Δ [a:C] [b:C]
-        [IdB′] = LogRel._⊩¹U_∷_^_/_.[IdK] [u]′ r≡! [ρ] ⊢Δ [a:B′] [b:B′]
-      in
-      transEq [IdA] [IdB] [IdC] (IdHoAB r≡! [ρ] ⊢Δ [a] [b]) (irrelevanceEq [IdB′] [IdB] (IdHoB′C r≡! [ρ] ⊢Δ [a:B′] [b:B′])))
-    (λ {ρ} {Δ} ¹≡⁰ r≡! [ρ] ⊢Δ [B] [e] [a] → ⊥-elim (⁰≢¹ (PE.sym ¹≡⁰)))
 transEqTerm∞ (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
 transEqTerm∞ (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
 transEqTerm∞ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
@@ -422,9 +355,7 @@ transEqTerm∞ {r = [ % , l ]} (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] 
 transEqTerm∞ {r = [ % , l ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
-transEqTerm∞ (emb {l′ = ι ⁰} l< [A]) [t≡u] [u≡v] = transEqTerm⁰ [A] [t≡u] [u≡v]
 transEqTerm∞ (emb {l′ = ι ¹} l< [A]) [t≡u] [u≡v] = transEqTerm¹ [A] [t≡u] [u≡v]
-transEqTerm∞ (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) [t≡u] [u≡v]
 
 transEqTerm : ∀ {l Γ A t u v r}
               ([A] : Γ ⊩⟨ l ⟩ A ^ r)
