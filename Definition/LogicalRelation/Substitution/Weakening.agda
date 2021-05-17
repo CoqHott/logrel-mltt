@@ -27,7 +27,7 @@ wk1ᵛ {A} [Γ] [F] [A] ⊢Δ [σ] =
   in  [σA]′
   ,   (λ [σ′] [σ≡σ′] →
          irrelevanceEq″ (PE.sym (subst-wk A))
-                        (PE.sym (subst-wk A))
+                        (PE.sym (subst-wk A)) PE.refl PE.refl
                         [σA] [σA]′
                         (proj₂ ([A] ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′])))
 
@@ -42,6 +42,6 @@ wk1Eqᵛ {A} {B} [Γ] [F] [A] [A≡B] ⊢Δ [σ] =
   let [σA] = proj₁ ([A] ⊢Δ (proj₁ [σ]))
       [σA]′ = irrelevance′ (PE.sym (subst-wk A)) [σA]
   in  irrelevanceEq″ (PE.sym (subst-wk A))
-                     (PE.sym (subst-wk B))
+                     (PE.sym (subst-wk B)) PE.refl PE.refl
                      [σA] [σA]′
                      ([A≡B] ⊢Δ (proj₁ [σ]))

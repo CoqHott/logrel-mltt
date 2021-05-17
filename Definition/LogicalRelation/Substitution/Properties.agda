@@ -69,7 +69,7 @@ wkSubstS ε ⊢Δ ⊢Δ′ ρ [σ] = tt
 wkSubstS {σ = σ} {Γ = Γ ∙ A ^ rA} ([Γ] ∙ x) ⊢Δ ⊢Δ′ ρ [σ] =
   let [tailσ] = wkSubstS [Γ] ⊢Δ ⊢Δ′ ρ (proj₁ [σ])
   in  [tailσ]
-   ,  irrelevanceTerm′ (wk-subst A) PE.refl
+   ,  irrelevanceTerm′ (wk-subst A) PE.refl PE.refl
         (LR.wk ρ ⊢Δ′ (proj₁ (x ⊢Δ (proj₁ [σ]))))
         (proj₁ (x ⊢Δ′ [tailσ]))
         (LR.wkTerm ρ ⊢Δ′ (proj₁ (x ⊢Δ (proj₁ [σ]))) (proj₂ [σ]))
@@ -84,7 +84,7 @@ wkSubstSEq : ∀ {ρ σ σ′ Γ Δ Δ′} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ) (
 wkSubstSEq ε ⊢Δ ⊢Δ′ ρ [σ] [σ≡σ′] = tt
 wkSubstSEq {Γ = Γ ∙ A ^ rA} ([Γ] ∙ x) ⊢Δ ⊢Δ′ ρ [σ] [σ≡σ′] =
   wkSubstSEq [Γ] ⊢Δ ⊢Δ′ ρ (proj₁ [σ]) (proj₁ [σ≡σ′])
-  , irrelevanceEqTerm′ (wk-subst A) PE.refl (LR.wk ρ ⊢Δ′ (proj₁ (x ⊢Δ (proj₁ [σ]))))
+  , irrelevanceEqTerm′ (wk-subst A) PE.refl PE.refl (LR.wk ρ ⊢Δ′ (proj₁ (x ⊢Δ (proj₁ [σ]))))
                             (proj₁ (x ⊢Δ′ (wkSubstS [Γ] ⊢Δ ⊢Δ′ ρ (proj₁ [σ]))))
                             (LR.wkEqTerm ρ ⊢Δ′ (proj₁ (x ⊢Δ (proj₁ [σ]))) (proj₂ [σ≡σ′]))
 
