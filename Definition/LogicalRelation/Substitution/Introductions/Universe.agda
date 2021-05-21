@@ -11,6 +11,7 @@ open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.Typed.Weakening
 open import Definition.LogicalRelation
+open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
 
@@ -31,24 +32,30 @@ U¹ᵛ {Γ} {rU} l< [Γ] ⊢Δ [σ] =
 U⁰ⱼ : ∀ {r Γ} → ⊢ Γ → Γ ⊢ Univ r ⁰ ^ [ ! , ι ¹ ]
 U⁰ⱼ ⊢Γ = univ (univ 0<1 ⊢Γ)
 
-U⁰ᵛ : ∀ {Γ rU l} → (ι ⁰ <∞ l) → ([Γ] : ⊩ᵛ Γ)
+U⁰ᵛ : ∀ {Γ rU l' l} → (⁰ ≤ l') → (ι l' <∞ l) → ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ l ⟩ Univ rU ⁰ ^ [ ! , ι ¹ ] / [Γ]
-U⁰ᵛ {Γ} {rU} l< [Γ] ⊢Δ [σ] =
+U⁰ᵛ {Γ} {rU} (<is≤ 0<1) ∞< [Γ] ⊢Δ [σ] = emb ∞< (Uᵣ (Uᵣ rU ⁰ emb< PE.refl [[ U⁰ⱼ ⊢Δ , U⁰ⱼ ⊢Δ , id (U⁰ⱼ ⊢Δ) ]])) , (λ [σ′] [σ≡σ′] → id (U⁰ⱼ ⊢Δ))
+U⁰ᵛ {Γ} {rU} (≡is≤ PE.refl) l< [Γ] ⊢Δ [σ] = 
   Uᵣ (Uᵣ rU ⁰ l< PE.refl [[ U⁰ⱼ ⊢Δ , U⁰ⱼ ⊢Δ , id (U⁰ⱼ ⊢Δ) ]])
   , (λ [σ′] [σ≡σ′] → id (U⁰ⱼ ⊢Δ))
 
+Uᵛgen : ∀ {Γ rU lU lU' l} → (lU ≤ lU') → (ι lU' <∞ l) → ([Γ] : ⊩ᵛ Γ)
+     → Γ ⊩ᵛ⟨ l ⟩ Univ rU lU ^ [ ! , next lU ] / [Γ]
+Uᵛgen {lU = ⁰} = U⁰ᵛ
+Uᵛgen {lU = ¹} (≡is≤ PE.refl) = U¹ᵛ
+
 Uᵛ : ∀ {Γ rU lU l} → (ι lU <∞ l) → ([Γ] : ⊩ᵛ Γ)
      → Γ ⊩ᵛ⟨ l ⟩ Univ rU lU ^ [ ! , next lU ] / [Γ]
-Uᵛ {lU = ⁰} = U⁰ᵛ
-Uᵛ {lU = ¹} = U¹ᵛ
+Uᵛ = Uᵛgen (≡is≤ PE.refl)
 
 -- Valid terms of type U are valid types.
-univᵛ : ∀ {A Γ rU lU l} ([Γ] : ⊩ᵛ Γ)
+univᵛ : ∀ {A Γ rU lU lU' l} ([Γ] : ⊩ᵛ Γ)
+        (lU< : lU ≤ lU')
         ([U] : Γ ⊩ᵛ⟨ l ⟩ Univ rU lU ^ [ ! , next lU ] / [Γ])
       → Γ ⊩ᵛ⟨ l ⟩ A ∷ Univ rU lU ^ [ ! , next lU ] / [Γ] / [U]
-      → Γ ⊩ᵛ⟨ ι lU ⟩ A ^ [ rU , ι lU ] / [Γ]
-univᵛ {lU = lU} {l = l} [Γ] [U] [A] ⊢Δ [σ] =
-  let [A]₁ = univEq (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) in
+      → Γ ⊩ᵛ⟨ ι lU' ⟩ A ^ [ rU , ι lU ] / [Γ]
+univᵛ {lU = lU} {l = l} [Γ] lU< [U] [A] ⊢Δ [σ] =
+  let [A]₁ = irrelevance-≤ lU< (univEq (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ]))) in
   [A]₁ , λ [σ′] [σ≡σ′] → univEqEq (proj₁ ([U] ⊢Δ [σ])) [A]₁
                                   ((proj₂ ([A] ⊢Δ [σ])) [σ′] [σ≡σ′])
 

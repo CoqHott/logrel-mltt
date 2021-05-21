@@ -39,11 +39,11 @@ maybeEmbₛ′ : ∀ {l A r Γ}
 maybeEmbₛ′ {ι ⁰} [Γ] [A] = [A]
 maybeEmbₛ′ {ι ¹} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])
-      [σA]′ = maybeEmb′ (proj₁ ([A] ⊢Δ [σ]))
+      [σA]′ = maybeEmb′ (<is≤ 0<1) (proj₁ ([A] ⊢Δ [σ]))
   in  [σA]′
   ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
 maybeEmbₛ′ {∞} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])
-      [σA]′ = maybeEmb′ (proj₁ ([A] ⊢Δ [σ]))
+      [σA]′ = maybeEmb (proj₁ ([A] ⊢Δ [σ]))
   in  [σA]′
   ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))

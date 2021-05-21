@@ -146,6 +146,37 @@ mutual
   irrelevanceEqT (emb¹∞ x) A≡B = irrelevanceEqT x A≡B
   irrelevanceEqT (emb∞¹ x) A≡B = irrelevanceEqT x A≡B
 
+  irrelevance-level : ∀ {A Γ r l l'}
+                    → l <∞ l'
+                    → Γ ⊩⟨ l ⟩ A ^ r
+                    → Γ ⊩⟨ l' ⟩ A ^ r
+  irrelevance-level l< (ℕᵣ x) = ℕᵣ x
+  irrelevance-level l< (Emptyᵣ x) = Emptyᵣ x
+  irrelevance-level l< (ne x) = ne x
+  irrelevance-level l< (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) = Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A (λ x ⊢Δ → irrelevance-level l< ([F] x ⊢Δ ))
+                                                                          (λ [ρ] ⊢Δ x → irrelevance-level l< ([G] [ρ] ⊢Δ
+                                                                             (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) x)))
+                                                                           λ [ρ] ⊢Δ [a] [b] x →
+                                                                           irrelevanceEq
+                                                                                 ([G] [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a]))
+                                                                                 (irrelevance-level l< ([G] [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a])))
+                                                                                 (G-ext [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a])
+                                                                                                      (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [b])
+                                                                                                      (irrelevanceEqTerm (irrelevance-level l< ([F] [ρ] ⊢Δ )) ([F] [ρ] ⊢Δ) x))
+  irrelevance-level l< (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = ∃ᵣ′ F G D ⊢F ⊢G A≡A (λ x ⊢Δ → irrelevance-level l< ([F] x ⊢Δ ))
+                                                                          (λ [ρ] ⊢Δ x → irrelevance-level l< ([G] [ρ] ⊢Δ
+                                                                             (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) x)))
+                                                                           λ [ρ] ⊢Δ [a] [b] x →
+                                                                           irrelevanceEq
+                                                                                 ([G] [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a]))
+                                                                                 (irrelevance-level l< ([G] [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a])))
+                                                                                 (G-ext [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a])
+                                                                                                      (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [b])
+                                                                                                      (irrelevanceEqTerm (irrelevance-level l< ([F] [ρ] ⊢Δ )) ([F] [ρ] ⊢Δ) x))
+  irrelevance-level {r = [ .! , ll ]} ∞< (Uᵣ (Uᵣ r .⁰ emb< eq d)) = emb ∞< (Uᵣ (Uᵣ r _ emb< eq d))
+  irrelevance-level ∞< (emb emb< [A]) = emb ∞< (emb emb< [A])
+
+
 --------------------------------------------------------------------------------
 
   -- Irrelevance for terms
@@ -309,3 +340,10 @@ mutual
   irrelevanceEqTermT (emb¹⁰ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb¹∞ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb∞¹ x) t≡u = irrelevanceEqTermT x t≡u
+
+irrelevance-≤ : ∀ {A Γ r l l'}
+                  → l ≤ l'
+                  → Γ ⊩⟨ ι l ⟩ A ^ r
+                  → Γ ⊩⟨ ι l' ⟩ A ^ r
+irrelevance-≤ (<is≤ 0<1) [A] = irrelevance-level emb< [A]
+irrelevance-≤ (≡is≤ PE.refl) [A] = [A]
