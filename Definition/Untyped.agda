@@ -51,6 +51,11 @@ data TypeLevel : Set where
 data _<∞_ : (i j : TypeLevel) → Set where
   emb< : ι ⁰ <∞ ι ¹
   ∞< : ι ¹ <∞ ∞
+  -- ∞<⁰ : ι ⁰ <∞ ∞
+
+data _≤∞_ (i j : TypeLevel) : Set where
+  <∞is≤∞  : i <∞ j → i ≤∞ j
+  ≡is≤∞ : i PE.≡ j → i ≤∞ j
 
 next : Level → TypeLevel
 next ⁰ = ι ¹
@@ -65,6 +70,16 @@ predLevel : TypeLevel → Level
 predLevel (ι ⁰) = ⁰
 predLevel (ι ¹) = ⁰
 predLevel ∞ = ¹
+
+maxLevel : (i : Level) → (j : Level) → Σ Level λ k → i ≤ k × j ≤ k 
+maxLevel ⁰ ⁰ = ⁰ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
+maxLevel ⁰ ¹ = ¹ , ((<is≤ 0<1) , (≡is≤ PE.refl))
+maxLevel ¹ ⁰ = ¹ , ((≡is≤ PE.refl) , (<is≤ 0<1))
+maxLevel ¹ ¹ = ¹ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
+
+-- ≤<∞ : ∀ {i j k } → i ≤ j → ι j <∞ k → ι i <∞ k
+-- ≤<∞ (<is≤ 0<1) ∞< = ∞<⁰
+-- ≤<∞ (≡is≤ PE.refl) e = e
 
 record TypeInfo : Set where
   constructor [_,_]

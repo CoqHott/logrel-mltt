@@ -139,7 +139,7 @@ redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 
 redFirstTerm (conv t⇒u A≡B) = conv (redFirstTerm t⇒u) A≡B
 redFirstTerm (app-subst t⇒u a) = (redFirstTerm t⇒u) ∘ⱼ a
-redFirstTerm (β-red A t a) = (lamⱼ (≡is≤ PE.refl) (≡is≤ PE.refl) A t) ∘ⱼ a
+redFirstTerm (β-red {lA = lA} {lB = lB} ⊢A ⊢t ⊢a) = let _ , ( lA< , lB< ) = maxLevel lA lB in (lamⱼ lA< lB< ⊢A ⊢t) ∘ⱼ ⊢a 
 redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ F z s (redFirstTerm n⇒n′)
 redFirstTerm (natrec-zero F z s) = natrecⱼ F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
@@ -592,13 +592,15 @@ genVar : ∀ {x A Γ r l } → Γ ⊢ var x ∷ A ^ [ r , l ] → Γ ⊢ var x �
 genVar {r = !} = refl
 genVar {r = %} d = proof-irrelevance d d
 
-
 toLevelInj : ∀ {l₁ l₁′ : TypeLevel} {l<₁ : l₁′ <∞ l₁} {l₂ l₂′ : TypeLevel} {l<₂ : l₂′ <∞ l₂} →
                toLevel l₁′ PE.≡ toLevel l₂′ → l₁′ PE.≡ l₂′
 toLevelInj {.(ι ¹)} {.(ι ⁰)} {emb<} {.(ι ¹)} {.(ι ⁰)} {emb<} e = PE.refl
 toLevelInj {.∞} {.(ι ¹)} {∞<} {.(ι ¹)} {.(ι ⁰)} {emb<} ()
 toLevelInj {.∞} {.(ι ¹)} {∞<} {.∞} {.(ι ¹)} {∞<} e = PE.refl
-
+-- toLevelInj {l<₁ = ∞<⁰} {l<₂ = emb<} x = PE.refl
+-- toLevelInj {l<₁ = emb<} {l<₂ = ∞<⁰} x = PE.refl
+-- toLevelInj {l<₁ = ∞<⁰} {l<₂ = ∞<⁰} x = PE.refl
+  
 IdRed*Term′ : ∀ {Γ A B t u l}
          (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι l ])
          (⊢u : Γ ⊢ u ∷ A ^ [ ! , ι l ])
@@ -681,3 +683,7 @@ un-univ≡ (univ x) = x
 un-univ≡ (refl x) = refl (un-univ x)
 un-univ≡ (sym X) = sym (un-univ≡ X)
 un-univ≡ (trans X Y) = trans (un-univ≡ X) (un-univ≡ Y)
+
+univ-gen : ∀ {r Γ l} → (⊢Γ : ⊢ Γ) → Γ ⊢ Univ r l ^ [ ! , next l ]
+univ-gen {l = ⁰} ⊢Γ = univ (univ 0<1 ⊢Γ )
+univ-gen {l = ¹} ⊢Γ = Uⱼ ⊢Γ

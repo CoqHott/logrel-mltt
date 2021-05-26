@@ -194,11 +194,11 @@ mutual
                 → Γ ⊢ f ≡ g ∷ Π F ^ rF ° lF ▹ G ° lG  ^ [ ! , l ]
                 → Γ ⊢ a ≡ b ∷ F ^ [ rF , ι lF ]
                 → Γ ⊢ f ∘ a ≡ g ∘ b ∷ G [ a ] ^ [ ! , ι lG ]
-    β-red       : ∀ {a t F rF G l}
-                → Γ     ⊢ F ^ [ rF , ι l ]
-                → Γ ∙ F ^ [ rF , ι l ] ⊢ t ∷ G ^ [ ! , ι l ]
-                → Γ     ⊢ a ∷ F ^ [ rF , ι l ]
-                → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ [ ! , ι l ]
+    β-red       : ∀ {a t F rF lF G lG}
+                → Γ     ⊢ F ^ [ rF , ι lF ]
+                → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ ! , ι lG ]
+                → Γ     ⊢ a ∷ F ^ [ rF , ι lF ]
+                → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ [ ! , ι lG ]
     η-eq        : ∀ {f g F rF lF lG l G}
                 → Γ     ⊢ F ^ [ rF , ι lF ]
                 → Γ     ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , l ]
@@ -332,11 +332,11 @@ mutual
                  → Γ ⊢ t ⇒ u ∷ Π A ^ rA ° lA ▹ B ° lB ^ l
                  → Γ ⊢ a ∷ A ^ [ rA , ι lA ]
                  → Γ ⊢ t ∘ a ⇒ u ∘ a ∷ B [ a ] ^ ι lB
-    β-red        : ∀ {A B l a t rA}
-                 → Γ     ⊢ A ^ [ rA , ι l ]
-                 → Γ ∙ A ^ [ rA , ι l ] ⊢ t ∷ B ^ [ ! , ι l ]
-                 → Γ     ⊢ a ∷ A ^ [ rA , ι l ]
-                 → Γ     ⊢ (lam A ▹ t) ∘ a ⇒ t [ a ] ∷ B [ a ] ^ ι l
+    β-red        : ∀ {A B lA lB a t rA}
+                 → Γ     ⊢ A ^ [ rA , ι lA ]
+                 → Γ ∙ A ^ [ rA , ι lA ] ⊢ t ∷ B ^ [ ! , ι lB ]
+                 → Γ     ⊢ a ∷ A ^ [ rA , ι lA ]
+                 → Γ     ⊢ (lam A ▹ t) ∘ a ⇒ t [ a ] ∷ B [ a ] ^ ι lB
     natrec-subst : ∀ {z s n n′ F l}
                  → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , ι l ]
                  → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , ι l ]

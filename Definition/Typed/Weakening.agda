@@ -297,7 +297,7 @@ mutual
   wkRedTerm ρ ⊢Δ (app-subst {B = B} t⇒u a) =
     PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β B))
              (app-subst (wkRedTerm ρ ⊢Δ t⇒u) (wkTerm ρ ⊢Δ a))
-  wkRedTerm ρ ⊢Δ (β-red {A} {B} {l} {a} {t} ⊢A ⊢t ⊢a) =
+  wkRedTerm ρ ⊢Δ (β-red {A} {B} {lF} {lG} {a} {t} ⊢A ⊢t ⊢a) =
     let ⊢ρA = wk ρ ⊢Δ ⊢A
     in  PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (wk-β B))
                  (PE.subst (λ x → _ ⊢ U.wk _ ((lam _ ▹ t) ∘ a) ⇒ x ∷ _ ^ _)
