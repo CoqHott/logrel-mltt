@@ -26,20 +26,22 @@ import Tools.PropositionalEquality as PE
 
 
 -- Valid lambda term construction.
-lamᵛ : ∀ {F G rF rG t Γ l}
+lamᵛ : ∀ {F G rF lF lG lΠ rΠ t Γ l}
+       (lF< : lF ≤ lΠ)
+       (lG< : lG ≤ lΠ)
        ([Γ] : ⊩ᵛ Γ)
-       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-       ([G] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ rG / [Γ] ∙ [F])
-       ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ t ∷ G ^ rG / [Γ] ∙ [F] / [G])
-     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ∷ Π F ^ rF ▹ G ^ rG / [Γ] / Πᵛ {F} {G} [Γ] [F] [G]
-lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+       ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F])
+       ([t] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ t ∷ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F] / [G])
+     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
+lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF< lG< [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
-      [ΠFG] = Πᵛ {F} {G} [Γ] [F] [G]
-      _ , Πᵣ rF′ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
+      [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
+      _ , Πᵣ rF′ lF lG F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
         extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
       lamt : ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-           → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t) ∷ subst σ (Π F ^ rF ▹ G) ^ ! / proj₁ ([ΠFG] ⊢Δ [σ])
+           → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t) ∷ subst σ (Π F ^ rF ° lF ▹ G ° lG) ^ [ ! , ι lΠ ] / proj₁ ([ΠFG] ⊢Δ [σ])
       lamt {Δ} {σ} ⊢Δ [σ] =
         let [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
             [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -50,30 +52,30 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
             [σt] = proj₁ ([t] (⊢Δ ∙ ⊢F) [liftσ])
             ⊢t = escapeTerm [σG] [σt]
             wk1t[0] = irrelevanceTerm″
-                        PE.refl
+                        PE.refl PE.refl PE.refl 
                         (PE.sym (wkSingleSubstId (subst (liftSubst σ) t)))
                         [σG] [σG] [σt]
-            β-red′ = PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x )
+            β-red′ = PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _)
                               (wkSingleSubstId (subst (liftSubst σ) G))
                               (β-red ⊢wk1F (T.wkTerm (lift (step id))
                                                      (⊢Δ ∙ ⊢F ∙ ⊢wk1F) ⊢t)
-                                                     (var (⊢Δ ∙ ⊢F) here))
-            _ , Πᵣ rF′ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
+                                                     (var (⊢Δ ∙ ⊢F) here)) 
+            _ , Πᵣ rF′ _ _ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
               extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
         in  Πₜ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
-               (idRedTerm:*: (lamⱼ ⊢F ⊢t))
+               (idRedTerm:*: (lamⱼ lF< lG< ⊢F ⊢t))
                lamₙ
-               (≅-η-eq ⊢F (lamⱼ ⊢F ⊢t) (lamⱼ ⊢F ⊢t) lamₙ lamₙ
+               (≅-η-eq ⊢F (lamⱼ lF< lG< ⊢F ⊢t) (lamⱼ lF< lG< ⊢F ⊢t) lamₙ lamₙ
                        (escapeTermEq [σG]
                          (reflEqTerm [σG]
                            (proj₁ (redSubstTerm β-red′ [σG] wk1t[0])))))
                (λ {_} {Δ₁} {a} {b} ρ ⊢Δ₁ [a] [b] [a≡b] →
                   let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ ρ [σ]
-                      [a]′ = irrelevanceTerm′ (wk-subst F) PE.refl ([F]′ ρ ⊢Δ₁)
+                      [a]′ = irrelevanceTerm′ (wk-subst F) PE.refl PE.refl ([F]′ ρ ⊢Δ₁)
                                               (proj₁ ([F] ⊢Δ₁ [ρσ])) [a]
-                      [b]′ = irrelevanceTerm′ (wk-subst F) PE.refl ([F]′ ρ ⊢Δ₁)
+                      [b]′ = irrelevanceTerm′ (wk-subst F) PE.refl PE.refl ([F]′ ρ ⊢Δ₁)
                                               (proj₁ ([F] ⊢Δ₁ [ρσ])) [b]
-                      [a≡b]′ = irrelevanceEqTerm′ (wk-subst F) PE.refl ([F]′ ρ ⊢Δ₁)
+                      [a≡b]′ = irrelevanceEqTerm′ (wk-subst F) PE.refl PE.refl ([F]′ ρ ⊢Δ₁)
                                                   (proj₁ ([F] ⊢Δ₁ [ρσ])) [a≡b]
                       ⊢F₁′ = escape (proj₁ ([F] ⊢Δ₁ [ρσ]))
                       ⊢F₁ = escape ([F]′ ρ ⊢Δ₁)
@@ -95,20 +97,20 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                       G[a]′ = proj₁ ([G] ⊢Δ₁ ([ρσ] , [a]′))
                       G[a] = [G]′ ρ ⊢Δ₁ [a]
                       t[a] = irrelevanceTerm″
-                               (PE.sym (singleSubstWkComp a σ G))
+                               (PE.sym (singleSubstWkComp a σ G)) PE.refl PE.refl
                                (PE.sym (singleSubstWkComp a σ t))
                                G[a]′ G[a]
                                (proj₁ ([t] ⊢Δ₁ ([ρσ] , [a]′)))
                       G[b]′ = proj₁ ([G] ⊢Δ₁ ([ρσ] , [b]′))
                       G[b] = [G]′ ρ ⊢Δ₁ [b]
                       t[b] = irrelevanceTerm″
-                               (PE.sym (singleSubstWkComp b σ G))
+                               (PE.sym (singleSubstWkComp b σ G)) PE.refl PE.refl
                                (PE.sym (singleSubstWkComp b σ t))
                                G[b]′ G[b]
                                (proj₁ ([t] ⊢Δ₁ ([ρσ] , [b]′)))
                       lamt∘a≡t[a] = proj₂ (redSubstTerm (β-red ⊢F₁ ⊢t ⊢a) G[a] t[a])
                       G[a]≡G[b] = G-ext ρ ⊢Δ₁ [a] [b] [a≡b]
-                      t[a]≡t[b] = irrelevanceEqTerm″
+                      t[a]≡t[b] = irrelevanceEqTerm″ PE.refl PE.refl
                                     (PE.sym (singleSubstWkComp a σ t))
                                     (PE.sym (singleSubstWkComp b σ t))
                                     (PE.sym (singleSubstWkComp a σ G))
@@ -123,7 +125,7 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                              (transEqTerm G[a] t[a]≡t[b] t[b]≡lamt∘b))
                (λ {_} {Δ₁} {a} ρ ⊢Δ₁ [a] →
                   let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ ρ [σ]
-                      [a]′ = irrelevanceTerm′ (wk-subst F) PE.refl ([F]′ ρ ⊢Δ₁)
+                      [a]′ = irrelevanceTerm′ (wk-subst F) PE.refl PE.refl ([F]′ ρ ⊢Δ₁)
                                               (proj₁ ([F] ⊢Δ₁ [ρσ])) [a]
                       ⊢F₁′ = escape (proj₁ ([F] ⊢Δ₁ [ρσ]))
                       ⊢F₁ = escape ([F]′ ρ ⊢Δ₁)
@@ -143,7 +145,7 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                       ⊢t = escapeTerm [G]₁′ [t]′
                       G[a]′ = proj₁ ([G] ⊢Δ₁ ([ρσ] , [a]′))
                       G[a] = [G]′ ρ ⊢Δ₁ [a]
-                      t[a] = irrelevanceTerm″ (PE.sym (singleSubstWkComp a σ G))
+                      t[a] = irrelevanceTerm″ (PE.sym (singleSubstWkComp a σ G)) PE.refl PE.refl
                                                (PE.sym (singleSubstWkComp a σ t))
                                                G[a]′ G[a]
                                                (proj₁ ([t] ⊢Δ₁ ([ρσ] , [a]′)))
@@ -151,7 +153,7 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
   in  lamt ⊢Δ [σ]
   ,   (λ {σ′} [σ′] [σ≡σ′] →
          let [liftσ′] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ′]
-             _ , Πᵣ rF″ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
+             _ , Πᵣ rF″ lF″ lG″ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
                extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ′])))
              ⊢F′ = escape (proj₁ ([F] ⊢Δ [σ′]))
              [G]₁ = proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ])
@@ -163,11 +165,11 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                               (var 0) (var (⊢Δ ∙ ⊢F) here)
                               (~-var (var (⊢Δ ∙ ⊢F) here))
              σlamt∘a≡σ′lamt∘a : ∀ {ρ Δ₁ a} → ([ρ] : ρ ∷ Δ₁ ⊆ Δ) (⊢Δ₁ : ⊢ Δ₁)
-                 → ([a] : Δ₁ ⊩⟨ l ⟩ a ∷ U.wk ρ (subst σ F) ^ rF / [F]′ [ρ] ⊢Δ₁)
+                 → ([a] : Δ₁ ⊩⟨ l ⟩ a ∷ U.wk ρ (subst σ F) ^ [ rF , _ ] / [F]′ [ρ] ⊢Δ₁)
                  → Δ₁ ⊩⟨ l ⟩ U.wk ρ (subst σ (lam F ▹ t)) ∘ a
                            ≡ U.wk ρ (subst σ′ (lam F ▹ t)) ∘ a
                            ∷ U.wk (lift ρ) (subst (liftSubst σ) G) [ a ]
-                            ^ !
+                            ^ [ ! , _ ]
                            / [G]′ [ρ] ⊢Δ₁ [a]
              σlamt∘a≡σ′lamt∘a {_} {Δ₁} {a} ρ ⊢Δ₁ [a] =
                 let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ ρ [σ]
@@ -178,14 +180,14 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                     ⊢F₂′ = escape (proj₁ ([F] ⊢Δ₁ [ρσ′]))
                     ⊢F₂ = escape ([F]″ ρ ⊢Δ₁)
                     [σF≡σ′F] = proj₂ ([F] ⊢Δ₁ [ρσ]) [ρσ′] [ρσ≡ρσ′]
-                    [a]′ = irrelevanceTerm′ (wk-subst F) PE.refl ([F]′ ρ ⊢Δ₁)
+                    [a]′ = irrelevanceTerm′ (wk-subst F) PE.refl PE.refl ([F]′ ρ ⊢Δ₁)
                                             (proj₁ ([F] ⊢Δ₁ [ρσ])) [a]
                     [a]″ = convTerm₁ (proj₁ ([F] ⊢Δ₁ [ρσ]))
                                       (proj₁ ([F] ⊢Δ₁ [ρσ′]))
                                       [σF≡σ′F] [a]′
                     ⊢a = escapeTerm ([F]′ ρ ⊢Δ₁) [a]
                     ⊢a′ = escapeTerm ([F]″ ρ ⊢Δ₁)
-                            (irrelevanceTerm′ (PE.sym (wk-subst F)) PE.refl
+                            (irrelevanceTerm′ (PE.sym (wk-subst F)) PE.refl PE.refl
                                               (proj₁ ([F] ⊢Δ₁ [ρσ′]))
                                               ([F]″ ρ ⊢Δ₁)
                                               [a]″)
@@ -193,13 +195,14 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                     G[a]₁′ = proj₁ ([G] ⊢Δ₁ ([ρσ′] , [a]″))
                     G[a] = [G]′ ρ ⊢Δ₁ [a]
                     G[a]″ = [G]″ ρ ⊢Δ₁
-                                   (irrelevanceTerm′ (PE.sym (wk-subst F)) PE.refl
+                                   (irrelevanceTerm′ (PE.sym (wk-subst F)) PE.refl PE.refl
                                                      (proj₁ ([F] ⊢Δ₁ [ρσ′]))
                                                      ([F]″ ρ ⊢Δ₁)
                                                      [a]″)
                     [σG[a]≡σ′G[a]] = irrelevanceEq″
                                        (PE.sym (singleSubstWkComp a σ G))
                                        (PE.sym (singleSubstWkComp a σ′ G))
+                                       PE.refl PE.refl
                                        G[a]′ G[a]
                                        (proj₂ ([G] ⊢Δ₁ ([ρσ] , [a]′))
                                               ([ρσ′] , [a]″)
@@ -230,11 +233,11 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                     ⊢t = escapeTerm [G]₁′ [t]′
                     ⊢t′ = escapeTerm [G]₂′ [t]″
                     t[a] = irrelevanceTerm″
-                             (PE.sym (singleSubstWkComp a σ G))
+                             (PE.sym (singleSubstWkComp a σ G)) PE.refl PE.refl
                              (PE.sym (singleSubstWkComp a σ t)) G[a]′ G[a]
                              (proj₁ ([t] ⊢Δ₁ ([ρσ] , [a]′)))
                     t[a]′ = irrelevanceTerm″
-                              (PE.sym (singleSubstWkComp a σ′ G))
+                              (PE.sym (singleSubstWkComp a σ′ G)) PE.refl PE.refl
                               (PE.sym (singleSubstWkComp a σ′ t))
                               G[a]₁′ G[a]″
                               (proj₁ ([t] ⊢Δ₁ ([ρσ′] , [a]″)))
@@ -245,7 +248,7 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                         (symEqTerm G[a]″
                            (proj₂ (redSubstTerm (β-red ⊢F₂ ⊢t′ ⊢a′)
                                                 G[a]″ t[a]′)))
-                    [σt[a]≡σ′t[a]] = irrelevanceEqTerm″
+                    [σt[a]≡σ′t[a]] = irrelevanceEqTerm″ PE.refl PE.refl
                                        (PE.sym (singleSubstWkComp a σ t))
                                        (PE.sym (singleSubstWkComp a σ′ t))
                                        (PE.sym (singleSubstWkComp a σ G))
@@ -259,20 +262,20 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                                              [σ′t[a]≡σ′lamt∘a])
          in  Πₜ₌ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
                  (lam (subst (repeat liftSubst σ′ 0) F) ▹ (subst (liftSubst σ′) t))
-                 (idRedTerm:*: (lamⱼ ⊢F ⊢t))
-                 (idRedTerm:*: (conv (lamⱼ ⊢F′ ⊢t′)
+                 (idRedTerm:*: (lamⱼ lF< lG< ⊢F ⊢t))
+                 (idRedTerm:*: (conv (lamⱼ lF< lG< ⊢F′ ⊢t′)
                                      (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                                               [σΠFG≡σ′ΠFG])))))
                  lamₙ lamₙ
-                 (≅-η-eq ⊢F (lamⱼ ⊢F ⊢t)
-                      (conv (lamⱼ ⊢F′ ⊢t′)
+                 (≅-η-eq ⊢F (lamⱼ lF< lG< ⊢F ⊢t)
+                      (conv (lamⱼ lF< lG< ⊢F′ ⊢t′)
                             (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                               [σΠFG≡σ′ΠFG]))))
                       lamₙ lamₙ
                       (escapeTermEq
                         (proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ]))
                         (irrelevanceEqTerm′
-                          (idWkLiftSubstLemma σ G) PE.refl
+                          (idWkLiftSubstLemma σ G) PE.refl PE.refl
                           ([G]′ (step id) (⊢Δ ∙ ⊢F) neuVar)
                           (proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ]))
                           (σlamt∘a≡σ′lamt∘a (step id) (⊢Δ ∙ ⊢F) neuVar))))
@@ -282,10 +285,10 @@ lamᵛ {F} {G} {rF} {rG = !} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                              [σΠFG≡σ′ΠFG]
                              (lamt ⊢Δ [σ′]))
                   σlamt∘a≡σ′lamt∘a)
-lamᵛ {F} {G} {rF} {rG = %} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF< lG< [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
-      [ΠFG] = Πᵛ {F} {G} [Γ] [F] [G]
-      _ , Πᵣ rF′ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
+      [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
+      _ , Πᵣ rF′ lF′ lG′ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
         extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
       [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -295,9 +298,9 @@ lamᵛ {F} {G} {rF} {rG = %} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
       ⊢G = escape [σG]
       [σt] = proj₁ ([t] (⊢Δ ∙ ⊢F) [liftσ])
       ⊢t = escapeTerm [σG] [σt]
-  in lamⱼ ⊢F  ⊢t , (λ {σ′} [σ′] [σ≡σ′] →
+  in lamⱼ lF< lG< ⊢F  ⊢t , (λ {σ′} [σ′] [σ≡σ′] →
          let [liftσ′] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ′]
-             _ , Πᵣ rF″ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
+             _ , Πᵣ rF″ lF″ lG″ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
                extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ′])))
              ⊢F′ = escape (proj₁ ([F] ⊢Δ [σ′]))
              [G]₁ = proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ])
@@ -305,33 +308,35 @@ lamᵛ {F} {G} {rF} {rG = %} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
              [σΠFG≡σ′ΠFG] = proj₂ ([ΠFG] ⊢Δ [σ]) [σ′] [σ≡σ′]
              ⊢t = escapeTerm [G]₁ (proj₁ ([t] (⊢Δ ∙ ⊢F) [liftσ]))
              ⊢t′ = escapeTerm [G]₁′ (proj₁ ([t] (⊢Δ ∙ ⊢F′) [liftσ′]))
-         in (lamⱼ ⊢F  ⊢t) , conv (lamⱼ ⊢F′  ⊢t′) (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ])) [σΠFG≡σ′ΠFG]))))
+         in (lamⱼ lF< lG< ⊢F  ⊢t) , conv (lamⱼ lF< lG< ⊢F′  ⊢t′) (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ])) [σΠFG≡σ′ΠFG]))))
 
 
 -- Reducibility of η-equality under a valid substitution.
-η-eqEqTerm : ∀ {f g F G rF rG Γ Δ σ l}
+η-eqEqTerm : ∀ {f g F G rF lF lG rΠ lΠ Γ Δ σ l}
+             (lF< : lF ≤ lΠ)
+             (lG< : lG ≤ lΠ)
              ([Γ] : ⊩ᵛ Γ)
-             ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-             ([G] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ rG / [Γ] ∙ [F])
-           → let [ΠFG] = Πᵛ {F} {G} [Γ] [F] [G] in
-             Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ wk1 f ∘ var 0 ≡ wk1 g ∘ var 0 ∷ G ^ rG
+             ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+             ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F])
+           → let [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G] in
+             Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ wk1 f ∘ var 0 ≡ wk1 g ∘ var 0 ∷ G ^ [ rΠ , ι lG ]
                           / [Γ] ∙ [F] / [G]
            → (⊢Δ   : ⊢ Δ)
              ([σ]  : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-           → Δ ⊩⟨ l ⟩ subst σ f ∷ Π subst σ F ^ rF ▹ subst (liftSubst σ) G ^ rG
+           → Δ ⊩⟨ l ⟩ subst σ f ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ^ [ rΠ , ι lΠ ]
                / proj₁ ([ΠFG] ⊢Δ [σ])
-           → Δ ⊩⟨ l ⟩ subst σ g ∷ Π subst σ F ^ rF ▹ subst (liftSubst σ) G ^ rG
+           → Δ ⊩⟨ l ⟩ subst σ g ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ^ [ rΠ , ι lΠ ]
                / proj₁ ([ΠFG] ⊢Δ [σ])
-           → Δ ⊩⟨ l ⟩ subst σ f ≡ subst σ g ∷ Π subst σ F ^ rF ▹ subst (liftSubst σ) G ^ rG
+           → Δ ⊩⟨ l ⟩ subst σ f ≡ subst σ g ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ^ [ rΠ , ι lΠ ]
                / proj₁ ([ΠFG] ⊢Δ [σ])
-η-eqEqTerm {f} {g} {F} {G} {rF} {rG = !} {Γ} {Δ} {σ} [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
-           (Πₜ f₁ [ ⊢t , ⊢u , d ] funcF f≡f [f] [f]₁)
-           (Πₜ g₁ [ ⊢t₁ , ⊢u₁ , d₁ ] funcG g≡g [g] [g]₁) =
-  let [d]  = [ ⊢t , ⊢u , d ]
-      [d′] = [ ⊢t₁ , ⊢u₁ , d₁ ]
-      [ΠFG] = Πᵛ {F} {G} [Γ] [F] [G]
+η-eqEqTerm {f} {g} {F} {G} {rF} {lF} {lG} {rΠ = !} {lΠ} {Γ} {Δ} {σ} lF< lG< [Γ] [F] [G] [f0≡g0] ⊢Δ [σ] 
+           (Πₜ f₁ [[ ⊢t , ⊢u , d ]] funcF f≡f [f] [f]₁)
+           (Πₜ g₁ [[ ⊢t₁ , ⊢u₁ , d₁ ]] funcG g≡g [g] [g]₁) = 
+  let [d]  = [[ ⊢t , ⊢u , d ]]
+      [d′] = [[ ⊢t₁ , ⊢u₁ , d₁ ]]
+      [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
       [σΠFG] = proj₁ ([ΠFG] ⊢Δ [σ])
-      _ , Πᵣ rF′ F′ G′ D′ ⊢F ⊢G A≡A [F]′ [G]′ G-ext = extractMaybeEmb (Π-elim [σΠFG])
+      _ , Πᵣ rF′ lF′ lG′ F′ G′ D′ ⊢F ⊢G A≡A [F]′ [G]′ G-ext = extractMaybeEmb (Π-elim [σΠFG])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       [wk1F] = wk (step id) (⊢Δ ∙ ⊢F) [σF]
       var0′ = var (⊢Δ ∙ ⊢F) here
@@ -344,17 +349,17 @@ lamᵛ {F} {G} {rF} {rG = %} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                                           (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]))
       σf0≡σg0′ =
         PE.subst₂
-          (λ x y → Δ ∙ subst σ F ^ rF ⊢ x ≅ y ∷ subst (liftSubst σ) G ^ !)
+          (λ x y → Δ ∙ subst σ F ^ [ rF , ι lF ] ⊢ x ≅ y ∷ subst (liftSubst σ) G ^ [ ! , ι lG ])
           (PE.cong₂ _∘_ (PE.trans (subst-wk f) (PE.sym (wk-subst f))) PE.refl)
           (PE.cong₂ _∘_ (PE.trans (subst-wk g) (PE.sym (wk-subst g))) PE.refl)
           σf0≡σg0
       ⊢ΠFG = escape [σΠFG]
       f≡f₁′ = proj₂ (redSubst*Term d [σΠFG] (Πₜ f₁ (idRedTerm:*: ⊢u) funcF f≡f [f] [f]₁))
       g≡g₁′ = proj₂ (redSubst*Term d₁ [σΠFG] (Πₜ g₁ (idRedTerm:*: ⊢u₁) funcG g≡g [g] [g]₁))
-      eq′  = irrelevanceEqTerm′ (cons0wkLift1-id σ G) PE.refl [σG]′ [σG]
+      eq′  = irrelevanceEqTerm′ (cons0wkLift1-id σ G) PE.refl PE.refl [σG]′ [σG]
                                 (app-congTerm [wk1F] [σG]′ (wk (step id) (⊢Δ ∙ ⊢F) [σΠFG])
                                               (wkEqTerm (step id) (⊢Δ ∙ ⊢F) [σΠFG] f≡f₁′) var0 var0 var0≡0)
-      eq₁′ = irrelevanceEqTerm′ (cons0wkLift1-id σ G) PE.refl [σG]′ [σG]
+      eq₁′ = irrelevanceEqTerm′ (cons0wkLift1-id σ G) PE.refl PE.refl [σG]′ [σG]
                                 (app-congTerm [wk1F] [σG]′ (wk (step id) (⊢Δ ∙ ⊢F) [σΠFG])
                                               (wkEqTerm (step id) (⊢Δ ∙ ⊢F) [σΠFG] g≡g₁′) var0 var0 var0≡0)
       eq   = escapeTermEq [σG] eq′
@@ -367,22 +372,22 @@ lamᵛ {F} {G} {rF} {rG = %} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
           (λ {ρ} {Δ₁} {a} [ρ] ⊢Δ₁ [a] →
              let [F]″ = proj₁ ([F] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]))
                  [a]′ = irrelevanceTerm′
-                          (wk-subst F) PE.refl ([F]′ [ρ] ⊢Δ₁)
+                          (wk-subst F) PE.refl PE.refl ([F]′ [ρ] ⊢Δ₁)
                           [F]″ [a]
                  fEq = PE.cong₂ _∘_ (PE.trans (subst-wk f) (PE.sym (wk-subst f))) PE.refl
                  gEq = PE.cong₂ _∘_ (PE.trans (subst-wk g) (PE.sym (wk-subst g))) PE.refl
                  GEq = PE.sym (PE.trans (subst-wk (subst (liftSubst σ) G))
                                         (PE.trans (substCompEq G)
                                                   (cons-wk-subst ρ σ a G)))
-                 f≡g = irrelevanceEqTerm″ fEq gEq GEq
+                 f≡g = irrelevanceEqTerm″ PE.refl PE.refl fEq gEq GEq
                          (proj₁ ([G] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ] , [a]′)))
                          ([G]′ [ρ] ⊢Δ₁ [a])
                          ([f0≡g0] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ] , [a]′))
                  [ρσΠFG] = wk [ρ] ⊢Δ₁ [σΠFG]
-                 [f]′ : Δ ⊩⟨ _ ⟩ f₁ ∷ Π F′ ^ rF ▹ G′ ^ ! / [σΠFG]
+                 [f]′ : Δ ⊩⟨ _ ⟩ f₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ ! , _ ] / [σΠFG]
                  [f]′ = Πₜ f₁ (idRedTerm:*: ⊢u) funcF f≡f [f] [f]₁
                  [ρf]′ = wkTerm [ρ] ⊢Δ₁ [σΠFG] [f]′
-                 [g]′ : Δ ⊩⟨ _ ⟩ g₁ ∷ Π F′ ^ rF ▹ G′ ^ ! / [σΠFG]
+                 [g]′ : Δ ⊩⟨ _ ⟩ g₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ ! , _ ] / [σΠFG]
                  [g]′ = Πₜ g₁ (idRedTerm:*: ⊢u₁) funcG g≡g [g] [g]₁
                  [ρg]′ = wkTerm [ρ] ⊢Δ₁ [σΠFG] [g]′
                  [f∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρf]′ [a]
@@ -395,21 +400,22 @@ lamᵛ {F} {G} {rF} {rG = %} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                                                  ([G]′ [ρ] ⊢Δ₁ [a]) [g∘u])
              in  transEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) (symEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) [tu≡fu])
                              (transEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) f≡g [gu≡t′u]))
-η-eqEqTerm {f} {g} {F} {G} {rF} {rG = %} {Γ} {Δ} {σ} [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
+η-eqEqTerm {f} {g} {F} {G} {rF} {lF} {lG} {rΠ = %} {lΠ} {Γ} {Δ} {σ} lF< lG<  [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
            d d₁ = d , d₁
 
-
 -- Validity of η-equality.
-η-eqᵛ : ∀ {f g F G rF rG Γ l}
+η-eqᵛ : ∀ {f g F G rF lF lG rΠ lΠ Γ l}
+        (lF< : lF ≤ lΠ)
+        (lG< : lG ≤ lΠ)
         ([Γ] : ⊩ᵛ Γ)
-        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-        ([G] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ rG / [Γ] ∙ [F])
-      → let [ΠFG] = Πᵛ {F} {G} [Γ] [F] [G] in
-        Γ ⊩ᵛ⟨ l ⟩ f ∷ Π F ^ rF ▹ G ^ rG / [Γ] / [ΠFG]
-      → Γ ⊩ᵛ⟨ l ⟩ g ∷ Π F ^ rF ▹ G ^ rG / [Γ] / [ΠFG]
-      → Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ wk1 f ∘ var 0 ≡ wk1 g ∘ var 0 ∷ G ^ rG
+        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+        ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F])
+      → let [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G] in
+        Γ ⊩ᵛ⟨ l ⟩ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / [ΠFG]
+      → Γ ⊩ᵛ⟨ l ⟩ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / [ΠFG]
+      → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ wk1 f ∘ var 0 ≡ wk1 g ∘ var 0 ∷ G ^ [ rΠ , ι lG ]
                      / [Γ] ∙ [F] / [G]
-      → Γ ⊩ᵛ⟨ l ⟩ f ≡ g ∷ Π F ^ rF ▹ G ^ rG / [Γ] / [ΠFG]
-η-eqᵛ {f} {g} {F} {G} [Γ] [F] [G] [f] [g] [f0≡g0] {Δ} {σ} ⊢Δ [σ] =
-  η-eqEqTerm {f} {g} {F} {G} [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
+      → Γ ⊩ᵛ⟨ l ⟩ f ≡ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / [ΠFG]
+η-eqᵛ {f} {g} {F} {G} lF< lG< [Γ] [F] [G] [f] [g] [f0≡g0] {Δ} {σ} ⊢Δ [σ] =
+  η-eqEqTerm {f} {g} {F} {G} lF< lG< [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
                 (proj₁ ([f] ⊢Δ [σ])) (proj₁ ([g] ⊢Δ [σ]))
