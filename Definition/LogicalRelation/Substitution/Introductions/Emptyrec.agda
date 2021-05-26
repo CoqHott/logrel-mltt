@@ -1,4 +1,4 @@
-{-# OPTIONS --safe #-}
+--{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -33,28 +33,27 @@ open import Tools.Nat
 import Tools.PropositionalEquality as PE
 
 -- Reducibility of natural recursion under a valid substitution.
-EmptyrecTerm : ∀ {F rF n Γ Δ σ l}
+EmptyrecTerm : ∀ {F rF lF lEmpty n Γ Δ σ l}
              ([Γ]  : ⊩ᵛ Γ)
-             ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
+             ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
              (⊢Δ   : ⊢ Δ)
              ([σ]  : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-             ([σn] : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ % / Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ)))
+             ([σn] : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
            → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
-               ∷ subst σ F ^ rF
+               ∷ subst σ F ^ [ rF , ι lF ]
                / proj₁ ([F] ⊢Δ [σ])
-EmptyrecTerm {F} {rF = !} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
+EmptyrecTerm {F} {rF = !} {lF} {lEmpty} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
            (Emptyₜ (ne d)) =
-  let [Empty] = Emptyᵛ {l = l} [Γ]
+  let [Empty] = Emptyᵛ {ll = lEmpty} {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
       ⊢F≡F = escapeEq [σF] (reflEq [σF])
   in neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F d)
-                        (~-Emptyrec ⊢F≡F (~-irrelevance d d))
-
-EmptyrecTerm {F} {rF = %} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
+                  (~-Emptyrec ⊢F≡F)
+EmptyrecTerm {F} {rF = %} {lF} {lEmpty} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
            (Emptyₜ (ne d)) =
-  let [Empty] = Emptyᵛ {l = l} [Γ]
+  let [Empty] = Emptyᵛ {ll = lEmpty} {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
@@ -63,29 +62,29 @@ EmptyrecTerm {F} {rF = %} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
 
 
 -- Reducibility of natural recursion congurence under a valid substitution equality.
-Emptyrec-congTerm : ∀ {F F′ rF n m Γ Δ σ σ′ l}
+Emptyrec-congTerm : ∀ {F F′ rF lF lEmpty n m Γ Δ σ σ′ l}
                   ([Γ]      : ⊩ᵛ Γ)
-                  ([F]      : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-                  ([F′]     : Γ ⊩ᵛ⟨ l ⟩ F′ ^ rF / [Γ])
-                  ([F≡F′]   : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ rF / [Γ] / [F])
+                  ([F]      : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+                  ([F′]     : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ])
+                  ([F≡F′]   : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , ι lF ] / [Γ] / [F])
                   (⊢Δ       : ⊢ Δ)
                   ([σ]      : Δ ⊩ˢ σ  ∷ Γ / [Γ] / ⊢Δ)
                   ([σ′]     : Δ ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ)
                   ([σ≡σ′]   : Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
-                  ([σn]     : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ % / Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ)))
-                  ([σm]     : Δ ⊩⟨ l ⟩ m ∷ Empty  ^ % / Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ)))
-                  ([σn≡σm]  : Δ ⊩⟨ l ⟩ n ≡ m ∷ Empty  ^ % / Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ)))
+                  ([σn]     : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
+                  ([σm]     : Δ ⊩⟨ l ⟩ m ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
+                  ([σn≡σm]  : Δ ⊩⟨ l ⟩ n ≡ m ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
                 → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
                     ≡ Emptyrec (subst σ′ F′) m
-                    ∷ subst σ F ^ rF
+                    ∷ subst σ F ^ [ rF , ι lF ]
                     / proj₁ ([F] ⊢Δ [σ])
-Emptyrec-congTerm {F} {F′} {rF = !} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
+Emptyrec-congTerm {F} {F′} {rF = !} {lF} {lEmpty} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]
                 (Emptyₜ (ne ⊢n′))
                 (Emptyₜ (ne ⊢m′))
                 (Emptyₜ₌ (ne d₁ d₁′)) =
-  let [Empty] = Emptyᵛ {l = l} [Γ]
+  let [Empty] = Emptyᵛ {ll = lEmpty} {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
       [σ′Empty] = proj₁ ([Empty] ⊢Δ [σ′])
       [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -102,25 +101,25 @@ Emptyrec-congTerm {F} {F′} {rF = !} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
       [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
       [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
       EmptyrecN = neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F ⊢n′)
-                           (~-Emptyrec ⊢F≡F (~-irrelevance ⊢n′ ⊢n′))
+                           (~-Emptyrec ⊢F≡F)
       EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ) (Emptyrecⱼ ⊢F′ ⊢m′)
-                           (~-Emptyrec ⊢F′≡F′ (~-irrelevance ⊢m′ ⊢m′))
+                           (~-Emptyrec ⊢F′≡F′)
       EmptyrecN≡M =
           neuEqTerm [σF] Emptyrecₙ Emptyrecₙ
                      (Emptyrecⱼ ⊢F ⊢n′)
                      (conv (Emptyrecⱼ ⊢F′ ⊢m′)
                             (sym (≅-eq (escapeEq [σF]
                               (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
-                     (~-Emptyrec ⊢F≡F′ (~-irrelevance ⊢n′ ⊢m′))
+                     (~-Emptyrec ⊢F≡F′)
   in EmptyrecN≡M
 
-Emptyrec-congTerm {F} {F′} {rF = %} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
+Emptyrec-congTerm {F} {F′} {rF = %} {lF} {lEmpty} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]
                 (Emptyₜ (ne ⊢n′))
                 (Emptyₜ (ne ⊢m′))
                 (Emptyₜ₌ (ne d₁ d₁′)) =
-  let [Empty] = Emptyᵛ {l = l} [Γ]
+  let [Empty] = Emptyᵛ {ll = lEmpty} {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
       [σ′Empty] = proj₁ ([Empty] ⊢Δ [σ′])
       [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -141,46 +140,47 @@ Emptyrec-congTerm {F} {F′} {rF = %} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                               (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
 
 
+
 -- Validity of empty recursion.
-Emptyrecᵛ : ∀ {F rF n Γ l} ([Γ] : ⊩ᵛ Γ)
-          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ % / [Γ])
-          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-        → ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ % / [Γ] / [Empty])
-        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ∷ F ^ rF / [Γ] / [F]
-Emptyrecᵛ {F} {rF} {n} {l = l} [Γ] [Empty] [F] [n]
+Emptyrecᵛ : ∀ {F rF lF lEmpty  n Γ l} ([Γ] : ⊩ᵛ Γ)
+          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ [ % , ι lEmpty ] / [Γ])
+          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+        → ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
+        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ∷ F ^ [ rF , ι lF ] / [Γ] / [F]
+Emptyrecᵛ {F} {rF} {lF} {lEmpty} {n} {l = l} [Γ] [Empty] [F] [n]
         {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [σn] = irrelevanceTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
-                             (Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ))) (proj₁ ([n] ⊢Δ [σ]))
+                             (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) (proj₁ ([n] ⊢Δ [σ]))
   in EmptyrecTerm {F = F} [Γ] [F] ⊢Δ [σ] [σn]
     , λ {σ'} [σ′] [σ≡σ′] →
       let [σ′n] = irrelevanceTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ′]))
-                                  (Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ))) (proj₁ ([n] ⊢Δ [σ′]))
+                                  (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) (proj₁ ([n] ⊢Δ [σ′]))
           [σn≡σ′n] = irrelevanceEqTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
-                                       (Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ)))
+                                       (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
                                        (proj₂ ([n] ⊢Δ [σ]) [σ′] [σ≡σ′])
           congTerm = Emptyrec-congTerm {F = F} {F′ = F} [Γ] [F] [F] (reflᵛ {F} {l = l} [Γ] [F])
                                        ⊢Δ [σ] [σ′] [σ≡σ′] [σn] [σ′n] [σn≡σ′n]
       in congTerm
 
 -- Validity of natural recursion congurence.
-Emptyrec-congᵛ : ∀ {F F′ rF n n′ Γ l} ([Γ] : ⊩ᵛ Γ)
-          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ % / [Γ])
-          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-          ([F′]  : Γ ⊩ᵛ⟨ l ⟩ F′ ^ rF / [Γ])
-          ([F≡F′]  : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ rF / [Γ] / [F])
-          ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ % / [Γ] / [Empty])
-          ([n′] : Γ ⊩ᵛ⟨ l ⟩ n′ ∷ Empty ^ % / [Γ] / [Empty])
-          ([n≡n′] : Γ ⊩ᵛ⟨ l ⟩ n ≡ n′ ∷ Empty ^ % / [Γ] / [Empty])
-        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ≡ Emptyrec F′ n′ ∷ F ^ rF / [Γ] / [F]
-Emptyrec-congᵛ {F} {F′} {rF} {n} {n′} {l = l}
+Emptyrec-congᵛ : ∀ {F F′ rF lF lEmpty n n′ Γ l} ([Γ] : ⊩ᵛ Γ)
+          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ [ % , ι lEmpty ] / [Γ])
+          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+          ([F′]  : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ])
+          ([F≡F′]  : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , ι lF ] / [Γ] / [F])
+          ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
+          ([n′] : Γ ⊩ᵛ⟨ l ⟩ n′ ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
+          ([n≡n′] : Γ ⊩ᵛ⟨ l ⟩ n ≡ n′ ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
+        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ≡ Emptyrec F′ n′ ∷ F ^ [ rF , ι lF ] / [Γ] / [F]
+Emptyrec-congᵛ {F} {F′} {rF} {lF} {lEmpty} {n} {n′} {l = l}
              [Γ] [Empty] [F] [F′] [F≡F′]
              [n] [n′] [n≡n′] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [σn] = irrelevanceTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
-                             (Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ))) (proj₁ ([n] ⊢Δ [σ]))
+                             (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) (proj₁ ([n] ⊢Δ [σ]))
       [σn′] = irrelevanceTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
-                             (Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ))) (proj₁ ([n′] ⊢Δ [σ]))
+                             (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) (proj₁ ([n′] ⊢Δ [σ]))
       [σn≡σn′] = irrelevanceEqTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
-                                   (Emptyᵣ (idRed:*: (Emptyⱼ ⊢Δ))) ([n≡n′] ⊢Δ [σ])
+                                   (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) ([n≡n′] ⊢Δ [σ])
       congTerm = Emptyrec-congTerm {F} {F′} [Γ] [F] [F′] [F≡F′]
                                    ⊢Δ [σ] [σ] (reflSubst [Γ] ⊢Δ [σ]) [σn] [σn′] [σn≡σn′]
   in congTerm
