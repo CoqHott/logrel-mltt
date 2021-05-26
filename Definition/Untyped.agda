@@ -77,6 +77,10 @@ maxLevel ⁰ ¹ = ¹ , ((<is≤ 0<1) , (≡is≤ PE.refl))
 maxLevel ¹ ⁰ = ¹ , ((≡is≤ PE.refl) , (<is≤ 0<1))
 maxLevel ¹ ¹ = ¹ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
 
+⁰min : (i : Level) → ⁰ ≤ i
+⁰min ⁰ = ≡is≤ PE.refl
+⁰min ¹ = <is≤ 0<1
+
 -- ≤<∞ : ∀ {i j k } → i ≤ j → ι j <∞ k → ι i <∞ k
 -- ≤<∞ (<is≤ 0<1) ∞< = ∞<⁰
 -- ≤<∞ (≡is≤ PE.refl) e = e
