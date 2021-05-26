@@ -41,17 +41,13 @@ proof-irrelevanceRel (ne x)
                    (neₜ ⊢t)
                    (neₜ ⊢t₁) =
                    neₜ₌ ⊢t  ⊢t₁
-proof-irrelevanceRel {Γ} {l = l} (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
+proof-irrelevanceRel {Γ} {l = l} (Πᵣ′ rF lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
   [f] , [f₁]
 proof-irrelevanceRel {Γ} {l = l} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
   [f] , [f₁]
 
-proof-irrelevanceRel {l = ι ¹} (emb {l′ = ι ⁰} (Nat.s≤s l<) [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
-proof-irrelevanceRel {l = ι ¹} (emb {l′ = ι ¹} (Nat.s≤s ()) [A]) [t] [u]
-proof-irrelevanceRel {l = ι ¹} (emb {l′ = ∞} (Nat.s≤s ()) [A]) [t] [u]
-proof-irrelevanceRel {l = ∞} (emb {l′ = ι ⁰} (Nat.s≤s l<) [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
-proof-irrelevanceRel {l = ∞} (emb {l′ = ι ¹} (Nat.s≤s (Nat.s≤s l<)) [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
-proof-irrelevanceRel {l = ∞} (emb {l′ = ∞} (Nat.s≤s (Nat.s≤s ())) [A]) [t] [u]
+proof-irrelevanceRel (emb emb< [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
+proof-irrelevanceRel (emb ∞< [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
 
 proof-irrelevanceᵛ : ∀ {Γ A t u l l′} ([Γ] : ⊩ᵛ Γ) ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ [ % , l′ ] / [Γ])
                    → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ [ % , l′ ] / [Γ] / [A]
