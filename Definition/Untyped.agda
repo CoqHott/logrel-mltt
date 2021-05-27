@@ -81,6 +81,10 @@ maxLevel ¹ ¹ = ¹ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
 ⁰min ⁰ = ≡is≤ PE.refl
 ⁰min ¹ = <is≤ 0<1
 
+levelBounded : (i : Level) → Σ TypeLevel λ k → ι i <∞ k
+levelBounded ⁰ = (ι ¹) , emb<
+levelBounded ¹ = ∞ , ∞<
+
 -- ≤<∞ : ∀ {i j k } → i ≤ j → ι j <∞ k → ι i <∞ k
 -- ≤<∞ (<is≤ 0<1) ∞< = ∞<⁰
 -- ≤<∞ (≡is≤ PE.refl) e = e
