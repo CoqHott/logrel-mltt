@@ -200,11 +200,13 @@ mutual
                 → Γ     ⊢ a ∷ F ^ [ rF , ι lF ]
                 → Γ     ⊢ (lam F ▹ t) ∘ a ≡ t [ a ] ∷ G [ a ] ^ [ ! , ι lG ]
     η-eq        : ∀ {f g F rF lF lG l G}
+                → lF ≤ l
+                → lG ≤ l
                 → Γ     ⊢ F ^ [ rF , ι lF ]
-                → Γ     ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , l ]
-                → Γ     ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , l ]
+                → Γ     ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l ]
+                → Γ     ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l ]
                 → Γ ∙ F ^ [ rF , ι lF ] ⊢ wk1 f ∘ var Nat.zero ≡ wk1 g ∘ var Nat.zero ∷ G ^ [ ! , ι lG ]
-                → Γ     ⊢ f ≡ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , l ]
+                → Γ     ⊢ f ≡ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l ]
     suc-cong    : ∀ {m n}
                 → Γ ⊢ m ≡ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
                 → Γ ⊢ suc m ≡ suc n ∷ ℕ ^ [ ! ,  ι ⁰ ]
