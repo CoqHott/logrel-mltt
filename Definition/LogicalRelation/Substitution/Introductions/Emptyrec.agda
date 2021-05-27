@@ -35,12 +35,12 @@ import Tools.PropositionalEquality as PE
 -- Reducibility of natural recursion under a valid substitution.
 EmptyrecTerm : ∀ {F rF lF lEmpty n Γ Δ σ l}
              ([Γ]  : ⊩ᵛ Γ)
-             ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+             ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , lF ] / [Γ])
              (⊢Δ   : ⊢ Δ)
              ([σ]  : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
              ([σn] : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
            → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
-               ∷ subst σ F ^ [ rF , ι lF ]
+               ∷ subst σ F ^ [ rF , lF ]
                / proj₁ ([F] ⊢Δ [σ])
 EmptyrecTerm {F} {rF = !} {lF} {lEmpty} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
            (Emptyₜ (ne d)) =
@@ -64,9 +64,9 @@ EmptyrecTerm {F} {rF = %} {lF} {lEmpty} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [�
 -- Reducibility of natural recursion congurence under a valid substitution equality.
 Emptyrec-congTerm : ∀ {F F′ rF lF lEmpty n m Γ Δ σ σ′ l}
                   ([Γ]      : ⊩ᵛ Γ)
-                  ([F]      : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
-                  ([F′]     : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ])
-                  ([F≡F′]   : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , ι lF ] / [Γ] / [F])
+                  ([F]      : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , lF ] / [Γ])
+                  ([F′]     : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , lF ] / [Γ])
+                  ([F≡F′]   : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , lF ] / [Γ] / [F])
                   (⊢Δ       : ⊢ Δ)
                   ([σ]      : Δ ⊩ˢ σ  ∷ Γ / [Γ] / ⊢Δ)
                   ([σ′]     : Δ ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ)
@@ -76,7 +76,7 @@ Emptyrec-congTerm : ∀ {F F′ rF lF lEmpty n m Γ Δ σ σ′ l}
                   ([σn≡σm]  : Δ ⊩⟨ l ⟩ n ≡ m ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
                 → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
                     ≡ Emptyrec (subst σ′ F′) m
-                    ∷ subst σ F ^ [ rF , ι lF ]
+                    ∷ subst σ F ^ [ rF , lF ]
                     / proj₁ ([F] ⊢Δ [σ])
 Emptyrec-congTerm {F} {F′} {rF = !} {lF} {lEmpty} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
                 [Γ] [F] [F′] [F≡F′]
@@ -144,9 +144,9 @@ Emptyrec-congTerm {F} {F′} {rF = %} {lF} {lEmpty} {n} {m} {Γ} {Δ} {σ} {σ�
 -- Validity of empty recursion.
 Emptyrecᵛ : ∀ {F rF lF lEmpty  n Γ l} ([Γ] : ⊩ᵛ Γ)
           ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ [ % , ι lEmpty ] / [Γ])
-          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , lF ] / [Γ])
         → ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
-        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ∷ F ^ [ rF , ι lF ] / [Γ] / [F]
+        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ∷ F ^ [ rF , lF ] / [Γ] / [F]
 Emptyrecᵛ {F} {rF} {lF} {lEmpty} {n} {l = l} [Γ] [Empty] [F] [n]
         {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [σn] = irrelevanceTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
@@ -165,13 +165,13 @@ Emptyrecᵛ {F} {rF} {lF} {lEmpty} {n} {l = l} [Γ] [Empty] [F] [n]
 -- Validity of natural recursion congurence.
 Emptyrec-congᵛ : ∀ {F F′ rF lF lEmpty n n′ Γ l} ([Γ] : ⊩ᵛ Γ)
           ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ [ % , ι lEmpty ] / [Γ])
-          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
-          ([F′]  : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ])
-          ([F≡F′]  : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , ι lF ] / [Γ] / [F])
+          ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , lF ] / [Γ])
+          ([F′]  : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , lF ] / [Γ])
+          ([F≡F′]  : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , lF ] / [Γ] / [F])
           ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
           ([n′] : Γ ⊩ᵛ⟨ l ⟩ n′ ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
           ([n≡n′] : Γ ⊩ᵛ⟨ l ⟩ n ≡ n′ ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
-        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ≡ Emptyrec F′ n′ ∷ F ^ [ rF , ι lF ] / [Γ] / [F]
+        → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ≡ Emptyrec F′ n′ ∷ F ^ [ rF , lF ] / [Γ] / [F]
 Emptyrec-congᵛ {F} {F′} {rF} {lF} {lEmpty} {n} {n′} {l = l}
              [Γ] [Empty] [F] [F′] [F≡F′]
              [n] [n′] [n≡n′] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
