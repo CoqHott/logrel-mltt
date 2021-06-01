@@ -21,6 +21,15 @@ maybeEmb {ι ⁰} [A] = emb ∞< (emb emb< [A])
 maybeEmb {ι ¹} [A] = emb ∞< [A]
 maybeEmb {∞} [A] = [A]
 
+-- Any level can be embedded into the highest level.
+maybeEmbTerm : ∀ {l A t r Γ}
+         → ([A] : Γ ⊩⟨ l ⟩ A ^ r) 
+         → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
+         → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ r / maybeEmb [A]
+maybeEmbTerm {ι ⁰} [A] [t] = [t]
+maybeEmbTerm {ι ¹} [A] [t] = [t]
+maybeEmbTerm {∞} [A] [t] = [t]
+
 -- The lowest level can be embedded in any level.
 maybeEmb′ : ∀ {l l' A r Γ}
           → l ≤ l'

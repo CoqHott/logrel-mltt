@@ -31,6 +31,16 @@ maybeEmbᵛ {ι ¹} [Γ] [A] ⊢Δ [σ] =
   ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
 maybeEmbᵛ {∞} [Γ] [A] ⊢Δ [σ] = [A] ⊢Δ [σ]
 
+maybeEmbTermᵛ : ∀ {l A t r Γ}
+         → ([Γ] : ⊩ᵛ Γ)
+         → ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ r / [Γ]) 
+         → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ r / [Γ] / [A]
+         → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ r / [Γ] / maybeEmbᵛ {A = A} [Γ] [A]
+maybeEmbTermᵛ {ι ⁰} [Γ] [A] [t] = [t]
+maybeEmbTermᵛ {ι ¹} [Γ] [A] [t] = [t]
+maybeEmbTermᵛ {∞} [Γ] [A] [t] = [t]
+
+
 -- The lowest level can be embedded in any level (validity variant).
 maybeEmbₛ′ : ∀ {l A r Γ}
              ([Γ] : ⊩ᵛ Γ)
