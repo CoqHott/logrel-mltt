@@ -228,8 +228,10 @@ mutual
                 → Γ     ⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var Nat.zero) ]↑ ° l ) ° l ^ [ ! , ι l ]
                 → Γ     ⊢ natrec F z s (suc n) ≡ (s ∘ n) ∘ (natrec F z s n)
                         ∷ F [ suc n ] ^ [ ! , ι l ]
-    Emptyrec-cong : ∀ {A A' l e e'}
+    Emptyrec-cong : ∀ {A A' l lEmpty e e'}
                 → Γ ⊢ A ≡ A' ^ [ ! , l ]
+                → Γ ⊢ e ∷ Empty ^ [ % , ι lEmpty ]
+                → Γ ⊢ e' ∷ Empty ^ [ % , ι lEmpty ]
                 → Γ ⊢ Emptyrec A e ≡ Emptyrec A' e' ∷ A ^ [ ! , l ]
     proof-irrelevance : ∀ {t u A l}
                       → Γ ⊢ t ∷ A ^ [ % , l ]

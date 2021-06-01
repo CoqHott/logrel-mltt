@@ -60,7 +60,7 @@ mutual
   wfEqTerm (natrec-cong F≡F′ z≡z′ s≡s′ n≡n′) = wfEqTerm z≡z′
   wfEqTerm (natrec-zero F z s) = wfTerm z
   wfEqTerm (natrec-suc n F z s) = wfTerm n
-  wfEqTerm (Emptyrec-cong A≡A') = wfEq A≡A'
+  wfEqTerm (Emptyrec-cong A≡A' _ _) = wfEq A≡A'
   wfEqTerm (proof-irrelevance t u) = wfTerm t
   wfEqTerm (Id-cong A t u) = wfEqTerm u
   wfEqTerm (Id-Π _ _ A B t u) = wfTerm t

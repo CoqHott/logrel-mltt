@@ -73,7 +73,6 @@ Emptyrec-congTerm : ∀ {F F′ rF lF lEmpty n m Γ Δ σ σ′ l}
                   ([σ≡σ′]   : Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
                   ([σn]     : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
                   ([σm]     : Δ ⊩⟨ l ⟩ m ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
-                  ([σn≡σm]  : Δ ⊩⟨ l ⟩ n ≡ m ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
                 → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
                     ≡ Emptyrec (subst σ′ F′) m
                     ∷ subst σ F ^ [ rF , lF ]
@@ -82,8 +81,7 @@ Emptyrec-congTerm {F} {F′} {rF = !} {lF} {lEmpty} {n} {m} {Γ} {Δ} {σ} {σ�
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]
                 (Emptyₜ (ne ⊢n′))
-                (Emptyₜ (ne ⊢m′))
-                (Emptyₜ₌ (ne d₁ d₁′)) =
+                (Emptyₜ (ne ⊢m′)) =
   let [Empty] = Emptyᵛ {ll = lEmpty} {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
       [σ′Empty] = proj₁ ([Empty] ⊢Δ [σ′])
@@ -117,8 +115,7 @@ Emptyrec-congTerm {F} {F′} {rF = %} {lF} {lEmpty} {n} {m} {Γ} {Δ} {σ} {σ�
                 [Γ] [F] [F′] [F≡F′]
                 ⊢Δ [σ] [σ′] [σ≡σ′]
                 (Emptyₜ (ne ⊢n′))
-                (Emptyₜ (ne ⊢m′))
-                (Emptyₜ₌ (ne d₁ d₁′)) =
+                (Emptyₜ (ne ⊢m′)) =
   let [Empty] = Emptyᵛ {ll = lEmpty} {l = l} [Γ]
       [σEmpty] = proj₁ ([Empty] ⊢Δ [σ])
       [σ′Empty] = proj₁ ([Empty] ⊢Δ [σ′])
@@ -159,7 +156,7 @@ Emptyrecᵛ {F} {rF} {lF} {lEmpty} {n} {l = l} [Γ] [Empty] [F] [n]
                                        (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
                                        (proj₂ ([n] ⊢Δ [σ]) [σ′] [σ≡σ′])
           congTerm = Emptyrec-congTerm {F = F} {F′ = F} [Γ] [F] [F] (reflᵛ {F} {l = l} [Γ] [F])
-                                       ⊢Δ [σ] [σ′] [σ≡σ′] [σn] [σ′n] [σn≡σ′n]
+                                       ⊢Δ [σ] [σ′] [σ≡σ′] [σn] [σ′n]
       in congTerm
 
 -- Validity of natural recursion congurence.
@@ -170,17 +167,14 @@ Emptyrec-congᵛ : ∀ {F F′ rF lF lEmpty n n′ Γ l} ([Γ] : ⊩ᵛ Γ)
           ([F≡F′]  : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , lF ] / [Γ] / [F])
           ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
           ([n′] : Γ ⊩ᵛ⟨ l ⟩ n′ ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
-          ([n≡n′] : Γ ⊩ᵛ⟨ l ⟩ n ≡ n′ ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
         → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ≡ Emptyrec F′ n′ ∷ F ^ [ rF , lF ] / [Γ] / [F]
 Emptyrec-congᵛ {F} {F′} {rF} {lF} {lEmpty} {n} {n′} {l = l}
              [Γ] [Empty] [F] [F′] [F≡F′]
-             [n] [n′] [n≡n′] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+             [n] [n′] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [σn] = irrelevanceTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
                              (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) (proj₁ ([n] ⊢Δ [σ]))
       [σn′] = irrelevanceTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
                              (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) (proj₁ ([n′] ⊢Δ [σ]))
-      [σn≡σn′] = irrelevanceEqTerm {l′ = l} (proj₁ ([Empty] ⊢Δ [σ]))
-                                   (Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ)))) ([n≡n′] ⊢Δ [σ])
       congTerm = Emptyrec-congTerm {F} {F′} [Γ] [F] [F′] [F≡F′]
-                                   ⊢Δ [σ] [σ] (reflSubst [Γ] ⊢Δ [σ]) [σn] [σn′] [σn≡σn′]
+                                   ⊢Δ [σ] [σ] (reflSubst [Γ] ⊢Δ [σ]) [σn] [σn′] 
   in congTerm
