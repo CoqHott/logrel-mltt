@@ -726,6 +726,7 @@ redU*gen (univ (conv x x₁) ⇨ D) = ⊥-elim (notredUterm* x)
                                                           (proj₁ ([ΠFG] ⊢Δ₁ [ρσ])) 
                                                           (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁)
                                                           X))
+                                                          
 
 
 
@@ -747,45 +748,55 @@ redU*gen (univ (conv x x₁) ⇨ D) = ⊥-elim (notredUterm* x)
            ([G≡E]ₜ : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ≡ E ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [F]
                                   / (λ {Δ} {σ} → [UG] {Δ} {σ}))
          → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π H ^ rF ° lF  ▹ E ° lG ∷ Univ rΠ lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
-Π-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {lG} {rΠ} {lΠ} {Γ}
-         lFΠ< lGΠ< [Γ] [F] [H] [UG] [UE] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] = {!!}
-{-
-  let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
-      ⊢H = escape (proj₁ ([H] ⊢Δ [σ]))
-      [liftFσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
-      [liftHσ] = liftSubstS {F = H} [Γ] ⊢Δ [H] [σ]
-      [F]ᵤ = univᵛ {F} [Γ] (Uᵛ [Γ]) [F]ₜ
-      [G]ᵤ₁ = univᵛ {G} {l′ = ⁰} (_∙_ {A = F} [Γ] [F])
-                    (λ {Δ} {σ} → [UF] {Δ} {σ}) [G]ₜ
-      [G]ᵤ = S.irrelevance {A = G} (_∙_ {A = F} [Γ] [F])
-                           (_∙_ {A = F} [Γ] [F]ᵤ) [G]ᵤ₁
-      [H]ᵤ = univᵛ {H} [Γ] (Uᵛ [Γ]) [H]ₜ
-      [E]ᵤ = S.irrelevance {A = E} (_∙_ {A = H} [Γ] [H]) (_∙_ {A = H} [Γ] [H]ᵤ)
-                           (univᵛ {E} {l′ = ⁰} (_∙_ {A = H} [Γ] [H])
-                                  (λ {Δ} {σ} → [UH] {Δ} {σ}) [E]ₜ)
-      [F≡H]ᵤ = univEqᵛ {F} {H} [Γ] (Uᵛ [Γ]) [F]ᵤ [F≡H]ₜ
-      [G≡E]ᵤ = S.irrelevanceEq {A = G} {B = E} (_∙_ {A = F} [Γ] [F])
-                               (_∙_ {A = F} [Γ] [F]ᵤ) [G]ᵤ₁ [G]ᵤ
-                 (univEqᵛ {G} {E} (_∙_ {A = F} [Γ] [F])
-                          (λ {Δ} {σ} → [UF] {Δ} {σ}) [G]ᵤ₁ [G≡E]ₜ)
-      ΠFGₜ = Πⱼ ? ▹ ? ▹ escapeTerm {l = ¹} (Uᵣ′ _ ⁰ 0<1 ⊢Δ) (proj₁ ([F]ₜ ⊢Δ [σ]))
-                ▹  escapeTerm (proj₁ ([UF] (⊢Δ ∙ ⊢F) [liftFσ]))
-                           (proj₁ ([G]ₜ (⊢Δ ∙ ⊢F) [liftFσ]))
-      ΠHEₜ = Πⱼ ? ▹ ? ▹ escapeTerm {l = ¹} (Uᵣ′ _ ⁰ 0<1 ⊢Δ) (proj₁ ([H]ₜ ⊢Δ [σ]))
-             ▹  escapeTerm (proj₁ ([UH] (⊢Δ ∙ ⊢H) [liftHσ]))
-                           (proj₁ ([E]ₜ (⊢Δ ∙ ⊢H) [liftHσ]))
-  in 
-  Uₜ₌ (Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG)
-          (Π subst σ H ^ rF ° lF ▹ subst (liftSubst σ) E ° lG)
-          (idRedTerm:*: ΠFGₜ) (idRedTerm:*: ΠHEₜ)
-          Πₙ Πₙ
-          (≅ₜ-Π-cong ⊢F (escapeTermEq (Uᵣ′ _ ⁰ 0<1 ⊢Δ) ([F≡H]ₜ ⊢Δ [σ]))
-                        (escapeTermEq (proj₁ ([UF] (⊢Δ ∙ ⊢F) [liftFσ]))
-                                          ([G≡E]ₜ (⊢Δ ∙ ⊢F) [liftFσ])))
-          (proj₁ (Πᵛ {F} {G} [Γ] [F]ᵤ [G]ᵤ ⊢Δ [σ]))
-          (proj₁ (Πᵛ {H} {E} [Γ] [H]ᵤ [E]ᵤ ⊢Δ [σ]))
-          (Π-congᵛ {F} {G} {H} {E} [Γ] [F]ᵤ [G]ᵤ [H]ᵤ [E]ᵤ [F≡H]ᵤ [G≡E]ᵤ ⊢Δ [σ])
--}
+Π-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {lG} {rΠ} {lΠ = ¹} {Γ}
+         lFΠ< lGΠ< [Γ] [F] [H] [UG] [UE] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] =
+  let l = ∞
+      [UF] = maybeEmbᵛ {A = Univ rF _} [Γ] (Uᵛ (proj₂ (levelBounded lF)) [Γ])
+      [ΠFG]ᵗ = Πᵗᵛ₁ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ = ¹} {Γ} lFΠ< lGΠ< [Γ] [F] (λ {Δ} {σ} → [UG] {Δ} {σ}) [F]ₜ [G]ₜ {Δ = Δ} {σ = σ} ⊢Δ [σ]
+      [ΠHE]ᵗ = Πᵗᵛ₁ {H} {E} {rF} {lF} {lG} {rΠ} {lΠ = ¹} {Γ} lFΠ< lGΠ< [Γ] [H] (λ {Δ} {σ} → [UE] {Δ} {σ}) [H]ₜ [E]ₜ {Δ = Δ} {σ = σ} ⊢Δ [σ]
+      ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
+      [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
+      univΔ = proj₁ ([UF] ⊢Δ [σ]) 
+      [Fₜ]σ {σ′} [σ′] = [F]ₜ {σ = σ′} ⊢Δ [σ′]
+      [σF] = proj₁ ([Fₜ]σ [σ])
+      [G] = maybeEmbᵛ {A = G} (_∙_ {A = F} [Γ] [F]) (univᵛ {G} (_∙_ {A = F} [Γ] [F]) lGΠ< (λ {Δ} {σ} → [UG] {Δ} {σ}) [G]ₜ)
+      [E] = maybeEmbᵛ {A = E} (_∙_ {A = H} [Γ] [H]) (univᵛ {E} (_∙_ {A = H} [Γ] [H]) lGΠ< (λ {Δ} {σ} → [UE] {Δ} {σ}) [E]ₜ)
+      [F≡H] = univEqᵛ {F} {H} [Γ] [UF] [F] [F≡H]ₜ
+      [G≡E] = univEqᵛ {G} {E} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → [UG] {Δ} {σ}) [G] [G≡E]ₜ
+  in Uₜ₌ [ΠFG]ᵗ [ΠHE]ᵗ (≅ₜ-Π-cong ⊢F (escapeTermEq univΔ ([F≡H]ₜ ⊢Δ [σ]))
+                                    (escapeTermEq (proj₁ ([UG] (⊢Δ ∙ ⊢F) [liftσ]))
+                                          ([G≡E]ₜ (⊢Δ ∙ ⊢F) [liftσ])))
+         λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]
+                                  X = Π-congᵛ {F} {G} {H} {E} {Γ} {rF} {lF} {lG} {rΠ} {¹}
+                                              lFΠ< lGΠ< [Γ] [F] [G] [H] [E] [F≡H] [G≡E] ⊢Δ₁ [ρσ]
+                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG)))
+                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° lG))) PE.refl PE.refl
+                                                (proj₁ (Πᵛ {F} {G} lFΠ< lGΠ< [Γ] [F] [G] ⊢Δ₁ [ρσ])) (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁) X 
+Π-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {lG} {rΠ} {lΠ = ⁰} {Γ}
+         lFΠ< lGΠ< [Γ] [F] [H] [UG] [UE] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] =
+  let l = ∞
+      [UF] = maybeEmbᵛ {A = Univ rF _} [Γ] (Uᵛ (proj₂ (levelBounded lF)) [Γ])
+      [ΠFG]ᵗ = Πᵗᵛ₁ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ = ⁰} {Γ} lFΠ< lGΠ< [Γ] [F] (λ {Δ} {σ} → [UG] {Δ} {σ}) [F]ₜ [G]ₜ {Δ = Δ} {σ = σ} ⊢Δ [σ]
+      [ΠHE]ᵗ = Πᵗᵛ₁ {H} {E} {rF} {lF} {lG} {rΠ} {lΠ = ⁰} {Γ} lFΠ< lGΠ< [Γ] [H] (λ {Δ} {σ} → [UE] {Δ} {σ}) [H]ₜ [E]ₜ {Δ = Δ} {σ = σ} ⊢Δ [σ]
+      ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
+      [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
+      univΔ = proj₁ ([UF] ⊢Δ [σ]) 
+      [Fₜ]σ {σ′} [σ′] = [F]ₜ {σ = σ′} ⊢Δ [σ′]
+      [σF] = proj₁ ([Fₜ]σ [σ])
+      [G] = maybeEmbᵛ {A = G} (_∙_ {A = F} [Γ] [F]) (univᵛ {G} (_∙_ {A = F} [Γ] [F]) lGΠ< (λ {Δ} {σ} → [UG] {Δ} {σ}) [G]ₜ)
+      [E] = maybeEmbᵛ {A = E} (_∙_ {A = H} [Γ] [H]) (univᵛ {E} (_∙_ {A = H} [Γ] [H]) lGΠ< (λ {Δ} {σ} → [UE] {Δ} {σ}) [E]ₜ)
+      [F≡H] = univEqᵛ {F} {H} [Γ] [UF] [F] [F≡H]ₜ
+      [G≡E] = univEqᵛ {G} {E} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → [UG] {Δ} {σ}) [G] [G≡E]ₜ
+  in Uₜ₌ [ΠFG]ᵗ [ΠHE]ᵗ (≅ₜ-Π-cong ⊢F (escapeTermEq univΔ ([F≡H]ₜ ⊢Δ [σ]))
+                                    (escapeTermEq (proj₁ ([UG] (⊢Δ ∙ ⊢F) [liftσ]))
+                                          ([G≡E]ₜ (⊢Δ ∙ ⊢F) [liftσ])))
+         λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]
+                                  X = Π-congᵛ {F} {G} {H} {E} {Γ} {rF} {lF} {lG} {rΠ} {⁰}
+                                              lFΠ< lGΠ< [Γ] [F] [G] [H] [E] [F≡H] [G≡E] ⊢Δ₁ [ρσ]
+                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG)))
+                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° lG))) PE.refl PE.refl
+                                                (proj₁ (Πᵛ {F} {G} lFΠ< lGΠ< [Γ] [F] [G] ⊢Δ₁ [ρσ])) (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁) X 
+
 
 
 -- Validity of non-dependent function types.
