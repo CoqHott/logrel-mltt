@@ -564,7 +564,7 @@ mutual
         [Empty] = Emptyᵛ {ll = ⁰} [Γ]
         [Γ∙Empty] = (_∙_ {Γ} {Empty} [Γ] [Empty])
         [SProp]₁ : Γ ∙ Empty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ∙Empty]
-        [SProp]₁ = maybeEmbᵛ {A = SProp ⁰} [Γ∙Empty] (Uᵛ emb< [Γ∙Empty])
+        [SProp]₁ = maybeEmbᵛ {A = SProp ⁰} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) 
         [Empty]₁ = Emptyᵗᵛ [Γ] emb<
         [Empty]₂ = Emptyᵗᵛ [Γ∙Empty] emb<
         [Unit] : Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] [SProp]
