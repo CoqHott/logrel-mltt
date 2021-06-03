@@ -757,8 +757,6 @@ redU*gen (univ (conv x x₁) ⇨ D) = ⊥-elim (notredUterm* x)
       ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
       univΔ = proj₁ ([UF] ⊢Δ [σ]) 
-      [Fₜ]σ {σ′} [σ′] = [F]ₜ {σ = σ′} ⊢Δ [σ′]
-      [σF] = proj₁ ([Fₜ]σ [σ])
       [G] = maybeEmbᵛ {A = G} (_∙_ {A = F} [Γ] [F]) (univᵛ {G} (_∙_ {A = F} [Γ] [F]) lGΠ< (λ {Δ} {σ} → [UG] {Δ} {σ}) [G]ₜ)
       [E] = maybeEmbᵛ {A = E} (_∙_ {A = H} [Γ] [H]) (univᵛ {E} (_∙_ {A = H} [Γ] [H]) lGΠ< (λ {Δ} {σ} → [UE] {Δ} {σ}) [E]ₜ)
       [F≡H] = univEqᵛ {F} {H} [Γ] [UF] [F] [F≡H]ₜ
