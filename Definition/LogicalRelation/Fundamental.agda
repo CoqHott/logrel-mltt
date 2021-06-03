@@ -141,13 +141,13 @@ mutual
     let [UF]′ = maybeEmbᵛ {A = Univ rF _} [Γ]₁ (Uᵛ (proj₂ (levelBounded lF)) [Γ]₁)
         [UΠ]  = maybeEmbᵛ {A = Univ rΠ _} [Γ]₁ (Uᵛ (proj₂ (levelBounded lΠ)) [Γ]₁)
         [F]′  = maybeEmbᵛ {A = F} [Γ]₁ [F]
-        [UG]′ = S.irrelevance {A = Univ rΠ _} ([Γ]₁ ∙ [F]) ([Γ]₁ ∙ [F]′) [UG]
+        [UG]′ : _ ⊩ᵛ⟨ ∞ ⟩ Univ rΠ lG ^ [ ! , next lG ] / _∙_ {A = F} [Γ]₁ [F]′
+        [UG]′ = S.irrelevance {A = Univ rΠ lG} {r = [ ! , next lG ]} (_∙_ {A = F} [Γ]₁ [F]) (_∙_ {A = F} [Γ]₁ [F]′) [UG]
         [F]ₜ′ = S.irrelevanceTerm {A = Univ rF _} {t = F} [Γ] [Γ]₁ [UF] [UF]′ [F]ₜ
+        [G]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = G} (_∙_ {A = F} [Γ]₁ [F]) (_∙_ {A = F} [Γ]₁ [F]′) [UG] [UG]′ [G]ₜ
     in  [Γ]₁ , [UΠ] 
     , 
-      Πᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} lF< lG< [Γ]₁ [F]′ [UG]′
-                                                       (maybeEmbTermᵛ {A = Univ _ _} {t = F} [Γ]₁ [UF]′ [F]ₜ′)
-                                                       (maybeEmbTermᵛ {A = Univ _ _} {t = F} ([Γ]₁ ∙ [F]) [UG] [G]ₜ)
+      Πᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} lF< lG< [Γ]₁ [F]′ [UG]′ [F]ₜ′ [G]ₜ′
   fundamentalTerm (∃ⱼ_▹_ {F} {G} ⊢F ⊢G)
     with fundamentalTerm ⊢F | fundamentalTerm ⊢G
   ... | [Γ] , [U] , [F]ₜ | [Γ]₁ , [U]₁ , [G]ₜ = {!!}
@@ -207,7 +207,8 @@ mutual
           [t]′ = S.irrelevanceTerm {A = A} {t = t} [Γ] [Γ]′ [A′] [A′]₁ [t]
       in  [Γ]′ , [A]
       ,   convᵛ {t} {A} {B} [Γ]′ [A′]₁ [A] [A′≡A] [t]′
-  fundamentalTerm (univ l< [Γ]) = {!!}
+  fundamentalTerm (univ 0<1 ⊢Γ) = let [Γ] = valid ⊢Γ
+                                  in [Γ] , (Uᵛ ∞< [Γ] , Uᵗᵛ [Γ])
   
   -- Fundamental theorem for term equality.
   fundamentalTermEq : ∀{Γ A t t′ rA} → Γ ⊢ t ≡ t′ ∷ A ^ rA

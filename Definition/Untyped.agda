@@ -353,6 +353,7 @@ data Natural : Term → Set where
 data Type : Term → Set where
   Πₙ : ∀ {A r lA B lB} → Type (Π A ^ r ° lA ▹ B ° lB)
   ℕₙ : Type ℕ
+  Uₙ : ∀ {r l} → Type (Univ r l)
   Emptyₙ : Type Empty
   ∃ₙ : ∀ {A B} → Type (∃ A ▹ B)
   ne : ∀{n} → Neutral n → Type n
@@ -374,6 +375,7 @@ naturalWhnf (ne x) = ne x
 typeWhnf : ∀ {A} → Type A → Whnf A
 typeWhnf Πₙ = Πₙ
 typeWhnf ℕₙ = ℕₙ
+typeWhnf Uₙ  = Uₙ
 typeWhnf ∃ₙ = ∃ₙ
 typeWhnf Emptyₙ = Emptyₙ
 typeWhnf (ne x) = ne x
@@ -488,6 +490,7 @@ wkNatural ρ (ne x) = ne (wkNeutral ρ x)
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
 wkType ρ Πₙ      = Πₙ
 wkType ρ ℕₙ      = ℕₙ
+wkType ρ Uₙ      = Uₙ
 wkType ρ ∃ₙ      = ∃ₙ
 wkType ρ Emptyₙ  = Emptyₙ
 wkType ρ (ne x) = ne (wkNeutral ρ x)

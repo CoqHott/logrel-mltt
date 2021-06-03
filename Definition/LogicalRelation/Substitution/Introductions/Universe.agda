@@ -22,12 +22,14 @@ import Definition.LogicalRelation.Weakening as wkLR
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
+U¹ : ∀ {Γ rU} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ ∞ ⟩ Univ rU ¹ ^ [ ! , ∞ ] 
+U¹ {Γ} {rU} ⊢Γ = Uᵣ′ (Univ rU ¹) ∞ rU ¹ ∞< PE.refl (idRed:*: (Uⱼ ⊢Γ))
+
 -- Validity of the universe type.
 U¹ᵛ : ∀ {Γ rU l} → (ι ¹ <∞ l) → ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ l ⟩ Univ rU ¹ ^ [ ! , ∞ ] / [Γ]
-U¹ᵛ {Γ} {rU} l< [Γ] ⊢Δ [σ] =
-  (Uᵣ (Uᵣ rU ¹ l< PE.refl [[ Uⱼ ⊢Δ , Uⱼ ⊢Δ , id (Uⱼ ⊢Δ) ]]))
-  , (λ [σ′] [σ≡σ′] → id (Uⱼ ⊢Δ))
+U¹ᵛ {Γ} {rU} ∞< [Γ] ⊢Δ [σ] =
+  U¹ ⊢Δ , (λ [σ′] [σ≡σ′] → id (Uⱼ ⊢Δ))
 
 U⁰ⱼ : ∀ {r Γ} → ⊢ Γ → Γ ⊢ Univ r ⁰ ^ [ ! , ι ¹ ]
 U⁰ⱼ ⊢Γ = univ (univ 0<1 ⊢Γ)
@@ -47,6 +49,14 @@ Uᵛgen {lU = ¹} (≡is≤ PE.refl) = U¹ᵛ
 Uᵛ : ∀ {Γ rU lU l} → (ι lU <∞ l) → ([Γ] : ⊩ᵛ Γ)
      → Γ ⊩ᵛ⟨ l ⟩ Univ rU lU ^ [ ! , next lU ] / [Γ]
 Uᵛ = Uᵛgen (≡is≤ PE.refl)
+
+Uᵗᵛ₁ :  ∀ {Γ rU} → (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ∞ ⟩ Univ rU ⁰ ∷ Univ ! ¹ ^ [ ! , ∞ ] / U¹ ⊢Γ
+Uᵗᵛ₁ {Γ} {rU} ⊢Γ = Uₜ (Univ rU ⁰) (idRedTerm:*: (univ 0<1 ⊢Γ)) Uₙ (≅-U⁰refl ⊢Γ)
+                                  (λ σ ⊢Δ₁ → Uᵣ′ (Univ rU ⁰) (ι ¹) rU ⁰ emb< PE.refl (idRed:*: (U⁰ⱼ ⊢Δ₁)))
+
+Uᵗᵛ : ∀ {Γ rU} → ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ Univ rU ⁰ ∷ Univ ! ¹ ^ [ ! , ∞ ] / [Γ] / Uᵛ ∞< [Γ]
+Uᵗᵛ {Γ} {rU} [Γ] = λ ⊢Δ [σ] → Uᵗᵛ₁ ⊢Δ
+                            , λ [σ′] [σ≡σ′] → Uₜ₌ (Uᵗᵛ₁ ⊢Δ) (Uᵗᵛ₁ ⊢Δ) (≅-U⁰refl ⊢Δ) λ [ρ] ⊢Δ → id (U⁰ⱼ ⊢Δ)
 
 -- Valid terms of type U are valid types.
 univᵛ : ∀ {A Γ rU lU lU' l} ([Γ] : ⊩ᵛ Γ)
