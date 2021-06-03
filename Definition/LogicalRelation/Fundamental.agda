@@ -143,7 +143,7 @@ mutual
         [F]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = F} [Γ] [Γ]₁ [UF] ((Uᵛ (proj₂ (levelBounded lF)) [Γ]₁)) [F]ₜ
     in  [Γ]₁ , [UΠ] 
     , 
-      Πᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} {∞} lF< lG< [Γ]₁ (maybeEmbᵛ [Γ]₁ [F]) [UF]′ (λ {Δ} {σ} → [UG] {Δ} {σ}) [UΠ] (maybeEmbTermᵛ [Γ]₁ [UΠ] [F]ₜ′) [G]ₜ
+      Πᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} lF< lG< [Γ]₁ (maybeEmbᵛ [Γ]₁ [F]) (λ {Δ} {σ} → [UG] {Δ} {σ}) (maybeEmbTermᵛ [Γ]₁ [UΠ] [F]ₜ′) [G]ₜ
   fundamentalTerm (∃ⱼ_▹_ {F} {G} ⊢F ⊢G)
     with fundamentalTerm ⊢F | fundamentalTerm ⊢G
   ... | [Γ] , [U] , [F]ₜ | [Γ]₁ , [U]₁ , [G]ₜ = {!!}
@@ -254,7 +254,7 @@ mutual
     with fundamental ⊢F | fundamentalTermEq F≡H | fundamentalTermEq G≡E
   ... | [Γ] , [F] | [Γ]₁ , modelsTermEq [U] [F]ₜ [H]ₜ [F≡H]ₜ
       | [Γ]₂ , modelsTermEq [U]₁ [G]ₜ [E]ₜ [G≡E]ₜ =
-    let [U]′  = S.irrelevance {A = Univ _ _} [Γ]₁ [Γ] [U] -- Uᵛ {!!} [Γ]
+    let [U]′  = maybeEmbᵛ [Γ] (Uᵛ (proj₂ (levelBounded lF)) [Γ]) -- S.irrelevance {A = Univ _ _} [Γ]₁ [Γ] [U] -- Uᵛ {!!} [Γ]
         [UΠ] = maybeEmbᵛ [Γ] (Uᵛ (proj₂ (levelBounded lΠ)) [Γ])
         [F]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = F} [Γ]₁ [Γ] [U] [U]′ [F]ₜ
         [H]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = H} [Γ]₁ [Γ] [U] [U]′ [H]ₜ
@@ -272,18 +272,18 @@ mutual
                   (S.irrelevanceTerm {A = Univ _ _} {t = E} [Γ]₂ ([Γ] ∙ [F])
                                      [U]₁ (λ {Δ} {σ} → [U]₁′ {Δ} {σ}) [E]ₜ)
         [F≡H]ₜ′ = S.irrelevanceEqTerm {A = Univ _ _} {t = F} {u = H}
-                                      [Γ]₁ [Γ] [U] (Uᵛ {!!} [Γ]) [F≡H]ₜ
+                                      [Γ]₁ [Γ] [U] [U]′ [F≡H]ₜ
         [G≡E]ₜ′ = S.irrelevanceEqTerm {A = Univ _ _} {t = G} {u = E} [Γ]₂
                                       (_∙_ {A = F} [Γ] [F]) [U]₁
                                       (λ {Δ} {σ} → [U]₁′ {Δ} {σ}) [G≡E]ₜ
     in  [Γ]
     ,   modelsTermEq
           [UΠ] -- looks like [U]′ but the implicits are different
-          (Πᵗᵛ {F} {G} lF< lG< [Γ] [F] [U]′ [U]₁′ [UΠ] [F]ₜ′ [G]ₜ′) 
-          (Πᵗᵛ {H} {E} {l = ∞} lF< lG< [Γ] [H] [U]′ (λ {Δ} {σ} → [U]₂′ {Δ} {σ}) [UΠ] [H]ₜ′ [E]ₜ′)
-          {!!} {- (Π-congᵗᵛ {F} {G} {H} {E} [Γ] [F] [H]
+          (Πᵗᵛ {F} {G} lF< lG< [Γ] [F] [U]₁′ [F]ₜ′ [G]ₜ′ ) 
+          (Πᵗᵛ {H} {E} lF< lG< [Γ] [H] (λ {Δ} {σ} → [U]₂′ {Δ} {σ}) [H]ₜ′ [E]ₜ′) 
+          (Π-congᵗᵛ {F} {G} {H} {E} lF< lG< [Γ] [F] [H]
                     (λ {Δ} {σ} → [U]₁′ {Δ} {σ}) (λ {Δ} {σ} → [U]₂′ {Δ} {σ})
-                    [F]ₜ′ [G]ₜ′ [H]ₜ′ [E]ₜ′ [F≡H]ₜ′ [G≡E]ₜ′) -}
+                    [F]ₜ′ [G]ₜ′ [H]ₜ′ [E]ₜ′ [F≡H]ₜ′ [G≡E]ₜ′) 
 
   fundamentalTermEq (app-cong {a} {b} {f} {g} {F} {G} {rF} {lF} {lG} {l} f≡g a≡b)
     with fundamentalTermEq f≡g | fundamentalTermEq a≡b
@@ -558,14 +558,13 @@ mutual
         [SProp] = Uᵛ emb< [Γ]
         [Empty] = Emptyᵛ {ll = ⁰} [Γ]
         [Γ∙Empty] = (_∙_ {Γ} {Empty} [Γ] [Empty])
-        [SProp]₁ : Γ ∙ Empty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ι ¹ ⟩ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ] ∙ [Empty]
-        [SProp]₁ = Uᵛ emb< (_∙_ {Γ} {Empty} [Γ] [Empty])
+        [SProp]₁ : Γ ∙ Empty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ] ∙ [Empty]
+        [SProp]₁ = maybeEmbᵛ {A = SProp _} (_∙_ {Γ} {Empty} [Γ] [Empty]) (Uᵛ emb< (_∙_ {Γ} {Empty} [Γ] [Empty]))
         [Empty]₁ = Emptyᵗᵛ [Γ] emb<
         [Empty]₂ = Emptyᵗᵛ [Γ∙Empty] emb<
         [Unit] : Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] [SProp]
         [Unit] = maybeEmbTermᵛ {A = SProp _} [Γ] [SProp]
-                 (Πᵗᵛ {Empty} {Empty} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [Empty] [SProp] (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [SProp]
-          [Empty]₁ λ {Δ} {σ} → [Empty]₂ {Δ} {σ})
+                 (Πᵗᵛ {Empty} {Empty} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [Empty] (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
         [id] , [eq] = redSubstTermᵛ {SProp ⁰} {Id ℕ zero zero} {Unit} [Γ]
           (λ ⊢Δ [σ] → Id-ℕ-00 ⊢Δ)
           [SProp] [Unit]

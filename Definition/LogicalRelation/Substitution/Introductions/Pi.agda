@@ -27,6 +27,7 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 open import Tools.Empty using (⊥; ⊥-elim)
 
+
 wk-subst2 : ∀ {ρ ρ' σ} t → U.wk ρ' (U.wk ρ (subst σ t)) PE.≡ subst (ρ' • ρ •ₛ σ) t
 wk-subst2 {ρ} {ρ'} {σ} t = PE.trans (wk-comp ρ' ρ (subst σ t)) (wk-subst t) 
 
@@ -728,26 +729,27 @@ redU*gen (univ (conv x x₁) ⇨ D) = ⊥-elim (notredUterm* x)
 
 
 
-{-
 -- Validity of Π-congurence as a term equality.
-Π-congᵗᵛ : ∀ {F G H E rF lF lG rΠ lΠ Γ}
-           ([Γ] : ⊩ᵛ Γ)
-           ([F] : Γ ⊩ᵛ⟨ ¹ ⟩ F ^ [ rF , ι lF ] / [Γ])
-           ([H] : Γ ⊩ᵛ⟨ ¹ ⟩ H ^ [ rF , ι lF ] / [Γ])
-           ([UF] : Γ ∙ F ^ rF ⊩ᵛ⟨ ¹ ⟩ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [F])
-           ([UH] : Γ ∙ H ^ rF ⊩ᵛ⟨ ¹ ⟩ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [H])
-           ([F]ₜ : Γ ⊩ᵛ⟨ ¹ ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / Uᵛ [Γ])
-           ([G]ₜ : Γ ∙ F ^ rF ⊩ᵛ⟨ ¹ ⟩ G ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [F]
-                                / (λ {Δ} {σ} → [UF] {Δ} {σ}))
-           ([H]ₜ : Γ ⊩ᵛ⟨ ¹ ⟩ H ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / Uᵛ [Γ])
-           ([E]ₜ : Γ ∙ H ^ rF ⊩ᵛ⟨ ¹ ⟩ E ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [H]
-                                / (λ {Δ} {σ} → [UH] {Δ} {σ}))
-           ([F≡H]ₜ : Γ ⊩ᵛ⟨ ¹ ⟩ F ≡ H ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / Uᵛ [Γ])
-           ([G≡E]ₜ : Γ ∙ F ^ rF ⊩ᵛ⟨ ¹ ⟩ G ≡ E ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [F]
-                                  / (λ {Δ} {σ} → [UF] {Δ} {σ}))
-         → Γ ⊩ᵛ⟨ ¹ ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π H ^ rF ° lF  ▹ E ° lG ∷ Univ rΠ lΠ ^ [ ! , next lΠ ] / [Γ] / Uᵛ [Γ]
-Π-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {lG} {rΠ} {lΠ}
-        {Γ} [Γ] [F] [H] [UF] [UH] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] = 
+Π-congᵗᵛ : ∀ {F G H E rF lF lG rΠ lΠ Γ} (lFΠ< : lF ≤ lΠ)  (lGΠ< : lG ≤ lΠ) ([Γ] : ⊩ᵛ Γ) →
+        let l    = ∞
+            [UF] = maybeEmbᵛ {A = Univ rF _} [Γ] (Uᵛ (proj₂ (levelBounded lF)) [Γ])
+            [UΠ] = maybeEmbᵛ {A = Univ rΠ _} [Γ] (Uᵛ (proj₂ (levelBounded lΠ)) [Γ])
+        in      
+           ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+           ([H] : Γ ⊩ᵛ⟨ l ⟩ H ^ [ rF , ι lF ] / [Γ])
+           ([UG] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [F])
+           ([UE] : Γ ∙ H ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [H])
+           ([F]ₜ : Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF])
+           ([G]ₜ : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ}))
+           ([H]ₜ : Γ ⊩ᵛ⟨ l ⟩ H ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF])
+           ([E]ₜ :  Γ ∙ H ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ E ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [H] / (λ {Δ} {σ} → [UE] {Δ} {σ}))
+           ([F≡H]ₜ : Γ ⊩ᵛ⟨ l ⟩ F ≡ H ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF])
+           ([G≡E]ₜ : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ≡ E ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] ∙ [F]
+                                  / (λ {Δ} {σ} → [UG] {Δ} {σ}))
+         → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π H ^ rF ° lF  ▹ E ° lG ∷ Univ rΠ lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
+Π-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {lG} {rΠ} {lΠ} {Γ}
+         lFΠ< lGΠ< [Γ] [F] [H] [UG] [UE] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] = {!!}
+{-
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       ⊢H = escape (proj₁ ([H] ⊢Δ [σ]))
       [liftFσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
