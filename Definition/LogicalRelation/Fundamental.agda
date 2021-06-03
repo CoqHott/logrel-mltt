@@ -45,10 +45,10 @@ mutual
 
   -- Fundamental theorem for types.
   fundamental : ∀ {Γ A rA} (⊢A : Γ ⊢ A ^ rA) → Σ (⊩ᵛ Γ) (λ [Γ] → Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
-  fundamental (Uⱼ x) = valid x , maybeEmbᵛ (valid x) (Uᵛ ∞< (valid x))
+  fundamental (Uⱼ x) = valid x , maybeEmbᵛ {A = Univ _ _} (valid x) (Uᵛ ∞< (valid x))
   fundamental (univ {A} ⊢A) with fundamentalTerm ⊢A
   fundamental (univ {A} ⊢A) | [Γ] , [U] , [A] =
-    [Γ] , maybeEmbᵛ [Γ] (univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [A])
+    [Γ] , maybeEmbᵛ {A = A} [Γ] (univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [A])
 
   -- Fundamental theorem for type equality.
   fundamentalEq : ∀{Γ A B rA} → Γ ⊢ A ≡ B ^ rA
@@ -57,9 +57,9 @@ mutual
     → Γ ⊩ᵛ⟨ ∞ ⟩ A ≡ B ^ rA / [Γ] / [A]
   fundamentalEq (univ {A} {B} x) with fundamentalTermEq x
   fundamentalEq (univ {A} {B} x) | [Γ] , modelsTermEq [U] [t] [u] [t≡u] =
-    let [A] = univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [t]
-        [B] = univᵛ {B} [Γ] (≡is≤ PE.refl) [U] [u]
-    in  [Γ] , maybeEmbᵛ [Γ] [A] , maybeEmbᵛ [Γ] [B]
+    let [A] = maybeEmbᵛ {A = A} [Γ] (univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [t])
+        [B] = maybeEmbᵛ {A = B} [Γ] (univᵛ {B} [Γ] (≡is≤ PE.refl) [U] [u])
+    in  [Γ] , [A] , [B]
     ,   (λ ⊢Δ [σ] → univEqEq (proj₁ ([U] ⊢Δ [σ]))
                              (proj₁ ([A] ⊢Δ [σ]))
                              ([t≡u] ⊢Δ [σ]))
@@ -131,19 +131,23 @@ mutual
     → ∃ λ ([Γ] : ⊩ᵛ Γ)
     → ∃ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
     → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ rA / [Γ] / [A]
-  fundamentalTerm (ℕⱼ x) = valid x , maybeEmbᵛ (valid x) (Uᵛ emb< (valid x)) ,  maybeEmbTermᵛ (valid x) (Uᵛ emb< (valid x)) (ℕᵗᵛ (valid x))
-  fundamentalTerm (Emptyⱼ ⊢Γ) = let [Γ] = valid ⊢Γ
-                                    [U] = Uᵛ (proj₂ (levelBounded _)) [Γ]
-                                in [Γ] , maybeEmbᵛ [Γ] [U] , maybeEmbTermᵛ [Γ] [U] (Emptyᵗᵛ [Γ] (proj₂ (levelBounded _)))
+  fundamentalTerm (ℕⱼ x) = valid x , maybeEmbᵛ {A = Univ _ _} (valid x) (Uᵛ emb< (valid x)) ,  maybeEmbTermᵛ {A = Univ _ _} {t = ℕ} (valid x) (Uᵛ emb< (valid x)) (ℕᵗᵛ (valid x))
+  fundamentalTerm (Emptyⱼ {l} ⊢Γ) = let [Γ] = valid ⊢Γ
+                                        [U] = Uᵛ (proj₂ (levelBounded _)) [Γ]
+                                    in [Γ] , maybeEmbᵛ {A = Univ _ _} [Γ] [U] , maybeEmbTermᵛ {A = Univ _ _} {t = Empty} [Γ] [U] (Emptyᵗᵛ {ll = l} [Γ] (proj₂ (levelBounded _)))
   fundamentalTerm (Πⱼ_▹_▹_▹_ {F} {rF} {lF} {G} {lG} {rΠ} {lΠ} lF< lG< ⊢F ⊢G)
     with fundamentalTerm ⊢F | fundamentalTerm ⊢G
   ... | [Γ] , [UF] , [F]ₜ | [Γ]₁ ∙ [F] , [UG] , [G]ₜ =
-    let [UF]′  = S.irrelevance {A = Univ _ _} [Γ] [Γ]₁ [UF]
-        [UΠ] = maybeEmbᵛ [Γ]₁ (Uᵛ (proj₂ (levelBounded lΠ)) [Γ]₁)
-        [F]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = F} [Γ] [Γ]₁ [UF] ((Uᵛ (proj₂ (levelBounded lF)) [Γ]₁)) [F]ₜ
+    let [UF]′ = maybeEmbᵛ {A = Univ rF _} [Γ]₁ (Uᵛ (proj₂ (levelBounded lF)) [Γ]₁)
+        [UΠ]  = maybeEmbᵛ {A = Univ rΠ _} [Γ]₁ (Uᵛ (proj₂ (levelBounded lΠ)) [Γ]₁)
+        [F]′  = maybeEmbᵛ {A = F} [Γ]₁ [F]
+        [UG]′ = S.irrelevance {A = Univ rΠ _} ([Γ]₁ ∙ [F]) ([Γ]₁ ∙ [F]′) [UG]
+        [F]ₜ′ = S.irrelevanceTerm {A = Univ rF _} {t = F} [Γ] [Γ]₁ [UF] [UF]′ [F]ₜ
     in  [Γ]₁ , [UΠ] 
     , 
-      Πᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} lF< lG< [Γ]₁ (maybeEmbᵛ [Γ]₁ [F]) (λ {Δ} {σ} → [UG] {Δ} {σ}) (maybeEmbTermᵛ [Γ]₁ [UΠ] [F]ₜ′) [G]ₜ
+      Πᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} lF< lG< [Γ]₁ [F]′ [UG]′
+                                                       (maybeEmbTermᵛ {A = Univ _ _} {t = F} [Γ]₁ [UF]′ [F]ₜ′)
+                                                       (maybeEmbTermᵛ {A = Univ _ _} {t = F} ([Γ]₁ ∙ [F]) [UG] [G]ₜ)
   fundamentalTerm (∃ⱼ_▹_ {F} {G} ⊢F ⊢G)
     with fundamentalTerm ⊢F | fundamentalTerm ⊢G
   ... | [Γ] , [U] , [F]ₜ | [Γ]₁ , [U]₁ , [G]ₜ = {!!}
