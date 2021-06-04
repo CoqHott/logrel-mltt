@@ -294,6 +294,9 @@ mutual
     cong₂ _∷_ (cong (⟦_,_⟧ l) (trans (wk-subst t) (subst-lifts-•ₛ l t)))
               (wkGen-substGen c)
 
+wk-subst2 : ∀ {ρ ρ' σ} t → wk ρ' (wk ρ (subst σ t)) ≡ subst (ρ' • ρ •ₛ σ) t
+wk-subst2 {ρ} {ρ'} {σ} t = trans (wk-comp ρ' ρ (subst σ t)) (wk-subst t) 
+
 -- subst σ ∘ wk ρ = subst (σ •ₛ ρ)
 
 mutual

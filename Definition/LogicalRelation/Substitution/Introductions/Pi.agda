@@ -28,10 +28,6 @@ import Tools.PropositionalEquality as PE
 open import Tools.Empty using (⊥; ⊥-elim)
 
 
-wk-subst2 : ∀ {ρ ρ' σ} t → U.wk ρ' (U.wk ρ (subst σ t)) PE.≡ subst (ρ' • ρ •ₛ σ) t
-wk-subst2 {ρ} {ρ'} {σ} t = PE.trans (wk-comp ρ' ρ (subst σ t)) (wk-subst t) 
-
-
 GappGen : ∀ {F G Γ rF lF lG rΠ l Δ σ ρ Δ₁}
          ([Γ] : ⊩ᵛ Γ)
          ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
