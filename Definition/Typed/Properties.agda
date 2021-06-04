@@ -687,3 +687,32 @@ un-univ≡ (trans X Y) = trans (un-univ≡ X) (un-univ≡ Y)
 univ-gen : ∀ {r Γ l} → (⊢Γ : ⊢ Γ) → Γ ⊢ Univ r l ^ [ ! , next l ]
 univ-gen {l = ⁰} ⊢Γ = univ (univ 0<1 ⊢Γ )
 univ-gen {l = ¹} ⊢Γ = Uⱼ ⊢Γ
+
+
+un-univ⇒ : ∀ {l Γ A B r} → Γ ⊢ A ⇒ B ^ [ r , ι l ] → Γ ⊢ A ⇒ B ∷ Univ r l ^ next l
+un-univ⇒ (univ x) = x
+
+univ⇒* : ∀ {l Γ A B r} → Γ ⊢ A ⇒* B ∷ Univ r l ^ next l → Γ ⊢ A ⇒* B ^ [ r , ι l ]
+univ⇒* (id x) = id (univ x)
+univ⇒* (x ⇨ D) = univ x ⇨ univ⇒* D
+
+un-univ⇒* : ∀ {l Γ A B r} → Γ ⊢ A ⇒* B ^ [ r , ι l ] → Γ ⊢ A ⇒* B ∷ Univ r l ^ next l
+un-univ⇒* (id x) = id (un-univ x)
+un-univ⇒* (x ⇨ D) = un-univ⇒ x ⇨ un-univ⇒* D
+
+univ:⇒*: : ∀ {l Γ A B r} →  Γ ⊢ A :⇒*: B ∷ Univ r l ^ next l → Γ ⊢ A :⇒*: B ^ [ r , ι l ]
+univ:⇒*: [[ ⊢A , ⊢B , D ]] = [[ (univ ⊢A) , (univ ⊢B) , (univ⇒* D) ]]
+
+un-univ:⇒*: : ∀ {l Γ A B r} → Γ ⊢ A :⇒*: B ^ [ r , ι l ] → Γ ⊢ A :⇒*: B ∷ Univ r l ^ next l
+un-univ:⇒*: [[ ⊢A , ⊢B , D ]] = [[ (un-univ ⊢A) , (un-univ ⊢B) , (un-univ⇒* D) ]]
+
+notredUterm* : ∀ {Γ r l l' A B} → Γ ⊢ Univ r l ⇒ A ∷ B ^ l' → ⊥
+notredUterm* (conv D x) = notredUterm* D
+
+notredU* : ∀ {Γ r l l' A} → Γ ⊢ Univ r l ⇒ A ^ [ ! , l' ] → ⊥
+notredU* (univ x) = notredUterm* x
+
+redU*gen : ∀ {Γ r l r' l' l''} → Γ ⊢ Univ r l ⇒* Univ r' l' ^ [ ! , l'' ] → Univ r l PE.≡ Univ r' l'
+redU*gen (id x) = PE.refl
+redU*gen (univ (conv x x₁) ⇨ D) = ⊥-elim (notredUterm* x)
+

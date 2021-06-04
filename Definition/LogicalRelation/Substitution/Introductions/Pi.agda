@@ -66,57 +66,7 @@ Gapp : ∀ {F G Γ rF lF lG rΠ l Δ σ ρ Δ₁}
                 / proj₁ ([F] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ])))
          → Δ₁ ⊩⟨ l ⟩ U.wk (lift ρ) (subst (liftSubst σ) G) [ a ] ^ [ rΠ , ι lG ]
 Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] ⊢Δ [σ] a [ρ] ⊢Δ₁ [a] =
-   let [G]a : ∀ {ρ Δ₁} a ([ρ] : ρ ∷ Δ₁ ⊆ Δ) (⊢Δ₁ : ⊢ Δ₁)
-             ([a] : Δ₁ ⊩⟨ l ⟩ a ∷ subst (ρ •ₛ σ) F ^ [ rF , ι lF ]
-                / proj₁ ([F] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ])))
-           → Σ (Δ₁ ⊩⟨ l ⟩ subst (consSubst (ρ •ₛ σ) a) G ^ [ rΠ , ι lG ])
-               (λ [Aσ] →
-               {σ′ : Nat → Term} →
-               (Σ (Δ₁ ⊩ˢ tail σ′ ∷ Γ / [Γ] / ⊢Δ₁)
-               (λ [tailσ] →
-                  Δ₁ ⊩⟨ l ⟩ head σ′ ∷ subst (tail σ′) F ^ [ rF , ι lF ] / proj₁ ([F] ⊢Δ₁ [tailσ]))) →
-               Δ₁ ⊩ˢ consSubst (ρ •ₛ σ) a ≡ σ′ ∷ Γ ∙ F ^ [ rF , ι lF ] /
-               [Γ] ∙ [F] / ⊢Δ₁ /
-               consSubstS {t = a} {A = F} [Γ] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]) [F]
-               [a] →
-               Δ₁ ⊩⟨ l ⟩ subst (consSubst (ρ •ₛ σ) a) G ≡
-               subst σ′ G ^ [ rΠ , ι lG ] / [Aσ])
-       [G]a {ρ} a [ρ] ⊢Δ₁ [a] = [G] {σ = consSubst (ρ •ₛ σ) a} ⊢Δ₁
-                              (consSubstS {t = a} {A = F} [Γ] ⊢Δ₁
-                                          (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ])
-                                          [F] [a])
-  in irrelevance′ (PE.sym (singleSubstWkComp a σ G)) (proj₁ ([G]a a [ρ] ⊢Δ₁ [a]))
-
-
-
-
-un-univ⇒ : ∀ {l Γ A B r} → Γ ⊢ A ⇒ B ^ [ r , ι l ] → Γ ⊢ A ⇒ B ∷ Univ r l ^ next l
-un-univ⇒ (univ x) = x
-
-univ⇒* : ∀ {l Γ A B r} → Γ ⊢ A ⇒* B ∷ Univ r l ^ next l → Γ ⊢ A ⇒* B ^ [ r , ι l ]
-univ⇒* (id x) = id (univ x)
-univ⇒* (x ⇨ D) = univ x ⇨ univ⇒* D
-
-un-univ⇒* : ∀ {l Γ A B r} → Γ ⊢ A ⇒* B ^ [ r , ι l ] → Γ ⊢ A ⇒* B ∷ Univ r l ^ next l
-un-univ⇒* (id x) = id (un-univ x)
-un-univ⇒* (x ⇨ D) = un-univ⇒ x ⇨ un-univ⇒* D
-
-univ:⇒*: : ∀ {l Γ A B r} →  Γ ⊢ A :⇒*: B ∷ Univ r l ^ next l → Γ ⊢ A :⇒*: B ^ [ r , ι l ]
-univ:⇒*: [[ ⊢A , ⊢B , D ]] = [[ (univ ⊢A) , (univ ⊢B) , (univ⇒* D) ]]
-
-un-univ:⇒*: : ∀ {l Γ A B r} → Γ ⊢ A :⇒*: B ^ [ r , ι l ] → Γ ⊢ A :⇒*: B ∷ Univ r l ^ next l
-un-univ:⇒*: [[ ⊢A , ⊢B , D ]] = [[ (un-univ ⊢A) , (un-univ ⊢B) , (un-univ⇒* D) ]]
-
-notredUterm* : ∀ {Γ r l l' A B} → Γ ⊢ Univ r l ⇒ A ∷ B ^ l' → ⊥
-notredUterm* (conv D x) = notredUterm* D
-
-notredU* : ∀ {Γ r l l' A} → Γ ⊢ Univ r l ⇒ A ^ [ ! , l' ] → ⊥
-notredU* (univ x) = notredUterm* x
-
-redU*gen : ∀ {Γ r l r' l' l''} → Γ ⊢ Univ r l ⇒* Univ r' l' ^ [ ! , l'' ] → Univ r l PE.≡ Univ r' l'
-redU*gen (id x) = PE.refl
-redU*gen (univ (conv x x₁) ⇨ D) = ⊥-elim (notredUterm* x)
-
+  irrelevance′ (PE.sym (singleSubstWkComp a σ G)) (proj₁ (GappGen {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] ⊢Δ [σ] a [ρ] ⊢Δ₁ [a]))
 
 -- Validity of Π.
 Πᵛ : ∀ {F G Γ rF lF lG rΠ lΠ l}
