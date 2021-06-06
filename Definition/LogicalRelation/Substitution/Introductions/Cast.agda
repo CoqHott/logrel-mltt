@@ -41,22 +41,22 @@ escapeEqReflTerm : ∀ {l Γ A t r}
 escapeEqReflTerm [A] [t] = escapeTermEq [A] (reflEqTerm [A] [t])
 
 
-appRed* : ∀ {Γ a t u A B rA l}
-          (⊢a : Γ ⊢ a ∷ A ^ [ rA , l ])
-          (D : Γ ⊢ t ⇒* u ∷ (Π A ^ rA ▹ B) ^ l)
-        → Γ ⊢ t ∘ a ⇒* u ∘ a ∷ B [ a ] ^ l
+appRed* : ∀ {Γ a t u A B rA lA lB l}
+          (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
+          (D : Γ ⊢ t ⇒* u ∷ (Π A ^ rA ° lA ▹ B ° lB) ^ l)
+        → Γ ⊢ t ∘ a ⇒* u ∘ a ∷ B [ a ] ^ ι lB
 appRed* ⊢a (id x) = id (x ∘ⱼ ⊢a)
 appRed* ⊢a (x ⇨ D) = app-subst x ⊢a ⇨ appRed* ⊢a D
 
 castΠRed* : ∀ {Γ F rF G A B e t}
          (⊢F : Γ ⊢ F ^ [ rF , ι ⁰ ])
          (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ^ [ ! , ι ⁰ ])
-         (⊢e : Γ ⊢ e ∷ Id (U ⁰) (Π F ^ rF ▹ G) A ^ [ % , next ⁰ ])
-         (⊢t : Γ ⊢ t ∷ Π F ^ rF ▹ G ^ [ ! , ι ⁰ ])
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) A ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ∷ Π F ^ rF ° ⁰ ▹ G ° ⁰ ^ [ ! , ι ⁰ ])
          (D : Γ ⊢ A ⇒* B ^ [ ! , ι ⁰ ])
-       → Γ ⊢ cast ⁰ (Π F ^ rF ▹ G) A e t ⇒* cast ⁰ (Π F ^ rF ▹ G) B e t ∷ A ^ ι ⁰
-castΠRed* ⊢F ⊢G ⊢e ⊢t (id (univ ⊢A)) = id (castⱼ (Πⱼ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G) ⊢A ⊢e ⊢t)
-castΠRed* ⊢F ⊢G ⊢e ⊢t ((univ d) ⇨ D) = cast-Π-subst (un-univ ⊢F) (un-univ ⊢G) d ⊢e ⊢t ⇨ conv* (castΠRed* ⊢F ⊢G (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢F))) (refl (Πⱼ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G)) (subsetTerm d)))) ⊢t D) (sym (subset (univ d)))
+       → Γ ⊢ cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) A e t ⇒* cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) B e t ∷ A ^ ι ⁰
+castΠRed* ⊢F ⊢G ⊢e ⊢t (id (univ ⊢A)) = id (castⱼ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G) ⊢A ⊢e ⊢t)
+castΠRed* ⊢F ⊢G ⊢e ⊢t ((univ d) ⇨ D) = cast-Π-subst (un-univ ⊢F) (un-univ ⊢G) d ⊢e ⊢t ⇨ conv* (castΠRed* ⊢F ⊢G (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢F))) (refl (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G)) (subsetTerm d)))) ⊢t D) (sym (subset (univ d)))
 
 
 wk1-singleSubst : ∀ x y → wk1 x [ y ] PE.≡ x
@@ -227,8 +227,8 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
 [cast] ⊢Γ (ne x) (Πᵣ x₁) [t] ⊢e = {!!}
 [cast] ⊢Γ (Πᵣ x) (ℕᵣ x₁) [t] ⊢e = {!!}
 [cast] ⊢Γ (Πᵣ x) (ne x₁) [t] ⊢e = {!!}
-[cast] {A} {B} {t} {e} {Γ} ⊢Γ (Πᵣ′ ! F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
-  (Πᵣ′ ! F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
+[cast] {A} {B} {t} {e} {Γ} ⊢Γ (Πᵣ′ ! ⁰ ⁰ F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
+  (Πᵣ′ ! ⁰ ⁰ F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
   (f , [[ ⊢t , ⊢f , Df ]] , funf , f≡f , [fext] , [f]) ⊢e =
   let
     b = λ ρ e x → cast ⁰ (wk ρ F₁) (wk ρ F) (Idsym (U ⁰) (wk ρ F) (wk ρ F₁) e) x
@@ -262,7 +262,7 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
     Δ₀ = Γ ∙ Id (U ⁰) F F₁ ^ [ % , ι ¹ ] ∙ wk1 F₁ ^ [ ! , ι ⁰ ]
     ρ₀ = (step (step id))
 
-    ⊢IdG₁G : Γ ∙ Id (U ⁰) F F₁ ^ [ % , ι ¹ ] ⊢ Π (wk1 F₁) ^ ! ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ^ [ % , ι ¹ ]
+    ⊢IdG₁G : Γ ∙ Id (U ⁰) F F₁ ^ [ % , ι ¹ ] ⊢ Π (wk1 F₁) ^ ! ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ° ¹ ^ [ % , ι ¹ ]
     ⊢IdG₁G = let
       ⊢Δ₀ : ⊢ Δ₀
       ⊢Δ₀ = ⊢Γ ∙ ⊢IdFF₁ ∙ univ (Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁) (un-univ ⊢F₁))
@@ -280,10 +280,10 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
       x₀ : Δ₀ ⊢ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ∷ SProp ¹ ^ [ ! , ∞ ]
       x₀ = Idⱼ (univ 0<1 ⊢Δ₀) (un-univ ⊢G₀′)
           (un-univ (Twk.wk (Twk.lift (Twk.step Twk.id)) ⊢Δ₀ ⊢G₁))
-      x₁ = Πⱼ <is≤ 0<1 ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁) (un-univ ⊢F₁) ▹ {! x₀ !}
+      x₁ = Πⱼ <is≤ 0<1 ▹ ≡is≤ PE.refl ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁) (un-univ ⊢F₁) ▹ x₀
       in univ x₁
 
-    ⊢e′ : Γ ⊢ e ∷ ∃ (Id (U ⁰) F F₁) ▹ (Π (wk1 F₁) ^ ! ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁)) ^ [ % , ι ¹ ]
+    ⊢e′ : Γ ⊢ e ∷ ∃ (Id (U ⁰) F F₁) ▹ (Π (wk1 F₁) ^ ! ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ° ¹) ^ [ % , ι ¹ ]
     ⊢e′ = let
       b₀ = cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (U ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0)
       b≡b₀ : b ρ₀ (var 1) (var 0) PE.≡ b₀
@@ -291,24 +291,24 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
         (PE.sym (wk1-wk (step id) F)) (PE.sym (wk1-wk (step id) F₁))
       x₀ = conv ⊢e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (un-univ≡ (subset* D)) (un-univ≡ (subset* D₁))))
       x₁ = conv x₀ (univ (Id-U-ΠΠ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁)))
-      x₂ = PE.subst (λ X → Γ ⊢ e ∷ ∃ (Id (U ⁰) F F₁) ▹ (Π (wk1 F₁) ^ ! ▹ Id (U ⁰) ((wk1d G) [ X ]↑) (wk1d G₁)) ^ [ % , ι ¹ ]) (PE.sym b≡b₀) x₁
+      x₂ = PE.subst (λ X → Γ ⊢ e ∷ ∃ (Id (U ⁰) F F₁) ▹ (Π (wk1 F₁) ^ ! ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ X ]↑) (wk1d G₁) ° ¹) ^ [ % , ι ¹ ]) (PE.sym b≡b₀) x₁
       in x₂
 
     ⊢fste : Γ ⊢ fst e ∷ Id (U ⁰) F F₁ ^ [ % , ι ¹ ]
     ⊢fste = fstⱼ (un-univ ⊢IdFF₁) (un-univ ⊢IdG₁G) ⊢e′
 
-    ⊢snde : Γ ⊢ snd e ∷ Π F₁ ^ ! ▹ Id (U ⁰) (wk1d G [ b (step id) (fst (wk1 e)) (var 0) ]) G₁ ^ [ % , ι ¹ ]
+    ⊢snde : Γ ⊢ snd e ∷ Π F₁ ^ ! ° ⁰ ▹ Id (U ⁰) (wk1d G [ b (step id) (fst (wk1 e)) (var 0) ]) G₁ ° ¹ ^ [ % , ι ¹ ]
     ⊢snde = let
       x₀ = sndⱼ (un-univ ⊢IdFF₁) (un-univ ⊢IdG₁G) ⊢e′
-      x₁ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ (Π X ^ ! ▹ subst _ (Id (U ⁰) Y (wk1d G₁))) ^ [ % , ι ¹ ])
+      x₁ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ (Π X ^ ! ° ⁰ ▹ subst _ (Id (U ⁰) Y (wk1d G₁)) ° ¹) ^ [ % , ι ¹ ])
           (wk1-singleSubst F₁ (fst e)) (cast-subst-lemma2 G (b ρ₀ (var 1) (var 0))) x₀
-      x₂ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ Π F₁ ^ ! ▹ Id (U ⁰) X Y ^ [ % , ι ¹ ])
+      x₂ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ Π F₁ ^ ! ° ⁰ ▹ Id (U ⁰) X Y ° ¹ ^ [ % , ι ¹ ])
         (singleSubstLift (wk (lift ρ₀) G) (b ρ₀ (var 1) (var 0))) (wk1d-singleSubst G₁ (fst e)) x₁
       σ = liftSubst (sgSubst (fst e))
       b≡b : subst σ (b ρ₀ (var 1) (var 0)) PE.≡ b (step id) (fst (wk1 e)) (var 0)
       b≡b = PE.trans (PE.cong (λ X → cast ⁰ (subst σ (wk ρ₀ F₁)) (subst σ (wk ρ₀ F)) X (var 0)) (subst-Idsym σ (U ⁰) (wk ρ₀ F) (wk ρ₀ F₁) (var 1)))
         (PE.cong₂ (λ X Y → cast ⁰ Y X (Idsym (U ⁰) X Y (fst (wk1 e))) (var 0)) (cast-subst-lemma5 F (fst e)) (cast-subst-lemma5 F₁ (fst e)))
-      x₃ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ Π F₁ ^ ! ▹ Id (U ⁰) (X [ Y ]) G₁ ^ [ % , ι ¹ ])
+      x₃ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ Π F₁ ^ ! ° ⁰ ▹ Id (U ⁰) (X [ Y ]) G₁ ° ¹ ^ [ % , ι ¹ ])
         (cast-subst-lemma3 G (fst e)) b≡b x₂
      in x₃
 
@@ -324,7 +324,7 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
       y₁ : wk (lift ρ) (b (step id) (fst (wk1 e)) (var 0)) [ x ] PE.≡ b ρ (fst (wk ρ e)) x
       y₁ = PE.cong₃ (λ X Y Z → cast ⁰ X Y Z x) (irrelevant-subst′ ρ F₁ x) (irrelevant-subst′ ρ F x) y₀
       x₀ = Δ ⊢ (wk ρ (snd e)) ∘ x ∷ Id (U ⁰) (wk (lift ρ) (wk1d G [ b (step id) (fst (wk1 e)) (var 0) ]) [ x ]) (wk (lift ρ) G₁ [ x ]) ^ [ % , ι ¹ ]
-      x₀ = {! Twk.wkTerm [ρ] ⊢Δ ⊢snde ∘ⱼ ⊢x !}
+      x₀ = Twk.wkTerm [ρ] ⊢Δ ⊢snde ∘ⱼ ⊢x
       x₁ = PE.cong₂ (λ X Y → X [ Y ]) (cast-subst-lemma4 ρ x G) y₁
       x₂ = PE.trans (singleSubstLift (wk (lift (lift ρ)) (wk1d G))
         (wk (lift ρ) (b (step id) (fst (wk1 e)) (var 0)))) x₁
@@ -375,10 +375,10 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
     [0] = neuTerm ([F₁] [ρ₁] ⊢Δ₁) (var 0) (var ⊢Δ₁ here) (~-var (var ⊢Δ₁ here))
 
     ⊢g0 = PE.subst (λ X → Δ₁ ⊢ g (step id) (var 0) ∷ X ^ [ ! , ι ⁰ ]) (wkSingleSubstId G₁) (escapeTerm ([G₁] [ρ₁] ⊢Δ₁ [0]) ([g] [ρ₁] ⊢Δ₁ [0]))
-    ⊢λg : Γ ⊢ lam F₁ ▹ g (step id) (var 0) ∷ Π F₁ ^ ! ▹ G₁ ^ [ ! , ι ⁰ ]
-    ⊢λg = lamⱼ ⊢F₁ ⊢g0
+    ⊢λg : Γ ⊢ lam F₁ ▹ g (step id) (var 0) ∷ Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ^ [ ! , ι ⁰ ]
+    ⊢λg = lamⱼ (≡is≤ PE.refl) (≡is≤ PE.refl) ⊢F₁ ⊢g0
 
-    D : Γ ⊢ cast ⁰ A B e t :⇒*: (lam F₁ ▹ g (step id) (var 0)) ∷ Π F₁ ^ ! ▹ G₁ ^ ι ⁰
+    D : Γ ⊢ cast ⁰ A B e t :⇒*: (lam F₁ ▹ g (step id) (var 0)) ∷ Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ^ ι ⁰
     D = let
         g0 = lam F₁ ▹ cast ⁰ (G [ b (step id) (fst (wk1 e)) (var 0) ]↑) G₁
           ((snd (wk1 e)) ∘ (var 0)) ((wk1 t) ∘ (b (step id) (fst (wk1 e)) (var 0)))
@@ -393,10 +393,10 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
       , ⊢λg
       , (conv* (CastRed*Term′ ⊢B ⊢e (conv ⊢t (sym (subset* D))) D
           ⇨∷* castΠRed* ⊢F ⊢G ⊢e′ ⊢t D₁) (subset* D₁))
-        ⇨∷* (PE.subst (λ X → Γ ⊢ cast ⁰ (Π F ^ ! ▹ G) (Π F₁ ^ ! ▹ G₁) e t ⇒ X ∷ Π F₁ ^ ! ▹ G₁ ^ ι ⁰) g≡g
+        ⇨∷* (PE.subst (λ X → Γ ⊢ cast ⁰ (Π F ^ ! ° ⁰ ▹ G ° ⁰) (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰) e t ⇒ X ∷ Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ^ ι ⁰) g≡g
           (cast-Π (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁) ⊢e″ ⊢t) ⇨ (id ⊢λg)) ]]
 
-    g≡g : Γ ⊢ (lam F₁ ▹ g (step id) (var 0)) ≅ (lam F₁ ▹ g (step id) (var 0)) ∷ Π F₁ ^ ! ▹ G₁ ^ [ ! , ι ⁰ ]
+    g≡g : Γ ⊢ (lam F₁ ▹ g (step id) (var 0)) ≅ (lam F₁ ▹ g (step id) (var 0)) ∷ Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ^ [ ! , ι ⁰ ]
     g≡g = let
       ⊢F₁′ = Twk.wk (Twk.step Twk.id) ⊢Δ₁ ⊢F₁
       ⊢g0 = escapeTerm ([G₁] [ρ₁] ⊢Δ₁ [0]) ([g] [ρ₁] ⊢Δ₁ [0])
@@ -443,16 +443,16 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
          ([G₁] [ρ] ⊢Δ [a]) ([G₁] [ρ] ⊢Δ [a′]) (G₁-ext [ρ] ⊢Δ [a] [a′] [a≡a′])
          ([g] [ρ] ⊢Δ [a]) ([g] [ρ] ⊢Δ [a′]) ([gext] [ρ] ⊢Δ [a] [a′] [a≡a′]))
     , (λ [ρ] ⊢Δ [a] → proj₁ (redSubst*Term (g∘a≡ga [ρ] ⊢Δ [a]) ([G₁] [ρ] ⊢Δ [a]) ([g] [ρ] ⊢Δ [a]))))
-  {!!}
-[cast] ⊢Γ (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-  (Πᵣ′ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
+--  {!!}
+[cast] ⊢Γ (Πᵣ′ rF ⁰ ⁰ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+  (Πᵣ′ rF₁ ⁰ ⁰ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
   (f , [[ ⊢t , ⊢f , Df ]] , funf , f≡f , [fext] , [f]) ⊢e = {!!}
 [castext] {A} {A₁} {A₂} {A₃} {t} {t₁} {e} {e₁} {Γ} ⊢Γ
-  (Πᵣ′ ! F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
-  (Πᵣ′ ! F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
+  (Πᵣ′ ! ⁰ ⁰ F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
+  (Πᵣ′ ! ⁰ ⁰ F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
   (Π₌ F₁′ G₁′ D₁′ A≡A₁′ [F≡F₁′] [G≡G₁′])
-  (Πᵣ′ ! F₂ G₂ [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]] ⊢F₂ ⊢G₂ A₂≡A₂ [F₂] [G₂] G₂-ext)
-  (Πᵣ′ ! F₃ G₃ [[ ⊢A₃ , ⊢ΠF₃G₃ , D₃ ]] ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext)
+  (Πᵣ′ ! ⁰ ⁰ F₂ G₂ [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]] ⊢F₂ ⊢G₂ A₂≡A₂ [F₂] [G₂] G₂-ext)
+  (Πᵣ′ ! ⁰ ⁰ F₃ G₃ [[ ⊢A₃ , ⊢ΠF₃G₃ , D₃ ]] ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext)
   (Π₌ F₃′ G₃′ D₃′ A₂≡A₃′ [F₂≡F₃′] [G₂≡G₃′])
   [t] -- (f , [[ ⊢t , ⊢f , Df ]] , funf , f≡f , [fext] , [f])
   [t₁] -- (f₁ , [[ ⊢t₁ , ⊢f₁ , Df₁ ]] , funf₁ , f₁≡f₁ , [f₁ext] , [f₁])
