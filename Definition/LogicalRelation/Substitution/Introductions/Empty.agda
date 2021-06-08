@@ -45,7 +45,7 @@ Unitᵗᵛ {Γ} [Γ] = let [SProp] = Uᵛ {rU = %} emb< [Γ]
                      [Empty] = Emptyᵛ {ll = ⁰} {l = ∞} [Γ]
                      [Γ∙Empty] = (_∙_ {Γ} {Empty} [Γ] [Empty])
                      [SProp]₁ : Γ ∙ Empty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ∙Empty]
-                     [SProp]₁ = maybeEmbᵛ {A = SProp ⁰} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) 
+                     [SProp]₁ {Δ} {σ} = maybeEmbᵛ {A = SProp ⁰} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) {Δ} {σ}
                      [Empty]₁ = Emptyᵗᵛ [Γ] emb<
                      [Empty]₂ = Emptyᵗᵛ [Γ∙Empty] emb<
                 in maybeEmbTermᵛ {A = SProp _} {t = Unit} [Γ] (Uᵛ emb< [Γ])
