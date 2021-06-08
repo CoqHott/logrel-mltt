@@ -13,6 +13,7 @@ open import Definition.LogicalRelation
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.Typed.Properties
+open import Definition.LogicalRelation.Properties.MaybeEmb
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 open import Tools.Empty using (⊥; ⊥-elim)
@@ -68,6 +69,21 @@ univEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A�
   ⊥-elim (univRedTerm x)
 univEq {ι ¹} (emb _ [U]′) [A] = univEq [U]′ [A]
 univEq {∞} (emb _ [U]′) [A] = univEq [U]′ [A]
+
+
+univ⊩ : ∀ {A Γ rU lU lU' l} 
+        ([U] : Γ ⊩⟨ l ⟩ Univ rU lU ^ [ ! , lU' ])
+      → Γ ⊩⟨ l ⟩ A ∷ Univ rU lU ^ [ ! , lU' ] / [U]
+      → Γ ⊩⟨ ι lU ⟩ A ^ [ rU , ι lU ] 
+univ⊩ {lU = lU} {l = l} [U] [A] = irrelevance-≤ (≡is≤ PE.refl) (univEq [U] [A])
+  
+univEqTerm : ∀ {Γ A t r l′ ll′}
+       → ([U] : Γ ⊩⟨ ∞ ⟩ Univ r l′ ^ [ ! , ll′ ] )
+       → ([A] : Γ ⊩⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U])
+       → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
+       → Γ ⊩⟨ ι l′ ⟩ t ∷ A ^ [ r , ι l′ ] / univEq [U] [A]
+univEqTerm {Γ} {A} {t} {r} {⁰} [U] [A] [t] = [t]
+univEqTerm {Γ} {A} {t} {r} {¹} [U] [A] [t] = [t]
 
 -- Helper function for reducible term equality of type U for specific type derivations.
 univEqEq′ : ∀ {l ll l′ Γ X A B} ([U] : Γ ⊩⟨ l ⟩U X ^ ll) →
