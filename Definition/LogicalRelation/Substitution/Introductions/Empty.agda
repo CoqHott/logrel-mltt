@@ -12,9 +12,12 @@ open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
+open import Definition.LogicalRelation.Substitution.Introductions.Pi
+open import Definition.LogicalRelation.Substitution.MaybeEmbed
 
 open import Tools.Unit
 open import Tools.Product
+import Tools.PropositionalEquality as PE
 
 
 -- Validity of the Empty type.
@@ -36,3 +39,14 @@ Emptyᵗᵛ [Γ] ∞< ⊢Δ [σ] = let ⊢Empty  = Emptyⱼ ⊢Δ
                                    (Uₜ Empty (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
                                    (Uₜ Empty (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
                                    (≅ₜ-Emptyrefl ⊢Δ) λ [ρ] ⊢Δ' → id (univ (Emptyⱼ ⊢Δ'))
+
+Unitᵗᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ emb< [Γ])
+Unitᵗᵛ {Γ} [Γ] = let [SProp] = Uᵛ {rU = %} emb< [Γ]
+                     [Empty] = Emptyᵛ {ll = ⁰} {l = ∞} [Γ]
+                     [Γ∙Empty] = (_∙_ {Γ} {Empty} [Γ] [Empty])
+                     [SProp]₁ : Γ ∙ Empty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ∙Empty]
+                     [SProp]₁ = maybeEmbᵛ {A = SProp ⁰} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) 
+                     [Empty]₁ = Emptyᵗᵛ [Γ] emb<
+                     [Empty]₂ = Emptyᵗᵛ [Γ∙Empty] emb<
+                in maybeEmbTermᵛ {A = SProp _} {t = Unit} [Γ] (Uᵛ emb< [Γ])
+                               (Πᵗᵛ {Empty} {Empty} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] ( Emptyᵛ {ll = ⁰} [Γ]) (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
