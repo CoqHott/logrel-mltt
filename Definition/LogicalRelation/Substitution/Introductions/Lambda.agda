@@ -27,18 +27,18 @@ import Tools.PropositionalEquality as PE
 
 -- Valid lambda term construction.
 lamᵛ : ∀ {F G rF lF lG lΠ rΠ t Γ l}
-       (lF< : lF ≤ lΠ)
-       (lG< : lG ≤ lΠ)
+       (lF≤ : lF ≤ lΠ)
+       (lG≤ : lG ≤ lΠ)
        ([Γ] : ⊩ᵛ Γ)
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F])
        ([t] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ t ∷ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F] / [G])
-     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
-lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF< lG< [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
+lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
-      [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
-      _ , Πᵣ rF′ lF lG F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
+      [ΠFG] = Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
+      _ , Πᵣ rF′ lF lG _ _ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
         extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
       lamt : ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
            → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t) ∷ subst σ (Π F ^ rF ° lF ▹ G ° lG) ^ [ ! , ι lΠ ] / proj₁ ([ΠFG] ⊢Δ [σ])
@@ -60,12 +60,12 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
                               (β-red ⊢wk1F (T.wkTerm (lift (step id))
                                                      (⊢Δ ∙ ⊢F ∙ ⊢wk1F) ⊢t)
                                                      (var (⊢Δ ∙ ⊢F) here)) 
-            _ , Πᵣ rF′ _ _ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
+            _ , Πᵣ rF′ _ _ _ _ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
               extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
         in  Πₜ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
-               (idRedTerm:*: (lamⱼ lF< lG< ⊢F ⊢t))
+               (idRedTerm:*: (lamⱼ lF≤ lG≤ ⊢F ⊢t))
                lamₙ
-               (≅-η-eq ⊢F (lamⱼ lF< lG< ⊢F ⊢t) (lamⱼ lF< lG< ⊢F ⊢t) lamₙ lamₙ
+               (≅-η-eq ⊢F (lamⱼ lF≤ lG≤ ⊢F ⊢t) (lamⱼ lF≤ lG≤ ⊢F ⊢t) lamₙ lamₙ
                        (escapeTermEq [σG]
                          (reflEqTerm [σG]
                            (proj₁ (redSubstTerm β-red′ [σG] wk1t[0])))))
@@ -153,7 +153,7 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
   in  lamt ⊢Δ [σ]
   ,   (λ {σ′} [σ′] [σ≡σ′] →
          let [liftσ′] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ′]
-             _ , Πᵣ rF″ lF″ lG″ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
+             _ , Πᵣ rF″ lF″ lG″ _ _ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
                extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ′])))
              ⊢F′ = escape (proj₁ ([F] ⊢Δ [σ′]))
              [G]₁ = proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ])
@@ -262,13 +262,13 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
                                              [σ′t[a]≡σ′lamt∘a])
          in  Πₜ₌ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
                  (lam (subst (repeat liftSubst σ′ 0) F) ▹ (subst (liftSubst σ′) t))
-                 (idRedTerm:*: (lamⱼ lF< lG< ⊢F ⊢t))
-                 (idRedTerm:*: (conv (lamⱼ lF< lG< ⊢F′ ⊢t′)
+                 (idRedTerm:*: (lamⱼ lF≤ lG≤ ⊢F ⊢t))
+                 (idRedTerm:*: (conv (lamⱼ lF≤ lG≤ ⊢F′ ⊢t′)
                                      (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                                               [σΠFG≡σ′ΠFG])))))
                  lamₙ lamₙ
-                 (≅-η-eq ⊢F (lamⱼ lF< lG< ⊢F ⊢t)
-                      (conv (lamⱼ lF< lG< ⊢F′ ⊢t′)
+                 (≅-η-eq ⊢F (lamⱼ lF≤ lG≤ ⊢F ⊢t)
+                      (conv (lamⱼ lF≤ lG≤ ⊢F′ ⊢t′)
                             (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                               [σΠFG≡σ′ΠFG]))))
                       lamₙ lamₙ
@@ -285,10 +285,10 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
                              [σΠFG≡σ′ΠFG]
                              (lamt ⊢Δ [σ′]))
                   σlamt∘a≡σ′lamt∘a)
-lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF< lG< [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
-      [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
-      _ , Πᵣ rF′ lF′ lG′ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
+      [ΠFG] = Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
+      _ , Πᵣ rF′ lF′ lG′ _ _ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
         extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
       [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -298,9 +298,9 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
       ⊢G = escape [σG]
       [σt] = proj₁ ([t] (⊢Δ ∙ ⊢F) [liftσ])
       ⊢t = escapeTerm [σG] [σt]
-  in lamⱼ lF< lG< ⊢F  ⊢t , (λ {σ′} [σ′] [σ≡σ′] →
+  in lamⱼ lF≤ lG≤ ⊢F  ⊢t , (λ {σ′} [σ′] [σ≡σ′] →
          let [liftσ′] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ′]
-             _ , Πᵣ rF″ lF″ lG″ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
+             _ , Πᵣ rF″ lF″ lG″ _ _ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ [F]″ [G]″ G-ext′ =
                extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ′])))
              ⊢F′ = escape (proj₁ ([F] ⊢Δ [σ′]))
              [G]₁ = proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ])
@@ -308,17 +308,17 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
              [σΠFG≡σ′ΠFG] = proj₂ ([ΠFG] ⊢Δ [σ]) [σ′] [σ≡σ′]
              ⊢t = escapeTerm [G]₁ (proj₁ ([t] (⊢Δ ∙ ⊢F) [liftσ]))
              ⊢t′ = escapeTerm [G]₁′ (proj₁ ([t] (⊢Δ ∙ ⊢F′) [liftσ′]))
-         in (lamⱼ lF< lG< ⊢F  ⊢t) , conv (lamⱼ lF< lG< ⊢F′  ⊢t′) (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ])) [σΠFG≡σ′ΠFG]))))
+         in (lamⱼ lF≤ lG≤ ⊢F  ⊢t) , conv (lamⱼ lF≤ lG≤ ⊢F′  ⊢t′) (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ])) [σΠFG≡σ′ΠFG]))))
 
 
 -- Reducibility of η-equality under a valid substitution.
 η-eqEqTerm : ∀ {f g F G rF lF lG rΠ lΠ Γ Δ σ l}
-             (lF< : lF ≤ lΠ)
-             (lG< : lG ≤ lΠ)
+             (lF≤ : lF ≤ lΠ)
+             (lG≤ : lG ≤ lΠ)
              ([Γ] : ⊩ᵛ Γ)
              ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
              ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F])
-           → let [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G] in
+           → let [ΠFG] = Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G] in
              Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ wk1 f ∘ var 0 ≡ wk1 g ∘ var 0 ∷ G ^ [ rΠ , ι lG ]
                           / [Γ] ∙ [F] / [G]
            → (⊢Δ   : ⊢ Δ)
@@ -329,14 +329,14 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
                / proj₁ ([ΠFG] ⊢Δ [σ])
            → Δ ⊩⟨ l ⟩ subst σ f ≡ subst σ g ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ^ [ rΠ , ι lΠ ]
                / proj₁ ([ΠFG] ⊢Δ [σ])
-η-eqEqTerm {f} {g} {F} {G} {rF} {lF} {lG} {rΠ = !} {lΠ} {Γ} {Δ} {σ} lF< lG< [Γ] [F] [G] [f0≡g0] ⊢Δ [σ] 
+η-eqEqTerm {f} {g} {F} {G} {rF} {lF} {lG} {rΠ = !} {lΠ} {Γ} {Δ} {σ} lF≤ lG≤ [Γ] [F] [G] [f0≡g0] ⊢Δ [σ] 
            (Πₜ f₁ [[ ⊢t , ⊢u , d ]] funcF f≡f [f] [f]₁)
            (Πₜ g₁ [[ ⊢t₁ , ⊢u₁ , d₁ ]] funcG g≡g [g] [g]₁) = 
   let [d]  = [[ ⊢t , ⊢u , d ]]
       [d′] = [[ ⊢t₁ , ⊢u₁ , d₁ ]]
-      [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G]
+      [ΠFG] = Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
       [σΠFG] = proj₁ ([ΠFG] ⊢Δ [σ])
-      _ , Πᵣ rF′ lF′ lG′ F′ G′ D′ ⊢F ⊢G A≡A [F]′ [G]′ G-ext = extractMaybeEmb (Π-elim [σΠFG])
+      _ , Πᵣ rF′ lF′ lG′ _ _ F′ G′ D′ ⊢F ⊢G A≡A [F]′ [G]′ G-ext = extractMaybeEmb (Π-elim [σΠFG])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       [wk1F] = wk (step id) (⊢Δ ∙ ⊢F) [σF]
       var0′ = var (⊢Δ ∙ ⊢F) here
@@ -400,22 +400,22 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF< lG< [Γ] [F] [G] 
                                                  ([G]′ [ρ] ⊢Δ₁ [a]) [g∘u])
              in  transEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) (symEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) [tu≡fu])
                              (transEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) f≡g [gu≡t′u]))
-η-eqEqTerm {f} {g} {F} {G} {rF} {lF} {lG} {rΠ = %} {lΠ} {Γ} {Δ} {σ} lF< lG<  [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
+η-eqEqTerm {f} {g} {F} {G} {rF} {lF} {lG} {rΠ = %} {lΠ} {Γ} {Δ} {σ} lF≤ lG≤  [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
            d d₁ = d , d₁
 
 -- Validity of η-equality.
 η-eqᵛ : ∀ {f g F G rF lF lG rΠ lΠ Γ l}
-        (lF< : lF ≤ lΠ)
-        (lG< : lG ≤ lΠ)
+        (lF≤ : lF ≤ lΠ)
+        (lG≤ : lG ≤ lΠ)
         ([Γ] : ⊩ᵛ Γ)
         ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
         ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F])
-      → let [ΠFG] = Πᵛ {F} {G} lF< lG< [Γ] [F] [G] in
+      → let [ΠFG] = Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G] in
         Γ ⊩ᵛ⟨ l ⟩ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / [ΠFG]
       → Γ ⊩ᵛ⟨ l ⟩ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / [ΠFG]
       → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ wk1 f ∘ var 0 ≡ wk1 g ∘ var 0 ∷ G ^ [ rΠ , ι lG ]
                      / [Γ] ∙ [F] / [G]
       → Γ ⊩ᵛ⟨ l ⟩ f ≡ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ] / [ΠFG]
-η-eqᵛ {f} {g} {F} {G} lF< lG< [Γ] [F] [G] [f] [g] [f0≡g0] {Δ} {σ} ⊢Δ [σ] =
-  η-eqEqTerm {f} {g} {F} {G} lF< lG< [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
+η-eqᵛ {f} {g} {F} {G} lF≤ lG≤ [Γ] [F] [G] [f] [g] [f0≡g0] {Δ} {σ} ⊢Δ [σ] =
+  η-eqEqTerm {f} {g} {F} {G} lF≤ lG≤ [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
                 (proj₁ ([f] ⊢Δ [σ])) (proj₁ ([g] ⊢Δ [σ]))

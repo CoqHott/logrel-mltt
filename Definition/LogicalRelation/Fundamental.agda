@@ -166,7 +166,7 @@ mutual
     let [ΠFG]′ = S.irrelevance {A = Π F ^ rF ° lF ▹ G ° lG } [Γ] [Γ]₁ [ΠFG]
         [t]′ = S.irrelevanceTerm {A = Π F ^ rF ° lF ▹ G ° lG} {t = g} [Γ] [Γ]₁ [ΠFG] [ΠFG]′ [t]
         [G[t]] = substSΠ {F} {G} {a} [Γ]₁ [F] [ΠFG]′ [u]
-        [t∘u] = appᵛ {F} {G} {rF} {lF} {lG} {[ r , l ]} {g} {a} [Γ]₁ [F] [ΠFG]′ [t]′ [u]
+        [t∘u] = appᵛ {F} {G} {rF} {lF} {lG} {r} {l} {g} {a} [Γ]₁ [F] [ΠFG]′ [t]′ [u]
     in  [Γ]₁ , [G[t]] , [t∘u]
   fundamentalTerm (zeroⱼ x) = valid x , ℕᵛ (valid x) , zeroᵛ {l = ∞} (valid x)
   fundamentalTerm (sucⱼ {n} t) with fundamentalTerm t
@@ -304,12 +304,12 @@ mutual
         [G[a]≡G[b]] = substSΠEq {F} {G} {F} {G} {a} {b} [Γ]₁ [F] [F] [ΠFG]′
                                 [ΠFG]′ (reflᵛ {Π F ^ rF ° lF ▹ G ° lG} [Γ]₁ [ΠFG]′) [a] [b] [a≡b]
     in  [Γ]₁ , modelsTermEq [G[a]]
-                            (appᵛ {F} {G} {rF} {lF} {lG} { [ ! , l ] } {f} {a} [Γ]₁ [F] [ΠFG]′ [f]′ [a])
+                            (appᵛ {F} {G} {rF} {lF} {lG} { ! } {l} {f} {a} [Γ]₁ [F] [ΠFG]′ [f]′ [a])
                             (conv₂ᵛ {g ∘ b} {G [ a ]} {G [ b ]} [Γ]₁
                                     [G[a]] [G[b]] [G[a]≡G[b]]
-                                    (appᵛ {F} {G} {rF} {lF} {lG} { [ ! , l ] } {g} {b}
+                                    (appᵛ {F} {G} {rF} {lF} {lG} { ! } {l} {g} {b}
                                           [Γ]₁ [F] [ΠFG]′ [g]′ [b]))
-                            (app-congᵛ {F} {G} {rF} {lF} {lG} { [ ! , l ] } {f} {g} {a} {b}
+                            (app-congᵛ {F} {G} {rF} {lF} {lG} { ! } {l} {f} {g} {a} {b}
                                        [Γ]₁ [F] [ΠFG]′ [f≡g]′ [a] [b] [a≡b])
   fundamentalTermEq (β-red {a} {b} {F} {rF} {lF} {G} {lG} ⊢F ⊢b ⊢a)
     with fundamental ⊢F | fundamentalTerm ⊢b | fundamentalTerm ⊢a
@@ -491,10 +491,10 @@ mutual
                          [Γ]₃ [ℕ]′ [F₊] [n]′)
                 [natrecₙ])
               [F[sucn]]
-              (appᵛ {F [ n ]} {q} { ! } {lF} {lF} { [ ! , ι lF ] } {s ∘ n} {natrec F z s n} [Γ]₃ [Fₙ]′
+              (appᵛ {F [ n ]} {q} { ! } {lF} {lF} { ! } {lF} {s ∘ n} {natrec F z s n} [Γ]₃ [Fₙ]′
                 (substSΠ {ℕ} {F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF} {n}
                          [Γ]₃ [ℕ]′ [F₊] [n]′)
-                (appᵛ {ℕ} {F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF} { ! } {⁰} {lF} { [ ! , ι lF ] } {s} {n}
+                (appᵛ {ℕ} {F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF} { ! } {⁰} {lF} { ! } {lF} {s} {n}
                       [Γ]₃ [ℕ]′ [F₊] [s] [n]′)
                 [natrecₙ])
         d , r =

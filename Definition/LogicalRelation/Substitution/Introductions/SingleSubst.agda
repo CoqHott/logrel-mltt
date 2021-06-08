@@ -169,12 +169,12 @@ subst↑SEq {F} {G} {G′} {t} {t′}
   in  transEq G[t]′ G′[t]′ G′[t′]′ G[t]≡G′[t] G′[t]≡G′[t′]
 
 -- Helper function for reducible substitution of Π-types with specific typing derivations.
-substSΠ₁′ : ∀ {F G t Γ rF r lF lG l l′}
-           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ^ r)
+substSΠ₁′ : ∀ {F G t Γ rF r lF lG l lΠ l′}
+           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ^[ r , lΠ ] )
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
-         → Γ ⊩⟨ l ⟩ G [ t ] ^ [ TypeInfo.r r , ι lG ]
-substSΠ₁′ {t = t} (noemb (Πᵣ rF′ lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext)) [F]₁ [t] =
+         → Γ ⊩⟨ l ⟩ G [ t ] ^ [ r , ι lG ]
+substSΠ₁′ {t = t} (noemb (Πᵣ rF′ lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) [F]₁ [t] =
   let F≡F′ , rF≡rF′ , lF≡lF′ , G≡G′ , lG≡lG′ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
       Feq = PE.trans F≡F′ (PE.sym (wk-id _))
       Geq = PE.cong (λ x → x [ _ ]) (PE.trans (wk-lift-id _) (PE.sym G≡G′))
@@ -185,26 +185,26 @@ substSΠ₁′ (emb emb< x) [F]₁ [t] = emb emb< (substSΠ₁′ x [F]₁ [t])
 substSΠ₁′ (emb ∞< x) [F]₁ [t] = emb ∞< (substSΠ₁′ x [F]₁ [t])
 
 -- Reducible substitution of Π-types.
-substSΠ₁ : ∀ {F G t Γ rF r lF lG l l′}
-           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ r)
+substSΠ₁ : ∀ {F G t Γ rF r lF lG lΠ l l′}
+           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ])
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
-         → Γ ⊩⟨ l ⟩ G [ t ] ^ [ TypeInfo.r r , ι lG ]
+         → Γ ⊩⟨ l ⟩ G [ t ] ^ [ r , ι lG ]
 substSΠ₁ [ΠFG] [F] [t] = substSΠ₁′ (Π-elim [ΠFG]) [F] [t]
 
 -- Helper function for reducible substitution of Π-congurence with specific typing derivations.
-substSΠ₂′ : ∀ {F F′ G G′ t t′ Γ rF lF lG r l l′ l″ l‴}
-           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ^ r)
-           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ^ r / Π-intr [ΠFG])
+substSΠ₂′ : ∀ {F F′ G G′ t t′ Γ rF lF lG lΠ r l l′ l″ l‴}
+           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ^[ r , lΠ ])
+           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ r , ι lΠ ] / Π-intr [ΠFG])
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([F′] : Γ ⊩⟨ l′ ⟩ F′ ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
            ([t′] : Γ ⊩⟨ l′ ⟩ t′ ∷ F′ ^ [ rF , ι lF ] / [F′])
            ([t≡t′] : Γ ⊩⟨ l′ ⟩ t ≡ t′ ∷ F ^ [ rF , ι lF ] / [F])
-           ([G[t]] : Γ ⊩⟨ l″ ⟩ G [ t ] ^ [ TypeInfo.r r , ι lG ])
-           ([G′[t′]] : Γ ⊩⟨ l‴ ⟩ G′ [ t′ ] ^ [ TypeInfo.r r , ι lG ])
-         → Γ ⊩⟨ l″ ⟩ G [ t ] ≡ G′ [ t′ ] ^ [ TypeInfo.r r , ι lG ] / [G[t]]
-substSΠ₂′ (noemb (Πᵣ rF′ lF lG F G D ⊢F ⊢G A≡A [F] [G] G-ext))
+           ([G[t]] : Γ ⊩⟨ l″ ⟩ G [ t ] ^ [ r , ι lG ])
+           ([G′[t′]] : Γ ⊩⟨ l‴ ⟩ G′ [ t′ ] ^ [ r , ι lG ])
+         → Γ ⊩⟨ l″ ⟩ G [ t ] ≡ G′ [ t′ ] ^ [ r , ι lG ] / [G[t]]
+substSΠ₂′ (noemb (Πᵣ rF′ lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
           (Π₌ F″ G″ D′ A≡B [F≡F′] [G≡G′])
           [F]₁ [F′] [t] [t′] [t≡t′] [G[t]] [G′[t′]] =
   let F≡F′ , rF≡rF′ , lF≡lF′ , G≡G′ , lG≡lG′ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
@@ -227,28 +227,28 @@ substSΠ₂′ (emb emb< x) = substSΠ₂′ x
 substSΠ₂′ (emb ∞< x) = substSΠ₂′ x
 
 -- Reducible substitution of Π-congurence.
-substSΠ₂ : ∀ {F F′ G G′ t t′ Γ rF lF lG r l l′ l″ l‴}
-           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ r)
-           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ^ r / [ΠFG])
+substSΠ₂ : ∀ {F F′ G G′ t t′ Γ rF lF lG lΠ r l l′ l″ l‴}
+           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ])
+           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ r , ι lΠ ] / [ΠFG])
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([F′] : Γ ⊩⟨ l′ ⟩ F′ ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
            ([t′] : Γ ⊩⟨ l′ ⟩ t′ ∷ F′ ^ [ rF , ι lF ] / [F′])
            ([t≡t′] : Γ ⊩⟨ l′ ⟩ t ≡ t′ ∷ F ^ [ rF , ι lF ] / [F])
-           ([G[t]] : Γ ⊩⟨ l″ ⟩ G [ t ] ^ [ TypeInfo.r r , ι lG ])
-           ([G′[t′]] : Γ ⊩⟨ l‴ ⟩ G′ [ t′ ] ^ [ TypeInfo.r r , ι lG ])
-         → Γ ⊩⟨ l″ ⟩ G [ t ] ≡ G′ [ t′ ] ^ [ TypeInfo.r r , ι lG ] / [G[t]]
+           ([G[t]] : Γ ⊩⟨ l″ ⟩ G [ t ] ^ [ r , ι lG ])
+           ([G′[t′]] : Γ ⊩⟨ l‴ ⟩ G′ [ t′ ] ^ [ r , ι lG ])
+         → Γ ⊩⟨ l″ ⟩ G [ t ] ≡ G′ [ t′ ] ^ [ r , ι lG ] / [G[t]]
 substSΠ₂ [ΠFG] [ΠFG≡ΠF′G′] =
   let [ΠFG≡ΠF′G′]′ = irrelevanceEq [ΠFG] (Π-intr (Π-elim [ΠFG])) [ΠFG≡ΠF′G′]
   in  substSΠ₂′ (Π-elim [ΠFG]) [ΠFG≡ΠF′G′]′
 
 -- Valid substitution of Π-types.
-substSΠ : ∀ {F G t Γ rF lF lG r l}
+substSΠ : ∀ {F G t Γ rF lF lG lΠ r l}
           ([Γ] : ⊩ᵛ Γ)
           ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
-          ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ r / [Γ])
+          ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ] / [Γ])
           ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
-        → Γ ⊩ᵛ⟨ l ⟩ G [ t ] ^ [ TypeInfo.r r , ι lG ] / [Γ]
+        → Γ ⊩ᵛ⟨ l ⟩ G [ t ] ^ [ r , ι lG ] / [Γ]
 substSΠ {F} {G} {t} [Γ] [F] [ΠFG] [t] ⊢Δ [σ] =
   let [σG[t]] = substSΠ₁ (proj₁ ([ΠFG] ⊢Δ [σ])) (proj₁ ([F] ⊢Δ [σ]))
                          (proj₁ ([t] ⊢Δ [σ]))
@@ -271,25 +271,25 @@ substSΠ {F} {G} {t} [Γ] [F] [ΠFG] [t] ⊢Δ [σ] =
 
 
 -- Valid substitution of Π-congurence.
-substSΠEq : ∀ {F G F′ G′ t u Γ rF lF lG r l}
+substSΠEq : ∀ {F G F′ G′ t u Γ rF lF lG lΠ r l}
             ([Γ] : ⊩ᵛ Γ)
             ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
             ([F′] : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ])
-            ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ r / [Γ])
-            ([ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F′ ^ rF ° lF ▹ G′ ° lG ^ r / [Γ])
-            ([ΠFG≡ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ^ r / [Γ] / [ΠFG])
+            ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ] / [Γ])
+            ([ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ r , ι lΠ ] / [Γ])
+            ([ΠFG≡ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ r , ι lΠ ] / [Γ] / [ΠFG])
             ([t]   : Γ ⊩ᵛ⟨ l ⟩ t ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
             ([u]   : Γ ⊩ᵛ⟨ l ⟩ u ∷ F′ ^ [ rF , ι lF ] / [Γ] / [F′])
             ([t≡u] : Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
-          → Γ ⊩ᵛ⟨ l ⟩ G [ t ] ≡ G′ [ u ] ^ [ TypeInfo.r r , ι lG ] / [Γ]
+          → Γ ⊩ᵛ⟨ l ⟩ G [ t ] ≡ G′ [ u ] ^ [ r , ι lG ] / [Γ]
                     / substSΠ {F} {G} {t} [Γ] [F] [ΠFG] [t]
 substSΠEq {F} {G} {F′} {G′} {t} {u} [Γ] [F] [F′] [ΠFG] [ΠF′G′] [ΠFG≡ΠF′G′]
            [t] [u] [t≡u] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [σΠFG] = proj₁ ([ΠFG] ⊢Δ [σ])
-      lFG , Πᵣ rF₁ lF₁ lG₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁ = extractMaybeEmb (Π-elim [σΠFG])
+      lFG , Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁ = extractMaybeEmb (Π-elim [σΠFG])
       F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ = Π-PE-injectivity (whnfRed* (red D₁) Πₙ)
       [σΠF′G′] = proj₁ ([ΠF′G′] ⊢Δ [σ])
-      lFG' , Πᵣ rF₂ lF₂ lG₂ F₂ G₂ D₂ ⊢F₂ ⊢G₂ A≡A₂ [F]₂ [G]₂ G-ext₂ = extractMaybeEmb (Π-elim [σΠF′G′])
+      lFG' , Πᵣ rF₂ lF₂ lG₂  _ _ F₂ G₂ D₂ ⊢F₂ ⊢G₂ A≡A₂ [F]₂ [G]₂ G-ext₂ = extractMaybeEmb (Π-elim [σΠF′G′])
       F′≡F₂ , rF′≡rF₂ , lF′≡lF₂ , G′≡G₂ , lG′≡lG₂ = Π-PE-injectivity (whnfRed* (red D₂) Πₙ)
       [σF] = proj₁ ([F] ⊢Δ [σ])
       [σF′] = proj₁ ([F′] ⊢Δ [σ])
