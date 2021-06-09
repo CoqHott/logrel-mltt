@@ -276,7 +276,7 @@ mutual
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ Id (U ⁰) ℕ ℕ
                   ≡ Unit
-                  ∷ (SProp ¹) ^ [ ! , next ¹ ] -- there is an issue here as (U ⁰) and Unit do not live at the same level 
+                  ∷ (SProp ¹) ^ [ ! , next ¹ ] 
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
                → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
