@@ -9,6 +9,7 @@ open EqRelSet {{...}}
 open import Definition.Untyped
 open import Definition.Untyped.Properties
 open import Definition.Typed hiding (tt)
+open import Definition.Typed.Properties
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
@@ -24,6 +25,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Empty
 open import Definition.LogicalRelation.Substitution.Introductions.Emptyrec
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
+open import Definition.LogicalRelation.Substitution.Introductions.Id
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
 open import Definition.LogicalRelation.Substitution.Introductions.Application
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
@@ -55,6 +57,8 @@ mutual
     → ∃  λ ([Γ] : ⊩ᵛ Γ)
     → ∃₂ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ]) ([B] : Γ ⊩ᵛ⟨ ∞ ⟩ B ^ rA / [Γ])
     → Γ ⊩ᵛ⟨ ∞ ⟩ A ≡ B ^ rA / [Γ] / [A]
+  fundamentalEq = {!!}
+{-
   fundamentalEq (univ {A} {B} x) with fundamentalTermEq x
   fundamentalEq (univ {A} {B} x) | [Γ] , modelsTermEq [U] [t] [u] [t≡u] =
     let [A] = maybeEmbᵛ {A = A} [Γ] (univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [t])
@@ -84,8 +88,9 @@ mutual
                            (irrelevanceEq (proj₁ ([B₁]₁ ⊢Δ [σ]′))
                                           (proj₁ ([B₁] ⊢Δ [σ]))
                                           ([B₁≡B] ⊢Δ [σ]′)))
+-}
 
-  -- Fundamental theorem for variables.
+-- Fundamental theorem for variables.
   fundamentalVar : ∀ {Γ A rA x}
                  → x ∷ A ^ rA ∈ Γ
                  → ([Γ] : ⊩ᵛ Γ)
@@ -131,6 +136,8 @@ mutual
     → ∃ λ ([Γ] : ⊩ᵛ Γ)
     → ∃ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
     → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ rA / [Γ] / [A]
+  fundamentalTerm  = {!!}
+{- 
   fundamentalTerm (ℕⱼ x) = valid x , maybeEmbᵛ {A = Univ _ _} (valid x) (Uᵛ emb< (valid x)) ,  maybeEmbTermᵛ {A = Univ _ _} {t = ℕ} (valid x) (Uᵛ emb< (valid x)) (ℕᵗᵛ (valid x))
   fundamentalTerm (Emptyⱼ {l} ⊢Γ) = let [Γ] = valid ⊢Γ
                                         [U] = Uᵛ (proj₂ (levelBounded _)) [Γ]
@@ -209,12 +216,14 @@ mutual
       ,   convᵛ {t} {A} {B} [Γ]′ [A′]₁ [A] [A′≡A] [t]′
   fundamentalTerm (univ 0<1 ⊢Γ) = let [Γ] = valid ⊢Γ
                                   in [Γ] , (Uᵛ ∞< [Γ] , Uᵗᵛ [Γ])
-  
+-}
+
   -- Fundamental theorem for term equality.
   fundamentalTermEq : ∀{Γ A t t′ rA} → Γ ⊢ t ≡ t′ ∷ A ^ rA
                     → ∃ λ ([Γ] : ⊩ᵛ Γ)
                     → [ Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ t′ ∷ A ^ rA / [Γ] ]
-  fundamentalTermEq (refl D) with fundamentalTerm D
+{-
+fundamentalTermEq (refl D) with fundamentalTerm D
   ... | [Γ] , [A] , [t] =
     [Γ] , modelsTermEq [A] [t] [t]
                        (λ ⊢Δ [σ] → reflEqTerm (proj₁ ([A] ⊢Δ [σ]))
@@ -557,29 +566,40 @@ mutual
   fundamentalTermEq (Id-cong x x₁ x₂) = {!!}
   fundamentalTermEq (Id-Π lF< lG< x x₁ x₂ x₃) = {!!}
   fundamentalTermEq {Γ} (Id-ℕ-00 ⊢Γ) =
-    let ⊢Unit : Γ ⊢ Unit ∷ (SProp ⁰) ^ [ ! , next ⁰ ]
-        ⊢Unit = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ Emptyⱼ ⊢Γ ▹ Emptyⱼ (⊢Γ ∙ univ (Emptyⱼ ⊢Γ))
-        [Γ] = valid ⊢Γ
+    let [Γ] = valid ⊢Γ
         [SProp] = Uᵛ emb< [Γ]
-        [Empty] = Emptyᵛ {ll = ⁰} [Γ]
-        [Γ∙Empty] = (_∙_ {Γ} {Empty} [Γ] [Empty])
-        [SProp]₁ : Γ ∙ Empty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ∙Empty]
-        [SProp]₁ = maybeEmbᵛ {A = SProp ⁰} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) 
-        [Empty]₁ = Emptyᵗᵛ [Γ] emb<
-        [Empty]₂ = Emptyᵗᵛ [Γ∙Empty] emb<
-        [Unit] : Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] [SProp]
-        [Unit] = maybeEmbTermᵛ {A = SProp _} {t = Unit} [Γ] [SProp]
-                               (Πᵗᵛ {Empty} {Empty} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [Empty] (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
-        [id] , [eq] = redSubstTermᵛ {SProp ⁰} {Id ℕ zero zero} {Unit} [Γ]
-          (λ ⊢Δ [σ] → Id-ℕ-00 ⊢Δ)
-          [SProp] [Unit]
+        [Unit] = Unitᵗᵛ [Γ]
+        [id] , [eq] = redSubstTermᵛ {SProp ⁰} {Id ℕ zero zero} {Unit} [Γ] (λ ⊢Δ [σ] → Id-ℕ-00 ⊢Δ) [SProp] [Unit]
     in [Γ] , modelsTermEq (maybeEmbᵛ {A = SProp _} [Γ] [SProp]) [id] [Unit] [eq]
-  fundamentalTermEq (Id-ℕ-SS x x₁) = {!!}
+  fundamentalTermEq (Id-ℕ-SS ⊢n ⊢m) with fundamentalTerm ⊢n | fundamentalTerm ⊢m
+  fundamentalTermEq {Γ} (Id-ℕ-SS {n} {m} ⊢n ⊢m) | [Γ] , [ℕ] , [n] | [Γ]′ , [ℕ]′ , [m]  =
+    let [SProp] = maybeEmbᵛ {A = SProp ⁰} [Γ]′ (Uᵛ emb< [Γ]′)
+        [Unit] = Unitᵗᵛ [Γ]′
+        ⊢Γ = soundContext [Γ]′
+        [n]′ = S.irrelevanceTerm {A = ℕ} {t = n} [Γ] [Γ]′ [ℕ] [ℕ]′ [n]
+        Idnm = Idᵗᵛ {A = ℕ} {t = n} {u = m} [Γ]′ [ℕ]′ [n]′ [m]
+        ⊢n′ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ℕ]′ ⊢Δ [σ])) (proj₁ ([n]′ ⊢Δ [σ]))
+        ⊢m′ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ℕ]′ ⊢Δ [σ])) (proj₁ ([m] ⊢Δ [σ]))
+        [id] , [eq] = redSubstTermᵛ {SProp ⁰} {t = Id ℕ (suc n) (suc m)} {u = Id ℕ n m} [Γ]′ (λ {Δ} {σ} ⊢Δ [σ] → Id-ℕ-SS (⊢n′ {Δ} {σ} ⊢Δ [σ]) (⊢m′ {Δ} {σ} ⊢Δ [σ])) [SProp] Idnm
+    in [Γ]′ , modelsTermEq [SProp] [id] Idnm [eq] 
+-}
   fundamentalTermEq (Id-U-ΠΠ x x₁ x₂ x₃) = {!!}
   fundamentalTermEq (Id-U-ℕℕ x) = {!!}
   fundamentalTermEq (Id-SProp x x₁) = {!!}
-  fundamentalTermEq (Id-ℕ-0S x) = {!!}
-  fundamentalTermEq (Id-ℕ-S0 x) = {!!}
+  fundamentalTermEq (Id-ℕ-0S ⊢n) with fundamentalTerm ⊢n 
+  fundamentalTermEq {Γ} (Id-ℕ-0S {n} ⊢n) | [Γ] , [ℕ] , [n] =
+    let [SProp] = maybeEmbᵛ {A = SProp ⁰} [Γ] (Uᵛ emb< [Γ])
+        [Empty] = Emptyᵗᵛ {ll = ⁰} [Γ] emb<
+        ⊢n′ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ℕ] ⊢Δ [σ])) (proj₁ ([n] ⊢Δ [σ]))
+        [id] , [eq] = redSubstTermᵛ {SProp ⁰} {t = Id ℕ zero (suc n)} {u = Empty} [Γ] (λ {Δ} {σ} ⊢Δ [σ] → Id-ℕ-0S (⊢n′ {Δ} {σ} ⊢Δ [σ])) [SProp] [Empty]
+    in  [Γ] , modelsTermEq [SProp] [id] [Empty] [eq] 
+  fundamentalTermEq (Id-ℕ-S0 ⊢n) with fundamentalTerm ⊢n 
+  fundamentalTermEq {Γ} (Id-ℕ-S0 {n} ⊢n) | [Γ] , [ℕ] , [n] =
+    let [SProp] = maybeEmbᵛ {A = SProp ⁰} [Γ] (Uᵛ emb< [Γ])
+        [Empty] = Emptyᵗᵛ {ll = ⁰} [Γ] emb<
+        ⊢n′ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ℕ] ⊢Δ [σ])) (proj₁ ([n] ⊢Δ [σ]))
+        [id] , [eq] = redSubstTermᵛ {SProp ⁰} {t = Id ℕ (suc n) zero} {u = Empty} [Γ] (λ {Δ} {σ} ⊢Δ [σ] → Id-ℕ-S0 (⊢n′ {Δ} {σ} ⊢Δ [σ])) [SProp] [Empty]
+    in  [Γ] , modelsTermEq [SProp] [id] [Empty] [eq] 
   fundamentalTermEq (Id-U-ℕΠ x x₁) = {!!}
   fundamentalTermEq (Id-U-Πℕ x x₁) = {!!}
   fundamentalTermEq (cast-cong x x₁ x₂) = {!!}
@@ -587,6 +607,9 @@ mutual
   fundamentalTermEq (cast-ℕ-0 x) = {!!}
   fundamentalTermEq (cast-ℕ-S x x₁) = {!!}
 
+  fundamentalTermEq = {!!}
+
+{-
 -- Fundamental theorem for substitutions.
 fundamentalSubst : ∀ {Γ Δ σ} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ)
       → Δ ⊢ˢ σ ∷ Γ
@@ -631,3 +654,4 @@ fundamentalSubstEq (⊢Γ ∙ ⊢A) ⊢Δ (tailσ≡σ′ , headσ≡σ′) =
                                                 [idA] [idA]′ [idt′]))
   ,   ([tailσ≡σ′]′ , irrelevanceEqTerm″ PE.refl PE.refl (subst-id _) (subst-id _) (subst-id _)
                                          [idA] [idA]′ [idt≡t′])
+-}
