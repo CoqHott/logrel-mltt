@@ -15,7 +15,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
 
-open import Tools.Unit
+open import Tools.Unit as TU
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
@@ -50,3 +50,14 @@ Unitᵗᵛ {Γ} [Γ] = let [SProp] = Uᵛ {rU = %} emb< [Γ]
                      [Empty]₂ = Emptyᵗᵛ [Γ∙Empty] emb<
                 in maybeEmbTermᵛ {A = SProp _} {t = Unit} [Γ] (Uᵛ emb< [Γ])
                                (Πᵗᵛ {Empty} {Empty} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] ( Emptyᵛ {ll = ⁰} [Γ]) (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
+
+
+Unit≡Unit : ∀ {Γ} (⊢Γ : ⊢ Γ)
+          → Γ ⊢ Unit ≅ Unit ∷ SProp ⁰ ^ [ ! , ι ¹ ]
+Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
+
+Unitᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ] / [Γ]
+Unitᵛ {Γ} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (Uᵛ emb< [Γ]) (Unitᵗᵛ [Γ])
+
+UnitType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ]
+UnitType {Γ} ⊢Γ = proj₁ (Unitᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)

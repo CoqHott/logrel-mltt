@@ -34,27 +34,6 @@ import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
-Unitⱼ : ∀ {Γ} (⊢Γ : ⊢ Γ)
-      → Γ ⊢ Unit ∷ SProp ⁰ ^ [ ! , ι ¹ ]
-Unitⱼ ⊢Γ = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ Emptyⱼ ⊢Γ ▹ Emptyⱼ (⊢Γ ∙ univ (Emptyⱼ ⊢Γ))
-
-typeUnit : Type Unit
-typeUnit = Πₙ
-
-Unit≡Unit : ∀ {Γ} (⊢Γ : ⊢ Γ)
-          → Γ ⊢ Unit ≅ Unit ∷ SProp ⁰ ^ [ ! , ι ¹ ]
-Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
-
-
-Unitᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ] / [Γ]
-Unitᵛ {Γ} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (Uᵛ emb< [Γ]) (Unitᵗᵛ [Γ])
-
-UnitType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ]
-UnitType {Γ} ⊢Γ = proj₁ (Unitᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)
-
-[SProp] : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ¹ ⟩ SProp ⁰ ^ [ ! , ι ¹ ]
-[SProp] ⊢Γ = Uᵣ (Uᵣ % ⁰ emb< PE.refl [[ (U⁰ⱼ ⊢Γ) , (U⁰ⱼ ⊢Γ) , (id (U⁰ⱼ ⊢Γ)) ]])
-
 aux : ∀ {Γ t u} →
       (⊢Γ : ⊢ Γ)
       ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ ℕ ^ [ ! , ι ⁰ ] / ℕᵣ (idRed:*: (univ (ℕⱼ ⊢Γ))))
