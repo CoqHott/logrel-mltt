@@ -572,7 +572,7 @@ fundamentalTermEq (refl D) with fundamentalTerm D
         [id] , [eq] = redSubstTermᵛ {SProp ⁰} {Id ℕ zero zero} {Unit} [Γ] (λ ⊢Δ [σ] → Id-ℕ-00 ⊢Δ) [SProp] [Unit]
     in [Γ] , modelsTermEq (maybeEmbᵛ {A = SProp _} [Γ] [SProp]) [id] [Unit] [eq]
   fundamentalTermEq (Id-ℕ-SS ⊢n ⊢m) with fundamentalTerm ⊢n | fundamentalTerm ⊢m
-  fundamentalTermEq {Γ} (Id-ℕ-SS {n} {m} ⊢n ⊢m) | [Γ] , [ℕ] , [n] | [Γ]′ , [ℕ]′ , [m]  =
+  fundamentalTermEq (Id-ℕ-SS {n} {m} ⊢n ⊢m) | [Γ] , [ℕ] , [n] | [Γ]′ , [ℕ]′ , [m]  =
     let [SProp] = maybeEmbᵛ {A = SProp ⁰} [Γ]′ (Uᵛ emb< [Γ]′)
         [Unit] = Unitᵗᵛ [Γ]′
         ⊢Γ = soundContext [Γ]′
@@ -583,9 +583,31 @@ fundamentalTermEq (refl D) with fundamentalTerm D
         [id] , [eq] = redSubstTermᵛ {SProp ⁰} {t = Id ℕ (suc n) (suc m)} {u = Id ℕ n m} [Γ]′ (λ {Δ} {σ} ⊢Δ [σ] → Id-ℕ-SS (⊢n′ {Δ} {σ} ⊢Δ [σ]) (⊢m′ {Δ} {σ} ⊢Δ [σ])) [SProp] Idnm
     in [Γ]′ , modelsTermEq [SProp] [id] Idnm [eq] 
 -}
-  fundamentalTermEq (Id-U-ΠΠ x x₁ x₂ x₃) = {!!}
-  fundamentalTermEq (Id-U-ℕℕ x) = {!!}
+  fundamentalTermEq (Id-U-ΠΠ ⊢A ⊢B ⊢A' ⊢B') with fundamentalTerm ⊢A | fundamentalTerm ⊢B | fundamentalTerm ⊢A' | fundamentalTerm ⊢B'
+  fundamentalTermEq (Id-U-ΠΠ {A} {B} {rA} {A'} {B'} ⊢A ⊢B ⊢A' ⊢B') | [Γ] , [UA] , [A] | [Γ]₁ ∙ [A]₁ , [UB] , [B] | [Γ]' , [UA'] , [A'] | [Γ]₁' ∙ [A']₁ , [UB'] , [B'] =
+    {!!}
+{-    let [U] = Uᵛ ∞< [Γ]'
+        [UA]′ = S.irrelevance {A = Univ _ _} [Γ] [Γ]' [UA] 
+        [A]′  = S.irrelevanceTerm {A = Univ _ _} {t = A} [Γ] [Γ]' [UA] [UA]′ [A]
+        ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UA]′ ⊢Δ [σ])) (proj₁ ([A]′ ⊢Δ [σ]))
+        -- [UB]′ = S.irrelevance {A = Univ _ _} ([Γ]₁ ∙ [A]₁) ([Γ]' ∙ (maybeEmbᵛ {A = A} [Γ]' (univᵛ {A = A} [Γ]' (≡is≤ PE.refl) [A]′))) [UB] 
+        -- [B]′  = S.irrelevanceTerm {A = Univ _ _} {t = B} [Γ] [Γ]' [UB] [UB]′ [B]
+        -- ⊢BΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UB]′ ⊢Δ [σ])) (proj₁ ([B]′ ⊢Δ [σ]))
+        ⊢A'Δ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UA'] ⊢Δ [σ])) (proj₁ ([A'] ⊢Δ [σ]))
+        [id] , [eq] = redSubstTermᵛ [Γ]' (λ {Δ} {σ} ⊢Δ [σ] → Id-U-ΠΠ (⊢AΔ {Δ} {σ} ⊢Δ [σ]) {!!} (⊢A'Δ {Δ} {σ} ⊢Δ [σ]) {!!}) [U] {!!}
+    in [Γ]' , modelsTermEq [U] [id] {!!} [eq]
+-}
+{-
+  fundamentalTermEq (Id-U-ℕℕ ⊢Γ) =
+    let [Γ] = valid ⊢Γ
+        [SProp] = Uᵛ ∞< [Γ]
+        [Unit] = Unitᵗᵛ {l = ¹} [Γ] 
+        [id] , [eq] = redSubstTermᵛ {SProp ¹} {Id (U ⁰) ℕ ℕ} {Unit} [Γ] (λ ⊢Δ [σ] → Id-U-ℕℕ ⊢Δ) [SProp] [Unit]
+    in [Γ] , modelsTermEq (maybeEmbᵛ {A = SProp ¹} [Γ] [SProp]) [id] [Unit] [eq] 
+-}
+        
   fundamentalTermEq (Id-SProp x x₁) = {!!}
+{- 
   fundamentalTermEq (Id-ℕ-0S ⊢n) with fundamentalTerm ⊢n 
   fundamentalTermEq {Γ} (Id-ℕ-0S {n} ⊢n) | [Γ] , [ℕ] , [n] =
     let [SProp] = maybeEmbᵛ {A = SProp ⁰} [Γ] (Uᵛ emb< [Γ])
@@ -600,8 +622,41 @@ fundamentalTermEq (refl D) with fundamentalTerm D
         ⊢n′ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ℕ] ⊢Δ [σ])) (proj₁ ([n] ⊢Δ [σ]))
         [id] , [eq] = redSubstTermᵛ {SProp ⁰} {t = Id ℕ (suc n) zero} {u = Empty} [Γ] (λ {Δ} {σ} ⊢Δ [σ] → Id-ℕ-S0 (⊢n′ {Δ} {σ} ⊢Δ [σ])) [SProp] [Empty]
     in  [Γ] , modelsTermEq [SProp] [id] [Empty] [eq] 
-  fundamentalTermEq (Id-U-ℕΠ x x₁) = {!!}
-  fundamentalTermEq (Id-U-Πℕ x x₁) = {!!}
+  fundamentalTermEq (Id-U-ℕΠ ⊢A ⊢B) with fundamentalTerm ⊢A | fundamentalTerm ⊢B
+  fundamentalTermEq {Γ} (Id-U-ℕΠ {A} {rA} {B} ⊢A ⊢B) | [Γ] , [UA] , [A]ᵗ | [Γ]₁ ∙ [A]₁ , [UB] , [B]ᵗ =
+    let [SProp] = Uᵛ {rU = %} ∞< [Γ]
+        [Empty] = Emptyᵗᵛ {ll = ¹} [Γ] ∞<
+        ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UA] ⊢Δ [σ])) (proj₁ ([A]ᵗ ⊢Δ [σ]))
+        [A] = univᵛ {A = A} [Γ] (≡is≤ PE.refl) [UA] [A]ᵗ
+        ⊢A = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([A] {Δ} {σ} ⊢Δ [σ]))
+        [Γ∙A] :  ⊩ᵛ (Γ ∙ A ^ [ rA , ι ⁰ ])
+        [Γ∙A] = [Γ] ∙ [A]
+        [UB]′ = S.irrelevance {A = Univ _ _} ([Γ]₁ ∙ [A]₁) [Γ∙A] (λ {Δ} {σ} → [UB] {Δ} {σ}) 
+        [B]ᵗ′  = S.irrelevanceTerm {A = Univ _ _} {t = B} ([Γ]₁ ∙ [A]₁) [Γ∙A] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB]′ {Δ} {σ}) [B]ᵗ
+        ⊢BΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UB]′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([B]ᵗ′ {Δ} {σ} ⊢Δ [σ]))
+        [liftσ] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A} [Γ] ⊢Δ [A] [σ] 
+        [id] , [eq] = redSubstTermᵛ {SProp ¹} {t = Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰)} {u = Empty} [Γ]
+                                    (λ {Δ} {σ} ⊢Δ [σ] → Id-U-ℕΠ (⊢AΔ {Δ} {σ} ⊢Δ [σ]) (⊢BΔ (⊢Δ ∙ ⊢A {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])))
+                                    [SProp] [Empty]
+    in [Γ] , modelsTermEq [SProp] [id] [Empty] [eq]
+  fundamentalTermEq (Id-U-Πℕ ⊢A ⊢B) with fundamentalTerm ⊢A | fundamentalTerm ⊢B
+  fundamentalTermEq {Γ} (Id-U-Πℕ {A} {rA} {B} ⊢A ⊢B) | [Γ] , [UA] , [A]ᵗ | [Γ]₁ ∙ [A]₁ , [UB] , [B]ᵗ =
+    let [SProp] = Uᵛ {rU = %} ∞< [Γ]
+        [Empty] = Emptyᵗᵛ {ll = ¹} [Γ] ∞<
+        ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UA] ⊢Δ [σ])) (proj₁ ([A]ᵗ ⊢Δ [σ]))
+        [A] = univᵛ {A = A} [Γ] (≡is≤ PE.refl) [UA] [A]ᵗ
+        ⊢A = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([A] {Δ} {σ} ⊢Δ [σ]))
+        [Γ∙A] :  ⊩ᵛ (Γ ∙ A ^ [ rA , ι ⁰ ])
+        [Γ∙A] = [Γ] ∙ [A]
+        [UB]′ = S.irrelevance {A = Univ _ _} ([Γ]₁ ∙ [A]₁) [Γ∙A] (λ {Δ} {σ} → [UB] {Δ} {σ}) 
+        [B]ᵗ′  = S.irrelevanceTerm {A = Univ _ _} {t = B} ([Γ]₁ ∙ [A]₁) [Γ∙A] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB]′ {Δ} {σ}) [B]ᵗ
+        ⊢BΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UB]′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([B]ᵗ′ {Δ} {σ} ⊢Δ [σ]))
+        [liftσ] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A} [Γ] ⊢Δ [A] [σ] 
+        [id] , [eq] = redSubstTermᵛ {SProp ¹} {t = Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) ℕ} {u = Empty} [Γ]
+                                    (λ {Δ} {σ} ⊢Δ [σ] → Id-U-Πℕ (⊢AΔ {Δ} {σ} ⊢Δ [σ]) (⊢BΔ (⊢Δ ∙ ⊢A {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])))
+                                    [SProp] [Empty]
+    in [Γ] , modelsTermEq [SProp] [id] [Empty] [eq]
+-}
   fundamentalTermEq (cast-cong x x₁ x₂) = {!!}
   fundamentalTermEq (cast-Π x x₁ x₂ x₃ x₄ x₅) = {!!}
   fundamentalTermEq (cast-ℕ-0 x) = {!!}
