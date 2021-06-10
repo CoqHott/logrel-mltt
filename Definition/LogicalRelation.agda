@@ -97,6 +97,18 @@ data [Cstr]-prop (K : constructors) (Γ : Con Term) (Pi : ∀ ki → [ K ]-cstr 
   ne   : ∀ {t t' a} → Γ ⊩neNf t ≡ t' ∷ cstr K ∘ a ⦂ 𝕥y → [Cstr]-prop K Γ Pi t t' a
 
 
+Cstr-prop-Whnf : ∀ {K Γ Pi t a} (d : Cstr-prop K Γ Pi t a) → Whnf t
+Cstr-prop-Whnf (cstrᵣ kK x) = cstrₙ
+Cstr-prop-Whnf (ne x) = ne (_⊩neNf_∷_⦂_.neK x)
+
+[Cstr]-prop-left-Whnf : ∀ {K Γ Pi t t' a} (d : [Cstr]-prop K Γ Pi t t' a) → Whnf t
+[Cstr]-prop-left-Whnf (cstrᵣ kK x) = cstrₙ
+[Cstr]-prop-left-Whnf (ne x) = ne (_⊩neNf_≡_∷_⦂_.neK x)
+
+[Cstr]-prop-right-Whnf : ∀ {K Γ Pi t t' a} (d : [Cstr]-prop K Γ Pi t t' a) → Whnf t'
+[Cstr]-prop-right-Whnf (cstrᵣ kK x) = cstrₙ
+[Cstr]-prop-right-Whnf (ne x) = ne (_⊩neNf_≡_∷_⦂_.neM x)
+
 -- Reducibility of natural numbers:
 
 -- Natural number type
@@ -219,6 +231,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
 
   -- Universe term
   record _⊩¹U_∷U_/_ {l′} (Γ : Con Term) (t : Term) (s : 𝕊) (l< : l′ < l) : Set where
+    inductive
     constructor Uₜ
     open LogRelKit (rec l<)
     field
@@ -336,10 +349,10 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
         K : constructors
         KcodU : cstr-cod K PE.≡ Univ (cstr-𝕊 K)
         a : Term
-        D : Γ ⊢ A :⇒*: cstr K ∘ a ⦂ cstr-𝕊 K
+        D : Γ ⊢ A :⇒*: cstr K ∘ a ⦂ s
         -- Is there a way to use the hypothesis that cstr-dom is closed to simplify the argument ?
         ⊢a : Γ ⊢ a ∷ wkAll Γ (cstr-dom K) ⦂ 𝕥y -- TODO: the sort of the dom might need to be generalized
-        A≡A : Γ ⊢ cstr K ∘ a ≅ cstr K ∘ a ⦂ cstr-𝕊 K
+        A≡A : Γ ⊢ cstr K ∘ a ≅ cstr K ∘ a ⦂ s
         [domK] : Γ ⊩¹ wkAll Γ (cstr-dom K) ⦂ 𝕥y
         -- [domK] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ (wkAll Γ (cstr-dom K)) ⦂ 𝕥y
         [a] : Γ ⊩¹ a ∷ wkAll Γ (cstr-dom K) ⦂ 𝕥y / [domK]
@@ -360,26 +373,25 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       open _⊩¹cstr_⦂_ [A]
       field
         a' : Term
-        D' : Γ ⊢ B :⇒*: cstr K ∘ a' ⦂ cstr-𝕊 K
-        -- Is there a way to use the hypothesis that cstr-dom is closed to simplify the argument ?
-        -- ⊢a : Γ ⊢ a ∷ wkAll Γ (cstr-dom k) ⦂ 𝕥y -- TODO: the sort of the dom might need to be generalized
-        A≡B : Γ ⊢ cstr K ∘ a ≅ cstr K ∘ a' ⦂ cstr-𝕊 K
+        D' : Γ ⊢ B :⇒*: cstr K ∘ a' ⦂ s
+        -- [A≡B] : Γ ⊩¹ cstr K ∘ a ≡ cstr K ∘ a' ⦂ s / [A]
+        A≡B : Γ ⊢ cstr K ∘ a ≅ cstr K ∘ a' ⦂ s
         [a≡a'] : Γ ⊩¹ a ≡ a' ∷ wkAll Γ (cstr-dom K) ⦂ 𝕥y / [domK]
         -- [a≡a'] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ a ≡ U.wk ρ a' ∷ U.wk ρ (wkAll Γ (cstr-dom K)) ⦂ 𝕥y / [domK] [ρ] ⊢Δ
 
     _⊩¹cstr_∷_⦂_/_ : (Γ : Con Term) (t A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
     Γ ⊩¹cstr t ∷ A ⦂ s / cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi] =
-      ∃ λ k → Γ ⊢ t :⇒*: k ∷ cstr K ∘ a ⦂ cstr-𝕊 K
-             × Γ ⊢ k ≅ k ∷ cstr K ∘ a ⦂ cstr-𝕊 K
+      ∃ λ k → Γ ⊢ t :⇒*: k ∷ cstr K ∘ a ⦂ s
+             × Γ ⊢ k ≅ k ∷ cstr K ∘ a ⦂ s
              × Cstr-prop K Γ (λ ki kiK t → Γ ⊩¹ t ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) k a
 
     _⊩¹cstr_≡_∷_⦂_/_ : (Γ : Con Term) (t u A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
     Γ ⊩¹cstr t ≡ u ∷ A ⦂ s / cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi] =
       let [A] = cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi]
       in ∃₂ λ k k' →
-         Γ ⊢ t :⇒*: k ∷ cstr K ∘ a ⦂ cstr-𝕊 K
-      ×  Γ ⊢ u :⇒*: k' ∷ cstr K ∘ a ⦂ cstr-𝕊 K
-      ×  Γ ⊢ k ≅ k' ∷ cstr K ∘ a ⦂ cstr-𝕊 K
+         Γ ⊢ t :⇒*: k ∷ cstr K ∘ a ⦂ s
+      ×  Γ ⊢ u :⇒*: k' ∷ cstr K ∘ a ⦂ s
+      ×  Γ ⊢ k ≅ k' ∷ cstr K ∘ a ⦂ s
       ×  Γ ⊩¹cstr t ∷ A ⦂ s / [A]
       ×  Γ ⊩¹cstr u ∷ A ⦂ s / [A]
       ×  [Cstr]-prop K Γ (λ ki kiK t u → Γ ⊩¹ t ≡ u ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) k k' a
@@ -431,15 +443,18 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     kit = Kit _⊩¹U_ _⊩¹Π_⦂_
               _⊩¹_⦂_ _⊩¹_≡_⦂_/_ _⊩¹_∷_⦂_/_ _⊩¹_≡_∷_⦂_/_
 
-open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ; emb; Uₜ; Uₜ₌; Π₌)
+open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ; emb; Uₜ; Uₜ₌; Π₌; cstrᵣ; cstr₌)
 
 -- Patterns for the non-records of Π
 pattern Πₜ a b c d e f = a , b , c , d , e , f
 pattern Πₜ₌ a b c d e f g h i j = a , b , c , d , e , f , g , h , i , j
+pattern cstrₜ a b c d = a , b , c , d
+pattern cstrₜ₌ a b c d e f g h = a , b , c , d , e , f , g , h
 
 pattern Uᵣ′ s a b c = Uᵣ {s = s} (Uᵣ a b c)
 pattern ne′ a b c d = ne (ne a b c d)
 pattern Πᵣ′  a b c d e f g h i j = Πᵣ (Πᵣ a b c d e f g h i j)
+pattern cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi] = cstrᵣ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
 
 logRelRec : ∀ l {l′} → l′ < l → LogRelKit
 logRelRec ⁰ = λ ()

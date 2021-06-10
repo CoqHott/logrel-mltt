@@ -27,7 +27,7 @@ wfTerm (Emptyrecⱼ A e) = wfTerm e
 wfTerm (conv t A≡B) = wfTerm t
 wfTerm (Boxⱼ d) = wfTerm d
 wfTerm (boxⱼ d) = wfTerm d
-wfTerm (cstrⱼ ⊢Γ) = ⊢Γ
+wfTerm (cstrⱼ ⊢Γ _ _ _) = ⊢Γ
 wfTerm (dstrⱼ ⊢Γ) = ⊢Γ
 wfTerm (Boxrecⱼ _ x d d₁) = wfTerm d
 
