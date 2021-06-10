@@ -301,6 +301,8 @@ mutual
                   Γ ⊢ A ≡ A' ∷ U l ^ [ ! , next l ]
                 → Γ ⊢ B ≡ B' ∷ U l ^ [ ! , next l ]
                 → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
+                → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , next ⁰ ]
+                → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , next ⁰ ]
                 → Γ ⊢ cast l A B e t ≡ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]
     cast-Π : ∀ {A A' rA B B' e f} → let l = ⁰ in let lA = ⁰ in let lB = ⁰ in 
                Γ ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]

@@ -73,7 +73,7 @@ mutual
   wfEqTerm (Id-ℕ-S0 n) = wfTerm n
   wfEqTerm (Id-U-ℕΠ A B) = wfTerm A
   wfEqTerm (Id-U-Πℕ A B) = wfTerm A
-  wfEqTerm (cast-cong A B t) = wfEqTerm t
+  wfEqTerm (cast-cong A B t _ _) = wfEqTerm t
   wfEqTerm (cast-Π A B A' B' e f) = wfTerm f
   wfEqTerm (cast-ℕ-0 e) = wfTerm e
   wfEqTerm (cast-ℕ-S e n) = wfTerm n
@@ -114,9 +114,13 @@ subsetTerm (Id-ℕ-0S n) = Id-ℕ-0S n
 subsetTerm (Id-ℕ-S0 n) = Id-ℕ-S0 n
 subsetTerm (Id-U-ℕΠ A B) = Id-U-ℕΠ A B
 subsetTerm (Id-U-Πℕ A B) = Id-U-Πℕ A B
-subsetTerm (cast-subst A B e t) = cast-cong (subsetTerm A) (refl B) (refl t)
-subsetTerm (cast-ℕ-subst B e t) = cast-cong (refl (ℕⱼ (wfTerm t))) (subsetTerm B) (refl t)
-subsetTerm (cast-Π-subst A P B e t) = cast-cong (refl (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B) (refl t)
+subsetTerm (cast-subst A B e t) = let ⊢Γ = wfEqTerm (subsetTerm A)
+                                  in cast-cong (subsetTerm A) (refl B) (refl t) e (conv e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (subsetTerm A) (refl B))))
+subsetTerm (cast-ℕ-subst B e t) = let ⊢Γ = wfEqTerm (subsetTerm B)
+                                  in cast-cong (refl (ℕⱼ (wfTerm t))) (subsetTerm B) (refl t) e (conv e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (refl (ℕⱼ ⊢Γ)) (subsetTerm B))))
+subsetTerm (cast-Π-subst A P B e t) = let ⊢Γ = wfTerm A
+                                      in cast-cong (refl (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ P)) (subsetTerm B) (refl t) e
+                                                   (conv e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (refl (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ A ▹ P)) (subsetTerm B) )))
 subsetTerm (cast-Π A B A' B' e f) = cast-Π A B A' B' e f
 subsetTerm (cast-ℕ-0 e) = cast-ℕ-0 e
 subsetTerm (cast-ℕ-S e n) = cast-ℕ-S e n
