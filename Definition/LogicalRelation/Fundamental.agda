@@ -26,6 +26,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Emptyrec
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.Introductions.Id
+open import Definition.LogicalRelation.Substitution.Introductions.Cast
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
 open import Definition.LogicalRelation.Substitution.Introductions.Application
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
@@ -656,8 +657,41 @@ fundamentalTermEq (refl D) with fundamentalTerm D
                                     (λ {Δ} {σ} ⊢Δ [σ] → Id-U-Πℕ (⊢AΔ {Δ} {σ} ⊢Δ [σ]) (⊢BΔ (⊢Δ ∙ ⊢A {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])))
                                     [SProp] [Empty]
     in [Γ] , modelsTermEq [SProp] [id] [Empty] [eq]
+  fundamentalTermEq (cast-cong {A} {A'} {B} {B'} {e} {e'} {t} {t'} A≡A' B≡B' t≡t' ⊢e ⊢e')
+    with fundamentalTermEq A≡A' | fundamentalTermEq B≡B' | fundamentalTermEq t≡t' | fundamentalTerm ⊢e | fundamentalTerm ⊢e'
+  ... | [Γ] , modelsTermEq [UA] [A]ₜ [A']ₜ [A≡A']ₜ | [Γ]₁ , modelsTermEq [UB] [B]ₜ [B']ₜ [B≡B']ₜ
+      | [Γ]₂ , modelsTermEq [A]₁ [t]ₜ [t']ₜ [t≡t']ₜ | [Γe] , [IdAB] , [e]ₜ
+      | [Γe'] , [IdAB'] , [e']ₜ = 
+        [A] = maybeEmbᵛ {A = A} [Γ] (univᵛ {A = A} [Γ] (≡is≤ PE.refl) [UA] [A]ₜ)
+        [B] = maybeEmbᵛ {A = B} [Γ]₁ (univᵛ {A = B} [Γ]₁ (≡is≤ PE.refl) [UB] [B]ₜ)
+        [UA]′  = S.irrelevance {A = Univ _ _} [Γ] [Γ]₂ [UA]
+        [A]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = A} [Γ] [Γ]₂ [UA] [UA]′ [A]ₜ
+        [A']ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = A'} [Γ] [Γ]₂ [UA] [UA]′ [A']ₜ
+        [UB]′  = S.irrelevance {A = Univ _ _} [Γ]₁ [Γ]₂ [UB]
+        [B]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = B} [Γ]₁ [Γ]₂ [UB] [UB]′ [B]ₜ
+        [B']ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = B'} [Γ]₁ [Γ]₂ [UB] [UB]′ [B']ₜ
+        [A]′ = maybeEmbᵛ {A = A} [Γ]₂ (univᵛ {A = A} [Γ]₂ (≡is≤ PE.refl) [UA]′ [A]ₜ′)
+        [t]ₜ′ = S.irrelevanceTerm {A = A} {t = t} [Γ]₂ [Γ]₂ [A]₁ [A]′ [t]ₜ
+        [A']′ = maybeEmbᵛ {A = A'} [Γ]₂ (univᵛ {A = A'} [Γ]₂ (≡is≤ PE.refl) [UA]′ [A']ₜ′)
+        [t']ₜ′ = S.irrelevanceTerm {A = A} {t = t'} [Γ]₂ [Γ]₂ [A]₁ [A]′ [t']ₜ
+        [A≡A']′ = S.irrelevanceEq {A = A} {B = A'} [Γ] [Γ]₂ [A] [A]′ (univEqᵛ {A = A} {B = A'} [Γ] [UA] [A] [A≡A']ₜ)
+        [t'A]ₜ = convᵛ {t'} {A} {A'} [Γ]₂ [A]′ [A']′ [A≡A']′ [t']ₜ′
+        [t≡t']ₜ′ = S.irrelevanceEqTerm {A = A} {t = t} {u = t'} [Γ]₂ [Γ]₂ [A]₁ [A]′ [t≡t']ₜ
+        [B]′ = maybeEmbᵛ {A = B} [Γ]₂ (univᵛ {A = B} [Γ]₂ (≡is≤ PE.refl) [UB]′ [B]ₜ′)
+        [B']′ = maybeEmbᵛ {A = B'} [Γ]₂ (univᵛ {A = B'} [Γ]₂ (≡is≤ PE.refl) [UB]′ [B']ₜ′)
+        [B≡B']′ = S.irrelevanceEq {A = B} {B = B'} [Γ]₁ [Γ]₂ [B] [B]′ (univEqᵛ {A = B} {B = B'} [Γ]₁ [UB] [B] [B≡B']ₜ)
+        [IdAB]′  = S.irrelevance {A = Id (Univ _ _) A B} [Γe] [Γ]₂ [IdAB]
+        [e]ₜ′ = S.irrelevanceTerm {A = Id (Univ _ _) A B} {t = e} [Γe] [Γ]₂ [IdAB] [IdAB]′ [e]ₜ
+        [IdAB']′  = S.irrelevance {A = Id (Univ _ _) A' B'} [Γe'] [Γ]₂ [IdAB']
+        [e']ₜ′ = S.irrelevanceTerm {A = Id (Univ _ _) A' B'} {t = e'} [Γe'] [Γ]₂ [IdAB'] [IdAB']′ [e']ₜ
+    in  [Γ]₂
+    ,   modelsTermEq [B]′ (castᵗᵛ {A} {B} {t} {e} [Γ]₂ [A]′ [B]′ [t]ₜ′ [IdAB]′ [e]ₜ′)
+                          (conv₂ᵛ {cast _ A' B' e' t'} {B} {B'} [Γ]₂ [B]′ [B']′ [B≡B']′
+                            (castᵗᵛ {A'} {B'} {t'} {e'} [Γ]₂ [A']′ [B']′ [t'A]ₜ [IdAB']′ [e']ₜ′))
+                          (cast-congᵗᵛ {A} {A'} {B} {B'} {t} {t'} {e} {e'} [Γ]₂ [A]′ [A']′ [A≡A']′ [B]′ [B']′ [B≡B']′ [t]ₜ′ [t≡t']ₜ′
+                                       [IdAB]′ [e]ₜ′ [IdAB']′ [e']ₜ′)
 -}
-  fundamentalTermEq (cast-cong x x₁ x₂) = {!!}
+
   fundamentalTermEq (cast-Π x x₁ x₂ x₃ x₄ x₅) = {!!}
   fundamentalTermEq (cast-ℕ-0 x) = {!!}
   fundamentalTermEq (cast-ℕ-S x x₁) = {!!}
