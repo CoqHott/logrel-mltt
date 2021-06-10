@@ -690,10 +690,16 @@ fundamentalTermEq (refl D) with fundamentalTerm D
                             (castᵗᵛ {A'} {B'} {t'} {e'} [Γ]₂ [A']′ [B']′ [t'A]ₜ [IdAB']′ [e']ₜ′))
                           (cast-congᵗᵛ {A} {A'} {B} {B'} {t} {t'} {e} {e'} [Γ]₂ [A]′ [A']′ [A≡A']′ [B]′ [B']′ [B≡B']′ [t]ₜ′ [t≡t']ₜ′
                                        [IdAB]′ [e]ₜ′ [IdAB']′ [e']ₜ′)
+  fundamentalTermEq (cast-ℕ-0 {e} ⊢e) with fundamentalTerm ⊢e
+  ... | [Γ] , [Id] , [e]ₜ =
+    let ⊢eΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([Id] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([e]ₜ {Δ} {σ} ⊢Δ [σ]))
+        [id] , [eq] = redSubstTermᵛ {ℕ} {cast ⁰ ℕ ℕ e zero} {zero} {∞} [Γ]
+                                    (λ {Δ} {σ} ⊢Δ [σ] → cast-ℕ-0 (⊢eΔ {Δ} {σ} ⊢Δ [σ]))
+                                    (ℕᵛ [Γ]) (zeroᵛ {l = ∞} [Γ])
+    in [Γ] , modelsTermEq (ℕᵛ [Γ]) [id] (zeroᵛ {l = ∞} [Γ]) [eq] 
 -}
 
   fundamentalTermEq (cast-Π x x₁ x₂ x₃ x₄ x₅) = {!!}
-  fundamentalTermEq (cast-ℕ-0 x) = {!!}
   fundamentalTermEq (cast-ℕ-S x x₁) = {!!}
 
   fundamentalTermEq = {!!}
