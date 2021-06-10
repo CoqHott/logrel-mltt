@@ -201,6 +201,9 @@ U≢Empty ()
 U≢Π : ∀ {s s' F G} → Univ s PE.≢ Π F ⦂ s' ▹ G
 U≢Π ()
 
+U≢cstr : ∀ {s k t} → Univ s PE.≢ cstr k ∘ t
+U≢cstr ()
+
 U≢ne : ∀ {s K} → Neutral K → Univ s PE.≢ K
 U≢ne () PE.refl
 
@@ -210,8 +213,17 @@ U≢ne () PE.refl
 ℕ≢Empty : ℕ PE.≢ Empty
 ℕ≢Empty ()
 
+ℕ≢cstr : ∀ {k t} →  ℕ PE.≢ cstr k ∘ t
+ℕ≢cstr ()
+
 Empty≢ℕ : Empty PE.≢ ℕ
 Empty≢ℕ ()
+
+Empty≢cstr : ∀ {k t} →  Empty PE.≢ cstr k ∘ t
+Empty≢cstr ()
+
+cstr≢Π :  ∀ {k t F s G} → cstr k ∘ t PE.≢ Π F ⦂ s ▹ G
+cstr≢Π ()
 
 ℕ≢ne : ∀ {K} → Neutral K → ℕ PE.≢ K
 ℕ≢ne () PE.refl
@@ -224,6 +236,9 @@ Empty≢Π ()
 
 Π≢ne : ∀ {F s G K} → Neutral K → Π F ⦂ s ▹ G PE.≢ K
 Π≢ne () PE.refl
+
+cstr≢ne : ∀ {k t K} → Neutral K → cstr k ∘ t PE.≢ K
+cstr≢ne (∘ₙ ()) PE.refl
 
 zero≢suc : ∀ {n} → zero PE.≢ suc n
 zero≢suc ()
