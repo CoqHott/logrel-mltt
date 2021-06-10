@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Typed.Consequences.Syntactic where
 
@@ -16,35 +16,35 @@ open import Tools.Product
 
 
 -- Syntactic validity of type equality.
-syntacticEq : ∀ {A B rA Γ} → Γ ⊢ A ≡ B ^ rA → Γ ⊢ A ^ rA × Γ ⊢ B ^ rA
+syntacticEq : ∀ {A B sA Γ} → Γ ⊢ A ≡ B ⦂ sA → Γ ⊢ A ⦂ sA × Γ ⊢ B ⦂ sA
 syntacticEq A≡B with fundamentalEq A≡B
 syntacticEq A≡B | [Γ] , [A] , [B] , [A≡B] =
   escapeᵛ [Γ] [A] , escapeᵛ [Γ] [B]
 
 -- Syntactic validity of terms.
-syntacticTerm : ∀ {t A rA Γ} → Γ ⊢ t ∷ A ^ rA → Γ ⊢ A ^ rA
+syntacticTerm : ∀ {t A sA Γ} → Γ ⊢ t ∷ A ⦂ sA → Γ ⊢ A ⦂ sA
 syntacticTerm t with fundamentalTerm t
 syntacticTerm t | [Γ] , [A] , [t] = escapeᵛ [Γ] [A]
 
 -- Syntactic validity of term equality.
-syntacticEqTerm : ∀ {t u A rA Γ} → Γ ⊢ t ≡ u ∷ A ^ rA → Γ ⊢ A ^ rA × (Γ ⊢ t ∷ A ^ rA × Γ ⊢ u ∷ A ^ rA)
+syntacticEqTerm : ∀ {t u A sA Γ} → Γ ⊢ t ≡ u ∷ A ⦂ sA → Γ ⊢ A ⦂ sA × (Γ ⊢ t ∷ A ⦂ sA × Γ ⊢ u ∷ A ⦂ sA)
 syntacticEqTerm t≡u with fundamentalTermEq t≡u
 syntacticEqTerm t≡u | [Γ] , modelsTermEq [A] [t] [u] [t≡u] =
   escapeᵛ [Γ] [A] , escapeTermᵛ [Γ] [A] [t] , escapeTermᵛ [Γ] [A] [u]
 
 -- Syntactic validity of type reductions.
-syntacticRed : ∀ {A B rA Γ} → Γ ⊢ A ⇒* B ^ rA → Γ ⊢ A ^ rA × Γ ⊢ B ^ rA
+syntacticRed : ∀ {A B sA Γ} → Γ ⊢ A ⇒* B ⦂ sA → Γ ⊢ A ⦂ sA × Γ ⊢ B ⦂ sA
 syntacticRed D with fundamentalEq (subset* D)
 syntacticRed D | [Γ] , [A] , [B] , [A≡B] =
   escapeᵛ [Γ] [A] , escapeᵛ [Γ] [B]
 
 -- Syntactic validity of term reductions.
-syntacticRedTerm : ∀ {t u A rA Γ} → Γ ⊢ t ⇒* u ∷ A ^ rA → Γ ⊢ A ^ rA × (Γ ⊢ t ∷ A ^ rA × Γ ⊢ u ∷ A ^ rA)
+syntacticRedTerm : ∀ {t u A sA Γ} → Γ ⊢ t ⇒* u ∷ A ⦂ sA → Γ ⊢ A ⦂ sA × (Γ ⊢ t ∷ A ⦂ sA × Γ ⊢ u ∷ A ⦂ sA)
 syntacticRedTerm d with fundamentalTermEq (subset*Term d)
 syntacticRedTerm d | [Γ] , modelsTermEq [A] [t] [u] [t≡u] =
   escapeᵛ [Γ] [A] , escapeTermᵛ [Γ] [A] [t] , escapeTermᵛ [Γ] [A] [u]
 
 -- Syntactic validity of Π-types.
-syntacticΠ : ∀ {Γ F G rF rG} → Γ ⊢ Π F ^ rF ▹ G ^ rG → Γ ⊢ F ^ rF × Γ ∙ F ^ rF ⊢ G ^ rG
+syntacticΠ : ∀ {Γ F G sF sG} → Γ ⊢ Π F ⦂ sF ▹ G ⦂ sG → Γ ⊢ F ⦂ sF × Γ ∙ F ⦂ sF ⊢ G ⦂ sG
 syntacticΠ ΠFG with injectivity (refl ΠFG)
-syntacticΠ ΠFG | F≡F , rF≡rF , G≡G = proj₁ (syntacticEq F≡F) , proj₁ (syntacticEq G≡G)
+syntacticΠ ΠFG | F≡F , sF≡sF , G≡G = proj₁ (syntacticEq F≡F) , proj₁ (syntacticEq G≡G)

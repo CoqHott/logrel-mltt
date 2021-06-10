@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -12,13 +12,13 @@ open import Tools.Product
 
 
 -- Weak head expansion of valid terms.
-redSubstTermᵛ : ∀ {A t u rA l Γ}
+redSubstTermᵛ : ∀ {A t u sA l Γ}
               → ([Γ] : ⊩ᵛ Γ)
-              → Γ ⊩ᵛ t ⇒ u ∷ A ^ rA / [Γ]
-              → ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ])
-              → Γ ⊩ᵛ⟨ l ⟩ u ∷ A ^ rA / [Γ] / [A]
-              → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ rA / [Γ] / [A]
-              × Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ rA / [Γ] / [A]
+              → Γ ⊩ᵛ t ⇒ u ∷ A ⦂ sA / [Γ]
+              → ([A] : Γ ⊩ᵛ⟨ l ⟩ A ⦂ sA / [Γ])
+              → Γ ⊩ᵛ⟨ l ⟩ u ∷ A ⦂ sA / [Γ] / [A]
+              → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ⦂ sA / [Γ] / [A]
+              × Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ⦂ sA / [Γ] / [A]
 redSubstTermᵛ [Γ] t⇒u [A] [u] =
   (λ ⊢Δ [σ] →
      let [σA] = proj₁ ([A] ⊢Δ [σ])

@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -16,13 +16,13 @@ open import Tools.Product
 
 
 -- Well-formed types are reducible.
-reducible : ∀ {A rA Γ} → Γ ⊢ A ^ rA → Γ ⊩⟨ ¹ ⟩ A ^ rA
+reducible : ∀ {A sA Γ} → Γ ⊢ A ⦂ sA → Γ ⊩⟨ ¹ ⟩ A ⦂ sA
 reducible A = let [Γ] , [A] = fundamental A
               in  reducibleᵛ [Γ] [A]
 
 -- Well-formed equality is reducible.
-reducibleEq : ∀ {A B rA Γ} → Γ ⊢ A ≡ B ^ rA
-            → ∃₂ λ [A] ([B] : Γ ⊩⟨ ¹ ⟩ B ^ rA) → Γ ⊩⟨ ¹ ⟩ A ≡ B ^ rA / [A]
+reducibleEq : ∀ {A B sA Γ} → Γ ⊢ A ≡ B ⦂ sA
+            → ∃₂ λ [A] ([B] : Γ ⊩⟨ ¹ ⟩ B ⦂ sA) → Γ ⊩⟨ ¹ ⟩ A ≡ B ⦂ sA / [A]
 reducibleEq {A} {B} A≡B =
   let [Γ] , [A] , [B] , [A≡B] = fundamentalEq A≡B
   in  reducibleᵛ [Γ] [A]
@@ -30,13 +30,13 @@ reducibleEq {A} {B} A≡B =
   ,   reducibleEqᵛ {A} {B} [Γ] [A] [A≡B]
 
 -- Well-formed terms are reducible.
-reducibleTerm : ∀ {t A rA Γ} → Γ ⊢ t ∷ A ^ rA → ∃ λ [A] → Γ ⊩⟨ ¹ ⟩ t ∷ A ^ rA / [A]
+reducibleTerm : ∀ {t A sA Γ} → Γ ⊢ t ∷ A ⦂ sA → ∃ λ [A] → Γ ⊩⟨ ¹ ⟩ t ∷ A ⦂ sA / [A]
 reducibleTerm {t} {A} ⊢t =
   let [Γ] , [A] , [t] = fundamentalTerm ⊢t
   in  reducibleᵛ [Γ] [A] , reducibleTermᵛ {t} {A} [Γ] [A] [t]
 
 -- Well-formed term equality is reducible.
-reducibleEqTerm : ∀ {t u A rA Γ} → Γ ⊢ t ≡ u ∷ A ^ rA → ∃ λ [A] → Γ ⊩⟨ ¹ ⟩ t ≡ u ∷ A ^ rA / [A]
+reducibleEqTerm : ∀ {t u A sA Γ} → Γ ⊢ t ≡ u ∷ A ⦂ sA → ∃ λ [A] → Γ ⊩⟨ ¹ ⟩ t ≡ u ∷ A ⦂ sA / [A]
 reducibleEqTerm {t} {u} {A} t≡u =
   let [Γ] , modelsTermEq [A] [t] [u] [t≡u] = fundamentalTermEq t≡u
   in  reducibleᵛ [Γ] [A] , reducibleEqTermᵛ {t} {u} {A} [Γ] [A] [t≡u]

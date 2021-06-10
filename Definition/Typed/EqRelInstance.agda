@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Typed.EqRelInstance where
 
@@ -13,22 +13,17 @@ open import Tools.Function
 
 -- Judgmental instance of the equality relation
 
-private
-  proof-irrelevance′ : ∀ {a b A Γ} → Γ ⊢ a ∷ A ^ % → Γ ⊢ b ∷ A ^ %
-                     → Γ ⊢ a ≡ a ∷ A ^ %
-                     → Γ ⊢ b ≡ b ∷ A ^ %
-                     → Γ ⊢ a ≡ b ∷ A ^ %
-  proof-irrelevance′ ⊢a ⊢b _ _ = proof-irrelevance ⊢a ⊢b
-
 instance eqRelInstance : EqRelSet
-eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
+eqRelInstance = eqRel _⊢_≡_⦂_ _⊢_≡_∷_⦂_ _⊢_≡_∷_⦂_
                       idᶠ idᶠ idᶠ univ
                       sym sym sym trans trans trans
                       conv conv wkEq wkEqTerm wkEqTerm
                       reduction reductionₜ
                       (refl ∘ᶠ Uⱼ) (refl ∘ᶠ ℕⱼ) (refl ∘ᶠ ℕⱼ)
                       (refl ∘ᶠ Emptyⱼ) (refl ∘ᶠ Emptyⱼ)
-                      Π-cong Π-cong (refl ∘ᶠ zeroⱼ) suc-cong
+                      Π-cong Π-cong Box-cong Box-cong
+                      (refl ∘ᶠ zeroⱼ) suc-cong
                       (λ x x₁ x₂ x₃ x₄ x₅ → η-eq x x₁ x₂ x₅)
+                      box-cong (refl ∘ᶠ cstrⱼ)
                       refl app-cong natrec-cong Emptyrec-cong
-                      proof-irrelevance′
+                      Boxrec-cong (refl ∘ᶠ dstrⱼ)

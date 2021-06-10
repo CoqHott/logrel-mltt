@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Typed.Consequences.SucCong where
 
@@ -13,9 +13,9 @@ open import Tools.Product
 
 
 -- Congurence of the type of the successor case in natrec.
-sucCong : ∀ {F G rF Γ} → Γ ∙ ℕ ^ ! ⊢ F ≡ G ^ rF
-        → Γ ⊢ Π ℕ ^ ! ▹ (F ^ rF ▹▹ F [ suc (var 0) ]↑)
-            ≡ Π ℕ ^ ! ▹ (G ^ rF ▹▹ G [ suc (var 0) ]↑) ^ rF
+sucCong : ∀ {F G sF Γ} → Γ ∙ ℕ ⦂ 𝕥y ⊢ F ≡ G ⦂ sF
+        → Γ ⊢ Π ℕ ⦂ 𝕥y ▹ (F ⦂ sF ▹▹ F [ suc (var 0) ]↑)
+            ≡ Π ℕ ⦂ 𝕥y ▹ (G ⦂ sF ▹▹ G [ suc (var 0) ]↑) ⦂ sF
 sucCong F≡G with wfEq F≡G
 sucCong F≡G | ⊢Γ ∙ ⊢ℕ =
   let ⊢F , _ = syntacticEq F≡G

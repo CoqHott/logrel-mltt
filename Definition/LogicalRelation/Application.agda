@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -21,63 +21,63 @@ import Tools.PropositionalEquality as PE
 
 
 -- Helper function for application of specific type derivations.
-appTerm′ : ∀ {F G t u Γ rF rG l l′ l″}
-          ([F] : Γ ⊩⟨ l″ ⟩ F ^ rF)
-          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ rG)
-          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ▹ G ^ rG)
-          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF ▹ G ^ rG / Π-intr [ΠFG])
-          ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ^ rF / [F])
-        → Γ ⊩⟨ l′ ⟩ t ∘ u ∷ G [ u ] ^ rG / [G[u]]
-appTerm′ {t = t} {Γ = Γ} {rG = rG} [F] [G[u]] (noemb (Πᵣ rF′ F G D ⊢F ⊢G A≡A [F′] [G′] G-ext))
+appTerm′ : ∀ {F G t u Γ sF sG l l′ l″}
+          ([F] : Γ ⊩⟨ l″ ⟩ F ⦂ sF)
+          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ⦂ sG)
+          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ⦂ sF ▹ G ⦂ sG)
+          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ⦂ sF ▹ G ⦂ sG / Π-intr [ΠFG])
+          ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ⦂ sF / [F])
+        → Γ ⊩⟨ l′ ⟩ t ∘ u ∷ G [ u ] ⦂ sG / [G[u]]
+appTerm′ {t = t} {Γ = Γ} {sG = sG} [F] [G[u]] (noemb (Πᵣ sF′ F G D ⊢F ⊢G A≡A [F′] [G′] G-ext))
          (Πₜ f d funcF f≡f [f] [f]₁) [u] =
   let ΠFG≡ΠF′G′ = whnfRed* (red D) Πₙ
-      F≡F′ , rF≡rF′ , G≡G′ = Π-PE-injectivity ΠFG≡ΠF′G′
+      F≡F′ , sF≡sF′ , G≡G′ = Π-PE-injectivity ΠFG≡ΠF′G′
       F≡idF′ = PE.trans F≡F′ (PE.sym (wk-id _))
       idG′ᵤ≡Gᵤ = PE.cong (λ x → x [ _ ]) (PE.trans (wk-lift-id _) (PE.sym G≡G′))
       idf∘u≡f∘u = (PE.cong (λ x → x ∘ _) (wk-id _))
       ⊢Γ = wf ⊢F
-      [u]′ = irrelevanceTerm′ F≡idF′ rF≡rF′ [F] ([F′] id ⊢Γ) [u]
+      [u]′ = irrelevanceTerm′ F≡idF′ sF≡sF′ [F] ([F′] id ⊢Γ) [u]
       [f∘u] = irrelevanceTerm″ idG′ᵤ≡Gᵤ idf∘u≡f∘u
                                 ([G′] id ⊢Γ [u]′) [G[u]] ([f]₁ id ⊢Γ [u]′)
       ⊢u = escapeTerm [F] [u]
-      d′ = PE.subst (λ x → Γ ⊢ t ⇒* f ∷ x ^ rG) (PE.sym ΠFG≡ΠF′G′) (redₜ d)
+      d′ = PE.subst (λ x → Γ ⊢ t ⇒* f ∷ x ⦂ sG) (PE.sym ΠFG≡ΠF′G′) (redₜ d)
   in  proj₁ (redSubst*Term (app-subst* d′ ⊢u) [G[u]] [f∘u])
 appTerm′ [F] [G[u]] (emb 0<1 x) [t] [u] = appTerm′ [F] [G[u]] x [t] [u]
 
 -- Application of reducible terms.
-appTerm : ∀ {F G t u Γ rF rF' rG l l′ l″} (eqr : rF PE.≡ rF')
-          ([F] : Γ ⊩⟨ l″ ⟩ F ^ rF)
-          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ rG)
-          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF' ▹ G ^ rG)
-          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF' ▹ G ^ rG / [ΠFG])
-          ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ^ rF / [F])
-        → Γ ⊩⟨ l′ ⟩ t ∘ u ∷ G [ u ] ^ rG / [G[u]]
+appTerm : ∀ {F G t u Γ sF sF' sG l l′ l″} (eqr : sF PE.≡ sF')
+          ([F] : Γ ⊩⟨ l″ ⟩ F ⦂ sF)
+          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ⦂ sG)
+          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ⦂ sF' ▹ G ⦂ sG)
+          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ⦂ sF' ▹ G ⦂ sG / [ΠFG])
+          ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ⦂ sF / [F])
+        → Γ ⊩⟨ l′ ⟩ t ∘ u ∷ G [ u ] ⦂ sG / [G[u]]
 appTerm PE.refl [F] [G[u]] [ΠFG] [t] [u] =
   let [t]′ = irrelevanceTerm [ΠFG] (Π-intr (Π-elim [ΠFG])) [t]
   in  appTerm′ [F] [G[u]] (Π-elim [ΠFG]) [t]′ [u]
 
 -- Helper function for application congurence of specific type derivations.
-app-congTerm′ : ∀ {F G t t′ u u′ Γ rF rG l l′}
-          ([F] : Γ ⊩⟨ l′ ⟩ F ^ rF)
-          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ rG)
-          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ▹ G ^ rG)
-          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ▹ G ^ rG / Π-intr [ΠFG])
-          ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ^ rF / [F])
-          ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ^ rF / [F])
-          ([u≡u′] : Γ ⊩⟨ l′ ⟩ u ≡ u′ ∷ F ^ rF / [F])
-        → Γ ⊩⟨ l′ ⟩ t ∘ u ≡ t′ ∘ u′ ∷ G [ u ] ^ rG / [G[u]]
-app-congTerm′ {F′} {G′} {t = t} {t′ = t′} {Γ = Γ} {rF = rF} {rG = rG}
-              [F] [G[u]] (noemb (Πᵣ rF′ F G D ⊢F ⊢G A≡A [F]₁ [G] G-ext))
+app-congTerm′ : ∀ {F G t t′ u u′ Γ sF sG l l′}
+          ([F] : Γ ⊩⟨ l′ ⟩ F ⦂ sF)
+          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ⦂ sG)
+          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ⦂ sF ▹ G ⦂ sG)
+          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ⦂ sF ▹ G ⦂ sG / Π-intr [ΠFG])
+          ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ⦂ sF / [F])
+          ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ⦂ sF / [F])
+          ([u≡u′] : Γ ⊩⟨ l′ ⟩ u ≡ u′ ∷ F ⦂ sF / [F])
+        → Γ ⊩⟨ l′ ⟩ t ∘ u ≡ t′ ∘ u′ ∷ G [ u ] ⦂ sG / [G[u]]
+app-congTerm′ {F′} {G′} {t = t} {t′ = t′} {Γ = Γ} {sF = sF} {sG = sG}
+              [F] [G[u]] (noemb (Πᵣ sF′ F G D ⊢F ⊢G A≡A [F]₁ [G] G-ext))
               (Πₜ₌ f g [ ⊢t , ⊢f , d ] [ ⊢t′ , ⊢g , d′ ] funcF funcG t≡u
                    (Πₜ f′ [ _ , ⊢f′ , d″ ] funcF′ f≡f [f] [f]₁)
                    (Πₜ g′ [ _ , ⊢g′ , d‴ ] funcG′ g≡g [g] [g]₁) [t≡u])
               [a] [a′] [a≡a′] =
   let ΠFG≡ΠF′G′ = whnfRed* (red D) Πₙ
-      F≡F′ , rF≡rF′ , G≡G′ = Π-PE-injectivity ΠFG≡ΠF′G′
+      F≡F′ , sF≡sF′ , G≡G′ = Π-PE-injectivity ΠFG≡ΠF′G′
       f≡f′ = whrDet*Term (d , functionWhnf funcF) (d″ , functionWhnf funcF′)
       g≡g′ = whrDet*Term (d′ , functionWhnf funcG) (d‴ , functionWhnf funcG′)
       F≡wkidF′ = PE.trans F≡F′ (PE.sym (wk-id _))
-      [ΠFG] = Πᵣ′ rF′ F G (PE.subst _ rF≡rF′ D) ⊢F ⊢G A≡A [F]₁ [G] G-ext
+      [ΠFG] = Πᵣ′ sF′ F G (PE.subst _ sF≡sF′ D) ⊢F ⊢G A≡A [F]₁ [G] G-ext
       t∘x≡wkidt∘x : {a b : Term} → wk id a ∘ b PE.≡ a ∘ b
       t∘x≡wkidt∘x {a} {b} = PE.cong (λ x → x ∘ b) (wk-id a)
       t∘x≡wkidt∘x′ : {a : Term} → wk id g′ ∘ a PE.≡ g ∘ a
@@ -87,21 +87,21 @@ app-congTerm′ {F′} {G′} {t = t} {t′ = t′} {Γ = Γ} {rF = rF} {rG = rG
       wkidG₁[u′]≡G[u′] = PE.cong (λ x → x [ _ ])
                                  (PE.trans (wk-lift-id _) (PE.sym G≡G′))
       ⊢Γ = wf ⊢F
-      [u]′ = irrelevanceTerm′ F≡wkidF′ rF≡rF′ [F] ([F]₁ id ⊢Γ) [a]
-      [u′]′ = irrelevanceTerm′ F≡wkidF′ rF≡rF′ [F] ([F]₁ id ⊢Γ) [a′]
-      [u≡u′]′ = irrelevanceEqTerm′ F≡wkidF′ rF≡rF′ [F] ([F]₁ id ⊢Γ) [a≡a′]
+      [u]′ = irrelevanceTerm′ F≡wkidF′ sF≡sF′ [F] ([F]₁ id ⊢Γ) [a]
+      [u′]′ = irrelevanceTerm′ F≡wkidF′ sF≡sF′ [F] ([F]₁ id ⊢Γ) [a′]
+      [u≡u′]′ = irrelevanceEqTerm′ F≡wkidF′ sF≡sF′ [F] ([F]₁ id ⊢Γ) [a≡a′]
       [G[u′]] = irrelevance′ wkidG₁[u′]≡G[u′] ([G] id ⊢Γ [u′]′)
       [G[u≡u′]] = irrelevanceEq″ wkidG₁[u]≡G[u] wkidG₁[u′]≡G[u′]
                                   ([G] id ⊢Γ [u]′) [G[u]]
                                   (G-ext id ⊢Γ [u]′ [u′]′ [u≡u′]′)
-      [f′] : Γ ⊩⟨ _ ⟩ f′ ∷ Π F′ ^ rF′ ▹ G′ ^ rG / [ΠFG]
+      [f′] : Γ ⊩⟨ _ ⟩ f′ ∷ Π F′ ⦂ sF′ ▹ G′ ⦂ sG / [ΠFG]
       [f′] = Πₜ f′ (idRedTerm:*: ⊢f′) funcF′ f≡f [f] [f]₁
-      [g′] : Γ ⊩⟨ _ ⟩ g′ ∷ Π F′ ^ rF′ ▹ G′ ^ rG / [ΠFG]
+      [g′] : Γ ⊩⟨ _ ⟩ g′ ∷ Π F′ ⦂ sF′ ▹ G′ ⦂ sG / [ΠFG]
       [g′] = Πₜ g′ (idRedTerm:*: ⊢g′) funcG′ g≡g [g] [g]₁
-      [f∘u] = appTerm rF≡rF′ [F] [G[u]] [ΠFG]
+      [f∘u] = appTerm sF≡sF′ [F] [G[u]] [ΠFG]
                       (irrelevanceTerm″ PE.refl (PE.sym f≡f′) [ΠFG] [ΠFG] [f′])
                       [a]
-      [g∘u′] = appTerm rF≡rF′ [F] [G[u′]] [ΠFG]
+      [g∘u′] = appTerm sF≡sF′ [F] [G[u′]] [ΠFG]
                        (irrelevanceTerm″ PE.refl (PE.sym g≡g′) [ΠFG] [ΠFG] [g′])
                        [a′]
       [tu≡t′u] = irrelevanceEqTerm″ t∘x≡wkidt∘x t∘x≡wkidt∘x wkidG₁[u]≡G[u]
@@ -110,8 +110,8 @@ app-congTerm′ {F′} {G′} {t = t} {t′ = t′} {Γ = Γ} {rF = rF} {rG = rG
       [t′u≡t′u′] = irrelevanceEqTerm″ t∘x≡wkidt∘x′ t∘x≡wkidt∘x′ wkidG₁[u]≡G[u]
                                        ([G] id ⊢Γ [u]′) [G[u]]
                                        ([g] id ⊢Γ [u]′ [u′]′ [u≡u′]′)
-      d₁ = PE.subst (λ x → Γ ⊢ t ⇒* f ∷ x ^ rG) (PE.sym ΠFG≡ΠF′G′) d
-      d₂ = PE.subst (λ x → Γ ⊢ t′ ⇒* g ∷ x ^ rG) (PE.sym ΠFG≡ΠF′G′) d′
+      d₁ = PE.subst (λ x → Γ ⊢ t ⇒* f ∷ x ⦂ sG) (PE.sym ΠFG≡ΠF′G′) d
+      d₂ = PE.subst (λ x → Γ ⊢ t′ ⇒* g ∷ x ⦂ sG) (PE.sym ΠFG≡ΠF′G′) d′
       [tu≡fu] = proj₂ (redSubst*Term (app-subst* d₁ (escapeTerm [F] [a]))
                                      [G[u]] [f∘u])
       [gu′≡t′u′] = convEqTerm₂ [G[u]] [G[u′]] [G[u≡u′]]
@@ -124,15 +124,15 @@ app-congTerm′ [F] [G[u]] (emb 0<1 x) [t≡t′] [u] [u′] [u≡u′] =
   app-congTerm′ [F] [G[u]] x [t≡t′] [u] [u′] [u≡u′]
 
 -- Application congurence of reducible terms.
-app-congTerm : ∀ {F G t t′ u u′ Γ rF rG l l′}
-          ([F] : Γ ⊩⟨ l′ ⟩ F ^ rF)
-          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ rG)
-          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ▹ G ^ rG)
-          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ▹ G ^ rG / [ΠFG])
-          ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ^ rF / [F])
-          ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ^ rF / [F])
-          ([u≡u′] : Γ ⊩⟨ l′ ⟩ u ≡ u′ ∷ F ^ rF / [F])
-        → Γ ⊩⟨ l′ ⟩ t ∘ u ≡ t′ ∘ u′ ∷ G [ u ] ^ rG / [G[u]]
+app-congTerm : ∀ {F G t t′ u u′ Γ sF sG l l′}
+          ([F] : Γ ⊩⟨ l′ ⟩ F ⦂ sF)
+          ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ⦂ sG)
+          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ⦂ sF ▹ G ⦂ sG)
+          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ⦂ sF ▹ G ⦂ sG / [ΠFG])
+          ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ⦂ sF / [F])
+          ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ⦂ sF / [F])
+          ([u≡u′] : Γ ⊩⟨ l′ ⟩ u ≡ u′ ∷ F ⦂ sF / [F])
+        → Γ ⊩⟨ l′ ⟩ t ∘ u ≡ t′ ∘ u′ ∷ G [ u ] ⦂ sG / [G[u]]
 app-congTerm [F] [G[u]] [ΠFG] [t≡t′] =
   let [t≡t′]′ = irrelevanceEqTerm [ΠFG] (Π-intr (Π-elim [ΠFG])) [t≡t′]
   in  app-congTerm′ [F] [G[u]] (Π-elim [ΠFG]) [t≡t′]′

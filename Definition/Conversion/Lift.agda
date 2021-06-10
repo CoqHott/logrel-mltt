@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Conversion.Lift where
 
@@ -24,18 +24,18 @@ import Tools.PropositionalEquality as PE
 
 
 -- Lifting of algorithmic equality of types from WHNF to generic types.
-liftConv : ∀ {A B rA Γ}
-          → Γ ⊢ A [conv↓] B ^ rA
-          → Γ ⊢ A [conv↑] B ^ rA
+liftConv : ∀ {A B sA Γ}
+          → Γ ⊢ A [conv↓] B ⦂ sA
+          → Γ ⊢ A [conv↑] B ⦂ sA
 liftConv A<>B =
   let ⊢A , ⊢B = syntacticEq (soundnessConv↓ A<>B)
       whnfA , whnfB = whnfConv↓ A<>B
   in  [↑] _ _ (id ⊢A) (id ⊢B) whnfA whnfB A<>B
 
 -- Lifting of algorithmic equality of terms from WHNF to generic terms.
-liftConvTerm : ∀ {t u A rA Γ}
-             → Γ ⊢ t [conv↓] u ∷ A ^ rA
-             → Γ ⊢ t [conv↑] u ∷ A ^ rA
+liftConvTerm : ∀ {t u A sA Γ}
+             → Γ ⊢ t [conv↓] u ∷ A ⦂ sA
+             → Γ ⊢ t [conv↑] u ∷ A ⦂ sA
 liftConvTerm t<>u =
   let ⊢A , ⊢t , ⊢u = syntacticEqTerm (soundnessConv↓Term t<>u)
       whnfA , whnfT , whnfU = whnfConv↓Term t<>u
@@ -44,137 +44,137 @@ liftConvTerm t<>u =
 
 mutual
   -- Helper function for lifting from neutrals to generic terms in WHNF.
-  lift~toConv↓!′ : ∀ {t u A A′ Γ l}
-                → Γ ⊩⟨ l ⟩ A′ ^ !
-                → Γ ⊢ A′ ⇒* A ^ !
-                → Γ ⊢ t ~ u ↓! A
-                → Γ ⊢ t [conv↓] u ∷ A ^ !
-  lift~toConv↓!′ (Uᵣ′ _ .⁰ 0<1 ⊢Γ) D ([~] A D₁ whnfB k~l)
+  lift~toConv↓𝕥y′ : ∀ {t u A A′ Γ l}
+                → Γ ⊩⟨ l ⟩ A′ ⦂ 𝕥y
+                → Γ ⊢ A′ ⇒* A ⦂ 𝕥y
+                → Γ ⊢ t ~ u ↓𝕥y A
+                → Γ ⊢ t [conv↓] u ∷ A ⦂ 𝕥y
+  lift~toConv↓𝕥y′ (Uᵣ′ _ .⁰ 0<1 ⊢Γ) D ([~] A D₁ whnfB k~l)
                 rewrite PE.sym (whnfRed* D Uₙ) =
-    let _ , ⊢t , ⊢u = syntacticEqTerm (conv (soundness~↑! k~l) (subset* D₁))
+    let _ , ⊢t , ⊢u = syntacticEqTerm (conv (soundness~↑𝕥y k~l) (subset* D₁))
     in  univ ⊢t ⊢u (ne ([~] A D₁ Uₙ k~l))
-  lift~toConv↓!′ (ℕᵣ D) D₁ ([~] A D₂ whnfB k~l)
+  lift~toConv↓𝕥y′ (ℕᵣ D) D₁ ([~] A D₂ whnfB k~l)
                 rewrite PE.sym (whrDet* (red D , ℕₙ) (D₁ , whnfB)) =
     ℕ-ins ([~] A D₂ ℕₙ k~l)
-  lift~toConv↓!′ (ne′ K D neK K≡K) D₁ ([~] A D₂ whnfB k~l)
+  lift~toConv↓𝕥y′ (ne′ K D neK K≡K) D₁ ([~] A D₂ whnfB k~l)
                 rewrite PE.sym (whrDet* (red D , ne neK) (D₁ , whnfB)) =
-    let _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↑! k~l)
+    let _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↑𝕥y k~l)
         A≡K = subset* D₂
-    in  ne-ins (conv ⊢t A≡K) (conv ⊢u A≡K) neK (~↓! ([~] A D₂ (ne neK) k~l))
-  lift~toConv↓!′ (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) with PE.sym (whrDet* (red D , Πₙ) (D₁ , whnfB))
-  lift~toConv↓!′ (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) | PE.refl =
-    let ⊢ΠFG , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! ([~] A D₂ Πₙ k~l))
-        neT , neU = ne~↑! k~l
+    in  ne-ins (conv ⊢t A≡K) (conv ⊢u A≡K) neK (~↓𝕥y ([~] A D₂ (ne neK) k~l))
+  lift~toConv↓𝕥y′ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) with PE.sym (whrDet* (red D , Πₙ) (D₁ , whnfB))
+  lift~toConv↓𝕥y′ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) | PE.refl =
+    let ⊢ΠFG , ⊢t , ⊢u = syntacticEqTerm (soundness~↓𝕥y ([~] A D₂ Πₙ k~l))
+        neT , neU = ne~↑𝕥y k~l
         ⊢Γ = wf ⊢F
         var0 = neuTerm ([F] (step id) (⊢Γ ∙ ⊢F)) (var 0) (var (⊢Γ ∙ ⊢F) here)
                        (refl (var (⊢Γ ∙ ⊢F) here))
         0≡0 = lift~toConv↑′ ([F] (step id) (⊢Γ ∙ ⊢F)) (var-refl′ (var (⊢Γ ∙ ⊢F) here))
         k∘0≡l∘0 = lift~toConv↑′ ([G] (step id) (⊢Γ ∙ ⊢F) var0)
-                                (~↑! (app-cong (wk~↓! (step id) (⊢Γ ∙ ⊢F) ([~] A D₂ Πₙ k~l)) 0≡0))
+                                (~↑𝕥y (app-cong (wk~↓𝕥y (step id) (⊢Γ ∙ ⊢F) ([~] A D₂ Πₙ k~l)) 0≡0))
     in  η-eq ⊢F ⊢t ⊢u (ne neT) (ne neU)
-             (PE.subst (λ x → _ ⊢ _ [conv↑] _ ∷ x ^ _)
+             (PE.subst (λ x → _ ⊢ _ [conv↑] _ ∷ x ⦂ _)
                        (wkSingleSubstId _)
                        k∘0≡l∘0)
-  lift~toConv↓!′ (emb 0<1 [A]) D t~u = lift~toConv↓!′ [A] D t~u
+  lift~toConv↓𝕥y′ (emb 0<1 [A]) D t~u = lift~toConv↓𝕥y′ [A] D t~u
 
-  lift~toConv↓%′ : ∀ {t u A A′ Γ l}
-                → Γ ⊩⟨ l ⟩ A′ ^ %
-                → Γ ⊢ A′ ⇒* A ^ %
-                → Γ ⊢ t ~ u ↓% A
-                → Γ ⊢ t [conv↓] u ∷ A ^ %
+  lift~toConv↓𝕥y′ : ∀ {t u A A′ Γ l}
+                → Γ ⊩⟨ l ⟩ A′ ⦂ 𝕥y
+                → Γ ⊢ A′ ⇒* A ⦂ 𝕥y
+                → Γ ⊢ t ~ u ↓𝕥y A
+                → Γ ⊢ t [conv↓] u ∷ A ⦂ 𝕥y
 
-  lift~toConv↓%′ (Emptyᵣ D) D₁ ([~] A D₂ whnfB k~l)
+  lift~toConv↓𝕥y′ (Emptyᵣ D) D₁ ([~] A D₂ whnfB k~l)
                 rewrite PE.sym (whrDet* (red D , Emptyₙ) (D₁ , whnfB)) =
     Empty-ins ([~] A D₂ Emptyₙ k~l)
-  lift~toConv↓%′ (ne′ K D neK K≡K) D₁ ([~] A D₂ whnfB k~l)
+  lift~toConv↓𝕥y′ (ne′ K D neK K≡K) D₁ ([~] A D₂ whnfB k~l)
                 rewrite PE.sym (whrDet* (red D , ne neK) (D₁ , whnfB)) =
-    let _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↑% k~l)
+    let _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↑𝕥y k~l)
         A≡K = subset* D₂
-    in  ne-ins (conv ⊢t A≡K) (conv ⊢u A≡K) neK (~↓% ([~] A D₂ (ne neK) k~l))
-  lift~toConv↓%′ (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) with PE.sym (whrDet* (red D , Πₙ) (D₁ , whnfB))
+    in  ne-ins (conv ⊢t A≡K) (conv ⊢u A≡K) neK (~↓𝕥y ([~] A D₂ (ne neK) k~l))
+  lift~toConv↓𝕥y′ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) D₁ ([~] A D₂ whnfB k~l) with PE.sym (whrDet* (red D , Πₙ) (D₁ , whnfB))
   ... | PE.refl =
-    let ⊢ΠFG , ⊢t , ⊢u = syntacticEqTerm (soundness~↓% ([~] A D₂ Πₙ k~l))
-        neT , neU = ne~↑% k~l
+    let ⊢ΠFG , ⊢t , ⊢u = syntacticEqTerm (soundness~↓𝕥y ([~] A D₂ Πₙ k~l))
+        neT , neU = ne~↑𝕥y k~l
         ⊢Γ = wf ⊢F
         ⊢var0 = var (⊢Γ ∙ ⊢F) here
         var0 = neuTerm ([F] (step id) (⊢Γ ∙ ⊢F)) (var 0) ⊢var0 (refl ⊢var0)
         0≡0 = lift~toConv↑′ ([F] (step id) (⊢Γ ∙ ⊢F)) (var-refl′ (var (⊢Γ ∙ ⊢F) here))
         k∘0≡l∘0 = lift~toConv↑′ ([G] (step id) (⊢Γ ∙ ⊢F) var0)
-                                (~↑% (%~↑ (∘ₙ (wkNeutral _ neT)) (∘ₙ (wkNeutral _ neU))
+                                (~↑𝕥y (𝕥y~↑ (∘ₙ (wkNeutral _ neT)) (∘ₙ (wkNeutral _ neU))
                                           (wkTerm (step id) (⊢Γ ∙ ⊢F) ⊢t ∘ⱼ ⊢var0)
                                           (wkTerm (step id) (⊢Γ ∙ ⊢F) ⊢u ∘ⱼ ⊢var0)))
     in  η-eq ⊢F ⊢t ⊢u (ne neT) (ne neU)
-             (PE.subst (λ x → _ ⊢ _ [conv↑] _ ∷ x ^ _)
+             (PE.subst (λ x → _ ⊢ _ [conv↑] _ ∷ x ⦂ _)
                        (wkSingleSubstId _)
                        k∘0≡l∘0)
-  lift~toConv↓%′ (emb 0<1 [A]) D t~u = lift~toConv↓%′ [A] D t~u
+  lift~toConv↓𝕥y′ (emb 0<1 [A]) D t~u = lift~toConv↓𝕥y′ [A] D t~u
 
   -- Helper function for lifting from neutrals to generic terms.
-  lift~toConv↑!′ : ∀ {t u A Γ l}
-                → Γ ⊩⟨ l ⟩ A ^ !
-                → Γ ⊢ t ~ u ↑! A
-                → Γ ⊢ t [conv↑] u ∷ A ^ !
-  lift~toConv↑!′ [A] t~u =
+  lift~toConv↑𝕥y′ : ∀ {t u A Γ l}
+                → Γ ⊩⟨ l ⟩ A ⦂ 𝕥y
+                → Γ ⊢ t ~ u ↑𝕥y A
+                → Γ ⊢ t [conv↑] u ∷ A ⦂ 𝕥y
+  lift~toConv↑𝕥y′ [A] t~u =
     let B , whnfB , D = whNorm′ [A]
         t~u↓ = [~] _ (red D) whnfB t~u
-        neT , neU = ne~↑! t~u
-        _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! t~u↓)
+        neT , neU = ne~↑𝕥y t~u
+        _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↓𝕥y t~u↓)
     in  [↑]ₜ _ _ _ (red D) (id ⊢t) (id ⊢u) whnfB
-             (ne neT) (ne neU) (lift~toConv↓!′ [A] (red D) t~u↓)
+             (ne neT) (ne neU) (lift~toConv↓𝕥y′ [A] (red D) t~u↓)
 
-  lift~toConv↑%′ : ∀ {t u A Γ l}
-                → Γ ⊩⟨ l ⟩ A ^ %
-                → Γ ⊢ t ~ u ↑% A
-                → Γ ⊢ t [conv↑] u ∷ A ^ %
-  lift~toConv↑%′ [A] t~u =
+  lift~toConv↑𝕥y′ : ∀ {t u A Γ l}
+                → Γ ⊩⟨ l ⟩ A ⦂ 𝕥y
+                → Γ ⊢ t ~ u ↑𝕥y A
+                → Γ ⊢ t [conv↑] u ∷ A ⦂ 𝕥y
+  lift~toConv↑𝕥y′ [A] t~u =
     let B , whnfB , D = whNorm′ [A]
         t~u↓ = [~] _ (red D) whnfB t~u
-        neT , neU = ne~↑% t~u
-        _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↓% t~u↓)
+        neT , neU = ne~↑𝕥y t~u
+        _ , ⊢t , ⊢u = syntacticEqTerm (soundness~↓𝕥y t~u↓)
     in  [↑]ₜ _ _ _ (red D) (id ⊢t) (id ⊢u) whnfB
-             (ne neT) (ne neU) (lift~toConv↓%′ [A] (red D) t~u↓)
+             (ne neT) (ne neU) (lift~toConv↓𝕥y′ [A] (red D) t~u↓)
 
-  lift~toConv↑′ : ∀ {t u A rA Γ l}
-                → Γ ⊩⟨ l ⟩ A ^ rA
-                → Γ ⊢ t ~ u ↑ A ^ rA
-                → Γ ⊢ t [conv↑] u ∷ A ^ rA
-  lift~toConv↑′ [A] (~↑! x) = lift~toConv↑!′ [A] x
-  lift~toConv↑′ [A] (~↑% x) = lift~toConv↑%′ [A] x
+  lift~toConv↑′ : ∀ {t u A sA Γ l}
+                → Γ ⊩⟨ l ⟩ A ⦂ sA
+                → Γ ⊢ t ~ u ↑ A ⦂ sA
+                → Γ ⊢ t [conv↑] u ∷ A ⦂ sA
+  lift~toConv↑′ [A] (~↑𝕥y x) = lift~toConv↑𝕥y′ [A] x
+  lift~toConv↑′ [A] (~↑𝕥y x) = lift~toConv↑𝕥y′ [A] x
 
 -- Lifting of algorithmic equality of terms from neutrals to generic terms in WHNF.
-lift~toConv↓! : ∀ {t u A Γ}
-             → Γ ⊢ t ~ u ↓! A
-             → Γ ⊢ t [conv↓] u ∷ A ^ !
-lift~toConv↓! ([~] A D whnfB k~l) =
-  lift~toConv↓!′ (reducible (proj₁ (syntacticRed D))) D ([~] A D whnfB k~l)
+lift~toConv↓𝕥y : ∀ {t u A Γ}
+             → Γ ⊢ t ~ u ↓𝕥y A
+             → Γ ⊢ t [conv↓] u ∷ A ⦂ 𝕥y
+lift~toConv↓𝕥y ([~] A D whnfB k~l) =
+  lift~toConv↓𝕥y′ (reducible (proj₁ (syntacticRed D))) D ([~] A D whnfB k~l)
 
-lift~toConv↓% : ∀ {t u A Γ}
-             → Γ ⊢ t ~ u ↓% A
-             → Γ ⊢ t [conv↓] u ∷ A ^ %
-lift~toConv↓% ([~] A D whnfB k~l) =
-  lift~toConv↓%′ (reducible (proj₁ (syntacticRed D))) D ([~] A D whnfB k~l)
+lift~toConv↓𝕥y : ∀ {t u A Γ}
+             → Γ ⊢ t ~ u ↓𝕥y A
+             → Γ ⊢ t [conv↓] u ∷ A ⦂ 𝕥y
+lift~toConv↓𝕥y ([~] A D whnfB k~l) =
+  lift~toConv↓𝕥y′ (reducible (proj₁ (syntacticRed D))) D ([~] A D whnfB k~l)
 
-lift~toConv↓ : ∀ {t u A rA Γ}
-             → Γ ⊢ t ~ u ↓ A ^ rA
-             → Γ ⊢ t [conv↓] u ∷ A ^ rA
-lift~toConv↓ (~↓! x) = lift~toConv↓! x
-lift~toConv↓ (~↓% x) = lift~toConv↓% x
+lift~toConv↓ : ∀ {t u A sA Γ}
+             → Γ ⊢ t ~ u ↓ A ⦂ sA
+             → Γ ⊢ t [conv↓] u ∷ A ⦂ sA
+lift~toConv↓ (~↓𝕥y x) = lift~toConv↓𝕥y x
+lift~toConv↓ (~↓𝕥y x) = lift~toConv↓𝕥y x
 
 -- Lifting of algorithmic equality of terms from neutrals to generic terms.
-lift~toConv↑! : ∀ {t u A Γ}
-             → Γ ⊢ t ~ u ↑! A
-             → Γ ⊢ t [conv↑] u ∷ A ^ !
-lift~toConv↑! t~u =
-  lift~toConv↑!′ (reducible (proj₁ (syntacticEqTerm (soundness~↑! t~u)))) t~u
+lift~toConv↑𝕥y : ∀ {t u A Γ}
+             → Γ ⊢ t ~ u ↑𝕥y A
+             → Γ ⊢ t [conv↑] u ∷ A ⦂ 𝕥y
+lift~toConv↑𝕥y t~u =
+  lift~toConv↑𝕥y′ (reducible (proj₁ (syntacticEqTerm (soundness~↑𝕥y t~u)))) t~u
 
-lift~toConv↑% : ∀ {t u A Γ}
-             → Γ ⊢ t ~ u ↑% A
-             → Γ ⊢ t [conv↑] u ∷ A ^ %
-lift~toConv↑% t~u =
-  lift~toConv↑%′ (reducible (proj₁ (syntacticEqTerm (soundness~↑% t~u)))) t~u
+lift~toConv↑𝕥y : ∀ {t u A Γ}
+             → Γ ⊢ t ~ u ↑𝕥y A
+             → Γ ⊢ t [conv↑] u ∷ A ⦂ 𝕥y
+lift~toConv↑𝕥y t~u =
+  lift~toConv↑𝕥y′ (reducible (proj₁ (syntacticEqTerm (soundness~↑𝕥y t~u)))) t~u
 
-lift~toConv↑ : ∀ {t u A rA Γ}
-             → Γ ⊢ t ~ u ↑ A ^ rA
-             → Γ ⊢ t [conv↑] u ∷ A ^ rA
-lift~toConv↑ (~↑! t~u) = lift~toConv↑! t~u
-lift~toConv↑ (~↑% t~u) = lift~toConv↑% t~u
+lift~toConv↑ : ∀ {t u A sA Γ}
+             → Γ ⊢ t ~ u ↑ A ⦂ sA
+             → Γ ⊢ t [conv↑] u ∷ A ⦂ sA
+lift~toConv↑ (~↑𝕥y t~u) = lift~toConv↑𝕥y t~u
+lift~toConv↑ (~↑𝕥y t~u) = lift~toConv↑𝕥y t~u

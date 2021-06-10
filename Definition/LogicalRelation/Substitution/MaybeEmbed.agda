@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -14,10 +14,10 @@ open import Tools.Product
 
 
 -- Any level can be embedded into the highest level (validity variant).
-maybeEmbᵛ : ∀ {l A r Γ}
+maybeEmbᵛ : ∀ {l A s Γ}
             ([Γ] : ⊩ᵛ Γ)
-          → Γ ⊩ᵛ⟨ l ⟩ A ^ r / [Γ]
-          → Γ ⊩ᵛ⟨ ¹ ⟩ A ^ r / [Γ]
+          → Γ ⊩ᵛ⟨ l ⟩ A ⦂ s / [Γ]
+          → Γ ⊩ᵛ⟨ ¹ ⟩ A ⦂ s / [Γ]
 maybeEmbᵛ {⁰} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])
       [σA]′ = maybeEmb (proj₁ ([A] ⊢Δ [σ]))
@@ -26,10 +26,10 @@ maybeEmbᵛ {⁰} [Γ] [A] ⊢Δ [σ] =
 maybeEmbᵛ {¹} [Γ] [A] = [A]
 
 -- The lowest level can be embedded in any level (validity variant).
-maybeEmbₛ′ : ∀ {l A r Γ}
+maybeEmbₛ′ : ∀ {l A s Γ}
              ([Γ] : ⊩ᵛ Γ)
-           → Γ ⊩ᵛ⟨ ⁰ ⟩ A ^ r / [Γ]
-           → Γ ⊩ᵛ⟨ l ⟩ A ^ r / [Γ]
+           → Γ ⊩ᵛ⟨ ⁰ ⟩ A ⦂ s / [Γ]
+           → Γ ⊩ᵛ⟨ l ⟩ A ⦂ s / [Γ]
 maybeEmbₛ′ {⁰} [Γ] [A] = [A]
 maybeEmbₛ′ {¹} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])

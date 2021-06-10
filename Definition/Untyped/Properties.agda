@@ -1,6 +1,6 @@
 -- Laws for weakenings and substitutions.
 
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Untyped.Properties where
 
@@ -364,30 +364,36 @@ wk-β↑ t = trans (wk-subst t) (sym (trans (subst-wk t)
 
 -- A specific equation on weakenings used for the reduction of natrec.
 
-wk-β-natrec : ∀ ρ G rG
-  → Π ℕ ^ ! ▹ (Π wk (lift ρ) G ^ rG ▹ wk (lift (lift ρ)) (wk1 (G [ suc (var 0) ]↑)))
-  ≡ Π ℕ ^ ! ▹ (wk (lift ρ) G ^ rG ▹▹ wk (lift ρ) G [ suc (var 0) ]↑)
-wk-β-natrec ρ G rG =
-  cong₃ Π_^_▹_ refl refl (cong₃ Π_^_▹_ refl refl
+wk-β-natrec : ∀ ρ G sG
+  → Π ℕ ⦂ 𝕥y ▹ (Π wk (lift ρ) G ⦂ sG ▹ wk (lift (lift ρ)) (wk1 (G [ suc (var 0) ]↑)))
+  ≡ Π ℕ ⦂ 𝕥y ▹ (wk (lift ρ) G ⦂ sG ▹▹ wk (lift ρ) G [ suc (var 0) ]↑)
+wk-β-natrec ρ G sG =
+  cong₃ Π_⦂_▹_ refl refl (cong₃ Π_⦂_▹_ refl refl
     (trans (wk-comp (lift (lift ρ)) (step id)
                     (subst (consSubst (wk1Subst var) (suc (var 0))) G))
        (trans (wk-subst G) (sym (trans (wk-subst (wk (lift ρ) G))
          (trans (subst-wk G)
                 (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)))))))
 
+wk-β-Boxrec : ∀ ρ F sF E
+  → Π F ⦂ ‼ sF ▹ wk (lift ρ) (E [ box sF (var 0) ]↑)
+  ≡ Π F ⦂ ‼ sF ▹ (wk (lift ρ) E [ box sF (var 0) ]↑)
+wk-β-Boxrec ρ F sF E = cong₃ Π_⦂_▹_ refl refl (wk-β↑ E)
+
+
 -- Composing a singleton substitution and a lifted substitution.
 -- sg u ∘ lift σ = cons id u ∘ lift σ = cons σ u
 
-substVarSingletonComp : ∀ {u σ} (x : Nat)
+substVasSingletonComp : ∀ {u σ} (x : Nat)
   → (sgSubst u ₛ•ₛ liftSubst σ) x ≡ (consSubst σ u) x
-substVarSingletonComp 0 = refl
-substVarSingletonComp {σ = σ} (1+ x) = trans (subst-wk (σ x)) (subst-id (σ x))
+substVasSingletonComp 0 = refl
+substVasSingletonComp {σ = σ} (1+ x) = trans (subst-wk (σ x)) (subst-id (σ x))
 
 -- The same again, as action on a term t.
 
 substSingletonComp : ∀ {a σ} t
   → subst (sgSubst a ₛ•ₛ liftSubst σ) t ≡ subst (consSubst σ a) t
-substSingletonComp = substVar-to-subst substVarSingletonComp
+substSingletonComp = substVar-to-subst substVasSingletonComp
 
 -- A single substitution after a lifted substitution.
 -- ((lift σ) G)[t] = (cons σ t)(G)
@@ -428,18 +434,18 @@ idWkLiftSubstLemma σ G =
   trans (singleSubstWkComp (var 0) σ G)
         (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)
 
-substVarComp↑ : ∀ {t} σ x
+substVasComp↑ : ∀ {t} σ x
   → (consSubst (wk1Subst idSubst) (subst (liftSubst σ) t) ₛ•ₛ liftSubst σ) x
   ≡ (liftSubst σ ₛ•ₛ consSubst (wk1Subst idSubst) t) x
-substVarComp↑ σ 0 = refl
-substVarComp↑ σ (1+ x) = trans (subst-wk (σ x)) (sym (wk≡subst (step id) (σ x)))
+substVasComp↑ σ 0 = refl
+substVasComp↑ σ (1+ x) = trans (subst-wk (σ x)) (sym (wk≡subst (step id) (σ x)))
 
 singleSubstLift↑ : ∀ σ G t
                  → subst (liftSubst σ) (G [ t ]↑)
                  ≡ subst (liftSubst σ) G [ subst (liftSubst σ) t ]↑
 singleSubstLift↑ σ G t =
   trans (substCompEq G)
-        (sym (trans (substCompEq G) (substVar-to-subst (substVarComp↑ σ) G)))
+        (sym (trans (substCompEq G) (substVar-to-subst (substVasComp↑ σ) G)))
 
 substConsComp : ∀ {σ t G}
        → subst (consSubst (λ x → σ (1+ x)) (subst (tail σ) t)) G
@@ -470,13 +476,13 @@ natrecSucCaseLemma {σ} (1+ x) =
            (sym (trans (wk1-wk (step id) _)
                              (wk≡subst (step (step id)) (σ x))))
 
-natrecSucCase : ∀ σ F rF
-  → Π ℕ ^ ! ▹ (Π subst (liftSubst σ) F ^ rF
+natrecSucCase : ∀ σ F sF
+  → Π ℕ ⦂ 𝕥y ▹ (Π subst (liftSubst σ) F ⦂ sF
                 ▹ subst (liftSubst (liftSubst σ)) (wk1 (F [ suc (var 0) ]↑)))
-  ≡ Π ℕ ^ ! ▹ (subst (liftSubst σ) F ^ rF ▹▹ subst (liftSubst σ) F [ suc (var 0) ]↑)
-natrecSucCase σ F rF =
-  cong₃ Π_^_▹_ refl refl
-    (cong₃ Π_^_▹_ refl refl
+  ≡ Π ℕ ⦂ 𝕥y ▹ (subst (liftSubst σ) F ⦂ sF ▹▹ subst (liftSubst σ) F [ suc (var 0) ]↑)
+natrecSucCase σ F sF =
+  cong₃ Π_⦂_▹_ refl refl
+    (cong₃ Π_⦂_▹_ refl refl
        (trans (trans (subst-wk (F [ suc (var 0) ]↑))
                            (substCompEq F))
                  (sym (trans (wk-subst (subst (liftSubst σ) F))
@@ -574,8 +580,8 @@ wk1-tailId t = trans (sym (subst-id (wk1 t))) (subst-wk t)
 open import Tools.Product
 open import Tools.Sum using (_⊎_; inj₁; inj₂)
 
-subst-Univ-either : ∀ {r} a b → subst (sgSubst a) b ≡ Univ r
-                  → (a ≡ Univ r × b ≡ var 0) ⊎ (b ≡ Univ r)
+subst-Univ-either : ∀ {s} a b → subst (sgSubst a) b ≡ Univ s
+                  → (a ≡ Univ s × b ≡ var 0) ⊎ (b ≡ Univ s)
 subst-Univ-either a (var 0) e = inj₁ (e , refl)
 subst-Univ-either a (Univ x) refl = inj₂ refl
 subst-Univ-either a (var (1+ x)) ()
@@ -589,3 +595,14 @@ subst-Univ-either a (gen Suckind c) ()
 subst-Univ-either a (gen Natreckind c) ()
 subst-Univ-either a (gen Emptykind c) ()
 subst-Univ-either a (gen Emptyreckind c) ()
+
+wk-sgSubst-pointwise : ∀ ρ {t} x → (ρ •ₛ sgSubst t) x ≡ (sgSubst (wk ρ t) ₛ• lift ρ) x
+wk-sgSubst-pointwise ρ Nat.zero = refl
+wk-sgSubst-pointwise ρ (1+ x) = refl
+
+wk-sgSubst : ∀ {ρ t} u → subst (sgSubst (wk ρ t)) (wk (lift ρ) u) ≡ wk ρ (subst (sgSubst t) u)
+wk-sgSubst {ρ} {t} u =
+  sym (
+  trans (wk-subst u)
+    (trans (substVar-to-subst (wk-sgSubst-pointwise ρ) u)
+      (sym (subst-wk u))))

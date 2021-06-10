@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -21,31 +21,31 @@ import Tools.PropositionalEquality as PE
 
 
 -- Neutral reflexive types are reducible.
-neu : ∀ {l Γ A r} (neA : Neutral A)
-    → Γ ⊢ A ^ r
-    → Γ ⊢ A ~ A ∷ Univ r ^ !
-    → Γ ⊩⟨ l ⟩ A ^ r
+neu : ∀ {l Γ A s} (neA : Neutral A)
+    → Γ ⊢ A ⦂ s
+    → Γ ⊢ A ~ A ∷ Univ s ⦂ 𝕥y
+    → Γ ⊩⟨ l ⟩ A ⦂ s
 neu neA A A~A = ne′ _ (idRed:*: A) neA A~A
 
   -- Helper function for reducible neutral equality of a specific type of derivation.
-neuEq′ : ∀ {l Γ A B r} ([A] : Γ ⊩⟨ l ⟩ne A ^ r)
+neuEq′ : ∀ {l Γ A B s} ([A] : Γ ⊩⟨ l ⟩ne A ⦂ s)
          (neA : Neutral A)
          (neB : Neutral B)
-       → Γ ⊢ A ^ r → Γ ⊢ B ^ r
-       → Γ ⊢ A ~ B ∷ Univ r ^ !
-       → Γ ⊩⟨ l ⟩ A ≡ B ^ r / ne-intr [A]
+       → Γ ⊢ A ⦂ s → Γ ⊢ B ⦂ s
+       → Γ ⊢ A ~ B ∷ Univ s ⦂ 𝕥y
+       → Γ ⊩⟨ l ⟩ A ≡ B ⦂ s / ne-intr [A]
 neuEq′ (noemb (ne K [ ⊢A , ⊢B , D ] neK K≡K)) neA neB A B A~B =
   let A≡K = whnfRed* D (ne neA)
-  in  ne₌ _ (idRed:*: B) neB (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) A≡K A~B)
+  in  ne₌ _ (idRed:*: B) neB (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ⦂ _) A≡K A~B)
 neuEq′ (emb 0<1 x) neB A:≡:B = neuEq′ x neB A:≡:B
 
 -- Neutrally equal types are of reducible equality.
-neuEq : ∀ {l Γ A B r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
+neuEq : ∀ {l Γ A B s} ([A] : Γ ⊩⟨ l ⟩ A ⦂ s)
         (neA : Neutral A)
         (neB : Neutral B)
-      → Γ ⊢ A ^ r → Γ ⊢ B ^ r
-      → Γ ⊢ A ~ B ∷ Univ r ^ !
-      → Γ ⊩⟨ l ⟩ A ≡ B ^ r / [A]
+      → Γ ⊢ A ⦂ s → Γ ⊢ B ⦂ s
+      → Γ ⊢ A ~ B ∷ Univ s ⦂ 𝕥y
+      → Γ ⊩⟨ l ⟩ A ≡ B ⦂ s / [A]
 neuEq [A] neA neB A B A~B =
   irrelevanceEq (ne-intr (ne-elim neA [A]))
                 [A]
@@ -53,10 +53,10 @@ neuEq [A] neA neB A B A~B =
 
 mutual
   -- Neutral reflexive terms are reducible.
-  neuTerm : ∀ {l Γ A r n} ([A] : Γ ⊩⟨ l ⟩ A ^ r) (neN : Neutral n)
-          → Γ ⊢ n ∷ A ^ r
-          → Γ ⊢ n ~ n ∷ A ^ r
-          → Γ ⊩⟨ l ⟩ n ∷ A ^ r / [A]
+  neuTerm : ∀ {l Γ A s n} ([A] : Γ ⊩⟨ l ⟩ A ⦂ s) (neN : Neutral n)
+          → Γ ⊢ n ∷ A ⦂ s
+          → Γ ⊢ n ~ n ∷ A ⦂ s
+          → Γ ⊩⟨ l ⟩ n ∷ A ⦂ s / [A]
   neuTerm (Uᵣ′ _ .⁰ 0<1 ⊢Γ) neN n n~n =
     Uₜ _ (idRedTerm:*: n) (ne neN) (~-to-≅ₜ n~n) (neu neN (univ n) n~n)
   neuTerm (ℕᵣ [ ⊢A , ⊢B , D ]) neN n n~n =
@@ -73,7 +73,7 @@ mutual
     let A≡K = subset* D
     in  neₜ _ (idRedTerm:*: (conv n A≡K)) (neNfₜ neN (conv n A≡K)
             (~-conv n~n A≡K))
-  neuTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n =
+  neuTerm (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n =
     let A≡ΠFG = subset* (red D)
     in  Πₜ _ (idRedTerm:*: (conv n A≡ΠFG)) (ne neN) (~-to-≅ₜ (~-conv n~n A≡ΠFG))
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
@@ -102,12 +102,12 @@ mutual
   neuTerm (emb 0<1 x) neN n = neuTerm x neN n
 
   -- Neutrally equal terms are of reducible equality.
-  neuEqTerm : ∀ {l Γ A n n′ r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
+  neuEqTerm : ∀ {l Γ A n n′ s} ([A] : Γ ⊩⟨ l ⟩ A ⦂ s)
               (neN : Neutral n) (neN′ : Neutral n′)
-            → Γ ⊢ n  ∷ A ^ r
-            → Γ ⊢ n′ ∷ A ^ r
-            → Γ ⊢ n ~ n′ ∷ A ^ r
-            → Γ ⊩⟨ l ⟩ n ≡ n′ ∷ A ^ r / [A]
+            → Γ ⊢ n  ∷ A ⦂ s
+            → Γ ⊢ n′ ∷ A ⦂ s
+            → Γ ⊢ n ~ n′ ∷ A ⦂ s
+            → Γ ⊩⟨ l ⟩ n ≡ n′ ∷ A ⦂ s / [A]
   neuEqTerm (Uᵣ′ _ .⁰ 0<1 ⊢Γ) neN neN′ n n′ n~n′ =
     let [n]  = neu neN  (univ n) (~-trans n~n′ (~-sym n~n′))
         [n′] = neu neN′ (univ n′) (~-trans (~-sym n~n′) n~n′)
@@ -129,8 +129,8 @@ mutual
     let A≡K = subset* D
     in  neₜ₌ _ _ (idRedTerm:*: (conv n A≡K)) (idRedTerm:*: (conv n′ A≡K))
              (neNfₜ₌ neN neN′ (~-conv n~n′ A≡K))
-  neuEqTerm (Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
-    let [ΠFG] = Πᵣ′ rF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext
+  neuEqTerm (Πᵣ′ sF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
+    let [ΠFG] = Πᵣ′ sF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext
         A≡ΠFG = subset* D
         n~n′₁ = ~-conv n~n′ A≡ΠFG
         n≡n′ = ~-to-≅ₜ n~n′₁

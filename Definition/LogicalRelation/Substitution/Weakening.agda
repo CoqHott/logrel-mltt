@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -16,11 +16,11 @@ import Tools.PropositionalEquality as PE
 
 
 -- Weakening of valid types by one.
-wk1ᵛ : ∀ {A F rA rF Γ l}
+wk1ᵛ : ∀ {A F sA sF Γ l}
       ([Γ] : ⊩ᵛ Γ)
-      ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-    → Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ]
-    → Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ wk1 A ^ rA / ([Γ] ∙ [F])
+      ([F] : Γ ⊩ᵛ⟨ l ⟩ F ⦂ sF / [Γ])
+    → Γ ⊩ᵛ⟨ l ⟩ A ⦂ sA / [Γ]
+    → Γ ∙ F ⦂ sF ⊩ᵛ⟨ l ⟩ wk1 A ⦂ sA / ([Γ] ∙ [F])
 wk1ᵛ {A} [Γ] [F] [A] ⊢Δ [σ] =
   let [σA] = proj₁ ([A] ⊢Δ (proj₁ [σ]))
       [σA]′ = irrelevance′ (PE.sym (subst-wk A)) [σA]
@@ -32,12 +32,12 @@ wk1ᵛ {A} [Γ] [F] [A] ⊢Δ [σ] =
                         (proj₂ ([A] ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′])))
 
 -- Weakening of valid type equality by one.
-wk1Eqᵛ : ∀ {A B F rA rF Γ l}
+wk1Eqᵛ : ∀ {A B F sA sF Γ l}
          ([Γ] : ⊩ᵛ Γ)
-         ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-         ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ])
-         ([A≡B] : Γ ⊩ᵛ⟨ l ⟩ A ≡ B ^ rA / [Γ] / [A])
-       → Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ wk1 A ≡ wk1 B ^ rA / [Γ] ∙ [F] / wk1ᵛ {A} {F} [Γ] [F] [A]
+         ([F] : Γ ⊩ᵛ⟨ l ⟩ F ⦂ sF / [Γ])
+         ([A] : Γ ⊩ᵛ⟨ l ⟩ A ⦂ sA / [Γ])
+         ([A≡B] : Γ ⊩ᵛ⟨ l ⟩ A ≡ B ⦂ sA / [Γ] / [A])
+       → Γ ∙ F ⦂ sF ⊩ᵛ⟨ l ⟩ wk1 A ≡ wk1 B ⦂ sA / [Γ] ∙ [F] / wk1ᵛ {A} {F} [Γ] [F] [A]
 wk1Eqᵛ {A} {B} [Γ] [F] [A] [A≡B] ⊢Δ [σ] =
   let [σA] = proj₁ ([A] ⊢Δ (proj₁ [σ]))
       [σA]′ = irrelevance′ (PE.sym (subst-wk A)) [σA]

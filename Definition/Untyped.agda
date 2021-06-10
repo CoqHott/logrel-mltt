@@ -1,6 +1,6 @@
 -- Raw terms, weakening (renaming) and substitution.
 
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Untyped where
 
@@ -10,25 +10,30 @@ open import Tools.List
 import Tools.PropositionalEquality as PE
 
 
-infixl 30 _∙_^_
-infix 30 Π_^_▹_
-infixr 22 _^_▹▹_
+infixl 30 _∙_⦂_
+infix 30 Π_⦂_▹_
+infixr 22 _⦂_▹▹_
 infixl 30 _ₛ•ₛ_ _•ₛ_ _ₛ•_
 infix 25 _[_]
 infix 25 _[_]↑
 
-data Relevance : Set where
-  ! : Relevance
-  % : Relevance
 
-!≢% : ! PE.≢ %
-!≢% ()
+postulate sorts : Set
+postulate constructors : Set
+postulate destructors : Set
+
+data 𝕊 : Set where
+  𝕥y : 𝕊
+  ‼ : (s : sorts) → 𝕊
+
+𝕥y≢‼ : ∀ {s} → 𝕥y PE.≢ ‼ s
+𝕥y≢‼ ()
 
 -- Typing contexts (snoc-lists, isomorphic to lists).
 
 data Con (A : Set) : Set where
   ε   : Con A               -- Empty context.
-  _∙_^_ : Con A → A → Relevance → Con A  -- Context extension.
+  _∙_⦂_ : Con A → A → 𝕊 → Con A  -- Context extension.
 
 record GenT (A : Set) : Set where
   inductive
@@ -38,8 +43,8 @@ record GenT (A : Set) : Set where
     t : A
 
 data Kind : Set where
-  Ukind : Relevance → Kind
-  Pikind : Relevance → Kind
+  Ukind : 𝕊 → Kind
+  Pikind : 𝕊 → Kind
   Natkind : Kind
   Lamkind : Kind
   Appkind : Kind
@@ -48,6 +53,11 @@ data Kind : Set where
   Natreckind : Kind
   Emptykind : Kind
   Emptyreckind : Kind
+  Boxkind : (s : sorts) → Kind
+  Boxconskind : (s : sorts) → Kind
+  Boxreckind : (s' : 𝕊) → Kind
+  Constructorkind : constructors → Kind
+  Destructorkind : destructors → Kind
 
 data Term : Set where
   var : (x : Nat) → Term
@@ -61,15 +71,15 @@ data Term : Set where
 
 -- Type constructors.
 U      : Term                     -- Universe.
-U = gen (Ukind !) []
+U = gen (Ukind 𝕥y) []
 
-SProp : Term
-SProp = gen (Ukind %) []
+𝕌 : (s : sorts) → Term
+𝕌 s = gen (Ukind (‼ s)) []
 
-pattern Univ r = gen (Ukind r) []
+pattern Univ s = gen (Ukind s) []
 
-Π_^_▹_   : Term → Relevance → Term → Term  -- Dependent function type (B is a binder).
-Π A ^ r ▹ B = gen (Pikind r) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
+Π_⦂_▹_   : Term → 𝕊 → Term → Term  -- Dependent function type (B is a binder).
+Π A ⦂ s ▹ B = gen (Pikind s) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
 ℕ      : Term                     -- Type of natural numbers.
 ℕ = gen Natkind []
@@ -100,12 +110,35 @@ Empty = gen Emptykind []
 Emptyrec : (A e : Term) -> Term
 Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
--- Injectivity of term constructors w.r.t. propositional equality.
+Box : (s : sorts)(A : Term)  → Term -- (s s' : 𝕊)
+Box s A = gen (Boxkind s) (⟦ 0 , A ⟧ ∷ [])
+
+box : (s : sorts)(t : Term) → Term
+box s t = gen (Boxconskind s) (⟦ 0 , t ⟧ ∷ [])
+
+Boxrec : (sC : 𝕊)(A C t u : Term) → Term
+Boxrec sC A C u t = gen (Boxreckind sC) (⟦ 0 , A ⟧ ∷ ⟦ 1 , C ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , t ⟧  ∷ [])
+
+cstr : (k : constructors) → Term
+cstr k = gen (Constructorkind k) []
+
+dstr : (k : destructors) → Term
+dstr k = gen (Destructorkind k) []
+
+-- Discriminate terms starting with a constructor
+data [_]-cstr (K : constructors) : Term → Set where
+  is-K-cstr : ∀ {t} → [ K ]-cstr (cstr K ∘ t)
+
+[_]-cstr-params : (K : constructors) {t : Term} ([K] : [ K ]-cstr t) → Term
+[ K ]-cstr-params {t = gen Appkind (_ ∷ ⟦ _ , t ⟧ ∷ [])} [K] = t
+
+
+-- Injectivity of term constructors w.s.t. propositional equality.
 
 -- If  Π F G = Π H E  then  F = H  and  G = E.
 
-Π-PE-injectivity : ∀ {F rF G H rH E} → Π F ^ rF ▹ G PE.≡ Π H ^ rH ▹ E
-  → F PE.≡ H × rF PE.≡ rH × G PE.≡ E
+Π-PE-injectivity : ∀ {F sF G H sH E} → Π F ⦂ sF ▹ G PE.≡ Π H ⦂ sH ▹ E
+  → F PE.≡ H × sF PE.≡ sH × G PE.≡ E
 Π-PE-injectivity PE.refl = PE.refl , PE.refl , PE.refl
 
 -- If  suc n = suc m  then  n = m.
@@ -113,7 +146,7 @@ Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 suc-PE-injectivity : ∀ {n m} → suc n PE.≡ suc m → n PE.≡ m
 suc-PE-injectivity PE.refl = PE.refl
 
-Univ-PE-injectivity : ∀ {r r'} → Univ r PE.≡ Univ r' → r PE.≡ r'
+Univ-PE-injectivity : ∀ {s s'} → Univ s PE.≡ Univ s' → s PE.≡ s'
 Univ-PE-injectivity PE.refl = PE.refl
 
 
@@ -127,7 +160,8 @@ data Neutral : Term → Set where
   ∘ₙ      : ∀ {k u}     → Neutral k → Neutral (k ∘ u)
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
   Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
-
+  Boxrecₙ : ∀ {sC A C t u} → Neutral t → Neutral (Boxrec sC A C u t)
+  destrₙ : ∀ {k t} → Neutral t → Neutral (dstr k ∘ t)
 
 -- Weak head normal forms (whnfs).
 
@@ -136,15 +170,18 @@ data Neutral : Term → Set where
 data Whnf : Term → Set where
 
   -- Type constructors are whnfs.
-  Uₙ    : ∀ {r} → Whnf (Univ r)
-  Πₙ    : ∀ {A r B} → Whnf (Π A ^ r ▹ B)
+  Uₙ    : ∀ {s} → Whnf (Univ s)
+  Πₙ    : ∀ {A s B} → Whnf (Π A ⦂ s ▹ B)
   ℕₙ    : Whnf ℕ
   Emptyₙ : Whnf Empty
+  Boxₙ  : ∀ {s A} → Whnf (Box s A)
 
   -- Introductions are whnfs.
   lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
   zeroₙ : Whnf zero
   sucₙ  : ∀ {t} → Whnf (suc t)
+  boxₙ : ∀ {s t} → Whnf (box s t)
+  cstrₙ : ∀ {k t} → Whnf (cstr k ∘ t)
 
   -- Neutrals are whnfs.
   ne   : ∀ {n} → Neutral n → Whnf n
@@ -155,19 +192,19 @@ data Whnf : Term → Set where
 -- Different whnfs are trivially distinguished by propositional equality.
 -- (The following statements are sometimes called "no-confusion theorems".)
 
-U≢ℕ : ∀ {r} → Univ r PE.≢ ℕ
+U≢ℕ : ∀ {s} → Univ s PE.≢ ℕ
 U≢ℕ ()
 
-U≢Empty : ∀ {r} → Univ r PE.≢ Empty
+U≢Empty : ∀ {s} → Univ s PE.≢ Empty
 U≢Empty ()
 
-U≢Π : ∀ {r r' F G} → Univ r PE.≢ Π F ^ r' ▹ G
+U≢Π : ∀ {s s' F G} → Univ s PE.≢ Π F ⦂ s' ▹ G
 U≢Π ()
 
-U≢ne : ∀ {r K} → Neutral K → Univ r PE.≢ K
+U≢ne : ∀ {s K} → Neutral K → Univ s PE.≢ K
 U≢ne () PE.refl
 
-ℕ≢Π : ∀ {F r G} → ℕ PE.≢ Π F ^ r ▹ G
+ℕ≢Π : ∀ {F s G} → ℕ PE.≢ Π F ⦂ s ▹ G
 ℕ≢Π ()
 
 ℕ≢Empty : ℕ PE.≢ Empty
@@ -182,10 +219,10 @@ Empty≢ℕ ()
 Empty≢ne : ∀ {K} → Neutral K → Empty PE.≢ K
 Empty≢ne () PE.refl
 
-Empty≢Π : ∀ {F r G} → Empty PE.≢ Π F ^ r ▹ G
+Empty≢Π : ∀ {F s G} → Empty PE.≢ Π F ⦂ s ▹ G
 Empty≢Π ()
 
-Π≢ne : ∀ {F r G K} → Neutral K → Π F ^ r ▹ G PE.≢ K
+Π≢ne : ∀ {F s G K} → Neutral K → Π F ⦂ s ▹ G PE.≢ K
 Π≢ne () PE.refl
 
 zero≢suc : ∀ {n} → zero PE.≢ suc n
@@ -211,7 +248,7 @@ data Natural : Term → Set where
 -- Large types could also be U.
 
 data Type : Term → Set where
-  Πₙ : ∀ {A r B} → Type (Π A ^ r ▹ B)
+  Πₙ : ∀ {A s B} → Type (Π A ⦂ s ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
   ne : ∀{n} → Neutral n → Type n
@@ -275,6 +312,12 @@ repeat : {A : Set} → (A → A) → A → Nat → A
 repeat f a 0 = a
 repeat f a (1+ n) = f (repeat f a n)
 
+-- Weakening to empty context
+-- empty-wk Γ : ε ≤ Γ
+empty-wk : Con Term → Wk
+empty-wk ε = id
+empty-wk (Γ ∙ _ ⦂ _) = step (empty-wk Γ)
+
 -- Weakening of variables.
 -- If η : Γ ≤ Δ and x ∈ dom(Δ) then wkVar ρ x ∈ dom(Γ).
 
@@ -302,6 +345,11 @@ mutual
 wk1 : Term → Term
 wk1 = wk (step id)
 
+-- Adding a whole context requires wkAll
+-- If Δ ⊢ t : A then Δ, Γ ⊢ wkAll Γ t : wkAll Γ A
+wkAll : Con Term → Term → Term
+wkAll Γ t = wk (empty-wk Γ) t
+
 -- Weakening of a neutral term.
 
 wkNeutral : ∀ {t} ρ → Neutral t → Neutral (wk ρ t)
@@ -309,6 +357,8 @@ wkNeutral ρ (var n)    = var (wkVar ρ n)
 wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
 wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
 wkNeutral ρ (Emptyrecₙ e) = Emptyrecₙ (wkNeutral ρ e)
+wkNeutral ρ (Boxrecₙ e) = Boxrecₙ (wkNeutral ρ e)
+wkNeutral ρ (destrₙ t) = destrₙ (wkNeutral ρ t)
 
 -- Weakening can be applied to our whnf views.
 
@@ -328,19 +378,22 @@ wkFunction ρ lamₙ    = lamₙ
 wkFunction ρ (ne x) = ne (wkNeutral ρ x)
 
 wkWhnf : ∀ {t} ρ → Whnf t → Whnf (wk ρ t)
-wkWhnf ρ Uₙ      = Uₙ
-wkWhnf ρ Πₙ      = Πₙ
-wkWhnf ρ ℕₙ      = ℕₙ
-wkWhnf ρ Emptyₙ  = Emptyₙ
-wkWhnf ρ lamₙ    = lamₙ
-wkWhnf ρ zeroₙ   = zeroₙ
-wkWhnf ρ sucₙ    = sucₙ
+wkWhnf ρ Uₙ     = Uₙ
+wkWhnf ρ Πₙ     = Πₙ
+wkWhnf ρ ℕₙ     = ℕₙ
+wkWhnf ρ Emptyₙ = Emptyₙ
+wkWhnf ρ Boxₙ   = Boxₙ
+wkWhnf ρ lamₙ   = lamₙ
+wkWhnf ρ zeroₙ  = zeroₙ
+wkWhnf ρ sucₙ   = sucₙ
+wkWhnf ρ boxₙ   = boxₙ
+wkWhnf ρ cstrₙ  = cstrₙ
 wkWhnf ρ (ne x) = ne (wkNeutral ρ x)
 
 -- Non-dependent version of Π.
 
-_^_▹▹_ : Term → Relevance → Term → Term
-A ^ r ▹▹ B = Π A ^ r ▹ wk1 B
+_⦂_▹▹_ : Term → 𝕊 → Term → Term
+A ⦂ s ▹▹ B = Π A ⦂ s ▹ wk1 B
 
 ------------------------------------------------------------------------
 -- Substitution

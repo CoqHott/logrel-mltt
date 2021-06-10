@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Conversion.Whnf where
 
@@ -11,64 +11,64 @@ open import Tools.Product
 
 mutual
   -- Extraction of neutrality from algorithmic equality of neutrals.
-  ne~↑! : ∀ {t u A Γ}
-       → Γ ⊢ t ~ u ↑! A
+  ne~↑𝕥y : ∀ {t u A Γ}
+       → Γ ⊢ t ~ u ↑𝕥y A
        → Neutral t × Neutral u
-  ne~↑! (var-refl x₁ x≡y) = var _ , var _
-  ne~↑! (app-cong x x₁) = let _ , q , w = ne~↓! x
+  ne~↑𝕥y (var-refl x₁ x≡y) = var _ , var _
+  ne~↑𝕥y (app-cong x x₁) = let _ , q , w = ne~↓𝕥y x
                          in  ∘ₙ q , ∘ₙ w
-  ne~↑! (natrec-cong x x₁ x₂ x₃) = let _ , q , w = ne~↓! x₃
+  ne~↑𝕥y (natrec-cong x x₁ x₂ x₃) = let _ , q , w = ne~↓𝕥y x₃
                                   in  natrecₙ q , natrecₙ w
-  ne~↑! (Emptyrec-cong x x₁) = let _ , q , w = ne~↓% x₁
+  ne~↑𝕥y (Emptyrec-cong x x₁) = let _ , q , w = ne~↓𝕥y x₁
                               in Emptyrecₙ q , Emptyrecₙ w
 
-  ne~↑% : ∀ {t u A Γ}
-        → Γ ⊢ t ~ u ↑% A
+  ne~↑𝕥y : ∀ {t u A Γ}
+        → Γ ⊢ t ~ u ↑𝕥y A
         → Neutral t × Neutral u
-  ne~↑% (%~↑ neK neL ⊢k ⊢l) = neK , neL
+  ne~↑𝕥y (𝕥y~↑ neK neL ⊢k ⊢l) = neK , neL
 
-  ne~↑ : ∀ {t u A rA Γ}
-       → Γ ⊢ t ~ u ↑ A ^ rA
+  ne~↑ : ∀ {t u A sA Γ}
+       → Γ ⊢ t ~ u ↑ A ⦂ sA
        → Neutral t × Neutral u
-  ne~↑ (~↑! x) = ne~↑! x
-  ne~↑ (~↑% x) = ne~↑% x
+  ne~↑ (~↑𝕥y x) = ne~↑𝕥y x
+  ne~↑ (~↑𝕥y x) = ne~↑𝕥y x
 
-  ne~↓! : ∀ {t u A Γ}
-        → Γ ⊢ t ~ u ↓! A
+  ne~↓𝕥y : ∀ {t u A Γ}
+        → Γ ⊢ t ~ u ↓𝕥y A
         → Whnf A × Neutral t × Neutral u
-  ne~↓! ([~] A D whnfB k~l) = whnfB , ne~↑! k~l
+  ne~↓𝕥y ([~] A D whnfB k~l) = whnfB , ne~↑𝕥y k~l
 
-  ne~↓% : ∀ {t u A Γ}
-        → Γ ⊢ t ~ u ↓% A
+  ne~↓𝕥y : ∀ {t u A Γ}
+        → Γ ⊢ t ~ u ↓𝕥y A
         → Whnf A × Neutral t × Neutral u
-  ne~↓% ([~] A D whnfB k~l) = whnfB , ne~↑% k~l
+  ne~↓𝕥y ([~] A D whnfB k~l) = whnfB , ne~↑𝕥y k~l
 
   -- Extraction of neutrality and WHNF from algorithmic equality of neutrals
   -- with type in WHNF.
-  ne~↓ : ∀ {t u A rA Γ}
-       → Γ ⊢ t ~ u ↓ A ^ rA
+  ne~↓ : ∀ {t u A sA Γ}
+       → Γ ⊢ t ~ u ↓ A ⦂ sA
        → Whnf A × Neutral t × Neutral u
-  ne~↓ (~↓! ([~] A₁ D whnfB k~l)) = whnfB , ne~↑! k~l
-  ne~↓ (~↓% ([~] A D whnfB k~l)) = whnfB , ne~↑% k~l
+  ne~↓ (~↓𝕥y ([~] A₁ D whnfB k~l)) = whnfB , ne~↑𝕥y k~l
+  ne~↓ (~↓𝕥y ([~] A D whnfB k~l)) = whnfB , ne~↑𝕥y k~l
 
 -- Extraction of WHNF from algorithmic equality of types in WHNF.
-whnfConv↓ : ∀ {A B rA Γ}
-          → Γ ⊢ A [conv↓] B ^ rA
+whnfConv↓ : ∀ {A B sA Γ}
+          → Γ ⊢ A [conv↓] B ⦂ sA
           → Whnf A × Whnf B
 whnfConv↓ (U-refl _ x) = Uₙ , Uₙ
 whnfConv↓ (ℕ-refl x) = ℕₙ , ℕₙ
 whnfConv↓ (Empty-refl x) = Emptyₙ , Emptyₙ
-whnfConv↓ (ne x) = let _ , neA , neB = ne~↓! x
+whnfConv↓ (ne x) = let _ , neA , neB = ne~↓𝕥y x
                    in  ne neA , ne neB
 whnfConv↓ (Π-cong _ x x₁ x₂) = Πₙ , Πₙ
 
 -- Extraction of WHNF from algorithmic equality of terms in WHNF.
-whnfConv↓Term : ∀ {t u A rA Γ}
-              → Γ ⊢ t [conv↓] u ∷ A ^ rA
+whnfConv↓Term : ∀ {t u A sA Γ}
+              → Γ ⊢ t [conv↓] u ∷ A ⦂ sA
               → Whnf A × Whnf t × Whnf u
-whnfConv↓Term (ℕ-ins x) = let _ , neT , neU = ne~↓! x
+whnfConv↓Term (ℕ-ins x) = let _ , neT , neU = ne~↓𝕥y x
                           in ℕₙ , ne neT , ne neU
-whnfConv↓Term (Empty-ins x) = let _ , neT , neU = ne~↓% x
+whnfConv↓Term (Empty-ins x) = let _ , neT , neU = ne~↓𝕥y x
                           in Emptyₙ , ne neT , ne neU
 whnfConv↓Term (ne-ins t u x x₁) =
   let _ , neT , neU = ne~↓ x₁

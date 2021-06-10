@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Conversion.EqRelInstance where
 
@@ -32,96 +32,96 @@ open import Tools.Function
 
 
 -- Algorithmic equality of neutrals with injected conversion.
-data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
-  ↑ : ∀ {B} → Γ ⊢ A ≡ B ^ r → Γ ⊢ k ~ l ↑ B ^ r → Γ ⊢ k ~ l ∷ A ^ r
+data _⊢_~_∷_⦂_ (Γ : Con Term) (k l A : Term) (s : 𝕊) : Set where
+  ↑ : ∀ {B} → Γ ⊢ A ≡ B ⦂ s → Γ ⊢ k ~ l ↑ B ⦂ s → Γ ⊢ k ~ l ∷ A ⦂ s
 
 -- Properties of algorithmic equality of neutrals with injected conversion.
 
-~-var : ∀ {x A r Γ} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ~ var x ∷ A ^ r
+~-var : ∀ {x A s Γ} → Γ ⊢ var x ∷ A ⦂ s → Γ ⊢ var x ~ var x ∷ A ⦂ s
 ~-var x =
   let ⊢A = syntacticTerm x
   in  ↑ (refl ⊢A) (var-refl′ x)
 
-~-app : ∀ {f g a b F rF G rG Γ}
-      → Γ ⊢ f ~ g ∷ Π F ^ rF ▹ G ^ rG
-      → Γ ⊢ a [conv↑] b ∷ F ^ rF
-      → Γ ⊢ f ∘ a ~ g ∘ b ∷ G [ a ] ^ rG
+~-app : ∀ {f g a b F sF G sG Γ}
+      → Γ ⊢ f ~ g ∷ Π F ⦂ sF ▹ G ⦂ sG
+      → Γ ⊢ a [conv↑] b ∷ F ⦂ sF
+      → Γ ⊢ f ∘ a ~ g ∘ b ∷ G [ a ] ⦂ sG
 ~-app (↑ A≡B x) x₁ =
   let _ , ⊢B = syntacticEq A≡B
       B′ , whnfB′ , D = whNorm ⊢B
       ΠFG≡B′ = trans A≡B (subset* (red D))
       H , E , B≡ΠHE = Π≡A ΠFG≡B′ whnfB′
-      F≡H , _ , G≡E = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ^ _) B≡ΠHE ΠFG≡B′)
+      F≡H , _ , G≡E = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ⦂ _) B≡ΠHE ΠFG≡B′)
       _ , ⊢f , _ = syntacticEqTerm (soundnessConv↑Term x₁)
   in  ↑ (substTypeEq G≡E (refl ⊢f))
-        (app-cong′ (PE.subst (λ x → _ ⊢ _ ~ _ ↓ x ^ _)
+        (app-cong′ (PE.subst (λ x → _ ⊢ _ ~ _ ↓ x ⦂ _)
                        B≡ΠHE ([~]′ _ (red D) whnfB′ x))
              (convConvTerm x₁ F≡H))
 
-~-natrec : ∀ {z z′ s s′ n n′ F F′ rF Γ}
-         → (Γ ∙ ℕ ^ !) ⊢ F [conv↑] F′ ^ rF →
-      Γ ⊢ z [conv↑] z′ ∷ (F [ zero ]) ^ rF →
-      Γ ⊢ s [conv↑] s′ ∷ (Π ℕ ^ ! ▹ (F ^ rF ▹▹ F [ suc (var 0) ]↑)) ^ rF →
-      Γ ⊢ n ~ n′ ∷ ℕ ^ ! →
-      Γ ⊢ natrec F z s n ~ natrec F′ z′ s′ n′ ∷ (F [ n ]) ^ rF
+~-natrec : ∀ {z z′ s s′ n n′ F F′ sF Γ}
+         → (Γ ∙ ℕ ⦂ 𝕥y) ⊢ F [conv↑] F′ ⦂ sF →
+      Γ ⊢ z [conv↑] z′ ∷ (F [ zero ]) ⦂ sF →
+      Γ ⊢ s [conv↑] s′ ∷ (Π ℕ ⦂ 𝕥y ▹ (F ⦂ sF ▹▹ F [ suc (var 0) ]↑)) ⦂ sF →
+      Γ ⊢ n ~ n′ ∷ ℕ ⦂ 𝕥y →
+      Γ ⊢ natrec F z s n ~ natrec F′ z′ s′ n′ ∷ (F [ n ]) ⦂ sF
 ~-natrec x x₁ x₂ (↑ A≡B x₄) =
   let _ , ⊢B = syntacticEq A≡B
       B′ , whnfB′ , D = whNorm ⊢B
       ℕ≡B′ = trans A≡B (subset* (red D))
       B≡ℕ = ℕ≡A ℕ≡B′ whnfB′
-      k~l′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓ x  ^ _) B≡ℕ
+      k~l′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓ x  ⦂ _) B≡ℕ
                       ([~]′ _ (red D) whnfB′ x₄)
       ⊢F , _ = syntacticEq (soundnessConv↑ x)
       _ , ⊢n , _ = syntacticEqTerm (soundness~↓ k~l′)
   in  ↑ (refl (substType ⊢F ⊢n)) (natrec-cong′ x x₁ x₂ k~l′)
 
-~-Emptyrec : ∀ {n n′ F F′ rF Γ}
-         → Γ ⊢ F [conv↑] F′ ^ rF →
-      Γ ⊢ n ~ n′ ∷ Empty ^ % →
-      Γ ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ rF
+~-Emptyrec : ∀ {n n′ F F′ sF Γ}
+         → Γ ⊢ F [conv↑] F′ ⦂ sF →
+      Γ ⊢ n ~ n′ ∷ Empty ⦂ 𝕥y →
+      Γ ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ⦂ sF
 ~-Emptyrec x (↑ A≡B x₄) =
   let _ , ⊢B = syntacticEq A≡B
       B′ , whnfB′ , D = whNorm ⊢B
       Empty≡B′ = trans A≡B (subset* (red D))
       B≡Empty = Empty≡A Empty≡B′ whnfB′
-      k~l′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓ x ^ _) B≡Empty
+      k~l′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓ x ⦂ _) B≡Empty
                       ([~]′ _ (red D) whnfB′ x₄)
       ⊢F , _ = syntacticEq (soundnessConv↑ x)
       _ , ⊢n , _ = syntacticEqTerm (soundness~↓ k~l′)
   in  ↑ (refl ⊢F) (Emptyrec-cong′ x k~l′)
 
-~-sym : {k l A : Term} {r : Relevance} {Γ : Con Term} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
+~-sym : {k l A : Term} {s : 𝕊} {Γ : Con Term} → Γ ⊢ k ~ l ∷ A ⦂ s → Γ ⊢ l ~ k ∷ A ⦂ s
 ~-sym (↑ A≡B x) =
   let ⊢Γ = wfEq A≡B
       B , A≡B′ , l~k = sym~↑ (reflConEq ⊢Γ) x
   in  ↑ (trans A≡B A≡B′) l~k
 
-~-trans : {k l m A : Term} {r : Relevance} {Γ : Con Term}
-        → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ m ∷ A ^ r
-        → Γ ⊢ k ~ m ∷ A ^ r
+~-trans : {k l m A : Term} {s : 𝕊} {Γ : Con Term}
+        → Γ ⊢ k ~ l ∷ A ⦂ s → Γ ⊢ l ~ m ∷ A ⦂ s
+        → Γ ⊢ k ~ m ∷ A ⦂ s
 ~-trans (↑ x x₁) (↑ x₂ x₃) =
   let ⊢Γ = wfEq x
       k~m , _ = trans~↑ (reflConEq ⊢Γ) x₁ x₃
   in  ↑ x k~m
 
-~-wk : {k l A : Term} {r : Relevance} {ρ : Wk} {Γ Δ : Con Term} →
+~-wk : {k l A : Term} {s : 𝕊} {ρ : Wk} {Γ Δ : Con Term} →
       ρ ∷ Δ ⊆ Γ →
-      ⊢ Δ → Γ ⊢ k ~ l ∷ A ^ r → Δ ⊢ wk ρ k ~ wk ρ l ∷ wk ρ A ^ r
+      ⊢ Δ → Γ ⊢ k ~ l ∷ A ⦂ s → Δ ⊢ wk ρ k ~ wk ρ l ∷ wk ρ A ⦂ s
 ~-wk x x₁ (↑ x₂ x₃) = ↑ (wkEq x x₁ x₂) (wk~↑ x x₁ x₃)
 
-~-conv : {k l A B : Term} {r : Relevance} {Γ : Con Term} →
-      Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ A ≡ B ^ r → Γ ⊢ k ~ l ∷ B ^ r
+~-conv : {k l A B : Term} {s : 𝕊} {Γ : Con Term} →
+      Γ ⊢ k ~ l ∷ A ⦂ s → Γ ⊢ A ≡ B ⦂ s → Γ ⊢ k ~ l ∷ B ⦂ s
 ~-conv (↑ x x₁) x₂ = ↑ (trans (sym x₂) x) x₁
 
-~-to-conv : {k l A : Term} {r : Relevance} {Γ : Con Term} →
-      Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ k [conv↑] l ∷ A ^ r
+~-to-conv : {k l A : Term} {s : 𝕊} {Γ : Con Term} →
+      Γ ⊢ k ~ l ∷ A ⦂ s → Γ ⊢ k [conv↑] l ∷ A ⦂ s
 ~-to-conv (↑ x x₁) = convConvTerm (lift~toConv↑ x₁) (sym x)
 
-Πₜ-cong : ∀ {F G H E rF rG Γ}
-        → Γ ⊢ F ^ rF
-        → Γ ⊢ F [conv↑] H ∷ (Univ rF) ^ !
-        → Γ ∙ F ^ rF ⊢ G [conv↑] E ∷ (Univ rG) ^ !
-        → Γ ⊢ Π F ^ rF ▹ G [conv↑] Π H ^ rF ▹ E ∷ (Univ rG) ^ !
+Πₜ-cong : ∀ {F G H E sF sG Γ}
+        → Γ ⊢ F ⦂ sF
+        → Γ ⊢ F [conv↑] H ∷ (Univ sF) ⦂ 𝕥y
+        → Γ ∙ F ⦂ sF ⊢ G [conv↑] E ∷ (Univ sG) ⦂ 𝕥y
+        → Γ ⊢ Π F ⦂ sF ▹ G [conv↑] Π H ⦂ sF ▹ E ∷ (Univ sG) ⦂ 𝕥y
 Πₜ-cong x x₁ x₂ =
   let _ , F∷U , H∷U = syntacticEqTerm (soundnessConv↑Term x₁)
       _ , G∷U , E∷U = syntacticEqTerm (soundnessConv↑Term x₂)
@@ -134,17 +134,17 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : Relevance) : Set where
                        (Π-cong PE.refl x F<>H G<>E))
 
 ~-irrelevance : {k l A : Term} {Γ : Con Term}
-               → Γ ⊢ k ∷ A ^ %
-               → Γ ⊢ l ∷ A ^ %
-               → Γ ⊢ k ~ k ∷ A ^ %
-               → Γ ⊢ l ~ l ∷ A ^ %
-               → Γ ⊢ k ~ l ∷ A ^ %
-~-irrelevance ⊢k ⊢l (↑ A≡B (~↑% (%~↑ neN _ _ _))) (↑ A≡C (~↑% (%~↑ neL _ _ _))) =
-  ↑ (trans A≡B (sym A≡B)) (~↑% (%~↑ neN neL ⊢k ⊢l))
+               → Γ ⊢ k ∷ A ⦂ 𝕥y
+               → Γ ⊢ l ∷ A ⦂ 𝕥y
+               → Γ ⊢ k ~ k ∷ A ⦂ 𝕥y
+               → Γ ⊢ l ~ l ∷ A ⦂ 𝕥y
+               → Γ ⊢ k ~ l ∷ A ⦂ 𝕥y
+~-irrelevance ⊢k ⊢l (↑ A≡B (~↑𝕥y (𝕥y~↑ neN _ _ _))) (↑ A≡C (~↑𝕥y (𝕥y~↑ neL _ _ _))) =
+  ↑ (trans A≡B (sym A≡B)) (~↑𝕥y (𝕥y~↑ neN neL ⊢k ⊢l))
 
 -- Algorithmic equality instance of the generic equality relation.
 instance eqRelInstance : EqRelSet
-eqRelInstance = eqRel _⊢_[conv↑]_^_ _⊢_[conv↑]_∷_^_ _⊢_~_∷_^_
+eqRelInstance = eqRel _⊢_[conv↑]_⦂_ _⊢_[conv↑]_∷_⦂_ _⊢_~_∷_⦂_
                       ~-to-conv soundnessConv↑ soundnessConv↑Term
                       univConv↑
                       symConv symConvTerm ~-sym

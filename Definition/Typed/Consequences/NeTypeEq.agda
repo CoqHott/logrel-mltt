@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K  #-}
 
 module Definition.Typed.Consequences.NeTypeEq where
 
@@ -13,24 +13,24 @@ import Tools.PropositionalEquality as PE
 
 
 -- Helper function for the same variable instance of a context have equal types.
-varTypeEq′ : ∀ {n R rR T rT Γ} → n ∷ R ^ rR ∈ Γ → n ∷ T ^ rT ∈ Γ → R PE.≡ T × rR PE.≡ rT
-varTypeEq′ here here = PE.refl , PE.refl
-varTypeEq′ (there n∷R) (there n∷T) with varTypeEq′ n∷R n∷T
+vasTypeEq′ : ∀ {n R sR T sT Γ} → n ∷ R ⦂ sR ∈ Γ → n ∷ T ⦂ sT ∈ Γ → R PE.≡ T × sR PE.≡ sT
+vasTypeEq′ here here = PE.refl , PE.refl
+vasTypeEq′ (there n∷R) (there n∷T) with vasTypeEq′ n∷R n∷T
 ... | PE.refl , PE.refl = PE.refl , PE.refl
 
 -- The same variable instance of a context have equal types.
-varTypeEq : ∀ {x A B rA rB Γ} → Γ ⊢ A ^ rA → Γ ⊢ B ^ rB
-          → x ∷ A ^ rA ∈ Γ
-          → x ∷ B ^ rB ∈ Γ
-          → Γ ⊢ A ≡ B ^ rA × rA PE.≡ rB
-varTypeEq A B x∷A x∷B with varTypeEq′ x∷A x∷B
+vasTypeEq : ∀ {x A B sA sB Γ} → Γ ⊢ A ⦂ sA → Γ ⊢ B ⦂ sB
+          → x ∷ A ⦂ sA ∈ Γ
+          → x ∷ B ⦂ sB ∈ Γ
+          → Γ ⊢ A ≡ B ⦂ sA × sA PE.≡ sB
+vasTypeEq A B x∷A x∷B with vasTypeEq′ x∷A x∷B
 ... | PE.refl , PE.refl = refl A , PE.refl
 
 -- The same neutral term have equal types.
--- to use this with different relevances rA rB we need unicity of relevance for types
-neTypeEq : ∀ {t A B rA Γ} → Neutral t → Γ ⊢ t ∷ A ^ rA → Γ ⊢ t ∷ B ^ rA → Γ ⊢ A ≡ B ^ rA
+-- to use this with different relevances sA sB we need unicity of relevance for types
+neTypeEq : ∀ {t A B sA Γ} → Neutral t → Γ ⊢ t ∷ A ⦂ sA → Γ ⊢ t ∷ B ⦂ sA → Γ ⊢ A ≡ B ⦂ sA
 neTypeEq (var x) (var x₁ x₂) (var x₃ x₄) =
-  proj₁ (varTypeEq (syntacticTerm (var x₃ x₂)) (syntacticTerm (var x₃ x₄)) x₂ x₄)
+  proj₁ (vasTypeEq (syntacticTerm (var x₃ x₂)) (syntacticTerm (var x₃ x₄)) x₂ x₄)
 neTypeEq (∘ₙ neT) (t∷A ∘ⱼ t∷A₁) (t∷B ∘ⱼ t∷B₁) with neTypeEq neT t∷A t∷B
 ... | q = let _ , _ , w = injectivity q
           in  substTypeEq w (refl t∷A₁)
