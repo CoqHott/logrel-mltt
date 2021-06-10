@@ -12,8 +12,8 @@ infixl 30 _∙_
 infix 30 Πⱼ_▹_▹_▹_
 
 -- Lemmas that are useful for reduction
-Unit : Term
-Unit = Π Empty ^ % ° ⁰ ▹ Empty ° ⁰
+Unit : ∀ {l} → Term
+Unit {l} =  Π Empty ^ % ° l ▹ Empty ° l
 
 tt : Term -- currently not used
 tt = lam Empty ▹ (Emptyrec Empty (var 0))
@@ -254,7 +254,7 @@ mutual
                  ∷ SProp l ^ [ ! , next l ]
     Id-ℕ-00 : ⊢ Γ
            → Γ ⊢ (Id ℕ zero zero)
-                  ≡ Unit
+                  ≡ Unit {⁰}
                   ∷ SProp ⁰ ^ [ ! , next ⁰ ]
     Id-ℕ-SS : ∀ {m n}
               → Γ ⊢ m ∷ ℕ ^ [ ! ,  ι ⁰ ]
@@ -275,8 +275,8 @@ mutual
                   ∷ SProp ¹ ^ [ ! , next ¹ ]
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ Id (U ⁰) ℕ ℕ
-                  ≡ Unit
-                  ∷ (SProp ¹) ^ [ ! , next ¹ ] -- there is an issue here as (U ⁰) and Unit do not live at the same level 
+                  ≡ Unit {¹} 
+                  ∷ (SProp ¹) ^ [ ! , next ¹ ] 
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
                → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
@@ -301,6 +301,8 @@ mutual
                   Γ ⊢ A ≡ A' ∷ U l ^ [ ! , next l ]
                 → Γ ⊢ B ≡ B' ∷ U l ^ [ ! , next l ]
                 → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
+                → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , next ⁰ ]
+                → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , next ⁰ ]
                 → Γ ⊢ cast l A B e t ≡ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]
     cast-Π : ∀ {A A' rA B B' e f} → let l = ⁰ in let lA = ⁰ in let lB = ⁰ in 
                Γ ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
@@ -399,7 +401,7 @@ mutual
                  ∷ SProp l ^ next l 
     Id-ℕ-00 : ⊢ Γ
             → Γ ⊢ (Id ℕ zero zero)
-                  ⇒ Unit
+                  ⇒ Unit {⁰}
                   ∷ SProp ⁰ ^ next ⁰
     Id-ℕ-SS : ∀ {m n}
               → Γ ⊢ m ∷ ℕ ^ [ ! , ι ⁰ ]
@@ -420,7 +422,7 @@ mutual
                     ∷ SProp ¹ ^ next ¹
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ (Id (U ⁰) ℕ ℕ)
-                  ⇒ Unit
+                  ⇒ Unit {¹} 
                   ∷ SProp ¹ ^ next ¹
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
@@ -564,3 +566,10 @@ data _⊢ˢ_≡_∷_ (Δ : Con Term) (σ σ′ : Subst) : (Γ : Con Term) → Se
 
 -- Note that we cannot use the well-formed substitutions.
 -- For that, we need to prove the fundamental theorem for substitutions.
+
+Unitⱼ : ∀ {Γ} (⊢Γ : ⊢ Γ)
+      → Γ ⊢ Unit ∷ SProp ⁰ ^ [ ! , ι ¹ ]
+Unitⱼ ⊢Γ = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ Emptyⱼ ⊢Γ ▹ Emptyⱼ (⊢Γ ∙ univ (Emptyⱼ ⊢Γ))
+
+typeUnit : ∀ {l} →  Type (Unit {l})
+typeUnit = Πₙ

@@ -15,7 +15,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
 
-open import Tools.Unit
+open import Tools.Unit as TU
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
@@ -40,13 +40,24 @@ Emptyᵗᵛ [Γ] ∞< ⊢Δ [σ] = let ⊢Empty  = Emptyⱼ ⊢Δ
                                    (Uₜ Empty (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
                                    (≅ₜ-Emptyrefl ⊢Δ) λ [ρ] ⊢Δ' → id (univ (Emptyⱼ ⊢Δ'))
 
-Unitᵗᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ emb< [Γ])
-Unitᵗᵛ {Γ} [Γ] = let [SProp] = Uᵛ {rU = %} emb< [Γ]
-                     [Empty] = Emptyᵛ {ll = ⁰} {l = ∞} [Γ]
-                     [Γ∙Empty] = (_∙_ {Γ} {Empty} [Γ] [Empty])
-                     [SProp]₁ : Γ ∙ Empty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (SProp ⁰) ^ [ ! , next ⁰ ] / [Γ∙Empty]
-                     [SProp]₁ {Δ} {σ} = maybeEmbᵛ {A = SProp ⁰} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) {Δ} {σ}
-                     [Empty]₁ = Emptyᵗᵛ [Γ] emb<
-                     [Empty]₂ = Emptyᵗᵛ [Γ∙Empty] emb<
-                in maybeEmbTermᵛ {A = SProp _} {t = Unit} [Γ] (Uᵛ emb< [Γ])
-                               (Πᵗᵛ {Empty} {Empty} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] ( Emptyᵛ {ll = ⁰} [Γ]) (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
+Unitᵗᵛ : ∀ {Γ l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ (SProp l) ^ [ ! , next l ] / [Γ] / maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ (proj₂ (levelBounded _)) [Γ])
+Unitᵗᵛ {Γ} {l} [Γ] = let [SProp] = maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])
+                         [Empty] = Emptyᵛ {ll = l} {l = ∞} [Γ]
+                         [Γ∙Empty] = (_∙_ {Γ} {Empty} [Γ] [Empty])
+                         [SProp]₁ : Γ ∙ Empty ^ [ % , ι l ] ⊩ᵛ⟨ ∞ ⟩ (SProp l) ^ [ ! , next l ] / [Γ∙Empty]
+                         [SProp]₁ {Δ} {σ} = maybeEmbᵛ {A = SProp l} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded _)) [Γ∙Empty] {Δ} {σ}) {Δ} {σ}
+                         [Empty]₁ = maybeEmbTermᵛ {A = SProp l} {t = Empty} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ]) (Emptyᵗᵛ {ll = l} [Γ] (proj₂ (levelBounded _)))
+                         [Empty]₂ = maybeEmbTermᵛ {A = SProp l} {t = Empty} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded _)) [Γ∙Empty] {Δ} {σ}) (Emptyᵗᵛ {ll = l} [Γ∙Empty] (proj₂ (levelBounded _)))
+                in maybeEmbTermᵛ {A = SProp l} {t = Unit} [Γ] [SProp] 
+                                 (Πᵗᵛ {Empty} {Empty} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] ( Emptyᵛ {ll = l} [Γ]) (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
+
+
+Unit≡Unit : ∀ {Γ l} (⊢Γ : ⊢ Γ)
+          → Γ ⊢ Unit {l} ≅ Unit {l} ∷ SProp ⁰ ^ [ ! , ι ¹ ]
+Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
+
+Unitᵛ : ∀ {Γ l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι l ⟩ Unit ^ [ % , ι l ] / [Γ]
+Unitᵛ {Γ} {l} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])) (Unitᵗᵛ {l = l} [Γ])
+
+UnitType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ]
+UnitType {Γ} ⊢Γ = proj₁ (Unitᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)

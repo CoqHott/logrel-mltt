@@ -1,4 +1,4 @@
-{-# OPTIONS --safe #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -25,6 +25,7 @@ open import Definition.LogicalRelation.Substitution.Weakening
 -- open import Definition.LogicalRelation.Substitution.Introductions.Nat
 open import Definition.LogicalRelation.Substitution.Introductions.Empty
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
+open import Definition.LogicalRelation.Substitution.MaybeEmbed
 -- open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
 
@@ -33,27 +34,6 @@ open import Tools.Empty
 import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
-
-Unitⱼ : ∀ {Γ} (⊢Γ : ⊢ Γ)
-      → Γ ⊢ Unit ∷ SProp ⁰ ^ [ ! , ι ¹ ]
-Unitⱼ ⊢Γ = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ Emptyⱼ ⊢Γ ▹ Emptyⱼ (⊢Γ ∙ univ (Emptyⱼ ⊢Γ))
-
-typeUnit : Type Unit
-typeUnit = Πₙ
-
-Unit≡Unit : ∀ {Γ} (⊢Γ : ⊢ Γ)
-          → Γ ⊢ Unit ≅ Unit ∷ SProp ⁰ ^ [ ! , ι ¹ ]
-Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
-
-
-Unitᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ] / [Γ]
-Unitᵛ {Γ} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (Uᵛ emb< [Γ]) (Unitᵗᵛ [Γ])
-
-UnitType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ]
-UnitType {Γ} ⊢Γ = proj₁ (Unitᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)
-
-[SProp] : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ¹ ⟩ SProp ⁰ ^ [ ! , ι ¹ ]
-[SProp] ⊢Γ = Uᵣ (Uᵣ % ⁰ emb< PE.refl [[ (U⁰ⱼ ⊢Γ) , (U⁰ⱼ ⊢Γ) , (id (U⁰ⱼ ⊢Γ)) ]])
 
 aux : ∀ {Γ t u} →
       (⊢Γ : ⊢ Γ)
@@ -435,12 +415,12 @@ IdTypeExt ⊢Γ (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
 -- IdTerm {A} {t} {u} {Γ} {¹} ⊢Γ (emb {l′ = .⁰} 0<1 [A]) [t] [u] | ⊢tA | ⊢uA =
 --   IdTerm ⊢Γ [A] [t] [u]
 
--- Idᵗᵛ : ∀ {A t u Γ l}
---        ([Γ] : ⊩ᵛ Γ)
---        ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ ! / [Γ])
---        ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ ! / [Γ] / [A])
---        ([u] : Γ ⊩ᵛ⟨ l ⟩ u ∷ A ^ ! / [Γ] / [A])
---      → Γ ⊩ᵛ⟨ ¹ ⟩ Id A t u ∷ SProp ^ ! / [Γ] / Uᵛ [Γ]
--- Idᵗᵛ [Γ] [A] [t] [u] ⊢Δ [σ] =
---   (IdTerm ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ])))
---   , {!!}
+Idᵗᵛ : ∀ {A t u Γ l}
+       ([Γ] : ⊩ᵛ Γ)
+       ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
+       ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([u] : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+     → Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ∷ SProp l ^ [ ! , next l ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ (proj₂ (levelBounded l)) [Γ]) 
+Idᵗᵛ [Γ] [A] [t] [u] ⊢Δ [σ] = {!!}
+  -- (IdTerm ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ])))
+  -- , {!!}
