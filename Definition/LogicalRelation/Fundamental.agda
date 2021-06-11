@@ -25,6 +25,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Empty
 open import Definition.LogicalRelation.Substitution.Introductions.Emptyrec
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
+open import Definition.LogicalRelation.Substitution.Introductions.Sigma
 open import Definition.LogicalRelation.Substitution.Introductions.Id
 open import Definition.LogicalRelation.Substitution.Introductions.Cast
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
@@ -156,9 +157,19 @@ mutual
     in  [Γ]₁ , [UΠ] 
     , 
       Πᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} lF< lG< [Γ]₁ [F]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′
-  fundamentalTerm (∃ⱼ_▹_ {F} {G} ⊢F ⊢G)
+  fundamentalTerm (∃ⱼ_▹_ {F} {G} {l} ⊢F ⊢G)
     with fundamentalTerm ⊢F | fundamentalTerm ⊢G
-  ... | [Γ] , [U] , [F]ₜ | [Γ]₁ , [U]₁ , [G]ₜ = {!!}
+  ... | [Γ] , [UF] , [F]ₜ | [Γ]₁ ∙ [F] , [UG] , [G]ₜ =
+    let [UF]′ = maybeEmbᵛ {A = SProp _} [Γ]₁ (Uᵛ (proj₂ (levelBounded l)) [Γ]₁)
+        [UΠ]  = maybeEmbᵛ {A = SProp _} [Γ]₁ (Uᵛ (proj₂ (levelBounded l)) [Γ]₁)
+        [F]′  = maybeEmbᵛ {A = F} [Γ]₁ [F]
+        [UG]′ : _ ⊩ᵛ⟨ ∞ ⟩ SProp l ^ [ ! , next l ] / _∙_ {A = F} [Γ]₁ [F]′
+        [UG]′ = S.irrelevance {A = Univ % l} (_∙_ {A = F} [Γ]₁ [F]) (_∙_ {A = F} [Γ]₁ [F]′) (λ {Δ} {σ} → [UG] {Δ} {σ})
+        [F]ₜ′ = S.irrelevanceTerm {A = SProp _} {t = F} [Γ] [Γ]₁ [UF] [UF]′ [F]ₜ
+        [G]ₜ′ = S.irrelevanceTerm {A = SProp _} {t = G} (_∙_ {A = F} [Γ]₁ [F]) (_∙_ {A = F} [Γ]₁ [F]′) (λ {Δ} {σ} → [UG] {Δ} {σ}) (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [G]ₜ
+    in  [Γ]₁ , [UΠ] 
+    , 
+      ∃ᵗᵛ {F} {G} {l} [Γ]₁ [F]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′
   fundamentalTerm (Idⱼ x x₁ x₂) = {!!}
   fundamentalTerm (var ⊢Γ x∷A) = valid ⊢Γ , fundamentalVar x∷A (valid ⊢Γ)
   fundamentalTerm (lamⱼ {F} {r} {l} {rF} {lF} {G} {lG} {t} lF< lG< ⊢F ⊢t)
