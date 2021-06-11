@@ -149,6 +149,11 @@ suc-PE-injectivity PE.refl = PE.refl
 Univ-PE-injectivity : ∀ {s s'} → Univ s PE.≡ Univ s' → s PE.≡ s'
 Univ-PE-injectivity PE.refl = PE.refl
 
+cstr-app-PE-injectivity : ∀ {k k' a a'} → cstr k ∘ a PE.≡ cstr k' ∘ a' → k PE.≡ k'
+cstr-app-PE-injectivity PE.refl = PE.refl
+
+cstr-app-PE-arg-injectivity : ∀ {k k' a a'} → cstr k ∘ a PE.≡ cstr k' ∘ a' → a PE.≡ a'
+cstr-app-PE-arg-injectivity PE.refl = PE.refl
 
 -- Neutral terms.
 
