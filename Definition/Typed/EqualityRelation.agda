@@ -6,6 +6,8 @@ open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Weakening using (_∷_⊆_)
 
+import Tools.PropositionalEquality as PE
+
 
 -- Generic equality relation used with the logical relation
 
@@ -158,8 +160,17 @@ record EqRelSet : Set₁ where
                → Γ ⊢ a ≅ a' ∷ F ⦂ ‼ sF
                → Γ ⊢ box sF a ≅ box sF a' ∷ Box sF F ⦂ 𝕥y
 
-    -- cstr refl
-    ≅-cstrrefl : ∀ {k Γ} → ⊢ Γ → Γ ⊢ cstr k ≅ cstr k ∷ cstr-type Γ k ⦂ cstr-𝕊 k
+    -- cstr congruence
+    ≅-cstr-cong : ∀ {a a' k Γ s}
+                 → cstr-cod k PE.≡ Univ s -- s is necessarily cstr-𝕊 k
+                 → ⊢ Γ
+                 → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
+                 → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ⦂ s
+
+    ≅ₜ-cstr-cong : ∀ {a a' k Γ}
+                 → ⊢ Γ
+                 → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
+                 → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ∷ cstr-type Γ k ⦂ cstr-𝕊 k
 
     -- Variable reflexivity
     ~-var : ∀ {x A s Γ} → Γ ⊢ var x ∷ A ⦂ s → Γ ⊢ var x ~ var x ∷ A ⦂ s

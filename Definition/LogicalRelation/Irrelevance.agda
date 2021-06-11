@@ -17,11 +17,19 @@ import Tools.PropositionalEquality as PE
 -- []-cstr-PE : ∀ {K K' t} (K≡K' : K PE.≡ K') (d : [ K ]-cstr t) → [ K' ]-cstr t
 -- []-cstr-PE PE.refl d = d
 
-Cstr-prop-ext : ∀ {K K' Γ Pi Pi' t a} (K≡K' : K PE.≡ K') (Pi→Pi' : ∀ ki kiK  kiK' t → Pi ki kiK t → Pi' ki kiK' t) (d : Cstr-prop K Γ Pi t a) → Cstr-prop K' Γ Pi' t a
+Cstr-prop-ext : ∀ {K K' Γ Pi Pi' t a s}
+                  (K≡K' : K PE.≡ K')
+                  (Pi→Pi' : ∀ ki kiK  kiK' t → Pi ki kiK t → Pi' ki kiK' t)
+                  (d : Cstr-prop K Γ Pi a s t)
+                → Cstr-prop K' Γ Pi' a s t
 Cstr-prop-ext PE.refl Pi→Pi' (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ x)
 Cstr-prop-ext PE.refl Pi→Pi' (ne x) = ne x
 
-[Cstr]-prop-ext : ∀ {K K' Γ Pi Pi' t t' a} (K≡K' : K PE.≡ K') (Pi→Pi' : ∀ ki kiK  kiK' t t' → Pi ki kiK t t' → Pi' ki kiK' t t') (d : [Cstr]-prop K Γ Pi t t' a) → [Cstr]-prop K' Γ Pi' t t' a
+[Cstr]-prop-ext : ∀ {K K' Γ Pi Pi' t t' a s}
+                    (K≡K' : K PE.≡ K')
+                    (Pi→Pi' : ∀ ki kiK  kiK' t t' → Pi ki kiK t t' → Pi' ki kiK' t t')
+                    (d : [Cstr]-prop K Γ Pi a s t t')
+                  → [Cstr]-prop K' Γ Pi' a s t t'
 [Cstr]-prop-ext PE.refl Pi→Pi' (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ _ x)
 [Cstr]-prop-ext PE.refl Pi→Pi' (ne x) = ne x
 
@@ -93,9 +101,9 @@ mutual
         a≡a₁    = cstr-app-PE-arg-injectivity Ka≡K₁a₁
     in
     cstr₌ a' (PE.subst (λ x → _ ⊢ _ :⇒*: cstr x ∘ a' ⦂ _) K≡K₁ D')
-             (PE.subst₂ (λ x y → Γ ⊢ x ≅ cstr y ∘ a' ⦂ s) Ka≡K₁a₁ K≡K₁ A≡B)
-             (PE.subst (λ x → Γ ⊩⟨ l′ ⟩ x ≡ a' ∷ _ ⦂ 𝕥y / [domK]₁) a≡a₁
-                       (irrelevanceEqTerm′ (PE.cong (λ x → wkAll Γ (cstr-dom x)) K≡K₁) PE.refl [domK] [domK]₁ [a≡a']) )
+             (PE.subst₂ (λ x y → Γ ⊢ x ≅ a' ∷ wkAll Γ (cstr-dom y) ⦂ cstr-dom-sort y) a≡a₁ K≡K₁ A≡B)
+             (PE.subst (λ x → Γ ⊩⟨ l′ ⟩ x ≡ a' ∷ _ ⦂ cstr-dom-sort K₁ / [domK]₁) a≡a₁
+                       (irrelevanceEqTerm′ (PE.cong (λ x → wkAll Γ (cstr-dom x)) K≡K₁) (PE.cong cstr-dom-sort K≡K₁) [domK] [domK]₁ [a≡a']) )
   irrelevanceEqT {Γ} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                  (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
@@ -170,8 +178,8 @@ mutual
     cstrₜ k
          (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) Ka≡K₁a₁ d)
          (PE.subst (λ x → Γ ⊢ k ≅ k ∷ x ⦂ s) Ka≡K₁a₁ k≡k)
-         (PE.subst (Cstr-prop K₁ Γ _ k) a≡a₁
-                   (Cstr-prop-ext K≡K₁ (λ ki kiK kiK' t d → irrelevanceTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) [k]))
+         (PE.subst (λ a → Cstr-prop K₁ Γ _ a s k) a≡a₁
+                   (Cstr-prop-ext  K≡K₁  (λ ki kiK kiK' t d → irrelevanceTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) [k]))
   irrelevanceTermT {Γ} {t = t} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                    (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                    (Πₜ f d funcF f≡f [f] [f]₁) =
@@ -252,7 +260,7 @@ mutual
              (PE.subst (λ x → Γ ⊢ k ≅ k' ∷ x ⦂ s) Ka≡K₁a₁ k≡k')
              (irrelevanceTerm cstrA cstrB [k])
              (irrelevanceTerm cstrA cstrB [k'])
-             (PE.subst ([Cstr]-prop K₁ Γ _ k k') a≡a₁
+             (PE.subst (λ a → [Cstr]-prop K₁ Γ _ a s k k') a≡a₁
                        ([Cstr]-prop-ext K≡K₁ (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) [k≡k']))
   irrelevanceEqTermT {Γ} {t = t} {u = u} {s = s}
                      (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)

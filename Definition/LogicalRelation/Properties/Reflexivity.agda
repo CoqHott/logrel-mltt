@@ -26,10 +26,10 @@ reflEmpty-prop : ∀ {Γ n}
 reflEmpty-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 
 
-reflCstr-prop : ∀ {K Γ Pi t a Pirel}
+reflCstr-prop : ∀ {K Γ Pi t a s Pirel}
               → (∀ ki kiK t → Pi ki kiK t → Pirel ki kiK t t)
-              → Cstr-prop K Γ Pi t a
-              → [Cstr]-prop K Γ Pirel t t a
+              → Cstr-prop K Γ Pi a s t
+              → [Cstr]-prop K Γ Pirel a s t t
 reflCstr-prop reflPi (cstrᵣ kK x) = cstrᵣ kK (reflPi _ kK _ x)
 reflCstr-prop reflPi (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 

@@ -80,32 +80,35 @@ record _⊩ne_≡_∷_⦂_/_ (Γ : Con Term) (t u A : Term) (s : 𝕊) ([A] : Γ
 
 -- Reducibility at constructor type:
 
-data Cstr-prop (K : constructors) (Γ : Con Term) (Pi : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Set) : (t : Term) (a : Term)  → Set where
+data Cstr-prop (K : constructors) (Γ : Con Term) (Pi : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Set) (a : Term) (s : 𝕊) : (t : Term) → Set where
   cstrᵣ : ∀ {k x}
         → (kK : [ K ]-cstr (cstr-cod k))
         -- Main problem: how to have the following hypothesis in a strictly positive fashion
         -- → Γ ⊩¹ x ∷ wkAll Γ (cstr-dom k) ⦂ 𝕥y / [domk] k Γ
         → Pi k kK x
-        → Cstr-prop K Γ Pi (cstr k ∘ x) ([ K ]-cstr-params kK [ x ])
-  ne   : ∀ {t a} → Γ ⊩neNf t ∷ cstr K ∘ a ⦂ 𝕥y → Cstr-prop K Γ Pi t a
+        -- How should a be constrained ?
+        -- first version, too rigid, breaks in Conversion because it is not stable under conversion
+        -- a PE.≡ [ K ]-cstr-params kK [ x ]
+        → Cstr-prop K Γ Pi a s (cstr k ∘ x)
+  ne   : ∀ {t} → Γ ⊩neNf t ∷ cstr K ∘ a ⦂ s → Cstr-prop K Γ Pi a s t
 
-data [Cstr]-prop (K : constructors) (Γ : Con Term) (Pi : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Term → Set) : (t t' : Term) (a : Term)  → Set where
+data [Cstr]-prop (K : constructors) (Γ : Con Term) (Pi : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Term → Set) (a : Term) (s : 𝕊) : (t t' : Term) → Set where
   cstrᵣ : ∀ {k x x'}
         → (kK : [ K ]-cstr (cstr-cod k))
         → Pi k kK x x'
-        → [Cstr]-prop K Γ Pi (cstr k ∘ x) (cstr k ∘ x') ([ K ]-cstr-params kK [ x ])
-  ne   : ∀ {t t' a} → Γ ⊩neNf t ≡ t' ∷ cstr K ∘ a ⦂ 𝕥y → [Cstr]-prop K Γ Pi t t' a
+        → [Cstr]-prop K Γ Pi a s (cstr k ∘ x) (cstr k ∘ x')
+  ne   : ∀ {t t'} → Γ ⊩neNf t ≡ t' ∷ cstr K ∘ a ⦂ s → [Cstr]-prop K Γ Pi a s t t'
 
 
-Cstr-prop-Whnf : ∀ {K Γ Pi t a} (d : Cstr-prop K Γ Pi t a) → Whnf t
+Cstr-prop-Whnf : ∀ {K Γ Pi t a s} (d : Cstr-prop K Γ Pi a s t) → Whnf t
 Cstr-prop-Whnf (cstrᵣ kK x) = cstrₙ
 Cstr-prop-Whnf (ne x) = ne (_⊩neNf_∷_⦂_.neK x)
 
-[Cstr]-prop-left-Whnf : ∀ {K Γ Pi t t' a} (d : [Cstr]-prop K Γ Pi t t' a) → Whnf t
+[Cstr]-prop-left-Whnf : ∀ {K Γ Pi t t' a s} (d : [Cstr]-prop K Γ Pi a s t t') → Whnf t
 [Cstr]-prop-left-Whnf (cstrᵣ kK x) = cstrₙ
 [Cstr]-prop-left-Whnf (ne x) = ne (_⊩neNf_≡_∷_⦂_.neK x)
 
-[Cstr]-prop-right-Whnf : ∀ {K Γ Pi t t' a} (d : [Cstr]-prop K Γ Pi t t' a) → Whnf t'
+[Cstr]-prop-right-Whnf : ∀ {K Γ Pi t t' a s} (d : [Cstr]-prop K Γ Pi a s t t') → Whnf t'
 [Cstr]-prop-right-Whnf (cstrᵣ kK x) = cstrₙ
 [Cstr]-prop-right-Whnf (ne x) = ne (_⊩neNf_≡_∷_⦂_.neM x)
 
@@ -347,15 +350,15 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       constructor cstrᵣ
       field
         K : constructors
-        KcodU : cstr-cod K PE.≡ Univ (cstr-𝕊 K)
+        KcodU : cstr-cod K PE.≡ Univ s
         a : Term
         D : Γ ⊢ A :⇒*: cstr K ∘ a ⦂ s
         -- Is there a way to use the hypothesis that cstr-dom is closed to simplify the argument ?
-        ⊢a : Γ ⊢ a ∷ wkAll Γ (cstr-dom K) ⦂ 𝕥y -- TODO: the sort of the dom might need to be generalized
-        A≡A : Γ ⊢ cstr K ∘ a ≅ cstr K ∘ a ⦂ s
-        [domK] : Γ ⊩¹ wkAll Γ (cstr-dom K) ⦂ 𝕥y
+        ⊢a : Γ ⊢ a ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K -- TODO: the sort of the dom might need to be generalized
+        A≡A : Γ ⊢ a ≅ a ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K -- Implies that Γ ⊢ cstr K ∘ a ≅ cstr K ∘ a ⦂ s by ≅-cstr-cong
+        [domK] : Γ ⊩¹ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K
         -- [domK] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ (wkAll Γ (cstr-dom K)) ⦂ 𝕥y
-        [a] : Γ ⊩¹ a ∷ wkAll Γ (cstr-dom K) ⦂ 𝕥y / [domK]
+        [a] : Γ ⊩¹ a ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K / [domK]
         -- [a] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ a ∷ U.wk ρ (wkAll Γ (cstr-dom k)) ⦂ 𝕥y / [dom] [ρ] ⊢Δ
         [Yi] : ∀ ki → [ K ]-cstr (cstr-cod ki) → Γ ⊩¹ cstr-dom ki ⦂ cstr-dom-sort ki
         -- KM: Do I need an hypothesys that cstr k is extensional, e.g.
@@ -374,16 +377,15 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       field
         a' : Term
         D' : Γ ⊢ B :⇒*: cstr K ∘ a' ⦂ s
-        -- [A≡B] : Γ ⊩¹ cstr K ∘ a ≡ cstr K ∘ a' ⦂ s / [A]
-        A≡B : Γ ⊢ cstr K ∘ a ≅ cstr K ∘ a' ⦂ s
-        [a≡a'] : Γ ⊩¹ a ≡ a' ∷ wkAll Γ (cstr-dom K) ⦂ 𝕥y / [domK]
+        A≡B : Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K
+        [a≡a'] : Γ ⊩¹ a ≡ a' ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K / [domK]
         -- [a≡a'] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ a ≡ U.wk ρ a' ∷ U.wk ρ (wkAll Γ (cstr-dom K)) ⦂ 𝕥y / [domK] [ρ] ⊢Δ
 
     _⊩¹cstr_∷_⦂_/_ : (Γ : Con Term) (t A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
     Γ ⊩¹cstr t ∷ A ⦂ s / cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi] =
       ∃ λ k → Γ ⊢ t :⇒*: k ∷ cstr K ∘ a ⦂ s
              × Γ ⊢ k ≅ k ∷ cstr K ∘ a ⦂ s
-             × Cstr-prop K Γ (λ ki kiK t → Γ ⊩¹ t ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) k a
+             × Cstr-prop K Γ (λ ki kiK t → Γ ⊩¹ t ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) a s k
 
     _⊩¹cstr_≡_∷_⦂_/_ : (Γ : Con Term) (t u A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
     Γ ⊩¹cstr t ≡ u ∷ A ⦂ s / cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi] =
@@ -394,7 +396,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       ×  Γ ⊢ k ≅ k' ∷ cstr K ∘ a ⦂ s
       ×  Γ ⊩¹cstr t ∷ A ⦂ s / [A]
       ×  Γ ⊩¹cstr u ∷ A ⦂ s / [A]
-      ×  [Cstr]-prop K Γ (λ ki kiK t u → Γ ⊩¹ t ≡ u ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) k k' a
+      ×  [Cstr]-prop K Γ (λ ki kiK t u → Γ ⊩¹ t ≡ u ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) a s k k'
 
     -- Logical relation definition
 

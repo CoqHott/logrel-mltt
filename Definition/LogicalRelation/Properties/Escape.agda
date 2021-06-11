@@ -38,7 +38,7 @@ escapeEq (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ Πₙ Πₙ A≡B
 escapeEq (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstr₌ a' D' A≡B [a≡a']) =
-  ≅-red (red D) (red D') cstrₙ cstrₙ A≡B
+  ≅-red (red D) (red D') cstrₙ cstrₙ (≅-cstr-cong KcodU (wfTerm ⊢a) A≡B)
 escapeEq (emb 0<1 A) A≡B = escapeEq A A≡B
 
 -- Reducible terms are well-formed.
