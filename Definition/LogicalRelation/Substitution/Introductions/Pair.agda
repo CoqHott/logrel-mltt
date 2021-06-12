@@ -40,6 +40,9 @@ import Tools.PropositionalEquality as PE
   let [G[t]] = substS {F} {G} {t} [Γ] [F] [G] [t]
       [ΠFG] = Πᵛ {F = F} {G = G} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [F] [G]
       [σF] = proj₁ ([F] ⊢Δ [σ])
+      ⊢F = escape [σF]
+      [σG] = proj₁ ([G] (⊢Δ ∙ ⊢F) (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]))
+      ⊢G = escape [σG]
       [σt] = proj₁ ([t] (⊢Δ) [σ])
       ⊢t = escapeTerm [σF] [σt]
       [σu] = proj₁ ([u] (⊢Δ) [σ])
@@ -48,8 +51,8 @@ import Tools.PropositionalEquality as PE
       [σG[t]]′ = irrelevance′ (singleSubstLift G t) [σG[t]]
       [σu]′ = irrelevanceTerm′ (singleSubstLift G t) PE.refl PE.refl [σG[t]] [σG[t]]′ [σu]
       ⊢u = escapeTerm [σG[t]]′ [σu]′
-      ⦅t,u⦆ⱼ = ⦅_,_⦆ⱼ {F = subst σ F} {G = subst (liftSubst σ) G} {t = subst σ t} {u = subst σ u}
-                      ⊢t ⊢u
+      ⦅t,u⦆ⱼ = ⦅_,_,_,_⦆ⱼ {F = subst σ F} {G = subst (liftSubst σ) G} {t = subst σ t} {u = subst σ u}
+                      ⊢F ⊢G ⊢t ⊢u
   in ⦅t,u⦆ⱼ , λ {σ′} [σ′] [σ≡σ′] →
             ⦅t,u⦆ⱼ ,
             let ⊢Γ = wfTerm ⊢t
@@ -88,6 +91,6 @@ import Tools.PropositionalEquality as PE
                 [G] = G-ext id ⊢Γ [σt]id [σt′]id [σt≡σt′]id
                 [σ′u]′ = convTerm₁ [σG[t]]′ [σG₁[t]]
                                    [Gσt≡σt′] [σ′u]′′ 
-                ⊢u′ = escapeTerm [σG₁[t]] [σ′u]′ 
-             in ⦅_,_⦆ⱼ {F = subst σ F} {G = subst (liftSubst σ) G} {t = subst σ′ t}
-                       {u = subst σ′ u} ⊢t′ ⊢u′
+                ⊢u′ = escapeTerm [σG₁[t]] [σ′u]′
+             in ⦅_,_,_,_⦆ⱼ {F = subst σ F} {G = subst (liftSubst σ) G} {t = subst σ′ t}
+                       {u = subst σ′ u} ⊢F ⊢G ⊢t′ ⊢u′
