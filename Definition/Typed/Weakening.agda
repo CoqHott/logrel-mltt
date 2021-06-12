@@ -81,8 +81,8 @@ mutual
   wkTerm ρ ⊢Δ (_∘ⱼ_ {G = G} g a) = PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
                                            (PE.sym (wk-β G))
                                            (wkTerm ρ ⊢Δ g ∘ⱼ wkTerm ρ ⊢Δ a)
-  wkTerm ρ ⊢Δ (⦅_,_⦆ⱼ {F = F} {G = G} t u)
-    = ⦅ wkTerm ρ ⊢Δ t ,  PE.subst (λ X → _ ⊢ _ ∷ X ^ [ % , _ ]) (wk-β G) (wkTerm ρ ⊢Δ u) ⦆ⱼ
+  wkTerm ρ ⊢Δ (⦅_,_,_,_⦆ⱼ {G = GG} F G t u )
+    = let ρF = wk ρ ⊢Δ F in ⦅ wk ρ ⊢Δ F , wk (lift ρ) (⊢Δ ∙ ρF) G , wkTerm ρ ⊢Δ t ,  PE.subst (λ X → _ ⊢ _ ∷ X ^ [ % , _ ]) (wk-β GG) (wkTerm ρ ⊢Δ u) ⦆ⱼ
   wkTerm ρ ⊢Δ (fstⱼ F G t) = let ρF = wkTerm ρ ⊢Δ F in
     let ρG = (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G) in
     fstⱼ ρF ρG (wkTerm ρ ⊢Δ t)

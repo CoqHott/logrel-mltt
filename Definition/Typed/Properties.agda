@@ -27,7 +27,7 @@ wfTerm (var ⊢Γ x₁) = ⊢Γ
 wfTerm (lamⱼ _ _ F t) with wfTerm t
 wfTerm (lamⱼ _ _ F t) | ⊢Γ ∙ F′ = ⊢Γ
 wfTerm (g ∘ⱼ a) = wfTerm a
-wfTerm (⦅ t , u ⦆ⱼ) = wfTerm t
+wfTerm (⦅ F , G , t , u ⦆ⱼ) = wfTerm t
 wfTerm (fstⱼ A B t) = wfTerm t
 wfTerm (sndⱼ A B t) = wfTerm t
 wfTerm (zeroⱼ ⊢Γ) = ⊢Γ
