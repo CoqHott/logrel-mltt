@@ -31,6 +31,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Cast
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
 open import Definition.LogicalRelation.Substitution.Introductions.Application
 open import Definition.LogicalRelation.Substitution.Introductions.Pair
+open import Definition.LogicalRelation.Substitution.Introductions.Fst
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 import Definition.LogicalRelation.Substitution.ProofIrrelevance as PI
 import Definition.LogicalRelation.Substitution.Irrelevance as S
@@ -139,13 +140,6 @@ mutual
     → ∃ λ ([Γ] : ⊩ᵛ Γ)
     → ∃ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
     → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ rA / [Γ] / [A]
-  fundamentalTerm (⦅_,_,_,_⦆ⱼ {l} {F} {G} {t} {u} ⊢F ⊢G ⊢t ⊢u) with fundamental ⊢F | fundamental ⊢G | fundamentalTerm ⊢t | fundamentalTerm ⊢u
-  ... | [ΓF] , [F]' | [ΓG] , [G] | [Γ] , [F] , [t]ₜ | [Γ]₁ , [G[t]] , [u]ₜ =
-     let  [F]′ = S.irrelevance {A = F} [Γ] [Γ]₁ [F]
-          [G]′ = S.irrelevance {A = G} [ΓG] ([Γ]₁ ∙ [F]′) [G]
-          [t]ₜ′ = S.irrelevanceTerm {A = F} {t = t} [Γ] [Γ]₁ [F] [F]′ [t]ₜ
-          [u]ₜ′ = S.irrelevanceTerm {A = G [ t ]} {t = u} [Γ]₁ [Γ]₁ [G[t]] (substS {F} {G} {t} [Γ]₁ [F]′ [G]′ [t]ₜ′) [u]ₜ
-     in  [Γ]₁ , ∃ᵛ {F} {G} {l∃ = l} [Γ]₁ [F]′ [G]′ , ⦅⦆ᵛ {F = F} {G = G} {t = t} {u = u} [Γ]₁ [F]′ [G]′ [t]ₜ′ [u]ₜ′
   fundamentalTerm  = {!!}
 {- 
   fundamentalTerm (ℕⱼ x) = valid x , maybeEmbᵛ {A = Univ _ _} (valid x) (Uᵛ emb< (valid x)) ,  maybeEmbTermᵛ {A = Univ _ _} {t = ℕ} (valid x) (Uᵛ emb< (valid x)) (ℕᵗᵛ (valid x))
@@ -214,7 +208,30 @@ mutual
         [s]′ = S.irrelevanceTerm {A = sType} {t = s} [Γ]₂ [Γ]′ [G₊] [G₊]′ [s]
     in  [Γ]′ , [Gₙ]′
     ,   natrecᵛ {G} {rG} {lG} {z} {s} {n} [Γ]′ [ℕ] [G]′ [G₀]′ [G₊]′ [Gₙ]′ [z]′ [s]′ [n]
-  fundamentalTerm (fstⱼ x x₁ x₂) = {!!}
+  fundamentalTerm (⦅_,_,_,_⦆ⱼ {l} {F} {G} {t} {u} ⊢F ⊢G ⊢t ⊢u) with fundamental ⊢F | fundamental ⊢G | fundamentalTerm ⊢t | fundamentalTerm ⊢u
+  ... | [ΓF] , [F]' | [ΓG] , [G] | [Γ] , [F] , [t]ₜ | [Γ]₁ , [G[t]] , [u]ₜ =
+     let  [F]′ = S.irrelevance {A = F} [Γ] [Γ]₁ [F]
+          [G]′ = S.irrelevance {A = G} [ΓG] ([Γ]₁ ∙ [F]′) [G]
+          [t]ₜ′ = S.irrelevanceTerm {A = F} {t = t} [Γ] [Γ]₁ [F] [F]′ [t]ₜ
+          [u]ₜ′ = S.irrelevanceTerm {A = G [ t ]} {t = u} [Γ]₁ [Γ]₁ [G[t]] (substS {F} {G} {t} [Γ]₁ [F]′ [G]′ [t]ₜ′) [u]ₜ
+     in  [Γ]₁ , ∃ᵛ {F} {G} {l∃ = l} [Γ]₁ [F]′ [G]′ , ⦅⦆ᵛ {F = F} {G = G} {t = t} {u = u} [Γ]₁ [F]′ [G]′ [t]ₜ′ [u]ₜ′
+  fundamentalTerm (fstⱼ {F} {G} {tu} {l} ⊢F ⊢G ⊢tu)
+    with fundamentalTerm ⊢F | fundamentalTerm ⊢G | fundamentalTerm ⊢tu
+  ... | [ΓF] , [UF] , [F]ₜ | [ΓG] ∙ [F] , [UG] , [G]ₜ | [Γ] , [∃FG] , [tu]ₜ =
+    let [UF]′ = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l)) [Γ])
+        [F]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = F} [ΓF] [Γ] [UF] [UF]′ [F]ₜ
+        [F]′ = maybeEmbᵛ {A = F} [Γ] (univᵛ {A = F} [Γ] (≡is≤ PE.refl) [UF]′ [F]ₜ′)
+        [UG]′ = S.irrelevance {A = Univ _ _} (_∙_ {A = F} [ΓG] [F]) (_∙_ {A = F} [Γ] [F]′) (λ {Δ} {σ} → [UG] {Δ} {σ})
+        [G]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = G} (_∙_ {A = F} [ΓG] [F])
+                                     (_∙_ {A = F} [Γ] [F]′) (λ {Δ} {σ} → [UG] {Δ} {σ})
+                                     (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [G]ₜ
+        [G]′ = maybeEmbᵛ {A = G} (_∙_ {A = F} [Γ] [F]′)
+               (univᵛ {A = G} (_∙_ {A = F} [Γ] [F]′) (≡is≤ PE.refl)
+               (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [G]ₜ′)
+        [tu]ₜ′ = S.irrelevanceTerm {A = ∃ F ▹ G} {t = tu} [Γ] [Γ] [∃FG]
+                                   (∃ᵛ {F} {G} [Γ] [F]′ [G]′) [tu]ₜ
+    in [Γ] , [F]′ , fstᵛ {F = F} {G = G} {tu = tu} [Γ] [F]′ [G]′
+                         (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′ [tu]ₜ′
   fundamentalTerm (sndⱼ x x₁ x₂) = {!!}
   fundamentalTerm (Idreflⱼ x) = {!!}
   fundamentalTerm (transpⱼ x x₁ x₂ x₃ x₄ x₅) = {!!}
