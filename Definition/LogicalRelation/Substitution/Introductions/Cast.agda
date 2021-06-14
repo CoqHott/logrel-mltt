@@ -245,8 +245,10 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
              (λ [ρ] ⊢Δ [y] [x] → proj₁ ([cast] ⊢Δ ([G₁] [ρ] ⊢Δ [y]) ([G] [ρ] ⊢Δ [x])))
              [b₂])
   where
+    -- Somehow Agda will hang if [b₁] and [b₂] are factored in [castΠΠ]
+    -- So I have to define them outside
+    -- ????
     b₁ = λ ρ e x → cast ⁰ (wk ρ F₁) (wk ρ F) (Idsym (U ⁰) (wk ρ F) (wk ρ F₁) e) x
-
     [b₁] : ∀ {ρ Δ e x} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
         → (Δ ⊢ e ∷ Id (U ⁰) (wk ρ F) (wk ρ F₁) ^ [ % , ι ¹ ])
         → (Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F₁ ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
@@ -258,7 +260,6 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
       in proj₂ ([cast] ⊢Δ ([F] [ρ] ⊢Δ) ([F₁] [ρ] ⊢Δ)) [x] ⊢e′
 
     b₂ = λ ρ e x → cast ⁰ (wk ρ F) (wk ρ F₁) (Idsym (U ⁰) (wk ρ F₁) (wk ρ F) e) x
-
     [b₂] : ∀ {ρ Δ e x} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
         → (Δ ⊢ e ∷ Id (U ⁰) (wk ρ F₁) (wk ρ F) ^ [ % , ι ¹ ])
         → (Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F ^ [ ! , ι ⁰ ] / [F] [ρ] ⊢Δ)
