@@ -702,3 +702,47 @@ open import Tools.Empty using (⊥; ⊥-elim)
                               in irrelevanceEq″ (PE.sym (wk-subst (∃ F ▹ G)))
                                                 (PE.sym (wk-subst (∃ H ▹ E))) PE.refl PE.refl
                                                 (proj₁ (∃ᵛ {F} {G} [Γ] [F] [G] ⊢Δ₁ [ρσ])) (LogRel._⊩¹U_∷_^_/_.[t] [∃FG]ᵗ [ρ] ⊢Δ₁) X 
+
+-- Validity of non-dependent function types.
+××ᵛ : ∀ {F G l∃ Γ l}
+      ([Γ] : ⊩ᵛ Γ)
+      ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])
+    → Γ ⊩ᵛ⟨ l ⟩ G ^ [ % , ι l∃ ] / [Γ]
+    → Γ ⊩ᵛ⟨ l ⟩ F ×× G ^ [ % , ι l∃ ] / [Γ]
+××ᵛ {F} {G} [Γ] [F] [G] =
+  ∃ᵛ {F} {wk1 G} [Γ] [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
+
+-- Validity of non-dependent function type congurence.
+××-congᵛ : ∀ {F F′ G G′ l∃ Γ l}
+           ([Γ] : ⊩ᵛ Γ)
+           ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])
+           ([F′] : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ % , ι l∃ ] / [Γ])
+           ([F≡F′] : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ % , ι l∃ ] / [Γ] / [F])
+           ([G] : Γ ⊩ᵛ⟨ l ⟩ G ^ [ % , ι l∃ ] / [Γ])
+           ([G′] : Γ ⊩ᵛ⟨ l ⟩ G′ ^ [ % , ι l∃ ] / [Γ])
+           ([G≡G′] : Γ ⊩ᵛ⟨ l ⟩ G ≡ G′ ^ [ % , ι l∃ ] / [Γ] / [G])
+         → Γ ⊩ᵛ⟨ l ⟩ F ×× G ≡ F′ ×× G′ ^ [ % , ι l∃ ] / [Γ] / ××ᵛ {F} {G} [Γ] [F] [G]
+××-congᵛ {F} {F′} {G} {G′} [Γ] [F] [F′] [F≡F′] [G] [G′] [G≡G′] =
+  ∃-congᵛ {F} {wk1 G} {F′} {wk1 G′} [Γ]
+          [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
+          [F′] (wk1ᵛ {G′} {F′} [Γ] [F′] [G′])
+          [F≡F′] (wk1Eqᵛ {G} {G′} {F} [Γ] [F] [G] [G≡G′])
+
+××ᵗᵛ : ∀ {F G l∃ Γ} ([Γ] : ⊩ᵛ Γ)→
+      let l    = ∞
+          [U] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+      in      
+        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])
+      → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] / [U]
+      → Γ ⊩ᵛ⟨ l ⟩ G ∷ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] / (λ {Δ} {σ} → [U] {Δ} {σ})
+      → Γ ⊩ᵛ⟨ l ⟩ F ×× G ∷ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] / [U]
+××ᵗᵛ {F} {G} {l∃} [Γ] [F] [Fₜ] [Gₜ] =
+  let l    = ∞
+      [U] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+      [Gₜ]′ = wk1ᵗᵛ {F} {G} {[ % , ι l∃ ]} {%} {l∃} [Γ] [F] [Gₜ]
+      [wU] = maybeEmbᵛ {A = Univ % _} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded l∃)) (_∙_ {A = F} [Γ] [F]) {Δ} {σ})
+      [wU]′ = wk1ᵛ {Univ _ _ } {F} [Γ] [F] [U]
+  in ∃ᵗᵛ {F} {wk1 G} [Γ] [F] (λ {Δ} {σ} → [wU]′ {Δ} {σ}) [Fₜ]
+        (S.irrelevanceTerm {A = Univ _ _} {t = wk1 G} (_∙_ {A = F} [Γ] [F]) (_∙_ {A = F} [Γ] [F])
+                                                      (λ {Δ} {σ} → [wU] {Δ} {σ}) (λ {Δ} {σ} → [wU]′ {Δ} {σ}) [Gₜ]′) 
+

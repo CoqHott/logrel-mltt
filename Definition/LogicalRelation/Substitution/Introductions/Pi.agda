@@ -780,8 +780,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       → Γ ⊩ᵛ⟨ l ⟩ G ∷ Univ rΠ lG ^ [ ! , next lG ] / [Γ] / (λ {Δ} {σ} → [UG] {Δ} {σ})
       → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ∷ Univ rΠ lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
 ▹▹ᵗᵛ {F} {G} {rF} {lF} {lG} {rΠ} {lΠ} lF< lG< [Γ] [F] [UG] [Fₜ] [Gₜ] =
-  let [G] = maybeEmbᵛ {A = G} [Γ] (univᵛ {G} [Γ] lG< (λ {Δ} {σ} → [UG] {Δ} {σ}) (λ {Δ} {σ} → [Gₜ] {Δ} {σ}))
-      [UG]′ = maybeEmbᵛ {A = Univ rΠ _} [Γ] (Uᵛ (proj₂ (levelBounded lG)) [Γ])
+  let [UG]′ = maybeEmbᵛ {A = Univ rΠ _} [Γ] (Uᵛ (proj₂ (levelBounded lG)) [Γ])
       [Gₜ]′ = wk1ᵗᵛ {F} {G} {[ rF , ι lF ]} {rΠ} {lG} [Γ] [F] (S.irrelevanceTerm {A = Univ _ _} {t = G} [Γ] [Γ] [UG] [UG]′ [Gₜ])
       [wUG] = maybeEmbᵛ {A = Univ rΠ _} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F]) {Δ} {σ})
       [wUG]′ = wk1ᵛ {Univ _ _ } {F} [Γ] [F] [UG]
