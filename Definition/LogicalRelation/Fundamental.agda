@@ -812,26 +812,35 @@ mutual
                                     [ΠAB'] [cast-Π-res] 
     in [Γ]₁ , modelsTermEq [ΠAB'] [id] [cast-Π-res] [eq]
       -}
-{-
+
   fundamentalTermEq {Γ} (Id-SProp {A} {B} ⊢A ⊢B) with fundamentalTerm ⊢A | fundamentalTerm ⊢B
   ... | [ΓA] , [UA] , [A]ₜ | [ΓB] , [UB] , [B]ₜ =
     let [SProp] = Uᵛ {rU = %} ∞< [ΓB]
-        [UA]′ = S.irrelevance {A = Univ _ _} [ΓA] [ΓB] [UA] 
+        [UA]′ =  maybeEmbᵛ {A = Univ _ _} [ΓB] (Uᵛ emb< [ΓB])
         [A]ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = A} [ΓA] [ΓB] [UA] [UA]′ [A]ₜ
+        [B]ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = B} [ΓB] [ΓB] [UB] [UA]′ [B]ₜ
         ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UA]′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([A]ₜ′ ⊢Δ [σ]))
         [A] = maybeEmbᵛ {A = A} [ΓB] (univᵛ {A = A} [ΓB] (≡is≤ PE.refl) [UA]′ [A]ₜ′)
+        [B] = maybeEmbᵛ {A = B} [ΓB] (univᵛ {A = B} [ΓB] (≡is≤ PE.refl) [UB] [B]ₜ)
         ⊢BΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UB] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([B]ₜ ⊢Δ [σ]))
-        Id-SProp-res = ∃ (A ^ % ° ⁰ ▹▹ B ° ⁰ ) ▹ ((wk1 B) ^ % ° ⁰  ▹▹ (wk1 A) ° ⁰ )
-        [Id-SProp] : Γ ⊩ᵛ Id (SProp ⁰) A B ⇒ Id-SProp-res ∷ SProp ¹ ^ ∞ / [ΓB]
-        [Id-SProp] = λ {Δ} {σ} ⊢Δ [σ] → let X = Id-SProp (⊢AΔ {Δ} {σ} ⊢Δ [σ]) (⊢BΔ {Δ} {σ} ⊢Δ [σ])
-                                        in PE.subst (λ ret → _ ⊢ _ ⇒ ret ∷ _ ^ _ ) {!PE.cong₂ (λ X Y → ∃ subst σ A ^ % ° ⁰ ▹▹ X ° ⁰ ▹ Y) ? c?!} X
-        [Id-SProp-res] : Γ ⊩ᵛ⟨ ∞ ⟩ Id-SProp-res ∷ SProp ¹ ^ [ ! , ∞ ] / [ΓB] / [SProp]
-        [Id-SProp-res] = {!!}
-        [id] , [eq] = redSubstTermᵛ {SProp ¹} {Id (SProp ⁰) A B} {Id-SProp-res}
+        _▹▹⁰_ = λ A B → A ^ % ° ⁰ ▹▹ B ° ⁰
+        Id-SProp-res = λ A B → (A ▹▹⁰ B) ×× (B ▹▹⁰ A)
+        [Id-SProp] : Γ ⊩ᵛ Id (SProp ⁰) A B ⇒ Id-SProp-res A B ∷ SProp ¹ ^ ∞ / [ΓB]
+        [Id-SProp] = λ {Δ} {σ} ⊢Δ [σ] → PE.subst (λ ret → Δ ⊢ Id (SProp ⁰) (subst σ A) (subst σ B) ⇒ ret ∷ SProp ¹ ^ ∞ )
+                                                 (PE.cong₄ (λ a b c d → ∃ (Π a ^ % ° ⁰ ▹ b ° ⁰) ▹ (Π c ^ % ° ⁰ ▹ d ° ⁰))
+                                                           PE.refl (PE.sym (Idsym-subst-lemma σ B)) (PE.sym (Idsym-subst-lemma σ B))
+                                                           (PE.trans (PE.cong wk1d (PE.sym (Idsym-subst-lemma σ A))) (PE.sym (Idsym-subst-lemma-wk1d σ (wk1 A)))))
+                                                 (Id-SProp {A = subst σ A} {B = subst σ B} (⊢AΔ {Δ} {σ} ⊢Δ [σ]) (⊢BΔ {Δ} {σ} ⊢Δ [σ]))       
+        [A▹▹B]ₜ = ▹▹ᵗᵛ {F = A} {G = B} (<is≤ 0<1) (<is≤ 0<1) [ΓB] [A] [UA]′ [A]ₜ′ [B]ₜ′
+        [A▹▹B] = maybeEmbᵛ {A = A ▹▹⁰ B} [ΓB] (univᵛ {A = A ▹▹⁰ B} [ΓB] (≡is≤ PE.refl) [SProp] [A▹▹B]ₜ)
+        [B▹▹A]ₜ = ▹▹ᵗᵛ {F = B} {G = A} (<is≤ 0<1) (<is≤ 0<1) [ΓB] [B] [UA]′ [B]ₜ′ [A]ₜ′
+        [Id-SProp-res] : Γ ⊩ᵛ⟨ ∞ ⟩ Id-SProp-res A B ∷ SProp ¹ ^ [ ! , ∞ ] / [ΓB] / [SProp]
+        [Id-SProp-res] = ××ᵗᵛ {F = A ▹▹⁰ B} {G = B ▹▹⁰ A} [ΓB] [A▹▹B] [A▹▹B]ₜ [B▹▹A]ₜ
+        [id] , [eq] = redSubstTermᵛ {SProp ¹} {Id (SProp ⁰) A B} {Id-SProp-res A B}
                                     [ΓB] (λ {Δ} {σ} ⊢Δ [σ] → [Id-SProp] {Δ} {σ} ⊢Δ [σ]) 
                                     [SProp] [Id-SProp-res] 
     in [ΓB] , modelsTermEq [SProp] [id] [Id-SProp-res] [eq]
--}  
+ 
   fundamentalTermEq (Id-U-ΠΠ ⊢A ⊢B ⊢A' ⊢B') with fundamentalTerm ⊢A | fundamentalTerm ⊢B | fundamentalTerm ⊢A' | fundamentalTerm ⊢B'
   fundamentalTermEq (Id-U-ΠΠ {A} {B} {rA} {A'} {B'} ⊢A ⊢B ⊢A' ⊢B') | [Γ] , [UA] , [A] | [Γ]₁ ∙ [A]₁ , [UB] , [B] | [Γ]' , [UA'] , [A'] | [Γ]₁' ∙ [A']₁ , [UB'] , [B'] =
     {!!}
