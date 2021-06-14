@@ -10,6 +10,8 @@ open import Definition.Untyped.Properties
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Substitution
+open import Definition.LogicalRelation.Substitution.MaybeEmbed
+open import Definition.LogicalRelation.Substitution.Introductions.Universe
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -45,3 +47,27 @@ wk1Eqᵛ {A} {B} [Γ] [F] [A] [A≡B] ⊢Δ [σ] =
                      (PE.sym (subst-wk B)) PE.refl PE.refl
                      [σA] [σA]′
                      ([A≡B] ⊢Δ (proj₁ [σ]))
+
+-- Weakening of valid term as a type by one.
+wk1ᵗᵛ : ∀ {F G rF rG lG Γ}
+         ([Γ] : ⊩ᵛ Γ)
+         ([F] : Γ ⊩ᵛ⟨ ∞ ⟩ F ^ rF / [Γ]) →
+       let l    = ∞
+           [UG] = maybeEmbᵛ {A = Univ rG _} [Γ] (Uᵛ (proj₂ (levelBounded lG)) [Γ])
+           [wUG] = maybeEmbᵛ {A = Univ rG _} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F])  {Δ} {σ})
+       in Γ ⊩ᵛ⟨ l ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] / [UG] →
+          Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ wk1 G ∷ Univ rG lG ^ [ ! , next lG ] / ([Γ] ∙ [F]) / (λ {Δ} {σ} → [wUG] {Δ} {σ})
+wk1ᵗᵛ {F} {G} {rF} {rG} {lG} [Γ] [F] [G]ₜ {Δ} {σ} ⊢Δ [σ] =
+  let l    = ∞
+      [UG] = maybeEmbᵛ {A = Univ rG _} [Γ] (Uᵛ (proj₂ (levelBounded lG)) [Γ])
+      [wUG] = maybeEmbᵛ {A = Univ rG _} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F])  {Δ} {σ})
+      [σG] = proj₁ ([G]ₜ ⊢Δ (proj₁ [σ]))
+      [Geq] = PE.sym (subst-wk G)
+      [σG]′ = irrelevanceTerm″ PE.refl PE.refl PE.refl [Geq] (proj₁ ([UG] ⊢Δ (proj₁ [σ]))) (proj₁ ([wUG] {Δ} {σ} ⊢Δ [σ])) [σG]
+  in  [σG]′
+  ,   (λ [σ′] [σ≡σ′] →
+         irrelevanceEqTerm″ PE.refl PE.refl
+                            (PE.sym (subst-wk G))
+                            (PE.sym (subst-wk G)) PE.refl 
+                            (proj₁ ([UG] ⊢Δ (proj₁ [σ]))) (proj₁ ([wUG] {Δ} {σ} ⊢Δ [σ]))
+                            (proj₂ ([G]ₜ ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′])))

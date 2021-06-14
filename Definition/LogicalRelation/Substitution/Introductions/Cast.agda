@@ -83,7 +83,10 @@ wk1d[]-[]↑ x y = PE.trans (substVar-to-subst aux x) (PE.sym (subst-wk x))
     aux (Nat.suc n) = PE.refl
 
 Idsym-subst-lemma : ∀ σ a → subst (liftSubst σ) (wk1 a) PE.≡ wk1 (subst σ a)
-Idsym-subst-lemma σ a = PE.trans (subst-wk a) (PE.sym (wk-subst a))
+Idsym-subst-lemma σ a = PE.trans (subst-wk a) (PE.sym (wk-subst a)) 
+
+Idsym-subst-lemma-wk1d : ∀ σ a → subst (liftSubst (liftSubst σ)) (wk1d a) PE.≡ wk1d (subst (liftSubst σ) a) 
+Idsym-subst-lemma-wk1d σ a = PE.trans {!!} (PE.sym (wk-subst-lift a))
 
 Idsym-wk-lemma : ∀ ρ a → wk (lift ρ) (wk1 a) PE.≡ wk1 (wk ρ a)
 Idsym-wk-lemma ρ a = PE.trans (wk-comp (lift ρ) (step id) a)
@@ -123,8 +126,6 @@ Idsymⱼ {Γ} {A} {l} {x} {y} {e} ⊢A ⊢x ⊢y ⊢e =
   in PE.subst₂ (λ X Y → Γ ⊢ Idsym A x y e ∷ Id X y Y ^ [ % , ι l ])
     (wk1-singleSubst A y) (wk1-singleSubst x y)
     (transpⱼ ⊢A ⊢P ⊢x ⊢refl ⊢y ⊢e)
-
-
 
 
 irrelevant-subst : ∀ ρ t a → (wk (step ρ) t) [ a ] PE.≡ wk ρ t

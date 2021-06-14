@@ -85,7 +85,9 @@ mutual
            → Γ ⊢     g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ]
            → Γ ⊢     a ∷ F ^ [ rF , ι lF ]
            → Γ ⊢ g ∘ a ∷ G [ a ] ^ [ r , ι lG ]
-    ⦅_,_⦆ⱼ : ∀ {l F G t u}
+    ⦅_,_,_,_⦆ⱼ : ∀ {l F G t u}
+             → Γ ⊢ F ^ [ % , ι l ]
+             → Γ ∙ F ^ [ % , ι l ] ⊢ G ^ [ % , ι l ]
              → Γ ⊢ t ∷ F ^ [ % , ι l ]
              → Γ ⊢ u ∷ G [ t ] ^ [ % , ι l ]
              → Γ ⊢ ⦅ t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι l ]
@@ -280,8 +282,8 @@ mutual
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
                → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
-               → Γ ⊢ (Id (SProp ⁰) A B)
-                     ≡ (∃ (A ^ % ° ⁰ ▹▹ B ° ⁰) ▹ ((wk1 B) ^ % ° ⁰ ▹▹ (wk1 A) ° ⁰))
+               → Γ ⊢ Id (SProp ⁰) A B
+                     ≡ (A ^ % ° ⁰ ▹▹ B ° ⁰) ×× (B ^ % ° ⁰ ▹▹ A ° ⁰)
                      ∷ SProp ¹ ^ [ ! , next ¹ ]
     Id-ℕ-0S : ∀ {t}
             → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
@@ -427,8 +429,8 @@ mutual
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
                → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
-               → Γ ⊢ (Id (SProp ⁰) A B)
-                     ⇒ (∃ (A ^ % ° ⁰ ▹▹ B ° ⁰ ) ▹ ((wk1 B) ^ % ° ⁰  ▹▹ (wk1 A) ° ⁰ ))
+               → Γ ⊢ Id (SProp ⁰) A B
+                     ⇒ (A ^ % ° ⁰ ▹▹ B ° ⁰) ×× (B ^ % ° ⁰  ▹▹ A ° ⁰ )
                      ∷ SProp ¹ ^ next ¹
     Id-ℕ-0S : ∀ {t}
             → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
