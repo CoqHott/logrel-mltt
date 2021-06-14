@@ -282,8 +282,8 @@ mutual
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
                → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
-               → Γ ⊢ (Id (SProp ⁰) A B)
-                     ≡ (∃ (A ^ % ° ⁰ ▹▹ B ° ⁰) ▹ ((wk1 B) ^ % ° ⁰ ▹▹ (wk1 A) ° ⁰))
+               → Γ ⊢ Id (SProp ⁰) A B
+                     ≡ (A ^ % ° ⁰ ▹▹ B ° ⁰) ×× (B ^ % ° ⁰ ▹▹ A ° ⁰)
                      ∷ SProp ¹ ^ [ ! , next ¹ ]
     Id-ℕ-0S : ∀ {t}
             → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
@@ -429,8 +429,8 @@ mutual
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
                → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
-               → Γ ⊢ (Id (SProp ⁰) A B)
-                     ⇒ (∃ (A ^ % ° ⁰ ▹▹ B ° ⁰ ) ▹ ((wk1 B) ^ % ° ⁰  ▹▹ (wk1 A) ° ⁰ ))
+               → Γ ⊢ Id (SProp ⁰) A B
+                     ⇒ (A ^ % ° ⁰ ▹▹ B ° ⁰) ×× (B ^ % ° ⁰  ▹▹ A ° ⁰ )
                      ∷ SProp ¹ ^ next ¹
     Id-ℕ-0S : ∀ {t}
             → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]

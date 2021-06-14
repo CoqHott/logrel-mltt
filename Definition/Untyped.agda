@@ -515,6 +515,11 @@ wkWhnf ρ (ne x) = ne (wkNeutral ρ x)
 _^_°_▹▹_°_ : Term → Relevance → Level → Term → Level → Term
 A ^ r ° lA ▹▹ B ° lB = Π A ^ r ° lA ▹ wk1 B ° lB
 
+-- Non-dependent version of ∃.
+
+_××_ : Term → Term → Term
+A ×× B = ∃ A ▹ wk1 B
+
 ------------------------------------------------------------------------
 -- Substitution
 
