@@ -40,6 +40,10 @@ redSubst* D (Πᵣ′ sF F G [ ⊢B , ⊢ΠFG , D′ ] ⊢F ⊢G A≡A [F] [G] G
   in  (Πᵣ′ sF F G [ ⊢A , ⊢ΠFG , D ⇨* D′ ] ⊢F ⊢G A≡A [F] [G] G-ext)
   ,   (Π₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
         (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
+redSubst* D (cstrᵣ′ K KcodU a [ ⊢B , ⊢cstr , D' ] ⊢a A≡A [domK] [a] [Yi]) =
+  let ⊢A = redFirst* D
+  in (cstrᵣ′ K KcodU a [ ⊢A , ⊢cstr , D ⇨* D' ] ⊢a A≡A [domK] [a] [Yi]),
+     (cstr₌ a [ ⊢B , ⊢cstr , D' ] A≡A (reflEqTerm [domK] [a]))
 redSubst* D (emb 0<1 x) with redSubst* D x
 redSubst* D (emb 0<1 x) | y , y₁ = emb 0<1 y , y₁
 
@@ -86,6 +90,15 @@ redSubst*Term {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] 
           (Πₜ f [d′] funcF f≡f [f] [f]₁)
           (Πₜ f [d] funcF f≡f [f] [f]₁)
           (λ [ρ] ⊢Δ [a] → reflEqTerm ([G] [ρ] ⊢Δ [a]) ([f]₁ [ρ] ⊢Δ [a]))
+redSubst*Term t⇒u (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ k [ ⊢t , ⊢u , d ] k≡k [k]) =
+  let A≡cstr = subset* (red D)
+      t⇒u'   = conv* t⇒u A≡cstr
+      [d]  = [ ⊢t , ⊢u , d ]
+      [d'] = [ conv (redFirst*Term t⇒u) A≡cstr , ⊢u , conv* t⇒u A≡cstr ⇨∷* d ]
+  in cstrₜ k [d'] k≡k [k]
+  ,  cstrₜ₌ k k [d'] [d] k≡k
+            (cstrₜ k [d'] k≡k [k]) (cstrₜ k [d] k≡k [k])
+            (reflCstr-prop (λ ki kiK t₁ x → reflEqTerm ([Yi] ki kiK) x) [k])
 redSubst*Term t⇒u (emb 0<1 x) [u] = redSubst*Term t⇒u x [u]
 
 -- Weak head expansion of reducible types with single reduction step.

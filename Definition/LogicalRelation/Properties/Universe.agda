@@ -13,7 +13,7 @@ open import Definition.LogicalRelation.Irrelevance
 
 
 -- Helper function for reducible terms of type U for specific type derivations.
-univEq′ : ∀ {l Γ A s} ([U] : Γ ⊩⟨ l ⟩U) → Γ ⊩⟨ l ⟩ A ∷ Univ s ⦂ 𝕥y / U-intr [U] → Γ ⊩⟨ ⁰ ⟩ A ⦂ s
+univEq′ : ∀ {l Γ A s} ([U] : Γ ⊩⟨ l ⟩U s) → Γ ⊩⟨ l ⟩ A ∷ Univ s ⦂ 𝕥y / U-intr [U] → Γ ⊩⟨ ⁰ ⟩ A ⦂ s
 univEq′ (noemb (Uᵣ .⁰ 0<1 ⊢Γ)) (Uₜ A₁ d typeA A≡A [A]) = [A]
 univEq′ (emb 0<1 x) [A] = univEq′ x [A]
 
@@ -23,7 +23,7 @@ univEq [U] [A] = univEq′ (U-elim [U])
                          (irrelevanceTerm [U] (U-intr (U-elim [U])) [A])
 
 -- Helper function for reducible term equality of type U for specific type derivations.
-univEqEq′ : ∀ {l l′ Γ A B s} ([U] : Γ ⊩⟨ l ⟩U) ([A] : Γ ⊩⟨ l′ ⟩ A ⦂ s)
+univEqEq′ : ∀ {l l′ Γ A B s} ([U] : Γ ⊩⟨ l ⟩U s) ([A] : Γ ⊩⟨ l′ ⟩ A ⦂ s)
          → Γ ⊩⟨ l ⟩ A ≡ B ∷ Univ s ⦂ 𝕥y / U-intr [U]
          → Γ ⊩⟨ l′ ⟩ A ≡ B  ⦂ s / [A]
 univEqEq′ (noemb (Uᵣ .⁰ 0<1 ⊢Γ)) [A]

@@ -99,6 +99,11 @@ mutual
               in  neuTerm ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkNeutral ρ neN))
                           (conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG ∘ⱼ a)
                           (~-app (~-wk [ρ] ⊢Δ (~-conv n~n A≡ΠFG)) a≡a))
+  neuTerm {n = n₁} (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) neN n n~n =
+    let A≡cstr = subset* (red D)
+        ⊢n    = conv n A≡cstr
+        ⊢n~n  = ~-conv n~n A≡cstr
+    in cstrₜ n₁ (idRedTerm:*:  ⊢n) (~-to-≅ₜ ⊢n~n) (ne (neNfₜ neN ⊢n ⊢n~n))
   neuTerm (emb 0<1 x) neN n = neuTerm x neN n
 
   -- Neutrally equal terms are of reducible equality.
@@ -152,4 +157,16 @@ mutual
                              (conv ρn  ρA≡ρΠFG ∘ⱼ a)
                              (conv ρn′ ρA≡ρΠFG ∘ⱼ a)
                              (~-app (~-wk [ρ] ⊢Δ n~n′₁) a≡a))
+  neuEqTerm {n = n₁} {n′ = n₁′} (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) neN neN′ n n′ n~n′ =
+    let A≡cstr = subset* (red D)
+        ⊢n    = conv n A≡cstr
+        ⊢n′    = conv n′ A≡cstr
+        ⊢n~n′  = ~-conv n~n′ A≡cstr
+        cstrA   = cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]
+        n~n = ~-trans n~n′ (~-sym n~n′)
+        n′~n′ = ~-trans (~-sym n~n′) n~n′
+    in cstrₜ₌ n₁ n₁′ (idRedTerm:*: ⊢n) (idRedTerm:*: ⊢n′) (~-to-≅ₜ ⊢n~n′)
+              (neuTerm cstrA neN n n~n)
+              (neuTerm cstrA neN′ n′ n′~n′)
+              (ne (neNfₜ₌ neN neN′ ⊢n~n′))
   neuEqTerm (emb 0<1 x) neN neN′ n:≡:n′ = neuEqTerm x neN neN′ n:≡:n′

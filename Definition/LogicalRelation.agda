@@ -360,7 +360,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
         -- [domK] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ (wkAll Γ (cstr-dom K)) ⦂ 𝕥y
         [a] : Γ ⊩¹ a ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K / [domK]
         -- [a] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ a ∷ U.wk ρ (wkAll Γ (cstr-dom k)) ⦂ 𝕥y / [dom] [ρ] ⊢Δ
-        [Yi] : ∀ ki → [ K ]-cstr (cstr-cod ki) → Γ ⊩¹ cstr-dom ki ⦂ cstr-dom-sort ki
+        [Yi] : ∀ ki → [ K ]-cstr (cstr-cod ki) → Γ ⊩¹ wkAll Γ (cstr-dom ki) ⦂ cstr-dom-sort ki
         -- KM: Do I need an hypothesys that cstr k is extensional, e.g.
         -- k-ext : ∀ {ρ Δ a b}
         --       → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
@@ -379,13 +379,18 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
         D' : Γ ⊢ B :⇒*: cstr K ∘ a' ⦂ s
         A≡B : Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K
         [a≡a'] : Γ ⊩¹ a ≡ a' ∷ wkAll Γ (cstr-dom K) ⦂ cstr-dom-sort K / [domK]
-        -- [a≡a'] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ a ≡ U.wk ρ a' ∷ U.wk ρ (wkAll Γ (cstr-dom K)) ⦂ 𝕥y / [domK] [ρ] ⊢Δ
+        -- [a≡a'] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ a ≡
+        -- U.wk ρ a' ∷ U.wk ρ (wkAll Γ (cstr-dom K)) ⦂ 𝕥y / [domK] [ρ] ⊢Δ
+        -- shouldn't there be a [Yi≡Yi'] ? Not for now because in [Cstr]-prop we
+        -- only relate two values if they start with the same constructor, hence
+        -- enforcing that their arguments have the same type (on the nose)
+        -- However, this should probably change if we were to accept equations between constructors (in the equational theory)
 
     _⊩¹cstr_∷_⦂_/_ : (Γ : Con Term) (t A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
     Γ ⊩¹cstr t ∷ A ⦂ s / cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi] =
       ∃ λ k → Γ ⊢ t :⇒*: k ∷ cstr K ∘ a ⦂ s
              × Γ ⊢ k ≅ k ∷ cstr K ∘ a ⦂ s
-             × Cstr-prop K Γ (λ ki kiK t → Γ ⊩¹ t ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) a s k
+             × Cstr-prop K Γ (λ ki kiK t → Γ ⊩¹ t ∷ wkAll Γ (cstr-dom ki) ⦂ cstr-dom-sort ki / [Yi] ki kiK) a s k
 
     _⊩¹cstr_≡_∷_⦂_/_ : (Γ : Con Term) (t u A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
     Γ ⊩¹cstr t ≡ u ∷ A ⦂ s / cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi] =
@@ -396,7 +401,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       ×  Γ ⊢ k ≅ k' ∷ cstr K ∘ a ⦂ s
       ×  Γ ⊩¹cstr t ∷ A ⦂ s / [A]
       ×  Γ ⊩¹cstr u ∷ A ⦂ s / [A]
-      ×  [Cstr]-prop K Γ (λ ki kiK t u → Γ ⊩¹ t ≡ u ∷ cstr-dom ki ⦂ cstr-dom-sort ki / [Yi] ki kiK) a s k k'
+      ×  [Cstr]-prop K Γ (λ ki kiK t u → Γ ⊩¹ t ≡ u ∷ wkAll Γ (cstr-dom ki) ⦂ cstr-dom-sort ki / [Yi] ki kiK) a s k k'
 
     -- Logical relation definition
 
