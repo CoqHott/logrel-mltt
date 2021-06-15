@@ -10,6 +10,7 @@ open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.Typed.Weakening
 open import Definition.LogicalRelation
+open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
@@ -103,23 +104,44 @@ cstrᵛ-univ {Γ} {k} {a} {s} [dom] [a] [domi] D kdomU ksort𝕥y =
         (idRedTerm:*: ⊢ka)
         cstrₙ
         (PE.subst₂ (λ x y → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a ∷ x ⦂ y)
-                   (cstr-codU-substS kdomU)
-                   ksort𝕥y (≅ₜ-cstr-cong ⊢Γ (escapeTermEq [dom] (reflEqTerm  [dom] [a]))))
+                   (cstr-codU-substS kdomU) ksort𝕥y
+                   (≅ₜ-cstr-cong ⊢Γ (escapeTermEq [dom] (reflEqTerm  [dom] [a]))))
         {! (cstrᵣ ?) !}
 
 
-cstrᵛ-cstr : ∀ {Γ k a A}
-             (D : Γ ⊩′⟨ ¹ ⟩cstr A ⦂ cstr-cod-sort k)
-           → Γ ⊩⟨ ¹ ⟩ cstr k ∘ a ∷ A ⦂ cstr-cod-sort k / cstrᵣ D
-cstrᵛ-cstr {k = k} {a = a} (cstrᵣ K KcodU a₁ D ⊢a A≡A [domK] [a] [Yi]) =
-  cstrₜ (cstr k ∘ a)
-        (idRedTerm:*: {!!}) {!!} {!!}
+cstrᵛ-cstr : ∀ {Γ k x} →
+             let l = ¹ in
+             ([dom] : Γ ⊩⟨ l ⟩ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k)
+             ([x] : Γ ⊩⟨ l ⟩ x ∷ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k / [dom])
+             (D : Γ ⊩′⟨ l ⟩cstr (cstr-cod-ctx Γ k) [ x ] ⦂ cstr-cod-sort k)
+           → Γ ⊩⟨ l ⟩ cstr k ∘ x ∷ (cstr-cod-ctx Γ k) [ x ] ⦂ cstr-cod-sort k / cstrᵣ D
+cstrᵛ-cstr {Γ} {k = k} {x = x} [dom] [x] (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) =
+  let codk≡Ka = whnfRed* (red D) {!!}
+      ⊢Γ     = wf (escape [dom])
+      ⊢kx    = cstrⱼ (cstr-dom-ctx-wty ⊢Γ)
+                     (cstr-cod-ctx-wty ⊢Γ)
+                     (λ ki x₁ → ⊥-elim {!!})
+                     (escapeTerm [dom] [x])
+      kK : [ K ]-cstr (cstr-cod k)
+      kK = {!!}
+  in cstrₜ (cstr k ∘ x)
+           (idRedTerm:*: (PE.subst (λ A → Γ ⊢ cstr k ∘ x ∷ A ⦂ cstr-cod-sort k) codk≡Ka ⊢kx))
+           (PE.subst (λ A → Γ ⊢ cstr k ∘ x ≅ cstr k ∘ x ∷ A ⦂ cstr-cod-sort k)
+                     codk≡Ka
+                     (≅ₜ-cstr-cong ⊢Γ (escapeTermEq [dom] (reflEqTerm  [dom] [x]))))
+           (cstrᵣ kK (irrelevanceTerm [dom] ([Yi] k kK) [x]))
 
 data CstrCod : Term → Set where
   univₖ : (s : 𝕊) → CstrCod (Univ s)
   cstrₖ : (K : constructors) (a : Term) → CstrCod (cstr K ∘ a)
 
 postulate cstr-cod-classify : (k : constructors) → CstrCod (cstr-cod k)
+
+CstrCod-wk : ∀ {ρ t} → CstrCod t → CstrCod (U.wk ρ t)
+CstrCod-wk d = ?
+
+CstrCod-wk-subst : ∀ {ρ t} → CstrCod t → CstrCod (U.subst ρ t)
+CstrCod-wk-subst d = ?
 
 cstr-cod-ctx-subst-classify : ∀ Γ k a → CstrCod ((cstr-cod-ctx Γ k) [ a ])
 cstr-cod-ctx-subst-classify Γ k a = {!!}
