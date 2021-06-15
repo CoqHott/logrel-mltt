@@ -133,17 +133,43 @@ subst↑S {F} {G} {t} {F' = F'} [Γ] [F] [F'] [G] [t] {σ = σ} ⊢Δ [σ] =
          in irrelevanceEq″ (substConsTailId {G} {t} {σ}) (substConsTailId {G} {t} {σ′}) PE.refl PE.refl 
                             G[t] G[t]′ [σG[t]≡σ′G[t]])
 
--- subst↑STerm : ∀ {F G t Γ rF rG lG} ([Γ] : ⊩ᵛ Γ)
---           ([F] : Γ ⊩ᵛ⟨ ∞ ⟩ F ^ rF / [Γ]) →
---           let [U] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F]
---               [U] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F} [Γ] [F]) (Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F]))
---           in
---           ([G] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F] /  (λ {Δ} {σ} → [U] {Δ} {σ}))
---           ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ t ∷ wk1 F ^ rF / [Γ] ∙ [F]
---                               / wk1ᵛ {F} {F} [Γ] [F] [F])
---         → Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ G [ t ]↑ ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [U] {Δ} {σ})
--- subst↑STerm {F} {G} {t} {lG = ¹} [Γ] [F] [G] [t] {σ = σ} ⊢Δ [σ] = Uₜ {!!} {!!} {!!} {!!} {!!} , {!!}
---   -- let [wk1F] = wk1ᵛ {F} {F} [Γ] [F] [F]
+subst↑STerm : ∀ {F F' G t Γ rF rF' rG lG} ([Γ] : ⊩ᵛ Γ)
+          ([F] : Γ ⊩ᵛ⟨ ∞ ⟩ F ^ rF / [Γ])
+          ([F'] : Γ ⊩ᵛ⟨ ∞ ⟩ F' ^ rF' / [Γ]) →
+          let [U] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F]) {Δ} {σ})
+              [U'] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F'} [Γ] [F']) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F'} [Γ] [F']) {Δ} {σ})            
+          in
+          ([G] : Γ ∙ F' ^ rF' ⊩ᵛ⟨ ∞ ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F'] /  (λ {Δ} {σ} → [U'] {Δ} {σ}))
+          ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ t ∷ wk1 F' ^ rF' / [Γ] ∙ [F]
+                              / wk1ᵛ {F'} {F} [Γ] [F] [F'])
+        → Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ G [ t ]↑ ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [U] {Δ} {σ})
+subst↑STerm {F} {F'} {G} {t} {Γ} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [G] [t] {σ = σ} ⊢Δ [σ] =
+  let [U] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F]) {Δ} {σ})
+      [U'] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F'} [Γ] [F']) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F'} [Γ] [F']) {Δ} {σ})
+      prfG = substConsId {σ} {t} G
+      [wk1F] = wk1ᵛ {F'} {F} [Γ] [F] [F']
+      [σwk1F] = proj₁ ([wk1F] {σ = σ} ⊢Δ [σ])
+      [σwk1F]′ = proj₁ ([F'] {σ = tail σ} ⊢Δ (proj₁ [σ]))
+      [t]′ = irrelevanceTerm′ (subst-wk F') PE.refl PE.refl [σwk1F] [σwk1F]′ (proj₁ ([t] ⊢Δ [σ]))
+      G[t] = proj₁ ([G] {σ = consSubst (tail σ) (subst σ t)} ⊢Δ
+                               (proj₁ [σ] , [t]′))
+      U' = proj₁ ([U'] {σ = consSubst (tail σ) (subst σ t)} ⊢Δ
+                               (proj₁ [σ] , [t]′))
+      G[t]′ = irrelevanceTerm″ PE.refl PE.refl PE.refl (substConsTailId {G} {t} {σ}) U'
+                               (proj₁ ([U] {σ = σ} ⊢Δ [σ])) G[t]
+  in G[t]′ ,
+     λ {σ′} [σ′] [σ≡σ′] →
+         let [σ′t] = irrelevanceTerm′ (subst-wk F') PE.refl PE.refl  
+                                      (proj₁ ([wk1F] {σ = σ′} ⊢Δ [σ′]))
+                                      (proj₁ ([F'] ⊢Δ (proj₁ [σ′])))
+                                      (proj₁ ([t] ⊢Δ [σ′]))
+             [σt≡σ′t] = irrelevanceEqTerm′ (subst-wk F') PE.refl PE.refl [σwk1F] [σwk1F]′
+                                           (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
+             [σG[t]≡σ′G[t]] = proj₂ ([G] ⊢Δ (proj₁ [σ] , [t]′))
+                                    (proj₁ [σ′] , [σ′t])
+                                    (proj₁ [σ≡σ′] , [σt≡σ′t])
+         in irrelevanceEqTerm″ PE.refl PE.refl (substConsTailId {G} {t} {σ}) (substConsTailId {G} {t} {σ′}) PE.refl U'
+                               (proj₁ ([U] {σ = σ} ⊢Δ [σ])) [σG[t]≡σ′G[t]] 
 
 -- Validity of substitution of single lifted variable in type equality.
 subst↑SEq : ∀ {F G G′ t t′ Γ rF rG l} ([Γ] : ⊩ᵛ Γ)
