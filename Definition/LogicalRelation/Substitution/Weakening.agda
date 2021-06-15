@@ -18,9 +18,9 @@ import Tools.PropositionalEquality as PE
 
 
 -- Weakening of valid types by one.
-wk1ᵛ : ∀ {A F rA rF Γ l}
+wk1ᵛ : ∀ {A F rA rF Γ l l'}
       ([Γ] : ⊩ᵛ Γ)
-      ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
+      ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ])
     → Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ]
     → Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ wk1 A ^ rA / ([Γ] ∙ [F])
 wk1ᵛ {A} [Γ] [F] [A] ⊢Δ [σ] =
@@ -34,9 +34,9 @@ wk1ᵛ {A} [Γ] [F] [A] ⊢Δ [σ] =
                         (proj₂ ([A] ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′])))
 
 -- Weakening of valid type equality by one.
-wk1Eqᵛ : ∀ {A B F rA rF Γ l}
+wk1Eqᵛ : ∀ {A B F rA rF Γ l l'}
          ([Γ] : ⊩ᵛ Γ)
-         ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
+         ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ])
          ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ])
          ([A≡B] : Γ ⊩ᵛ⟨ l ⟩ A ≡ B ^ rA / [Γ] / [A])
        → Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ wk1 A ≡ wk1 B ^ rA / [Γ] ∙ [F] / wk1ᵛ {A} {F} [Γ] [F] [A]
@@ -49,9 +49,9 @@ wk1Eqᵛ {A} {B} [Γ] [F] [A] [A≡B] ⊢Δ [σ] =
                      ([A≡B] ⊢Δ (proj₁ [σ]))
 
 -- Weakening of valid term as a type by one.
-wk1ᵗᵛ : ∀ {F G rF rG lG Γ}
+wk1ᵗᵛ : ∀ {F G rF rG lG Γ l'}
          ([Γ] : ⊩ᵛ Γ)
-         ([F] : Γ ⊩ᵛ⟨ ∞ ⟩ F ^ rF / [Γ]) →
+         ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
        let l    = ∞
            [UG] = maybeEmbᵛ {A = Univ rG _} [Γ] (Uᵛ (proj₂ (levelBounded lG)) [Γ])
            [wUG] = maybeEmbᵛ {A = Univ rG _} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F])  {Δ} {σ})
