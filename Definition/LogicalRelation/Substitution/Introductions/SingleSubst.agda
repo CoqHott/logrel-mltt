@@ -136,17 +136,14 @@ subst↑S {F} {G} {t} {F' = F'} [Γ] [F] [F'] [G] [t] {σ = σ} ⊢Δ [σ] =
 subst↑STerm : ∀ {F F' G t Γ rF rF' rG lG} ([Γ] : ⊩ᵛ Γ)
           ([F] : Γ ⊩ᵛ⟨ ∞ ⟩ F ^ rF / [Γ])
           ([F'] : Γ ⊩ᵛ⟨ ∞ ⟩ F' ^ rF' / [Γ]) →
-          let [U] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F]) {Δ} {σ})
-              [U'] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F'} [Γ] [F']) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F'} [Γ] [F']) {Δ} {σ})            
-          in
+          ([U] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F])
+          ([U'] : Γ ∙ F' ^ rF' ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F'])
           ([G] : Γ ∙ F' ^ rF' ⊩ᵛ⟨ ∞ ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F'] /  (λ {Δ} {σ} → [U'] {Δ} {σ}))
           ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ t ∷ wk1 F' ^ rF' / [Γ] ∙ [F]
                               / wk1ᵛ {F'} {F} [Γ] [F] [F'])
         → Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ G [ t ]↑ ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [U] {Δ} {σ})
-subst↑STerm {F} {F'} {G} {t} {Γ} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [G] [t] {σ = σ} ⊢Δ [σ] =
-  let [U] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F]) {Δ} {σ})
-      [U'] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F'} [Γ] [F']) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F'} [Γ] [F']) {Δ} {σ})
-      prfG = substConsId {σ} {t} G
+subst↑STerm {F} {F'} {G} {t} {Γ} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [U] [U'] [G] [t] {σ = σ} ⊢Δ [σ] =
+  let prfG = substConsId {σ} {t} G
       [wk1F] = wk1ᵛ {F'} {F} [Γ] [F] [F']
       [σwk1F] = proj₁ ([wk1F] {σ = σ} ⊢Δ [σ])
       [σwk1F]′ = proj₁ ([F'] {σ = tail σ} ⊢Δ (proj₁ [σ]))
