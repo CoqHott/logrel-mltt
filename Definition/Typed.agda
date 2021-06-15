@@ -114,12 +114,12 @@ mutual
               → Γ ⊢ u ∷ A ^ [ ! , l ]
               → Γ ⊢ e ∷ (Id A t u) ^ [ % , l ]
               → Γ ⊢ transp A P t s u e ∷ P [ u ] ^ [ % , l ]
-    castⱼ : ∀ {A B e t}
-            → Γ ⊢ A ∷ U ⁰ ^ [ ! , next ⁰ ]
-            → Γ ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
-            → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , next ⁰ ]
-            → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
-            → Γ ⊢ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ]
+    castⱼ : ∀ {A B r e t}
+            → Γ ⊢ A ∷ Univ r ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢ B ∷ Univ r ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢ e ∷ (Id (Univ r ⁰) A B) ^ [ % , next ⁰ ]
+            → Γ ⊢ t ∷ A ^ [ r , ι ⁰ ]
+            → Γ ⊢ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ]
     castreflⱼ : ∀ {A t}
                  → Γ ⊢ A ∷ U ⁰ ^ [ ! , next ⁰ ]
                  → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]

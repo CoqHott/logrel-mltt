@@ -28,6 +28,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.Introductions.Sigma
 open import Definition.LogicalRelation.Substitution.Introductions.Id
 open import Definition.LogicalRelation.Substitution.Introductions.Cast
+open import Definition.LogicalRelation.Substitution.Introductions.CastPi
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
 open import Definition.LogicalRelation.Substitution.Introductions.Application
 open import Definition.LogicalRelation.Substitution.Introductions.Pair
@@ -762,57 +763,24 @@ mutual
   fundamentalTermEq {Γ} (cast-Π {A} {A'} {rA} {B} {B'} {e} {f} ⊢A ⊢B ⊢A' ⊢B' ⊢e ⊢f)
     with fundamentalTerm ⊢A | fundamentalTerm ⊢B | fundamentalTerm ⊢A' | fundamentalTerm ⊢B' | fundamentalTerm ⊢e | fundamentalTerm ⊢f
   ... | [ΓA] , [UA] , [A]ₜ | [ΓB] ∙ [AB] , [UB] , [B]ₜ | [ΓA'] , [UA'] , [A']ₜ | [ΓB'] ∙ [AB'] , [UB'] , [B']ₜ | [Γ] , [Id] , [e]ₜ | [Γ]₁ , [ΠAB] , [f]ₜ =
-    let [UA]′ = S.irrelevance {A = Univ _ _} [ΓA] [Γ]₁ [UA]
+    let [UA]′ = maybeEmbᵛ {A = Univ rA _} [Γ]₁ (Uᵛ emb< [Γ]₁)
         [A]ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = A} [ΓA] [Γ]₁ [UA] [UA]′ [A]ₜ
-        ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UA]′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([A]ₜ′ ⊢Δ [σ]))
-        [UA']′ = S.irrelevance {A = Univ _ _} [ΓA'] [Γ]₁ [UA']
-        [A']ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = A'} [ΓA'] [Γ]₁ [UA'] [UA']′ [A']ₜ
-        ⊢A'Δ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UA']′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([A']ₜ′ ⊢Δ [σ]))
+        [A']ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = A'} [ΓA'] [Γ]₁ [UA'] [UA]′ [A']ₜ
         [A] = maybeEmbᵛ {A = A} [Γ]₁ (univᵛ {A = A} [Γ]₁ (≡is≤ PE.refl) [UA]′ [A]ₜ′)
-        ⊢A = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([A] ⊢Δ [σ]))
-        [A'] = maybeEmbᵛ {A = A'} [Γ]₁ (univᵛ {A = A'} [Γ]₁ (≡is≤ PE.refl) [UA']′ [A']ₜ′)
-        ⊢A' = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([A'] ⊢Δ [σ]))
+        [A'] = maybeEmbᵛ {A = A'} [Γ]₁ (univᵛ {A = A'} [Γ]₁ (≡is≤ PE.refl) [UA]′ [A']ₜ′)
         [ΓB]₁ = [Γ]₁ ∙ [A]
         [UB]′ = S.irrelevance {A = Univ _ _} {Γ = Γ ∙ A ^ _} ([ΓB] ∙ [AB]) [ΓB]₁ (λ {Δ} {σ} → [UB] {Δ} {σ})
         [B]ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = B} ([ΓB] ∙ [AB]) [ΓB]₁ (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB]′ {Δ} {σ}) [B]ₜ
-        ⊢BΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UB]′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([B]ₜ′ {Δ} {σ} ⊢Δ [σ]))
         [ΓB']₁ = [Γ]₁ ∙ [A']
         [UB']′ = S.irrelevance {A = Univ _ _} {Γ = Γ ∙ A' ^ _} ([ΓB'] ∙ [AB']) [ΓB']₁ (λ {Δ} {σ} → [UB'] {Δ} {σ})
         [B']ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = B'} ([ΓB'] ∙ [AB']) [ΓB']₁ (λ {Δ} {σ} → [UB'] {Δ} {σ}) (λ {Δ} {σ} → [UB']′ {Δ} {σ}) [B']ₜ
         [B']  = maybeEmbᵛ {A = B'} [ΓB']₁ (univᵛ {A = B'} [ΓB']₁ (≡is≤ PE.refl) (λ {Δ} {σ} → [UB']′ {Δ} {σ}) [B']ₜ′)
-        ⊢B'Δ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UB']′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([B']ₜ′ {Δ} {σ} ⊢Δ [σ]))
-        [liftσ] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A} {σ = σ} {Δ = Δ} [Γ]₁ ⊢Δ [A] [σ]
-        [liftσ'] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A'} {σ = σ} {Δ = Δ} [Γ]₁ ⊢Δ [A'] [σ]
         [Id]′  = S.irrelevance {A = Id (Univ _ _) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ )} [Γ] [Γ]₁ [Id]
-        -- ⊢Id = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([Id]′{Δ} {σ} ⊢Δ [σ]))
         [e]ₜ′ = S.irrelevanceTerm {A = Id (Univ _ _)  (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ )} {t = e} [Γ] [Γ]₁ [Id] [Id]′ [e]ₜ
-        ⊢e = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([Id]′ {Δ} {σ} ⊢Δ [σ])) (proj₁ ([e]ₜ′ {Δ} {σ} ⊢Δ [σ]))
-        ⊢f = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ΠAB] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([f]ₜ {Δ} {σ} ⊢Δ [σ]))
-        [ΠAB'] = Πᵛ {A'} {B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ]₁ [A'] [B']
-        cast-Π-res A A' B B' e f = lam A' ▹
-                 let a = cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                 cast ⁰ (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a)
-        [cast-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ cast-Π-res A A' B B' e f ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ^ [ ! , ι ⁰ ] / [Γ]₁ / [ΠAB']
-        [cast-Π-res] = lamᵛ {F = A'} {G = B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ]₁ [A'] [B'] (castᵗᵛ [ΓB']₁ [UB']′ {!!} [B']ₜ′ {!!} [B'] {!!} {!!} {!!})
-        [cast-Π] : Γ ⊩ᵛ cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰) e f ⇒ cast-Π-res A A' B B' e f ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ^ ι ⁰ / [Γ]₁
-        [cast-Π] = λ {Δ} {σ} ⊢Δ [σ] → let Aσ  = ⊢AΔ {Δ} {σ} ⊢Δ [σ]
-                                          Bσ  = ⊢BΔ {Δ ∙ subst σ A ^ _} {liftSubst σ} (⊢Δ ∙ ⊢A {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])
-                                          A'σ = ⊢A'Δ {Δ} {σ} ⊢Δ [σ]
-                                          B'σ = ⊢B'Δ {Δ ∙ subst σ A' ^ _} {liftSubst σ} (⊢Δ ∙ ⊢A' {Δ} {σ} ⊢Δ [σ]) ([liftσ'] {Δ} {σ} ⊢Δ [σ])
-                                          eσ  = ⊢e {Δ} {σ} ⊢Δ [σ]
-                                          fσ  = ⊢f {Δ} {σ} ⊢Δ [σ]
-                                          X : Δ ⊢ (cast ⁰ (Π (subst σ A) ^ rA ° ⁰ ▹ (subst (liftSubst σ) B) ° ⁰) (Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰) (subst σ e) (subst σ f))
-                                                  ⇒ cast-Π-res (subst σ A) (subst σ A') (subst (liftSubst σ) B) (subst (liftSubst σ) B') (subst σ e) (subst σ f)
-                                                  ∷ Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰ ^ ι ⁰
-                                          X = cast-Π {Δ} {subst σ A} {subst σ A'} {rA} {subst (liftSubst σ) B} {subst (liftSubst σ) B'} {subst σ e} {subst σ f} Aσ Bσ A'σ B'σ eσ fσ
-                                       in PE.subst (λ BB → _ ⊢ _ ⇒ lam subst σ A' ▹ BB ∷ _ ^ _ )
-                                                   (PE.cong₄ (cast ⁰) {!!} PE.refl (PE.cong₂ (λ X Y → snd X ∘ Y) (PE.sym (Idsym-subst-lemma σ e)) {!!}) {!!}) X
-        [id] , [eq] = redSubstTermᵛ {Π A' ^ rA ° ⁰ ▹ B' ° ⁰} {cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰) e f} {cast-Π-res A A' B B' e f}
-                                    [Γ]₁ (λ {Δ} {σ} ⊢Δ [σ] → [cast-Π] {Δ} {σ} ⊢Δ [σ])
-                                    [ΠAB'] [cast-Π-res]
-    in [Γ]₁ , modelsTermEq [ΠAB'] [id] [cast-Π-res] [eq]
-      -}
-
+    in [Γ]₁ , cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f} [Γ]₁ [A] [A'] (λ {Δ} {σ} → [UB]′ {Δ} {σ}) (λ {Δ} {σ} → [UB']′ {Δ} {σ})
+                       [A]ₜ′ [B]ₜ′ [A']ₜ′ [B']ₜ′ [Id]′ [e]ₜ′ [ΠAB] [f]ₜ
+-}
+{-
   fundamentalTermEq {Γ} (Id-SProp {A} {B} ⊢A ⊢B) with fundamentalTerm ⊢A | fundamentalTerm ⊢B
   ... | [ΓA] , [UA] , [A]ₜ | [ΓB] , [UB] , [B]ₜ =
     let [SProp] = Uᵛ {rU = %} ∞< [ΓB]
@@ -840,7 +808,7 @@ mutual
                                     [ΓB] (λ {Δ} {σ} ⊢Δ [σ] → [Id-SProp] {Δ} {σ} ⊢Δ [σ])
                                     [SProp] [Id-SProp-res]
     in [ΓB] , modelsTermEq [SProp] [id] [Id-SProp-res] [eq]
-
+ -}
   fundamentalTermEq (Id-U-ΠΠ ⊢A ⊢B ⊢A' ⊢B') with fundamentalTerm ⊢A | fundamentalTerm ⊢B | fundamentalTerm ⊢A' | fundamentalTerm ⊢B'
   fundamentalTermEq (Id-U-ΠΠ {A} {B} {rA} {A'} {B'} ⊢A ⊢B ⊢A' ⊢B') | [Γ] , [UA] , [A] | [Γ]₁ ∙ [A]₁ , [UB] , [B] | [Γ]' , [UA'] , [A'] | [Γ]₁' ∙ [A']₁ , [UB'] , [B'] =
     {!!}

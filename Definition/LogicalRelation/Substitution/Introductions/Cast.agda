@@ -485,42 +485,45 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
     --   , {!!} )
 [castext] {A} {C} {B} {D} {Γ} ⊢Γ [A] [C] [A≡C] [B] [D] [B≡D] = {!!}
 
-cast∞ : ∀ {A B t e Γ}
-         (⊢Γ : ⊢ Γ)
-         ([U] : Γ ⊩⟨ ∞ ⟩ U ⁰ ^ [ ! , ι ¹ ])
-         ([AU] : Γ ⊩⟨ ∞ ⟩ A ∷ U ⁰ ^ [ ! , ι ¹ ] / [U])
-         ([BU] : Γ ⊩⟨ ∞ ⟩ B ∷ U ⁰ ^ [ ! , ι ¹ ] / [U])
-         ([A] : Γ ⊩⟨ ∞ ⟩ A ^ [ ! , ι ⁰ ])
-         ([B] : Γ ⊩⟨ ∞ ⟩ B ^ [ ! , ι ⁰ ])
-         ([t] : Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [A])
-         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (U ⁰) A B ^ [ % , ι ¹ ]) →
-         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ] / [Id] ) →
-         Γ ⊩⟨ ∞ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / [B]
-cast∞ {A} {B} {t} {e} {Γ} ⊢Γ [U] [AU] [BU] [A] [B] [t] [Id] [e] =
-  let
-    [A]′ : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ ! , ι ⁰ ]
-    [A]′ = univEq [U] [AU]
-    [B]′ : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ ! , ι ⁰ ]
-    [B]′ = univEq [U] [BU]
-    [t]′ : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [A]′
-    [t]′ = irrelevanceTerm [A] (emb ∞< (emb emb< [A]′)) [t]
-    ⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ]
-    ⊢e = escapeTerm [Id] [e]
-    x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / [B]′
-    x = proj₁ ([cast] ⊢Γ [A]′ [B]′) [t]′ ⊢e
-  in irrelevanceTerm (emb ∞< (emb emb< [B]′)) [B] x
 
-castᵗᵛ : ∀ {A B t e Γ}
+
+cast∞ : ∀ {A B r t e Γ}
+         (⊢Γ : ⊢ Γ)
+         ([U] : Γ ⊩⟨ ∞ ⟩ Univ r ⁰ ^ [ ! , ι ¹ ])
+         ([AU] : Γ ⊩⟨ ∞ ⟩ A ∷ Univ r ⁰ ^ [ ! , ι ¹ ] / [U])
+         ([BU] : Γ ⊩⟨ ∞ ⟩ B ∷ Univ r ⁰ ^ [ ! , ι ¹ ] / [U])
+         ([A] : Γ ⊩⟨ ∞ ⟩ A ^ [ r , ι ⁰ ])
+         ([B] : Γ ⊩⟨ ∞ ⟩ B ^ [ r , ι ⁰ ])
+         ([t] : Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
+         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]) →
+         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Id] ) →
+         Γ ⊩⟨ ∞ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B]
+cast∞ {A} {B} {r} {t} {e} {Γ} ⊢Γ [U] [AU] [BU] [A] [B] [t] [Id] [e] =
+  let
+    [A]′ : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ]
+    [A]′ = univEq [U] [AU]
+    [B]′ : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ r , ι ⁰ ]
+    [B]′ = univEq [U] [BU]
+    [t]′ : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A]′
+    [t]′ = irrelevanceTerm [A] (emb ∞< (emb emb< [A]′)) [t]
+    ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]
+    ⊢e = escapeTerm [Id] [e]
+    x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B]′
+    x = ? -- proj₁ ([cast] ⊢Γ [A]′ [B]′) [t]′ ⊢e
+  in irrelevanceTerm (emb ∞< (emb emb< [B]′)) [B] x
+  
+
+castᵗᵛ : ∀ {A B r t e Γ}
          ([Γ] : ⊩ᵛ Γ)
-         ([U] : Γ ⊩ᵛ⟨ ∞ ⟩ U ⁰ ^ [ ! , ι ¹ ] / [Γ])
-         ([AU] : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ U ⁰ ^ [ ! , ι ¹ ] / [Γ] / [U])
-         ([BU] : Γ ⊩ᵛ⟨ ∞ ⟩ B ∷ U ⁰ ^ [ ! , ι ¹ ] / [Γ] / [U])
-         ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι ⁰ ] / [Γ])
-         ([B] : Γ ⊩ᵛ⟨ ∞ ⟩ B ^ [ ! , ι ⁰ ] / [Γ])
-         ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [Γ] / [A])
-         ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (U ⁰) A B ^ [ % , ι ¹ ] / [Γ]) →
-         ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ] / [Γ] / [Id] ) →
-         Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / [Γ] / [B]
+         ([U] : Γ ⊩ᵛ⟨ ∞ ⟩ Univ r ⁰ ^ [ ! , ι ¹ ] / [Γ])
+         ([AU] : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ Univ r ⁰ ^ [ ! , ι ¹ ] / [Γ] / [U])
+         ([BU] : Γ ⊩ᵛ⟨ ∞ ⟩ B ∷ Univ r ⁰ ^ [ ! , ι ¹ ] / [Γ] / [U])
+         ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ r , ι ⁰ ] / [Γ])
+         ([B] : Γ ⊩ᵛ⟨ ∞ ⟩ B ^ [ r , ι ⁰ ] / [Γ])
+         ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [Γ] / [A])
+         ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Γ]) →
+         ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Γ] / [Id] ) →
+         Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [Γ] / [B]
 castᵗᵛ {A} {B} {t} {e} {Γ} [Γ] [U] [AU] [BU] [A] [B] [t] [Id] [e] ⊢Δ [σ] =
   cast∞ ⊢Δ (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([AU] ⊢Δ [σ])) (proj₁ ([BU] ⊢Δ [σ]))
     (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([B] ⊢Δ [σ]))
@@ -543,3 +546,4 @@ cast-congᵗᵛ : ∀ {A A' B B' t t' e e' Γ}
          ([e'] : Γ ⊩ᵛ⟨ ∞ ⟩ e' ∷ Id (U ⁰) A' B' ^ [ % , ι ¹ ] / [Γ] / [Id'] ) →
          Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ ! , ι ⁰ ] / [Γ] / [B]
 cast-congᵗᵛ = {!!}
+
