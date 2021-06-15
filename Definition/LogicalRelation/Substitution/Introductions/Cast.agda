@@ -403,7 +403,7 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₃ G₃ [[ ⊢A₃ , ⊢ΠF₃G₃ , D₃ ]] ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext)
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₄ G₄ [[ ⊢A₄ , ⊢ΠF₄G₄ , D₄ ]] ⊢F₄ ⊢G₄ A₄≡A₄ [F₄] [G₄] G₄-ext)
   (Π₌ F₄′ G₄′ D₄′ A₃≡A₄′ [F₃≡F₄′] [G₃≡G₄′]) =
-      ([castext]₁ , {!!})
+      ([castext]₁ , [castext]₂)
    where
       [A₁] = (Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
       [A₂] = (Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₂ G₂ [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]] ⊢F₂ ⊢G₂ A₂≡A₂ [F₂] [G₂] G₂-ext)
@@ -412,7 +412,30 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
       [A₄] = (Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₄ G₄ [[ ⊢A₄ , ⊢ΠF₄G₄ , D₄ ]] ⊢F₄ ⊢G₄ A₄≡A₄ [F₄] [G₄] G₄-ext)
       [A₃≡A₄] = (Π₌ F₄′ G₄′ D₄′ A₃≡A₄′ [F₃≡F₄′] [G₃≡G₄′])
 
+      Π≡Π = whrDet* (D₂ , Whnf.Πₙ) (D₂′ , Whnf.Πₙ)
+      F₂≡F₂′ = let x , _ , _ , _ , _ = Π-PE-injectivity Π≡Π in x
+      G₂≡G₂′ = let _ , _ , _ , x , _ = Π-PE-injectivity Π≡Π in x
+      Π≡Π′ = whrDet* (D₄ , Whnf.Πₙ) (D₄′ , Whnf.Πₙ)
+      F₄≡F₄′ = let x , _ , _ , _ , _ = Π-PE-injectivity Π≡Π′ in x
+      G₄≡G₄′ = let _ , _ , _ , x , _ = Π-PE-injectivity Π≡Π′ in x
+
+      A₁≡A₂ = PE.subst₂ (λ X Y → Γ ⊢ Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ≅ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₂≡F₂′) (PE.sym G₂≡G₂′) A₁≡A₂′
+      A₃≡A₄ = PE.subst₂ (λ X Y → Γ ⊢ Π F₃ ^ ! ° ⁰ ▹ G₃ ° ⁰ ≅ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₄≡F₄′) (PE.sym G₄≡G₄′) A₃≡A₄′
+      [F₁≡F₂] = PE.subst (λ X → ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ≡ wk ρ X ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
+                         (PE.sym F₂≡F₂′) [F₁≡F₂′]
+      [F₃≡F₄] = PE.subst (λ X → ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₃ ≡ wk ρ X ^ [ ! , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
+                         (PE.sym F₄≡F₄′) [F₃≡F₄′]
+      [G₁≡G₂] = PE.subst (λ X → ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+                                → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ F₁ ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
+                                → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₁ [ a ] ≡ wk (lift ρ) X [ a ] ^ [ ! , ι ⁰ ] / [G₁] [ρ] ⊢Δ [a])
+                         (PE.sym G₂≡G₂′) [G₁≡G₂′]
+      [G₃≡G₄] = PE.subst (λ X → ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+                                → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ F₃ ^ [ ! , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
+                                → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₃ [ a ] ≡ wk (lift ρ) X [ a ] ^ [ ! , ι ⁰ ] / [G₃] [ρ] ⊢Δ [a])
+                         (PE.sym G₄≡G₄′) [G₃≡G₄′]
+
       b₁ = λ ρ e x → cast ⁰ (wk ρ F₃) (wk ρ F₁) (Idsym (U ⁰) (wk ρ F₁) (wk ρ F₃) e) x
+      b₂ = λ ρ e x → cast ⁰ (wk ρ F₄) (wk ρ F₂) (Idsym (U ⁰) (wk ρ F₂) (wk ρ F₄) e) x
 
       [b₁] : ∀ {ρ Δ e x} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           → (Δ ⊢ e ∷ Id (U ⁰) (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ¹ ])
@@ -424,8 +447,6 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
             (un-univ (escape ([F₃] [ρ] ⊢Δ))) ⊢e
         in proj₂ ([cast] ⊢Δ ([F₁] [ρ] ⊢Δ) ([F₃] [ρ] ⊢Δ)) [x] ⊢e′
 
-      b₂ = λ ρ e x → cast ⁰ (wk ρ F₄) (wk ρ F₂) (Idsym (U ⁰) (wk ρ F₂) (wk ρ F₄) e) x
-
       [b₁≡b₂] : ∀ {ρ Δ e₁₃ e₂₄ x₃ x₄} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           → (Δ ⊢ e₁₃ ∷ Id (U ⁰) (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ¹ ])
           → (Δ ⊢ e₂₄ ∷ Id (U ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ¹ ])
@@ -433,11 +454,13 @@ redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
           → (Δ ⊩⟨ ι ⁰ ⟩ x₄ ∷ wk ρ F₄ ^ [ ! , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₃ ≡ x₄ ∷ wk ρ F₃ ^ [ ! , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
           → Δ ⊩⟨ ι ⁰ ⟩ b₁ ρ e₁₃ x₃ ≡ b₂ ρ e₂₄ x₄ ∷ wk ρ F₁ ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ
-      [b₁≡b₂] [ρ] ⊢Δ ⊢e₁₃ ⊢e₂₄ [x₃] [x₄] [x₃≡x₄] = {!!}
-        -- let
-        --   ⊢e′ = Idsymⱼ (univ 0<1 ⊢Δ) (un-univ (escape ([F₁] [ρ] ⊢Δ)))
-        --     (un-univ (escape ([F₃] [ρ] ⊢Δ))) ⊢e
-        -- in proj₂ ([cast] ⊢Δ ([F₁] [ρ] ⊢Δ) ([F₃] [ρ] ⊢Δ)) [x] ⊢e′
+      [b₁≡b₂] [ρ] ⊢Δ ⊢e₁₃ ⊢e₂₄ [x₃] [x₄] [x₃≡x₄] =
+        let
+          ⊢e₃₁ = Idsymⱼ (univ 0<1 ⊢Δ) (un-univ (escape ([F₁] [ρ] ⊢Δ)))
+            (un-univ (escape ([F₃] [ρ] ⊢Δ))) ⊢e₁₃
+          ⊢e₄₂ = Idsymⱼ (univ 0<1 ⊢Δ) (un-univ (escape ([F₂] [ρ] ⊢Δ)))
+            (un-univ (escape ([F₄] [ρ] ⊢Δ))) ⊢e₂₄
+        in proj₂ ([castext] ⊢Δ ([F₁] [ρ] ⊢Δ) ([F₂] [ρ] ⊢Δ) ([F₁≡F₂] [ρ] ⊢Δ) ([F₃] [ρ] ⊢Δ) ([F₄] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ)) [x₃] [x₄] [x₃≡x₄] ⊢e₃₁ ⊢e₄₂
 
       [castext]₁ : (∀ {t₁ t₂ e₁₃ e₂₄} → ([t₁] : Γ ⊩⟨ ι ⁰ ⟩ t₁ ∷ A₁ ^ [ ! , ι ⁰ ] / [A₁])
                         → ([t₁] : Γ ⊩⟨ ι ⁰ ⟩ t₂ ∷ A₂ ^ [ ! , ι ⁰ ] / [A₂])
@@ -509,9 +532,9 @@ cast∞ {A} {B} {r} {t} {e} {Γ} ⊢Γ [U] [AU] [BU] [A] [B] [t] [Id] [e] =
     ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]
     ⊢e = escapeTerm [Id] [e]
     x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B]′
-    x = ? -- proj₁ ([cast] ⊢Γ [A]′ [B]′) [t]′ ⊢e
+    x = {!!} -- proj₁ ([cast] ⊢Γ [A]′ [B]′) [t]′ ⊢e
   in irrelevanceTerm (emb ∞< (emb emb< [B]′)) [B] x
-  
+
 
 castᵗᵛ : ∀ {A B r t e Γ}
          ([Γ] : ⊩ᵛ Γ)
@@ -546,4 +569,3 @@ cast-congᵗᵛ : ∀ {A A' B B' t t' e e' Γ}
          ([e'] : Γ ⊩ᵛ⟨ ∞ ⟩ e' ∷ Id (U ⁰) A' B' ^ [ % , ι ¹ ] / [Γ] / [Id'] ) →
          Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ ! , ι ⁰ ] / [Γ] / [B]
 cast-congᵗᵛ = {!!}
-
