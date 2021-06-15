@@ -55,3 +55,16 @@ proof-irrelevanceᵛ : ∀ {Γ A t u l l′} ([Γ] : ⊩ᵛ Γ) ([A] : Γ ⊩ᵛ
                    → Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ [ % , l′ ] / [Γ] / [A]
 proof-irrelevanceᵛ [Γ] [A] [t] [u] {σ = σ} ⊢Δ [σ] =
   proof-irrelevanceRel (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ]))
+
+
+validityIrr : ∀ {l A t Γ l'} ([Γ] : ⊩ᵛ Γ) ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ [ % , l' ] / [Γ])
+                (⊢t : ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ) → Δ ⊢ subst σ t ∷ subst σ A ^ [ % , l' ]) → Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ [ % , l' ] / [Γ] / [A]
+validityIrr [Γ] [A] ⊢t {Δ} {σ} ⊢Δ [σ] =
+  let [Aσ] = proj₁ ([A] ⊢Δ [σ])
+      [tσ] = logRelIrr [Aσ] (⊢t ⊢Δ [σ])
+      -- [tσ] = proj₁ ([t] ⊢Δ [σ])
+  in  logRelIrr [Aσ] (⊢t ⊢Δ [σ]) ,
+      λ [σ′] [σ≡σ′] → let [Aσ′] = proj₁ ([A] ⊢Δ [σ′])
+                          [tσ′] = logRelIrr [Aσ′] (⊢t ⊢Δ [σ′])
+                          [Aσ≡σ′] = proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]
+                      in logRelIrrEq [Aσ] (⊢t ⊢Δ [σ]) (escapeTerm [Aσ] (convTerm₂ [Aσ] [Aσ′] [Aσ≡σ′] [tσ′]))
