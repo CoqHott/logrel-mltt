@@ -18,6 +18,8 @@ open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.Properties
 open import Definition.LogicalRelation.Substitution.Conversion
 open import Definition.LogicalRelation.Substitution.Weakening
+open import Definition.LogicalRelation.Substitution.MaybeEmbed
+open import Definition.LogicalRelation.Substitution.Introductions.Universe
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -102,33 +104,46 @@ substSTerm {F} {G} {t} {f} [Γ] [F] [G] [f] [t] {σ = σ} ⊢Δ [σ] =
                   ([σ≡σ′] , proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])))
 
 -- Validity of substitution of single lifted variable in types.
-subst↑S : ∀ {F G t Γ rF rG l} ([Γ] : ⊩ᵛ Γ)
+subst↑S : ∀ {F G t Γ rF F' rF' rG l} ([Γ] : ⊩ᵛ Γ)
           ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-          ([G] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ rG / [Γ] ∙ [F])
-          ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ t ∷ wk1 F ^ rF / [Γ] ∙ [F]
-                              / wk1ᵛ {F} {F} [Γ] [F] [F])
+          ([F'] : Γ ⊩ᵛ⟨ l ⟩ F' ^ rF' / [Γ])
+          ([G] : Γ ∙ F' ^ rF' ⊩ᵛ⟨ l ⟩ G ^ rG / [Γ] ∙ [F'])
+          ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ t ∷ wk1 F' ^ rF' / [Γ] ∙ [F]
+                              / wk1ᵛ {F'} {F} [Γ] [F] [F'])
         → Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G [ t ]↑ ^ rG / [Γ] ∙ [F]
-subst↑S {F} {G} {t} [Γ] [F] [G] [t] {σ = σ} ⊢Δ [σ] =
-  let [wk1F] = wk1ᵛ {F} {F} [Γ] [F] [F]
+subst↑S {F} {G} {t} {F' = F'} [Γ] [F] [F'] [G] [t] {σ = σ} ⊢Δ [σ] =
+  let [wk1F] = wk1ᵛ {F'} {F} [Γ] [F] [F']
       [σwk1F] = proj₁ ([wk1F] {σ = σ} ⊢Δ [σ])
-      [σwk1F]′ = proj₁ ([F] {σ = tail σ} ⊢Δ (proj₁ [σ]))
-      [t]′ = irrelevanceTerm′ (subst-wk F) PE.refl PE.refl [σwk1F] [σwk1F]′ (proj₁ ([t] ⊢Δ [σ]))
+      [σwk1F]′ = proj₁ ([F'] {σ = tail σ} ⊢Δ (proj₁ [σ]))
+      [t]′ = irrelevanceTerm′ (subst-wk F') PE.refl PE.refl [σwk1F] [σwk1F]′ (proj₁ ([t] ⊢Δ [σ]))
       G[t] = proj₁ ([G] {σ = consSubst (tail σ) (subst σ t)} ⊢Δ
                                (proj₁ [σ] , [t]′))
       G[t]′ = irrelevance′ (substConsTailId {G} {t} {σ}) G[t]
   in  G[t]′
   ,   (λ {σ′} [σ′] [σ≡σ′] →
-         let [σ′t] = irrelevanceTerm′ (subst-wk F) PE.refl PE.refl  
+         let [σ′t] = irrelevanceTerm′ (subst-wk F') PE.refl PE.refl  
                                       (proj₁ ([wk1F] {σ = σ′} ⊢Δ [σ′]))
-                                      (proj₁ ([F] ⊢Δ (proj₁ [σ′])))
+                                      (proj₁ ([F'] ⊢Δ (proj₁ [σ′])))
                                       (proj₁ ([t] ⊢Δ [σ′]))
-             [σt≡σ′t] = irrelevanceEqTerm′ (subst-wk F) PE.refl PE.refl [σwk1F] [σwk1F]′
+             [σt≡σ′t] = irrelevanceEqTerm′ (subst-wk F') PE.refl PE.refl [σwk1F] [σwk1F]′
                                            (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
              [σG[t]≡σ′G[t]] = proj₂ ([G] ⊢Δ (proj₁ [σ] , [t]′))
                                     (proj₁ [σ′] , [σ′t])
                                     (proj₁ [σ≡σ′] , [σt≡σ′t])
          in irrelevanceEq″ (substConsTailId {G} {t} {σ}) (substConsTailId {G} {t} {σ′}) PE.refl PE.refl 
                             G[t] G[t]′ [σG[t]≡σ′G[t]])
+
+-- subst↑STerm : ∀ {F G t Γ rF rG lG} ([Γ] : ⊩ᵛ Γ)
+--           ([F] : Γ ⊩ᵛ⟨ ∞ ⟩ F ^ rF / [Γ]) →
+--           let [U] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F]
+--               [U] = maybeEmbᵛ {A = Univ rG lG} (_∙_ {A = F} [Γ] [F]) (Uᵛ (proj₂ (levelBounded lG)) (_∙_ {A = F} [Γ] [F]))
+--           in
+--           ([G] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F] /  (λ {Δ} {σ} → [U] {Δ} {σ}))
+--           ([t] : Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ t ∷ wk1 F ^ rF / [Γ] ∙ [F]
+--                               / wk1ᵛ {F} {F} [Γ] [F] [F])
+--         → Γ ∙ F ^ rF ⊩ᵛ⟨ ∞ ⟩ G [ t ]↑ ∷ Univ rG lG ^ [ ! , next lG ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [U] {Δ} {σ})
+-- subst↑STerm {F} {G} {t} {lG = ¹} [Γ] [F] [G] [t] {σ = σ} ⊢Δ [σ] = Uₜ {!!} {!!} {!!} {!!} {!!} , {!!}
+--   -- let [wk1F] = wk1ᵛ {F} {F} [Γ] [F] [F]
 
 -- Validity of substitution of single lifted variable in type equality.
 subst↑SEq : ∀ {F G G′ t t′ Γ rF rG l} ([Γ] : ⊩ᵛ Γ)
@@ -143,7 +158,7 @@ subst↑SEq : ∀ {F G G′ t t′ Γ rF rG l} ([Γ] : ⊩ᵛ Γ)
             ([t≡t′] : Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ t ≡ t′ ∷ wk1 F ^ rF / [Γ] ∙ [F]
                                    / wk1ᵛ {F} {F} [Γ] [F] [F])
           → Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G [ t ]↑ ≡ G′ [ t′ ]↑ ^ rG / [Γ] ∙ [F]
-                        / subst↑S {F} {G} {t} [Γ] [F] [G] [t]
+                        / subst↑S {F} {G} {t} {F' = F} [Γ] [F] [F] [G] [t]
 subst↑SEq {F} {G} {G′} {t} {t′}
           [Γ] [F] [G] [G′] [G≡G′] [t] [t′] [t≡t′] {σ = σ} ⊢Δ [σ] =
   let [wk1F] = wk1ᵛ {F} {F} [Γ] [F] [F]
