@@ -23,16 +23,6 @@ import Tools.PropositionalEquality as PE
 
 import Data.Nat as Nat
 
-wk1d[]-[]↑ : ∀ x y → x [ y ]↑ PE.≡ wk1d x [ y ]
-wk1d[]-[]↑ x y = PE.trans (substVar-to-subst aux x) (PE.sym (subst-wk x))
-  where
-    aux : ∀ n → consSubst (wk1Subst idSubst) y n PE.≡ (sgSubst y ₛ• lift (step id)) n
-    aux Nat.zero = PE.refl
-    aux (Nat.suc n) = PE.refl
-
-
-
-
 -- Application of valid terms.
 appᵛ : ∀ {F G rF lF lG rΠ lΠ t u Γ l}
        ([Γ] : ⊩ᵛ Γ)

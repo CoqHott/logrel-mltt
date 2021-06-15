@@ -42,14 +42,6 @@ aux : ∀ {Γ t u} →
        Γ ⊩⟨ ι ⁰ ⟩ Id ℕ t u ^ [ % , ι ⁰ ]
 aux = {!!}
 
-IdRed* : ∀ {Γ A B t u l}
-         (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι l ])
-         (⊢u : Γ ⊢ u ∷ A ^ [ ! , ι l ])
-         (D : Γ ⊢ A ⇒* B ^ [ ! , ι l ])
-       → Γ ⊢ Id A t u ⇒* Id B t u ^ [ % , ι l ]
-IdRed* ⊢t ⊢u (id ⊢A) = id (univ (Idⱼ (un-univ ⊢A) ⊢t ⊢u))
-IdRed* ⊢t ⊢u (d ⇨ D) = univ (Id-subst (un-univ⇒ d) ⊢t ⊢u) ⇨ IdRed* (conv ⊢t (subset d)) (conv ⊢u (subset d)) D
-
 sgSubst-and-lift : ∀ ρ a x → ((sgSubst a) ₛ• (step ρ)) x PE.≡ toSubst ρ x
 sgSubst-and-lift ρ a Nat.zero = PE.refl
 sgSubst-and-lift ρ a (Nat.suc x) = PE.refl
