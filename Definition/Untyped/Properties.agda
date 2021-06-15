@@ -295,7 +295,7 @@ mutual
               (wkGen-substGen c)
 
 wk-subst2 : ∀ {ρ ρ' σ} t → wk ρ' (wk ρ (subst σ t)) ≡ subst (ρ' • ρ •ₛ σ) t
-wk-subst2 {ρ} {ρ'} {σ} t = trans (wk-comp ρ' ρ (subst σ t)) (wk-subst t) 
+wk-subst2 {ρ} {ρ'} {σ} t = trans (wk-comp ρ' ρ (subst σ t)) (wk-subst t)
 
 -- subst σ ∘ wk ρ = subst (σ •ₛ ρ)
 
@@ -439,6 +439,41 @@ singleSubstLift G t =
                       (sym (substSingletonComp G)))
                (sym (substCompEq G)))
 
+-- substituting in a weakened term does nothing
+
+wk1-singleSubst : ∀ x y → wk1 x [ y ] ≡ x
+wk1-singleSubst x y = trans (subst-wk x) (trans (substVar-to-subst aux x) (subst-id x))
+  where
+    aux : ∀ n → (sgSubst y ₛ• step id) n ≡ idSubst n
+    aux 0 = refl
+    aux (1+ n) = refl
+
+wk1d-singleSubst : ∀ x y → subst (liftSubst (sgSubst y)) (wk1d x) ≡ x
+wk1d-singleSubst x y = trans (subst-wk x) (trans (substVar-to-subst aux x) (subst-id x))
+  where
+    aux : ∀ n → (liftSubst (sgSubst y) ₛ• lift (step id)) n ≡ idSubst n
+    aux 0 = refl
+    aux (1+ n) = refl
+
+irrelevant-subst : ∀ ρ t a → (wk (step ρ) t) [ a ] ≡ wk ρ t
+irrelevant-subst ρ t a = trans (trans (subst-wk t) (substVar-to-subst (sgSubst-and-lift ρ a) t)) (sym (wk≡subst ρ t))
+  where
+    sgSubst-and-lift : ∀ ρ a x → ((sgSubst a) ₛ• (step ρ)) x ≡ toSubst ρ x
+    sgSubst-and-lift ρ a 0 = refl
+    sgSubst-and-lift ρ a (1+ x) = refl
+
+irrelevant-subst′ : ∀ ρ t a → (wk (lift ρ) (wk1 t)) [ a ] ≡ wk ρ t
+irrelevant-subst′ ρ t a = trans (cong (λ X → X [ a ]) (lift-wk1 ρ t)) (irrelevant-subst ρ t a)
+
+-- x [ y ]↑ can be expressed with substitution in a weakened term
+
+wk1d[]-[]↑ : ∀ x y → x [ y ]↑ ≡ wk1d x [ y ]
+wk1d[]-[]↑ x y = trans (substVar-to-subst aux x) (sym (subst-wk x))
+  where
+    aux : ∀ n → consSubst (wk1Subst idSubst) y n ≡ (sgSubst y ₛ• lift (step id)) n
+    aux 0 = refl
+    aux (1+ n) = refl
+
 -- More specific laws.
 
 idWkLiftSubstLemma : ∀ σ G
@@ -501,7 +536,7 @@ natrecSucCase σ F rF lF =
                            (substCompEq F))
                  (sym (trans (wk-subst (subst (liftSubst σ) F))
                                    (trans (substCompEq F)
-                                             (substVar-to-subst natrecSucCaseLemma F))))) refl ) refl 
+                                             (substVar-to-subst natrecSucCaseLemma F))))) refl ) refl
 
 natrecIrrelevantSubstLemma : ∀ F z s m σ (x : Nat)
   → (sgSubst (natrec (subst (liftSubst σ) F) (subst σ z) (subst σ s) m)
@@ -588,6 +623,83 @@ substConcatSingleton′ t = substVar-to-subst (λ { 0 → refl ; (1+ x) → refl
 
 wk1-tailId : ∀ t → wk1 t ≡ subst (tail idSubst) t
 wk1-tailId t = trans (sym (subst-id (wk1 t))) (subst-wk t)
+
+-- more specific laws
+
+Idsym-subst-lemma : ∀ σ a → subst (liftSubst σ) (wk1 a) ≡ wk1 (subst σ a)
+Idsym-subst-lemma σ a = trans (subst-wk a) (sym (wk-subst a))
+
+Idsym-subst-lemma-wk1d : ∀ σ a → subst (liftSubst (liftSubst σ)) (wk1d a) ≡ wk1d (subst (liftSubst σ) a)
+Idsym-subst-lemma-wk1d σ a = trans (trans (subst-wk a) (substVar-to-subst aux a)) (sym (wk-subst-lift a))
+  where
+    aux : ∀ n → (liftSubst (liftSubst σ) ₛ• lift (step id)) n ≡ liftSubst (step id •ₛ σ) n
+    aux Nat.zero = refl
+    aux (1+ n) = refl
+
+Idsym-wk-lemma : ∀ ρ a → wk (lift ρ) (wk1 a) ≡ wk1 (wk ρ a)
+Idsym-wk-lemma ρ a = trans (wk-comp (lift ρ) (step id) a)
+  (trans (cong (λ X → wk X a) (sym (lift-step-comp ρ)))
+  (sym (wk-comp (step id) ρ a)))
+
+subst-Idsym : ∀ σ A x y e → subst σ (Idsym A x y e) ≡ Idsym (subst σ A) (subst σ x) (subst σ y) (subst σ e)
+subst-Idsym σ A x y e = cong₂
+  (λ X Y → transp (subst σ A) (Id X _ Y) (subst σ x)
+    (Idrefl (subst σ A) (subst σ x)) (subst σ y) (subst σ e))
+  (Idsym-subst-lemma σ A) (Idsym-subst-lemma σ x)
+
+wk-Idsym : ∀ ρ A x y e → wk ρ (Idsym A x y e) ≡ Idsym (wk ρ A) (wk ρ x) (wk ρ y) (wk ρ e)
+wk-Idsym ρ A x y e = cong₂
+  (λ X Y → transp (wk ρ A) (Id X _ Y) (wk ρ x)
+    (Idrefl (wk ρ A) (wk ρ x)) (wk ρ y) (wk ρ e))
+  (Idsym-wk-lemma ρ A) (Idsym-wk-lemma ρ x)
+
+-- more specific laws
+
+cast-subst-lemma : ∀ G a b ρ → wk (lift ρ) (G [ b ]↑) [ a ] ≡ wk (lift ρ) G [ wk (lift ρ) b [ a ] ]
+cast-subst-lemma G a b p = trans (subst-wk (G [ b ]↑))
+  (trans (substCompEq G)
+  (trans (substVar-to-subst subst-lemma-var G) (sym (subst-wk G))))
+  where
+    subst-lemma-var : (x : Nat) → (sgSubst a ₛ• lift p ₛ•ₛ consSubst (wk1Subst idSubst) b) x ≡ (sgSubst (wk (lift p) b [ a ]) ₛ• lift p) x
+    subst-lemma-var 0 = sym (subst-wk b)
+    subst-lemma-var (1+ n) = refl
+
+cast-subst-lemma2 : ∀ x y → wk1d x [ y ]↑ ≡ wk (lift (step (step id))) x [ y ]
+cast-subst-lemma2 x y = trans (subst-wk x) (trans (substVar-to-subst aux x) (sym (subst-wk x)))
+  where
+    aux : ∀ n → (consSubst (wk1Subst idSubst) y ₛ• lift (step id)) n ≡ (sgSubst y ₛ• lift (step (step id))) n
+    aux 0 = refl
+    aux (1+ n) = refl
+
+cast-subst-lemma3 : ∀ x y → subst (liftSubst (liftSubst (sgSubst y))) (wk (lift (step (step id))) x) ≡ wk1d x
+cast-subst-lemma3 x y = trans (subst-wk x) (trans (substVar-to-subst aux x) (sym (wk≡subst (lift (step id)) x)))
+  where
+    aux : ∀ n → (liftSubst (liftSubst (sgSubst y)) ₛ• lift (step (step id))) n ≡ toSubst (lift (step id)) n
+    aux 0 = refl
+    aux (1+ n) = refl
+
+cast-subst-lemma4 : ∀ ρ x y → subst (liftSubst (sgSubst x)) (wk (lift (lift ρ)) (wk1d y)) ≡ wk (lift ρ) y
+cast-subst-lemma4 ρ x y = trans (subst-wk (wk1d y)) (trans (subst-wk y)
+  (trans (substVar-to-subst aux y) (sym (wk≡subst (lift ρ) y))))
+  where
+    aux : (x₁ : Nat) → (liftSubst (sgSubst x) ₛ• lift (lift ρ) ₛ• lift (step id)) x₁ ≡ toSubst (lift ρ) x₁
+    aux 0 = refl
+    aux (1+ n) = refl
+
+cast-subst-lemma5 : ∀ x y → subst (liftSubst (sgSubst y)) (wk (step (step id)) x) ≡ wk1 x
+cast-subst-lemma5 x y = trans (subst-wk x) (trans (substVar-to-subst aux x) (sym (wk≡subst (step id) x)))
+ where
+    aux : ∀ n → (liftSubst (sgSubst y) ₛ• step (step id)) n ≡ toSubst (step id) n
+    aux 0 = refl
+    aux (1+ n) = refl
+
+cast-subst-lemma6 : ∀ ρ G x a → wk (lift ρ) (wk1d G [ x ]) [ a ] ≡ wk (lift ρ) G [ wk (lift ρ) x [ a ] ]
+cast-subst-lemma6 ρ G x a = trans (subst-wk (wk1d G [ x ])) (trans (substCompEq (wk1d G)) (trans (subst-wk G)
+  (trans (substVar-to-subst aux G) (sym (subst-wk G)))))
+ where
+    aux : ∀ n → (sgSubst a ₛ• lift ρ ₛ•ₛ sgSubst x ₛ• lift (step id)) n ≡ (sgSubst (wk (lift ρ) x [ a ]) ₛ• lift ρ) n
+    aux 0 = sym (subst-wk x)
+    aux (1+ n) = refl
 
 
 -- helpers

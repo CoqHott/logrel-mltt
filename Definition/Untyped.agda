@@ -71,7 +71,7 @@ predLevel (ι ⁰) = ⁰
 predLevel (ι ¹) = ⁰
 predLevel ∞ = ¹
 
-maxLevel : (i : Level) → (j : Level) → Σ Level λ k → i ≤ k × j ≤ k 
+maxLevel : (i : Level) → (j : Level) → Σ Level λ k → i ≤ k × j ≤ k
 maxLevel ⁰ ⁰ = ⁰ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
 maxLevel ⁰ ¹ = ¹ , ((<is≤ 0<1) , (≡is≤ PE.refl))
 maxLevel ¹ ⁰ = ¹ , ((≡is≤ PE.refl) , (<is≤ 0<1))
@@ -91,7 +91,7 @@ levelBounded ¹ = ∞ , ∞<
 
 record TypeInfo : Set where
   constructor [_,_]
-  field 
+  field
     r : Relevance
     l : TypeLevel
 
@@ -208,7 +208,6 @@ cast l A B e t = gen (Castkind l) (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e
 castrefl : (A t : Term) → Term
 castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
-
 -- Injectivity of term constructors w.r.t. propositional equality.
 
 -- If  Π F G = Π H E  then  F = H  and  G = E.
@@ -286,7 +285,7 @@ U≢ℕ ()
 U≢Empty : ∀ {r l} → Univ r l PE.≢ Empty
 U≢Empty ()
 
-U≢Π : ∀ {r r' l F lF G lG} → Univ r l PE.≢ Π F ^ r' ° lF ▹ G ° lG 
+U≢Π : ∀ {r r' l F lF G lG} → Univ r l PE.≢ Π F ^ r' ° lF ▹ G ° lG
 U≢Π ()
 
 U≢∃ : ∀ {r l F G} → Univ r l PE.≢ ∃ F ▹ G
@@ -660,3 +659,20 @@ t [ s ]↑ = subst (consSubst (wk1Subst idSubst) s) t
 
 _[_]↑↑ : (t : Term) (s : Term) → Term
 t [ s ]↑↑ = subst (consSubst (wk1Subst (wk1Subst idSubst)) s) t
+
+-- Definition of syntaxic sugar
+
+Unit : ∀ {l} → Term
+Unit {l} =  Π Empty ^ % ° l ▹ Empty ° l
+
+tt : Term -- currently not used
+tt = lam Empty ▹ (Emptyrec Empty (var 0))
+
+ap : (A B f x y e : Term) → Term -- currently not used
+ap A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x)) ((wk1 f) ∘ (var 0))) x (Idrefl B (f ∘ x)) y e
+
+Idsym : (A x y e : Term) → Term
+Idsym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
+
+Idtrans : (A x y z e f : Term) → Term -- currently not used
+Idtrans A x y z e f = transp A (Id (wk1 A) (wk1 x) (var 0)) y e z f

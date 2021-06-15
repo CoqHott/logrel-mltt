@@ -32,13 +32,6 @@ _•ₜ_ {lift ρ} {lift ρ′} {Δ′ = Δ′ ∙ A ^ rA} (lift η) (lift η′
 
 -- Weakening of judgements
 
--- TODO : find a better place for this useful lemma?
-wk-Idsym : ∀ ρ A x y e → U.wk ρ (Idsym A x y e) PE.≡ Idsym (U.wk ρ A) (U.wk ρ x) (U.wk ρ y) (U.wk ρ e)
-wk-Idsym ρ A x y e =
-  let pred = λ A' x' → transp (U.wk ρ A) ((Id A' (var 0) x')) (U.wk ρ x) (U.wk ρ (Idrefl A x)) (U.wk ρ y) (U.wk ρ e) in
-  let e0 = PE.subst (λ z → pred (wk1 (U.wk ρ A)) z PE.≡ pred (wk1 (U.wk ρ A)) (wk1 (U.wk ρ x))) (wk1-wk≡lift-wk1 ρ x) PE.refl in
-  PE.subst (λ z → pred z (U.wk (lift ρ) (wk1 x)) PE.≡ pred (wk1 (U.wk ρ A)) (wk1 (U.wk ρ x))) (wk1-wk≡lift-wk1 ρ A) e0
-
 wkIndex : ∀ {Γ Δ n A r ρ} → ρ ∷ Δ ⊆ Γ →
         let ρA = U.wk ρ A
             ρn = wkVar ρ n
@@ -63,7 +56,7 @@ mutual
      in  ⊢ Δ → Γ ⊢ A ^ r → Δ ⊢ ρA ^ r
   wk ρ ⊢Δ (Uⱼ ⊢Γ) = Uⱼ ⊢Δ
   wk ρ ⊢Δ (univ A) = univ (wkTerm ρ ⊢Δ A)
-  
+
   wkTerm : ∀ {Γ Δ A t r ρ} → ρ ∷ Δ ⊆ Γ →
          let ρA = U.wk ρ A
              ρt = U.wk ρ t
@@ -205,7 +198,7 @@ mutual
   wkEqTerm ρ ⊢Δ (Id-cong A t u) = Id-cong (wkEqTerm ρ ⊢Δ A) (wkEqTerm ρ ⊢Δ t) (wkEqTerm ρ ⊢Δ u)
   wkEqTerm {ρ = ρ} [ρ] ⊢Δ (Id-Π {rA = rA} {t = t} {u = u} <l <l' Aⱼ Bⱼ tⱼ uⱼ) =
     let ρA = wkTerm [ρ] ⊢Δ Aⱼ in
-    let ρB = wkTerm (lift [ρ]) (⊢Δ ∙ univ ρA) Bⱼ in 
+    let ρB = wkTerm (lift [ρ]) (⊢Δ ∙ univ ρA) Bⱼ in
     let ρt = wkTerm [ρ] ⊢Δ tⱼ in
     let ρu = wkTerm [ρ] ⊢Δ uⱼ in
     PE.subst
@@ -236,10 +229,10 @@ mutual
     PE.subst (λ x → Δ ⊢ U.wk ρ (Id (U l) (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰)) ≡ ∃ U.wk ρ (Id (Univ rA l) A A') ▹ (Π U.wk (lift ρ) (wk1 A') ^ rA ° ⁰ ▹ Id (U l) x (U.wk (lift (lift ρ)) (wk1d B')) ° l') ∷ SProp l' ^ [ ! , _ ]) (PE.sym (wk-β↑ {ρ = lift ρ} {a = cast l (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0)} (wk1d B))) j7
   wkEqTerm ρ ⊢Δ (Id-U-ℕℕ ⊢Γ) = Id-U-ℕℕ ⊢Δ
   wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Id-SProp {A = A} {B = B} Aⱼ Bⱼ) =
-    let ρA = wkTerm [ρ] ⊢Δ Aⱼ 
-        ρB = wkTerm [ρ] ⊢Δ Bⱼ 
-        l = ⁰ 
-        l' = ¹ 
+    let ρA = wkTerm [ρ] ⊢Δ Aⱼ
+        ρB = wkTerm [ρ] ⊢Δ Bⱼ
+        l = ⁰
+        l' = ¹
     in
     PE.subst
       (λ x → _ ⊢ Id (SProp l) (U.wk ρ A) _ ≡ ∃ (Π U.wk ρ A ^ % ° ⁰ ▹ _ ° ⁰) ▹ (Π _ ^ % ° ⁰ ▹ x ° _) ∷ _ ^ [ ! , _ ])
@@ -261,7 +254,7 @@ mutual
     let ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B in
     Id-U-Πℕ ρA ρB
   wkEqTerm ρ ⊢Δ (cast-cong A B t e e') = cast-cong (wkEqTerm ρ ⊢Δ A) (wkEqTerm ρ ⊢Δ B) (wkEqTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ e')
-  wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) = let l = ⁰ in let lA = ⁰ in let lB = ⁰ in 
+  wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) = let l = ⁰ in let lA = ⁰ in let lB = ⁰ in
     let ρA = wkTerm [ρ] ⊢Δ Aⱼ in
     let ρA' = wkTerm [ρ] ⊢Δ A'ⱼ in
     let ρB = wkTerm (lift [ρ]) (⊢Δ ∙ (univ ρA)) Bⱼ in
@@ -374,10 +367,10 @@ mutual
     PE.subst (λ x → Δ ⊢ U.wk ρ (Id (U l) (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰)) ⇒ ∃ U.wk ρ (Id (Univ rA l) A A') ▹ (Π U.wk (lift ρ) (wk1 A') ^ rA ° ⁰ ▹ Id (U l) x (U.wk (lift (lift ρ)) (wk1d B')) ° l') ∷ SProp l' ^ next l') (PE.sym (wk-β↑ {ρ = lift ρ} {a = cast l (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA l) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0)} (wk1d B))) j7
   wkRedTerm ρ ⊢Δ (Id-U-ℕℕ ⊢Γ) = Id-U-ℕℕ ⊢Δ
   wkRedTerm {ρ = ρ} [ρ] ⊢Δ (Id-SProp {A = A} {B = B} Aⱼ Bⱼ) =
-    let ρA = wkTerm [ρ] ⊢Δ Aⱼ 
-        ρB = wkTerm [ρ] ⊢Δ Bⱼ 
-        l = ⁰ 
-        l' = ¹ 
+    let ρA = wkTerm [ρ] ⊢Δ Aⱼ
+        ρB = wkTerm [ρ] ⊢Δ Bⱼ
+        l = ⁰
+        l' = ¹
     in
     PE.subst
       (λ x → _ ⊢ Id (SProp l) (U.wk ρ A) _ ⇒ ∃ (Π U.wk ρ A ^ % ° ⁰ ▹ _ ° ⁰) ▹ (Π _ ^ % ° ⁰ ▹ x ° _) ∷ _ ^ _)

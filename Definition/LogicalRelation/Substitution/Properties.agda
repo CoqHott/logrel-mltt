@@ -5,9 +5,9 @@ open import Definition.Typed.EqualityRelation
 module Definition.LogicalRelation.Substitution.Properties {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
-open import Definition.Untyped
+open import Definition.Untyped hiding (tt)
 open import Definition.Untyped.Properties
-open import Definition.Typed hiding (tt)
+open import Definition.Typed
 open import Definition.Typed.Weakening
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Substitution

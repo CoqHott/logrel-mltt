@@ -11,22 +11,6 @@ import Tools.PropositionalEquality as PE
 infixl 30 _∙_
 infix 30 Πⱼ_▹_▹_▹_
 
--- Lemmas that are useful for reduction
-Unit : ∀ {l} → Term
-Unit {l} =  Π Empty ^ % ° l ▹ Empty ° l
-
-tt : Term -- currently not used
-tt = lam Empty ▹ (Emptyrec Empty (var 0))
-
-ap : (A B f x y e : Term) → Term -- currently not used
-ap A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x)) ((wk1 f) ∘ (var 0))) x (Idrefl B (f ∘ x)) y e
-
-Idsym : (A x y e : Term) → Term
-Idsym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
-
-Idtrans : (A x y z e f : Term) → Term -- currently not used
-Idtrans A x y z e f = transp A (Id (wk1 A) (wk1 x) (var 0)) y e z f
-
 -- Well-typed variables
 data _∷_^_∈_ : (x : Nat) (A : Term) (r : TypeInfo) (Γ : Con Term) → Set where
   here  : ∀ {Γ A r}                     →         0 ∷ wk1 A ^ r ∈ (Γ ∙ A ^ r )
@@ -53,7 +37,7 @@ mutual
     -- Σ Relevant ▹ Irrelevant ∷ Relevant (allow us to encode relevant Empty, bool)
     -- Quotients
     -- J-types (identity types that have J)
-    
+
   data _⊢_∷_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ : ∀ {r l l'}
          → l < l'
@@ -277,8 +261,8 @@ mutual
                   ∷ SProp ¹ ^ [ ! , next ¹ ]
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ Id (U ⁰) ℕ ℕ
-                  ≡ Unit {¹} 
-                  ∷ (SProp ¹) ^ [ ! , next ¹ ] 
+                  ≡ Unit {¹}
+                  ∷ (SProp ¹) ^ [ ! , next ¹ ]
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
                → Γ ⊢ B ∷ SProp ⁰ ^ [ ! , next ⁰ ]
@@ -299,14 +283,14 @@ mutual
             → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
             → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
             → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) ℕ ≡ Empty ∷ SProp ¹ ^ [ ! , next ¹ ]
-    cast-cong : ∀ {A A' B B' e e' t t'} → let l = ⁰ in 
+    cast-cong : ∀ {A A' B B' e e' t t'} → let l = ⁰ in
                   Γ ⊢ A ≡ A' ∷ U l ^ [ ! , next l ]
                 → Γ ⊢ B ≡ B' ∷ U l ^ [ ! , next l ]
                 → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
                 → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , next ⁰ ]
                 → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , next ⁰ ]
                 → Γ ⊢ cast l A B e t ≡ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]
-    cast-Π : ∀ {A A' rA B B' e f} → let l = ⁰ in let lA = ⁰ in let lB = ⁰ in 
+    cast-Π : ∀ {A A' rA B B' e f} → let l = ⁰ in let lA = ⁰ in let lB = ⁰ in
                Γ ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
              → Γ ∙ A ^ [ rA , ι lA ] ⊢ B ∷ U lB ^ [ ! , next lB ]
              → Γ ⊢ A' ∷ (Univ rA lA) ^ [ ! , next lA ]
@@ -380,7 +364,7 @@ mutual
               → Γ ⊢ n ⇒ n' ∷ ℕ ^ ι ⁰
               → Γ ⊢ Id ℕ (suc m) n ⇒ Id ℕ (suc m) n' ∷ SProp ⁰ ^ next ⁰
     Id-U-subst : ∀ {A A' B}
-              → Γ ⊢ A ⇒ A' ∷ U ⁰  ^ next ⁰ 
+              → Γ ⊢ A ⇒ A' ∷ U ⁰  ^ next ⁰
               → Γ ⊢ B ∷ U ⁰  ^ [ ! , next ⁰  ]
               → Γ ⊢ Id (U ⁰ ) A B ⇒ Id (U ⁰) A' B ∷ SProp ¹ ^ next ¹
     Id-U-ℕ-subst : ∀ {B B'}
@@ -400,7 +384,7 @@ mutual
            → Γ ⊢ u ∷ (Π A ^ rA ° lA ▹ B ° lB ) ^ [ ! , ι l ]
            → Γ ⊢ (Id (Π A ^ rA ° lA ▹ B ° lB ) t u)
                  ⇒ Π A ^ rA ° lA ▹ (Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0))) ° lB
-                 ∷ SProp l ^ next l 
+                 ∷ SProp l ^ next l
     Id-ℕ-00 : ⊢ Γ
             → Γ ⊢ (Id ℕ zero zero)
                   ⇒ Unit {⁰}
@@ -424,7 +408,7 @@ mutual
                     ∷ SProp ¹ ^ next ¹
     Id-U-ℕℕ : ⊢ Γ
             → Γ ⊢ (Id (U ⁰) ℕ ℕ)
-                  ⇒ Unit {¹} 
+                  ⇒ Unit {¹}
                   ∷ SProp ¹ ^ next ¹
     Id-SProp : ∀ {A B}
                → Γ ⊢ A ∷ SProp ⁰ ^ [ ! , next ⁰ ]
@@ -446,7 +430,7 @@ mutual
             → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
             → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
             → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) ℕ ⇒ Empty ∷ SProp ¹ ^ next ¹
-    cast-subst : ∀ {A A' B e t} → let l = ⁰ in 
+    cast-subst : ∀ {A A' B e t} → let l = ⁰ in
                     Γ ⊢ A ⇒ A' ∷ U l ^ next l
                   → Γ ⊢ B ∷ U l ^ [ ! , next l ]
                   → Γ ⊢ e ∷ Id (U l) A B ^ [ % , next l ]
@@ -457,14 +441,14 @@ mutual
                   → Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ [ % , next ⁰ ]
                   → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
                   → Γ ⊢ cast ⁰ ℕ B e t ⇒ cast ⁰ ℕ B' e t ∷ B ^ ι ⁰
-    cast-Π-subst : ∀ {A rA P B B' e t} → let l = ⁰ in let lA = ⁰ in let lP = ⁰ in 
+    cast-Π-subst : ∀ {A rA P B B' e t} → let l = ⁰ in let lA = ⁰ in let lP = ⁰ in
                     Γ ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
                   → Γ ∙ A ^ [ rA , ι lA ] ⊢ P ∷ U lP ^ [ ! , next lA ]
                   → Γ ⊢ B ⇒ B' ∷ U l ^ next l
                   → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ° lA ▹ P ° lP) B ^ [ % , next l ]
                   → Γ ⊢ t ∷ (Π A ^ rA ° lA ▹ P ° lP) ^ [ ! , ι l ]
                   → Γ ⊢ cast l (Π A ^ rA ° lA ▹ P ° lP) B e t ⇒ cast l (Π A ^ rA ° lA ▹ P ° lP) B' e t ∷ B ^ ι l
-    cast-Π : ∀ {A A' rA B B' e f} → let l = ⁰ in 
+    cast-Π : ∀ {A A' rA B B' e f} → let l = ⁰ in
                Γ ⊢ A ∷ (Univ rA l) ^ [ ! , next l ]
              → Γ ∙ A ^ [ rA , ι l ] ⊢ B ∷ U l ^ [ ! , next l ]
              → Γ ⊢ A' ∷ (Univ rA l) ^ [ ! , next l ]

@@ -50,22 +50,9 @@ IdRed* : ∀ {Γ A B t u l}
 IdRed* ⊢t ⊢u (id ⊢A) = id (univ (Idⱼ (un-univ ⊢A) ⊢t ⊢u))
 IdRed* ⊢t ⊢u (d ⇨ D) = univ (Id-subst (un-univ⇒ d) ⊢t ⊢u) ⇨ IdRed* (conv ⊢t (subset d)) (conv ⊢u (subset d)) D
 
-appRed* : ∀ {Γ a t u A B rA lA lB l}
-          (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
-          (D : Γ ⊢ t ⇒* u ∷ (Π A ^ rA ° lA ▹ B ° lB) ^ ι l)
-        → Γ ⊢ t ∘ a ⇒* u ∘ a ∷ B [ a ] ^ ι lB
-appRed* ⊢a (id x) = id (x ∘ⱼ ⊢a)
-appRed* ⊢a (x ⇨ D) = app-subst x ⊢a ⇨ appRed* ⊢a D
-
 sgSubst-and-lift : ∀ ρ a x → ((sgSubst a) ₛ• (step ρ)) x PE.≡ toSubst ρ x
 sgSubst-and-lift ρ a Nat.zero = PE.refl
 sgSubst-and-lift ρ a (Nat.suc x) = PE.refl
-
-irrelevant-subst : ∀ ρ t a → (wk (step ρ) t) [ a ] PE.≡ wk ρ t
-irrelevant-subst ρ t a = PE.trans (PE.trans (subst-wk t) (substVar-to-subst (sgSubst-and-lift ρ a) t)) (PE.sym (wk≡subst ρ t))
-
-irrelevant-subst′ : ∀ ρ t a → (wk (lift ρ) (wk1 t)) [ a ] PE.≡ wk ρ t
-irrelevant-subst′ ρ t a = PE.trans (PE.cong (λ X → X [ a ]) (lift-wk1 ρ t)) (irrelevant-subst ρ t a)
 
 escapeEqRefl : ∀ {l Γ A r}
             → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
@@ -420,7 +407,7 @@ Idᵗᵛ : ∀ {A t u Γ l}
        ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
        ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
        ([u] : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
-     → Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ∷ SProp l ^ [ ! , next l ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ (proj₂ (levelBounded l)) [Γ]) 
+     → Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ∷ SProp l ^ [ ! , next l ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ (proj₂ (levelBounded l)) [Γ])
 Idᵗᵛ [Γ] [A] [t] [u] ⊢Δ [σ] = {!!}
   -- (IdTerm ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ])))
   -- , {!!}
