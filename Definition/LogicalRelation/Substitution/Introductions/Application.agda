@@ -1,4 +1,4 @@
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -14,6 +14,9 @@ open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Application
 open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
+open import Definition.LogicalRelation.Substitution.Introductions.Pi
+open import Definition.LogicalRelation.Substitution.Weakening
+import Definition.LogicalRelation.Substitution.Irrelevance as S
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -70,3 +73,39 @@ app-congᵛ {F} {G} {rF} {lF} {lG} {rΠ} {a = a} [Γ] [F] [ΠFG] [t≡u] [a] [b]
   in  irrelevanceEqTerm′ (PE.sym (singleSubstLift G a)) PE.refl PE.refl [G[a]]′ [G[a]]
                          (app-congTerm [σF] [G[a]]′ [σΠFG] ([t≡u] ⊢Δ [σ])
                                        [σa] [σb] ([a≡b] ⊢Δ [σ]))
+
+postulate wk1d↑ : ∀ G u → wk1d G [ u ] PE.≡ G [ u ]↑
+
+appᵛ↑ : ∀ {F F' G rF rF' lF lF' lG rΠ lΠ t u Γ l}
+       (lF≤ : lF ≤ lΠ)
+       (lG≤ : lG ≤ lΠ)
+       ([Γ] : ⊩ᵛ Γ)
+       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+       ([F'] : Γ ⊩ᵛ⟨ l ⟩ F' ^ [ rF' , ι lF' ] / [Γ])
+       ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F]) 
+       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] / [Γ])  
+       ([t] : Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ t ∷ wk1 (Π F ^ rF ° lF ▹ G ° lG) ^ [ rΠ , ι lΠ ] / [Γ] ∙ [F'] / wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG} {F = F'} [Γ] [F'] [ΠFG])
+       ([u] : Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ u ∷ wk1 F ^ [ rF , ι lF ] / [Γ] ∙ [F'] / wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
+         → Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ t ∘ u ∷ G [ u ]↑ ^ [ rΠ , ι lG ] / [Γ] ∙ [F'] / subst↑S {F'} {G} {u} {F' = F} [Γ] [F'] [F] [G] [u]
+appᵛ↑ {F} {F'} {G} {rF} {rF'} {lF} {lF'} {lG} {rΠ} {lΠ} {t} {u} lF≤ lG≤ [Γ] [F] [F'] [G] [ΠFG] [t] [u] =
+  let [G[u]] = subst↑S {F'} {G} {u} {F' = F} [Γ] [F'] [F] [G] [u]
+      [wF] = wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F]
+      [wΠFG] = wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG} {F = F'} [Γ] [F'] [ΠFG]
+      [app] = appᵛ {F = wk1 F} {G = wk1d G} {t = t} {u = u} (_∙_ {A = F'} [Γ] [F']) [wF] [wΠFG] [t] [u]
+  in S.irrelevanceTerm′ {A = wk1d G [ u ]} {A′ =  G [ u ]↑} {t = t ∘ u} (wk1d↑ G u) PE.refl (_∙_ {A = F'} [Γ] [F']) (_∙_ {A = F'} [Γ] [F'])
+                        (substSΠ {wk1 F} {wk1d G} {u} (_∙_ {A = F'} [Γ] [F']) [wF] [wΠFG] [u]) [G[u]] [app]
+
+{- irrelevanceTerm′ (PE.sym (singleSubstLift G u)) PE.refl PE.refl
+                       [σG[u]]′ [σG[u]]
+                       (appTerm PE.refl [σF] [σG[u]]′ [σΠFG] [σt] [σu])
+  ,   (λ [σ′] [σ≡σ′] →
+         let [σu′] = convTerm₂ [σF] (proj₁ ([F] ⊢Δ [σ′]))
+                               (proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′])
+                               (proj₁ ([u] ⊢Δ [σ′]))
+         in  irrelevanceEqTerm′ (PE.sym (singleSubstLift G u)) PE.refl PE.refl
+                                [σG[u]]′ [σG[u]]
+                                (app-congTerm [σF] [σG[u]]′ [σΠFG]
+                                              (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
+                                              [σu] [σu′]
+                                              (proj₂ ([u] ⊢Δ [σ]) [σ′] [σ≡σ′])))
+-}
