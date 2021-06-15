@@ -65,6 +65,11 @@ wk-lift-wkAll {ρ} {Δ} {Γ} {t} d rewrite wk-comp (lift ρ) (lift (empty-wk Γ)
 lift-wkAll : ∀ {ρ Δ Γ A s} (d : ρ ∷ Δ ⊆ Γ) → lift ρ ∷ Δ ∙ wkAll Δ A ⦂ s ⊆ Γ ∙ wkAll Γ A ⦂ s
 lift-wkAll {A = A} d rewrite PE.sym (wk-wkAll {t = A} d) = lift d
 
+wk-cstr-dom : ∀ {ρ Γ Δ t s k} ([ρ] : ρ ∷ Δ ⊆ Γ) (d : Δ ⊢ t ∷ U.wk ρ (cstr-dom-ctx Γ k) ⦂ s) → Δ ⊢ t ∷ cstr-dom-ctx Δ k ⦂ s
+wk-cstr-dom {ρ} {Γ} {Δ} {t} {s} [ρ] d = PE.subst (λ x → Δ ⊢ t ∷ x ⦂ s) (wk-wkAll [ρ]) d
+
+wk-cstr-cod : ∀ {ρ a k Δ Γ} ([ρ] : ρ ∷ Δ ⊆ Γ)  → subst (sgSubst (U.wk ρ a)) (U.wk (lift (empty-wk Δ)) (cstr-cod k)) PE.≡ U.wk ρ (cstr-cod-ctx Γ k [ a ])
+wk-cstr-cod {k = k} [ρ] rewrite (PE.sym  (wk-lift-wkAll {t = cstr-cod k} [ρ])) = wk-sgSubst (U.wk (lift (empty-wk _)) (cstr-cod k))
 
 mutual
   wk : ∀ {Γ Δ A s ρ} → ρ ∷ Δ ⊆ Γ →
@@ -117,13 +122,13 @@ mutual
                                 (wk-β-Boxrec ρ (U.wk ρ A) sA C)
                                 (wkTerm [ρ] ⊢Δ ⊢u))
                       (wkTerm [ρ] ⊢Δ ⊢t))
-  wkTerm {Δ = Δ} ρ ⊢Δ (cstrⱼ {k = k} ⊢Γ ⊢domk ⊢codk ⊢domki) =
+  wkTerm {Δ = Δ} ρ ⊢Δ (cstrⱼ {k = k} {a = a} ⊢domk ⊢codk ⊢domki ⊢a) =
     let ρdomk      = PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll ρ) (wk ρ ⊢Δ ⊢domk) in
-    PE.subst (λ x → Δ ⊢ cstr k ∷ x ⦂ cstr-𝕊 k) (PE.sym (wk-wkAll ρ))
-             (cstrⱼ ⊢Δ
-                    ρdomk
+    PE.subst (λ x → Δ ⊢ cstr k ∘ U.wk _ a ∷ x ⦂ cstr-𝕊 k) (wk-cstr-cod ρ)
+             (cstrⱼ ρdomk
                     (PE.subst (λ x → Δ ∙ wkAll Δ _ ⦂ _ ⊢ x ⦂ _) (wk-lift-wkAll ρ) (wk (lift-wkAll ρ) (⊢Δ ∙ ρdomk) ⊢codk))
-                    λ ki kiK → PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll ρ) (wk ρ ⊢Δ (⊢domki ki kiK)))
+                    (λ ki kiK → PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll ρ) (wk ρ ⊢Δ (⊢domki ki kiK)))
+                    (wk-cstr-dom ρ (wkTerm ρ ⊢Δ ⊢a)))
   wkTerm {Δ = Δ} ρ ⊢Δ (dstrⱼ {o = o} x) =
     PE.subst (λ x → Δ ⊢ dstr o ∷ x ⦂ dstr-𝕊 o) (PE.sym (wk-wkAll ρ)) (dstrⱼ ⊢Δ)
   wkEq : ∀ {Γ Δ A B s ρ} → ρ ∷ Δ ⊆ Γ →
@@ -363,3 +368,51 @@ wkRed:*:Term : ∀ {Γ Δ A t u s ρ} → ρ ∷ Δ ⊆ Γ →
              in ⊢ Δ → Γ ⊢ t :⇒*: u ∷ A ⦂ s → Δ ⊢ ρt :⇒*: ρu ∷ ρA ⦂ s
 wkRed:*:Term ρ ⊢Δ [ ⊢t , ⊢u , d ] =
   [ wkTerm ρ ⊢Δ ⊢t , wkTerm ρ ⊢Δ ⊢u , wkRed*Term ρ ⊢Δ d ]
+
+
+
+-- interaction between cstr-cod and weakening/substitutions
+
+cstr-codU-ctx : ∀ {Γ k s} → cstr-cod k PE.≡ Univ s → cstr-cod-ctx Γ k PE.≡ Univ s
+cstr-codU-ctx {Γ} e = PE.cong (λ x → U.wk (lift (empty-wk Γ)) x) e
+
+cstr-codU-substS : ∀ {Γ k s a} → cstr-cod k PE.≡ Univ s → (cstr-cod-ctx Γ k) [ a ] PE.≡ Univ s
+cstr-codU-substS {Γ} {a = a} e = PE.cong (λ x → x [ a ]) (cstr-codU-ctx e)
+
+-- KM : Are the 2 following lemmas useful ?
+[]-cstr-ctx-PE-wk : ∀ {k K t ρ}
+                  → cstr-cod k PE.≡ cstr K ∘ t
+                  → U.wk ρ (cstr-cod k) PE.≡ cstr K ∘ (U.wk ρ t)
+[]-cstr-ctx-PE-wk {ρ = ρ} e = PE.cong (λ x → U.wk ρ x) e
+
+[]-cstr-ctx-PE-subst : ∀ {k K t ρ}
+                  → cstr-cod k PE.≡ cstr K ∘ t
+                  → U.subst ρ (cstr-cod k) PE.≡ cstr K ∘ (U.subst ρ t)
+[]-cstr-ctx-PE-subst {ρ = ρ} e = PE.cong (λ x → U.subst ρ x) e
+
+
+[]-cstr-wk : ∀ {t K ρ} → [ K ]-cstr t → [ K ]-cstr (U.wk ρ t)
+[]-cstr-wk {.(cstr _ ∘ _)} is-K-cstr = is-K-cstr
+
+[]-cstr-subst : ∀ {t K ρ} → [ K ]-cstr t → [ K ]-cstr (U.subst ρ t)
+[]-cstr-subst {.(cstr _ ∘ _)} is-K-cstr = is-K-cstr
+
+[]-cstr-cod-ctx : ∀ {Γ k K} → [ K ]-cstr (cstr-cod k) → [ K ]-cstr (cstr-cod-ctx Γ k)
+[]-cstr-cod-ctx {Γ} d = []-cstr-wk d
+
+[]-cstr-cod-subst : ∀ {Γ k K a} → [ K ]-cstr (cstr-cod k) → [ K ]-cstr ((cstr-cod-ctx Γ k) [ a ])
+[]-cstr-cod-subst {Γ} d = []-cstr-subst ([]-cstr-cod-ctx d)
+
+-- cstr-codU-substS : ∀ {Γ k s a} → cstr-cod k PE.≡ Univ s → (cstr-cod-ctx Γ k) [ a ] PE.≡ Univ s
+-- cstr-codU-substS {Γ} {a = a} e = PE.cong (λ x → x [ a ]) (cstr-codU-ctx e)
+
+
+empty-wk-⊆ : ∀ {Γ} → ⊢ Γ → empty-wk Γ ∷ Γ ⊆ ε
+empty-wk-⊆ ε = id
+empty-wk-⊆ (d ∙ x) = step (empty-wk-⊆ d)
+
+cstr-dom-ctx-wty : ∀ {Γ k} → ⊢ Γ → Γ ⊢ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k
+cstr-dom-ctx-wty {k = k} ⊢Γ = wk (empty-wk-⊆ ⊢Γ) ⊢Γ (cstr-dom-wty k)
+
+cstr-cod-ctx-wty : ∀ {Γ k} → ⊢ Γ → Γ ∙ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k ⊢ cstr-cod-ctx Γ k ⦂ cstr-cod-sort k
+cstr-cod-ctx-wty {k = k} d = wk (lift (empty-wk-⊆ d)) (d ∙ cstr-dom-ctx-wty d) (cstr-cod-wty k)

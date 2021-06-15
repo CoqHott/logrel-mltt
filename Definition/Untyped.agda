@@ -271,6 +271,8 @@ data Type : Term → Set where
   Πₙ : ∀ {A s B} → Type (Π A ⦂ s ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
+  cstrₙ : ∀ {k a} → Type (cstr k ∘ a) -- this is not valid for all constructors
+  Boxₙ : ∀ {A s} → Type (Box s A)
   ne : ∀{n} → Neutral n → Type n
 
 -- A whnf of type Π A B is either lam t or neutral.
@@ -291,6 +293,8 @@ typeWhnf : ∀ {A} → Type A → Whnf A
 typeWhnf Πₙ = Πₙ
 typeWhnf ℕₙ = ℕₙ
 typeWhnf Emptyₙ = Emptyₙ
+typeWhnf cstrₙ = cstrₙ
+typeWhnf Boxₙ = Boxₙ
 typeWhnf (ne x) = ne x
 
 functionWhnf : ∀ {f} → Function f → Whnf f
@@ -391,6 +395,8 @@ wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
 wkType ρ Πₙ      = Πₙ
 wkType ρ ℕₙ      = ℕₙ
 wkType ρ Emptyₙ  = Emptyₙ
+wkType ρ cstrₙ   = cstrₙ
+wkType ρ Boxₙ   = Boxₙ
 wkType ρ (ne x) = ne (wkNeutral ρ x)
 
 wkFunction : ∀ {t} ρ → Function t → Function (wk ρ t)

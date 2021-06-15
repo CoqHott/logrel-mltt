@@ -210,6 +210,7 @@ record LogRelKit : Set₁ where
   field
     _⊩U_ : (Γ : Con Term) (s : 𝕊) → Set
     _⊩Π_⦂_ : (Γ : Con Term) → Term → 𝕊 → Set
+    _⊩cstr_⦂_ : (Γ : Con Term) → Term → 𝕊 → Set
 
     _⊩_⦂_ : (Γ : Con Term) → Term → 𝕊 → Set
     _⊩_≡_⦂_/_ : (Γ : Con Term) (A B : Term) (s : 𝕊) → Γ ⊩ A ⦂ s → Set
@@ -447,7 +448,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       where open LogRelKit (rec l<)
 
     kit : LogRelKit
-    kit = Kit _⊩¹U_ _⊩¹Π_⦂_
+    kit = Kit _⊩¹U_ _⊩¹Π_⦂_ _⊩¹cstr_⦂_
               _⊩¹_⦂_ _⊩¹_≡_⦂_/_ _⊩¹_∷_⦂_/_ _⊩¹_≡_∷_⦂_/_
 
 open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ; emb; Uₜ; Uₜ₌; Π₌; cstrᵣ; cstr₌)
@@ -477,6 +478,9 @@ _⊩′⟨_⟩U_ : (Γ : Con Term) (l : TypeLevel) (s : 𝕊) → Set
 
 _⊩′⟨_⟩Π_⦂_ : (Γ : Con Term) (l : TypeLevel) → Term → 𝕊 → Set
 Γ ⊩′⟨ l ⟩Π A ⦂ s = Γ ⊩Π A ⦂ s where open LogRelKit (kit l)
+
+_⊩′⟨_⟩cstr_⦂_ : (Γ : Con Term) (l : TypeLevel) → Term → 𝕊 → Set
+Γ ⊩′⟨ l ⟩cstr A ⦂ s = Γ ⊩cstr A ⦂ s where open LogRelKit (kit l)
 
 _⊩⟨_⟩_⦂_ : (Γ : Con Term) (l : TypeLevel) → Term → 𝕊 → Set
 Γ ⊩⟨ l ⟩ A ⦂ s = Γ ⊩ A ⦂ s where open LogRelKit (kit l)

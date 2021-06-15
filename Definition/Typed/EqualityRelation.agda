@@ -170,7 +170,7 @@ record EqRelSet : Set₁ where
     ≅ₜ-cstr-cong : ∀ {a a' k Γ}
                  → ⊢ Γ
                  → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
-                 → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ∷ cstr-type Γ k ⦂ cstr-𝕊 k
+                 → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ∷ (cstr-cod-ctx Γ k) [ a ] ⦂ cstr-𝕊 k
 
     -- Variable reflexivity
     ~-var : ∀ {x A s Γ} → Γ ⊢ var x ∷ A ⦂ s → Γ ⊢ var x ~ var x ∷ A ⦂ s

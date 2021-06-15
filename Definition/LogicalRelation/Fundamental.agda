@@ -17,7 +17,7 @@ open import Definition.LogicalRelation.Substitution.Conversion
 open import Definition.LogicalRelation.Substitution.Reduction
 open import Definition.LogicalRelation.Substitution.Reflexivity
 open import Definition.LogicalRelation.Substitution.Introductions
-import Definition.LogicalRelation.Substitution.ProofIrrelevance as PI
+-- import Definition.LogicalRelation.Substitution.ProofIrrelevance as PI
 import Definition.LogicalRelation.Substitution.Irrelevance as S
 
 open import Tools.Product
@@ -38,6 +38,7 @@ mutual
   fundamental (ℕⱼ x) = valid x , ℕᵛ (valid x)
   fundamental (Emptyⱼ x) = valid x , Emptyᵛ (valid x)
   fundamental (Uⱼ x) = valid x , Uᵛ (valid x)
+  fundamental (Boxⱼ ⊢A) = {!!}
   fundamental (Πⱼ_▹_ {F} {sF} {G} ⊢F ⊢G) with fundamental ⊢F | fundamental ⊢G
   fundamental (Πⱼ_▹_ {F} {sF} {G} ⊢F ⊢G) | [Γ] , [F] | [Γ∙F] , [G] =
     [Γ] , Πᵛ {F} {G} [Γ] [F] (S.irrelevance {A = G} [Γ∙F] ([Γ] ∙ [F]) [G])
@@ -58,6 +59,7 @@ mutual
     ,   (λ ⊢Δ [σ] → univEqEq (proj₁ ([U] ⊢Δ [σ]))
                              (proj₁ ([A] ⊢Δ [σ]))
                              ([t≡u] ⊢Δ [σ]))
+  fundamentalEq (Box-cong F F≡H) = {!!}
   fundamentalEq (refl D) =
     let [Γ] , [B] = fundamental D
     in  [Γ] , [B] , [B] , (λ ⊢Δ [σ] → reflEq (proj₁ ([B] ⊢Δ [σ])))
@@ -199,6 +201,11 @@ mutual
           [t]′ = S.irrelevanceTerm {A = A} {t = t} [Γ] [Γ]′ [A′] [A′]₁ [t]
       in  [Γ]′ , [A]
       ,   convᵛ {t} {A} {B} [Γ]′ [A′]₁ [A] [A′≡A] [t]′
+  fundamentalTerm (Boxⱼ ⊢A) = {!!}
+  fundamentalTerm (boxⱼ ⊢t) = {!!}
+  fundamentalTerm (Boxrecⱼ ⊢A ⊢C ⊢u ⊢t) = {!!}
+  fundamentalTerm (cstrⱼ ⊢Γ dom cod pi) = {!!}
+  fundamentalTerm (dstrⱼ ⊢Γ) = {!!}
 
   -- Fundamental theorem for term equality.
   fundamentalTermEq : ∀{Γ A t t′ sA} → Γ ⊢ t ≡ t′ ∷ A ⦂ sA
@@ -536,12 +543,11 @@ mutual
                      (Emptyrec-congᵛ {F} {F′} {sF} {n} {n′}
                        [Γ]′ [Empty] [F]′ [F′]′ [F≡F′]′
                        [n] [n′] [n≡n′])
-  fundamentalTermEq (proof-irrelevance ⊢t ⊢u) with fundamentalTerm ⊢t | fundamentalTerm ⊢u
-  fundamentalTermEq {A = A} {t = t} {t′ = t′} (proof-irrelevance ⊢t ⊢u) | [Γ] , [A] , [t] | [Γ]′ , [A]′ , [u] =
-    let [u]′ = S.irrelevanceTerm {A = A} {t = t′} [Γ]′ [Γ] [A]′ [A] [u]
-    in [Γ] , modelsTermEq [A] [t] [u]′
-                           (PI.proof-irrelevanceᵛ {A = A} {t = t} {u = t′} [Γ] [A] [t] [u]′)
-
+  fundamentalTermEq (Box-cong F F≡H) = {!!}
+  fundamentalTermEq (box-cong F ⊢a ⊢a' a≡a') = {!!}
+  fundamentalTermEq (Boxrec-cong F F≡F' E≡E' u≡u' t≡t') = {!!}
+  fundamentalTermEq (Boxrec-box F E ⊢u ⊢a) = {!!}
+  fundamentalTermEq (rew ka⇒t ⊢ka) = {!!}
 
 -- Fundamental theorem for substitutions.
 fundamentalSubst : ∀ {Γ Δ σ} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ)

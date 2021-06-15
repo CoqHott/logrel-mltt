@@ -19,7 +19,6 @@ postulate cstr-cod : constructors → Term
 -- Hypothesis: cstr-cod is a non-neutral whnf
 -- postulate cstr-cod-whnf : (k : constructors) → Whnf (cstr-cod k)
 
--- KM: Shouldn't this constructor target 𝕊 directly ?
 postulate cstr-dom-sort : constructors → 𝕊
 postulate cstr-cod-sort : constructors → 𝕊
 
@@ -33,8 +32,14 @@ postulate dstr-cod-sort : destructors → 𝕊
 cstr-𝕊 : constructors → 𝕊
 cstr-𝕊 k = cstr-cod-sort k
 
+cstr-dom-ctx : Con Term → constructors → Term
+cstr-dom-ctx Γ k = wkAll Γ (cstr-dom k)
+
+cstr-cod-ctx : Con Term → constructors → Term
+cstr-cod-ctx Γ k = wk (lift (empty-wk Γ)) (cstr-cod k)
+
 cstr-type : Con Term → constructors → Term
-cstr-type Γ k = wkAll Γ (Π cstr-dom k ⦂ cstr-𝕊 k ▹ cstr-cod k)
+cstr-type Γ k = wkAll Γ (Π cstr-dom k ⦂ cstr-dom-sort k ▹ cstr-cod k)
 
 dstr-𝕊 : destructors → 𝕊
 dstr-𝕊 o = dstr-cod-sort o
@@ -139,12 +144,12 @@ mutual
             → Γ ⊢ u ∷ Π A ⦂ ‼ sA ▹ (C [ box sA (var 0) ]↑) ⦂ sC
             → Γ ⊢ t ∷ Box sA A ⦂ 𝕥y
             → Γ ⊢ Boxrec sC A C u t ∷ C [ t ] ⦂ sC
-    cstrⱼ  : ∀ {k}
-           → ⊢ Γ
-           → Γ ⊢ wkAll Γ (cstr-dom k) ⦂ cstr-cod-sort k
-           → Γ ∙ wkAll Γ (cstr-dom k) ⦂ cstr-cod-sort k ⊢ wk (lift (empty-wk Γ)) (cstr-cod k) ⦂ cstr-cod-sort k
-           → (∀ ki → [ k ]-cstr (cstr-cod ki) → Γ ⊢ wkAll Γ (cstr-dom ki) ⦂ cstr-dom-sort ki)
-           → Γ ⊢ cstr k ∷ cstr-type Γ k ⦂ cstr-𝕊 k
+    cstrⱼ  : ∀ {k a}
+           → Γ ⊢ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k
+           → Γ ∙ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k ⊢ cstr-cod-ctx Γ k ⦂ cstr-cod-sort k
+           → (∀ ki → [ k ]-cstr (cstr-cod ki) → Γ ⊢ cstr-dom-ctx Γ ki ⦂ cstr-dom-sort ki)
+           → Γ ⊢ a ∷ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k
+           → Γ ⊢ cstr k ∘ a ∷  (cstr-cod-ctx Γ k) [ a ] ⦂ cstr-𝕊 k
     dstrⱼ  : ∀ {o}
            → ⊢ Γ
            → Γ ⊢ dstr o ∷ dstr-type Γ o ⦂ dstr-𝕊 o
@@ -400,3 +405,11 @@ data _⊢ˢ_≡_∷_ (Δ : Con Term) (σ σ′ : Subst) : (Γ : Con Term) → Se
 
 -- Note that we cannot use the well-formed substitutions.
 -- For that, we need to prove the fundamental theorem for substitutions.
+
+postulate cstr-dom-wty : (k : constructors) → ε ⊢ cstr-dom k ⦂ cstr-dom-sort k
+
+postulate cstr-cod-wty : (k : constructors) → ε ∙ cstr-dom k ⦂ cstr-dom-sort k ⊢ cstr-cod k ⦂ cstr-cod-sort k
+
+
+
+

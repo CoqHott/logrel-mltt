@@ -27,7 +27,7 @@ wfTerm (Emptyrecⱼ A e) = wfTerm e
 wfTerm (conv t A≡B) = wfTerm t
 wfTerm (Boxⱼ d) = wfTerm d
 wfTerm (boxⱼ d) = wfTerm d
-wfTerm (cstrⱼ ⊢Γ _ _ _) = ⊢Γ
+wfTerm (cstrⱼ _ _ _ ⊢a) = wfTerm ⊢a
 wfTerm (dstrⱼ ⊢Γ) = ⊢Γ
 wfTerm (Boxrecⱼ _ x d d₁) = wfTerm d
 
@@ -317,3 +317,6 @@ redU (univ x) = redU*Term′ PE.refl x
 redU* : ∀ {A Γ s s'} → Γ ⊢ A ⇒* (Univ s) ⦂ s' → A PE.≡ (Univ s)
 redU* (id x) = PE.refl
 redU* (x ⇨ A⇒*U) rewrite redU* A⇒*U = ⊥-elim (redU x)
+
+
+
