@@ -21,6 +21,17 @@ import Definition.LogicalRelation.Substitution.Irrelevance as S
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+import Data.Nat as Nat
+
+wk1d[]-[]↑ : ∀ x y → x [ y ]↑ PE.≡ wk1d x [ y ]
+wk1d[]-[]↑ x y = PE.trans (substVar-to-subst aux x) (PE.sym (subst-wk x))
+  where
+    aux : ∀ n → consSubst (wk1Subst idSubst) y n PE.≡ (sgSubst y ₛ• lift (step id)) n
+    aux Nat.zero = PE.refl
+    aux (Nat.suc n) = PE.refl
+
+
+
 
 -- Application of valid terms.
 appᵛ : ∀ {F G rF lF lG rΠ lΠ t u Γ l}
@@ -74,8 +85,6 @@ app-congᵛ {F} {G} {rF} {lF} {lG} {rΠ} {a = a} [Γ] [F] [ΠFG] [t≡u] [a] [b]
                          (app-congTerm [σF] [G[a]]′ [σΠFG] ([t≡u] ⊢Δ [σ])
                                        [σa] [σb] ([a≡b] ⊢Δ [σ]))
 
-postulate wk1d↑ : ∀ G u → wk1d G [ u ] PE.≡ G [ u ]↑
-
 appᵛ↑ : ∀ {F F' G rF rF' lF lF' lG rΠ lΠ t u Γ l}
        (lF≤ : lF ≤ lΠ)
        (lG≤ : lG ≤ lΠ)
@@ -92,20 +101,5 @@ appᵛ↑ {F} {F'} {G} {rF} {rF'} {lF} {lF'} {lG} {rΠ} {lΠ} {t} {u} lF≤ lG�
       [wF] = wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F]
       [wΠFG] = wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG} {F = F'} [Γ] [F'] [ΠFG]
       [app] = appᵛ {F = wk1 F} {G = wk1d G} {t = t} {u = u} (_∙_ {A = F'} [Γ] [F']) [wF] [wΠFG] [t] [u]
-  in S.irrelevanceTerm′ {A = wk1d G [ u ]} {A′ =  G [ u ]↑} {t = t ∘ u} (wk1d↑ G u) PE.refl (_∙_ {A = F'} [Γ] [F']) (_∙_ {A = F'} [Γ] [F'])
+  in S.irrelevanceTerm′ {A = wk1d G [ u ]} {A′ =  G [ u ]↑} {t = t ∘ u} (PE.sym (wk1d[]-[]↑ G u)) PE.refl (_∙_ {A = F'} [Γ] [F']) (_∙_ {A = F'} [Γ] [F'])
                         (substSΠ {wk1 F} {wk1d G} {u} (_∙_ {A = F'} [Γ] [F']) [wF] [wΠFG] [u]) [G[u]] [app]
-
-{- irrelevanceTerm′ (PE.sym (singleSubstLift G u)) PE.refl PE.refl
-                       [σG[u]]′ [σG[u]]
-                       (appTerm PE.refl [σF] [σG[u]]′ [σΠFG] [σt] [σu])
-  ,   (λ [σ′] [σ≡σ′] →
-         let [σu′] = convTerm₂ [σF] (proj₁ ([F] ⊢Δ [σ′]))
-                               (proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′])
-                               (proj₁ ([u] ⊢Δ [σ′]))
-         in  irrelevanceEqTerm′ (PE.sym (singleSubstLift G u)) PE.refl PE.refl
-                                [σG[u]]′ [σG[u]]
-                                (app-congTerm [σF] [σG[u]]′ [σΠFG]
-                                              (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
-                                              [σu] [σu′]
-                                              (proj₂ ([u] ⊢Δ [σ]) [σ′] [σ≡σ′])))
--}
