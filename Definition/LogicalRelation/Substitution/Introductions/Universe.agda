@@ -14,6 +14,7 @@ open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
+open import Definition.LogicalRelation.Substitution.MaybeEmbed
 
 open import Tools.Product
 open import Tools.Empty
@@ -69,6 +70,8 @@ univᵛ {lU = lU} {l = l} [Γ] lU< [U] [A] ⊢Δ [σ] =
   [A]₁ , λ [σ′] [σ≡σ′] → univEqEq (proj₁ ([U] ⊢Δ [σ])) [A]₁
                                   ((proj₂ ([A] ⊢Δ [σ])) [σ′] [σ≡σ′])
 
+
+
 -- Valid term equality of type U is valid type equality.
 univEqᵛ : ∀ {A B Γ rU lU l l′} ([Γ] : ⊩ᵛ Γ)
           ([U] : Γ ⊩ᵛ⟨ l′ ⟩ Univ rU lU ^ [ ! , next lU ] / [Γ])
@@ -77,3 +80,16 @@ univEqᵛ : ∀ {A B Γ rU lU l l′} ([Γ] : ⊩ᵛ Γ)
         → Γ ⊩ᵛ⟨ l ⟩ A ≡ B ^ [ rU , ι lU ] / [Γ] / [A]
 univEqᵛ {A} [Γ] [U] [A] [t≡u] ⊢Δ [σ] =
   univEqEq (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) ([t≡u] ⊢Δ [σ])
+
+univᵗᵛ : ∀ {Γ A t r l′}  ([Γ] : ⊩ᵛ Γ)
+       → ([U] : Γ ⊩ᵛ⟨ ∞ ⟩ Univ r l′ ^ [ ! , next l′ ] / [Γ] )
+       → ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , next l′ ] / [Γ] / [U])
+       → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / [Γ] / maybeEmbᵛ {A = A} [Γ] (univᵛ {A = A} [Γ] (≡is≤ PE.refl) [U] [A]) 
+       → Γ ⊩ᵛ⟨ ι l′ ⟩ t ∷ A ^ [ r , ι l′ ] / [Γ] / univᵛ {A = A} [Γ] (≡is≤ PE.refl) [U] [A]
+univᵗᵛ {Γ} {A} {t} {r} {⁰} [Γ] [U] [A] [t] ⊢Δ [σ] =
+  univEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) ,
+  λ [σ′] [σ≡σ′] → univEqEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′]) 
+univᵗᵛ {Γ} {A} {t} {r} {¹} [Γ] [U] [A] [t] ⊢Δ [σ] =
+  univEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) ,
+  λ [σ′] [σ≡σ′] → univEqEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′]) 
+
