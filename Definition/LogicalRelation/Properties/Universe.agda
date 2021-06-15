@@ -140,3 +140,12 @@ univEqEq {l} {l′} {Γ} {A} {B} {r} {ll} [U] [A] [A≡B] =
   let [A≡B]′ = irrelevanceEqTerm [U] (U-intr (U-elim [U])) [A≡B]
       X = univEqEq′ (U-elim [U]) (PE.subst (λ r → Γ ⊩⟨ l′ ⟩ A ^ r) (PE.sym (PE.cong toTypeInfo (U-Relevance-Level-eq [U]))) [A]) [A≡B]′
   in helper-eq (PE.sym (PE.cong toTypeInfo (U-Relevance-Level-eq [U]))) X
+
+univEqEqTerm : ∀ {Γ A t u r l′ ll}
+             → ([U] : Γ ⊩⟨ ∞ ⟩ Univ r l′ ^ [ ! , ll ] )
+             → ([A] : Γ ⊩⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , ll ] / [U])
+             → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
+             → Γ ⊩⟨ ∞ ⟩ t ≡ u ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
+             → Γ ⊩⟨ ι l′ ⟩ t ≡ u ∷ A ^ [ r , ι l′ ] / univEq [U] [A]
+univEqEqTerm {Γ} {A} {t} {u} {r} {⁰} [U] [A] [t] [t≡u] = [t≡u]
+univEqEqTerm {Γ} {A} {t} {u} {r} {¹} [U] [A] [t] [t≡u] = [t≡u]
