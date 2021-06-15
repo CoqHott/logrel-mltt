@@ -63,7 +63,7 @@ sucCase₂ : ∀ {F rF Γ l} ([Γ] : ⊩ᵛ Γ)
            ([F] : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ] ∙ [ℕ])
          → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F [ suc (var 0) ]↑ ^ rF / [Γ] ∙ [ℕ]
 sucCase₂ {F} {rF} {Γ} {l} [Γ] [ℕ] [F] =
-  subst↑S {ℕ} {F} {suc (var 0)} [Γ] [ℕ] [F]
+  subst↑S {ℕ} {F} {suc (var 0)} {F' = ℕ} [Γ] [ℕ] [ℕ] [F]
           (λ {Δ} {σ} → sucCase₃ [Γ] [ℕ] {Δ} {σ})
 
 sucCase₁ : ∀ {F rF Γ l lF} ([Γ] : ⊩ᵛ Γ)
