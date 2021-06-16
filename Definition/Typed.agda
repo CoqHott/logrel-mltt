@@ -40,8 +40,9 @@ cstr-dom-ctx Γ k = wkAll Γ (cstr-dom k)
 cstr-cod-ctx : Con Term → constructors → Term
 cstr-cod-ctx Γ k = wk (lift (empty-wk Γ)) (cstr-cod k)
 
-cstr-type : Con Term → constructors → Term
-cstr-type Γ k = wkAll Γ (Π cstr-dom k ⦂ cstr-dom-sort k ▹ cstr-cod k)
+cstr-type : Con Term → constructors → Term → Term
+cstr-type Γ k a = (cstr-cod-ctx Γ k) [ a ]
+-- cstr-type Γ k = wkAll Γ (Π cstr-dom k ⦂ cstr-dom-sort k ▹ cstr-cod k)
 
 dstr-𝕊 : destructors → 𝕊
 dstr-𝕊 o = dstr-cod-sort o
@@ -56,7 +57,7 @@ dstr-cod-ctx : Con Term → destructors → Term
 dstr-cod-ctx Γ k = wk (lift (lift (empty-wk Γ))) (dstr-cod k)
 
 dstr-type : Con Term → destructors → Term → Term → Term
-dstr-type Γ o t p = (dstr-cod-ctx Γ o) [ t ] [ p ]
+dstr-type Γ o t p = (dstr-cod-ctx Γ o) [ wk1 t ] [ p ]
 -- wkAll Γ (Π dstr-dom o ⦂ dstr-dom-sort o ▹ Π dstr-param o ⦂ dstr-param-sort o ▹  dstr-cod o)
 
 {- Rewrite rules -}
@@ -285,6 +286,13 @@ mutual
                → Γ ⊢ u ∷ Π F ⦂ ‼ sF ▹ (E [ box sF (var 0) ]↑) ⦂ sE
                → Γ ⊢ a ∷ F ⦂ ‼ sF
                → Γ ⊢ Boxrec sE F E u (box sF a) ≡ u ∘ a ∷ E [ box sF a ] ⦂ sE
+    cstr-cong  : ∀ {a a' k}
+               → Γ ⊢ a ≡ a' ∷ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k
+               → Γ ⊢ cstr k ∘ a ≡ cstr k ∘ a' ∷ cstr-type Γ k a ⦂ cstr-𝕊 k
+    dstr-cong  : ∀ {a a' p p' k}
+               → Γ ⊢ a ≡ a' ∷ dstr-dom-ctx Γ k ⦂ dstr-dom-sort k
+               → Γ ⊢ p ≡ p' ∷ dstr-param-ctx Γ k ⦂ dstr-param-sort k
+               → Γ ⊢ dstr′ k a p ≡ dstr′ k a' p' ∷ dstr-type Γ k a p ⦂ dstr-𝕊 k
     rew        : ∀ {A s k p a t}
                → Γ 𝕊⊢ k ⊚ a ⊚ p ⇒ t ⦂ s
                → Γ ⊢ dstr′ k a p ∷ A ⦂ s
@@ -344,8 +352,8 @@ data _⊢_⇒_∷_⦂_ (Γ : Con Term) : Term → Term → Term → 𝕊 → Set
                → Γ ⊢ dstr′ k a p ∷ A ⦂ s
                → Γ ⊢ dstr′ k a p ⇒ t ∷ A ⦂ s
 
-pattern dstr-cong d p≡p' t≡t' = app-cong (app-subst d p≡p') t≡t'
-pattern dstr-subst d ⊢p ⊢t = app-subst (app-subst d ⊢p) ⊢t
+-- pattern dstr-cong d p≡p' t≡t' = app-cong (app-subst d p≡p') t≡t'
+-- pattern dstr-subst d ⊢p ⊢t = app-subst (app-subst d ⊢p) ⊢t
 
 -- Type reduction
 data _⊢_⇒_⦂_ (Γ : Con Term) : Term → Term → 𝕊 → Set where

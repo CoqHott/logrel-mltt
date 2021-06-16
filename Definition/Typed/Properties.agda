@@ -58,6 +58,8 @@ wfEqTerm (box-cong _ _ _ d) = wfEqTerm d
 wfEqTerm (Boxrec-cong _ _ x d₁ d) = wfEqTerm d
 wfEqTerm (Boxrec-box _ x x₁ x₂) = wfTerm x₁
 wfEqTerm (rew _ ⊢ka) = wfTerm ⊢ka
+wfEqTerm (cstr-cong d) = wfEqTerm d
+wfEqTerm (dstr-cong d d₁) = wfEqTerm d
 
 wfEq : ∀ {Γ A B s} → Γ ⊢ A ≡ B ⦂ s → ⊢ Γ
 wfEq (univ A≡B) = wfEqTerm A≡B

@@ -62,6 +62,12 @@ wk-wkAll {ρ} {Δ} {Γ} {t} d rewrite wk-comp ρ (empty-wk Γ) t rewrite wk-comp
 wk-lift-wkAll : ∀ {ρ Δ Γ t} (d : ρ ∷ Δ ⊆ Γ) → U.wk (lift ρ) (U.wk (lift (empty-wk Γ)) t) PE.≡ U.wk (lift (empty-wk Δ)) t
 wk-lift-wkAll {ρ} {Δ} {Γ} {t} d rewrite wk-comp (lift ρ) (lift (empty-wk Γ)) t rewrite wk-comp-empty d = PE.refl
 
+wk-lift-lift-wkAll : ∀ {ρ Δ Γ t} (d : ρ ∷ Δ ⊆ Γ) → U.wk (lift (lift ρ)) (U.wk (lift (lift (empty-wk Γ))) t) PE.≡ U.wk (lift (lift (empty-wk Δ))) t
+wk-lift-lift-wkAll {ρ} {Δ} {Γ} {t} d rewrite wk-comp (lift (lift ρ)) (lift (lift (empty-wk Γ))) t rewrite wk-comp-empty d = PE.refl
+
+wk-step-wkAll : ∀ {ρ Δ Γ A s t} (d : ρ ∷ Δ ⊆ Γ) → U.wk (step ρ) (U.wk (empty-wk Γ) t) PE.≡ U.wk (empty-wk (Δ ∙ A ⦂ s)) t
+wk-step-wkAll {ρ} {Δ} {Γ} {t = t} d = PE.trans (wk-comp (step ρ) (empty-wk Γ) t) (PE.cong (λ s → U.wk (step s) t) (wk-comp-empty d))
+
 lift-wkAll : ∀ {ρ Δ Γ A s} (d : ρ ∷ Δ ⊆ Γ) → lift ρ ∷ Δ ∙ wkAll Δ A ⦂ s ⊆ Γ ∙ wkAll Γ A ⦂ s
 lift-wkAll {A = A} d rewrite PE.sym (wk-wkAll {t = A} d) = lift d
 
@@ -70,6 +76,23 @@ wk-cstr-dom {ρ} {Γ} {Δ} {t} {s} [ρ] d = PE.subst (λ x → Δ ⊢ t ∷ x �
 
 wk-cstr-cod : ∀ {ρ a k Δ Γ} ([ρ] : ρ ∷ Δ ⊆ Γ)  → subst (sgSubst (U.wk ρ a)) (U.wk (lift (empty-wk Δ)) (cstr-cod k)) PE.≡ U.wk ρ (cstr-cod-ctx Γ k [ a ])
 wk-cstr-cod {k = k} [ρ] rewrite (PE.sym  (wk-lift-wkAll {t = cstr-cod k} [ρ])) = wk-sgSubst (U.wk (lift (empty-wk _)) (cstr-cod k))
+
+wk-cstr-type : ∀ {ρ Γ Δ k a} ([ρ] : ρ ∷ Δ ⊆ Γ) → cstr-type Δ k (U.wk ρ a) PE.≡ U.wk ρ (cstr-type Γ k a)
+wk-cstr-type {ρ} {Γ} {Δ} {k} {a} [ρ] =
+  PE.sym (PE.trans
+    (wk-β (cstr-cod-ctx Γ k))
+    (PE.cong (λ t → t [ U.wk ρ a ]) (wk-lift-wkAll {t = cstr-cod k} [ρ])))
+
+wk-dstr-type : ∀ {ρ Γ Δ o a p} ([ρ] : ρ ∷ Δ ⊆ Γ) → dstr-type Δ o (U.wk ρ a) (U.wk ρ p) PE.≡ U.wk ρ (dstr-type Γ o a p)
+wk-dstr-type {ρ} {Γ} {Δ} {o} {a} {p} [ρ] =
+  PE.sym (PE.trans
+    (wk-β ((dstr-cod-ctx Γ o) [ wk1 a ]))
+    (PE.cong (λ t → t [ U.wk ρ p ]) (PE.trans (wk-β (dstr-cod-ctx Γ o))
+      (PE.cong₂ _[_]
+        (PE.trans (wk-comp (lift (lift ρ)) (lift (lift (empty-wk Γ))) (dstr-cod o))
+                  (PE.cong (λ s → U.wk (lift (lift s)) (dstr-cod o)) (wk-comp-empty [ρ])))
+        (PE.sym (wk1-wk≡lift-wk1 ρ a))))))
+
 
 mutual
   wk : ∀ {Γ Δ A s ρ} → ρ ∷ Δ ⊆ Γ →
@@ -129,13 +152,25 @@ mutual
                     (PE.subst (λ x → Δ ∙ wkAll Δ _ ⦂ _ ⊢ x ⦂ _) (wk-lift-wkAll ρ) (wk (lift-wkAll ρ) (⊢Δ ∙ ρdomk) ⊢codk))
                     (λ ki kiK → PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll ρ) (wk ρ ⊢Δ (⊢domki ki kiK)))
                     (wk-cstr-dom ρ (wkTerm ρ ⊢Δ ⊢a)))
-  wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (dstrⱼ {o = o} {a = a} dom cod ⊢a) =
-    let ρdom      = PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll [ρ]) (wk [ρ] ⊢Δ dom) in
-    PE.subst (λ x → Δ ⊢ dstr o ∘ U.wk ρ a ∷ x ⦂ dstr-𝕊 o)
-             (PE.sym (wk-wkAll [ρ]))
+  wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (dstrⱼ {o = o} {p = p} {a = a} dom par cod ⊢a ⊢p) =
+    let ρdom      = PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll [ρ]) (wk [ρ] ⊢Δ dom)
+        ρpar      = PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll [ρ]) (wk [ρ] ⊢Δ par)
+        Δ'        = Δ ∙ dstr-param-ctx Δ o ⦂ dstr-param-sort o
+        ⊢Δ∙par   = ⊢Δ ∙ ρpar
+        -- [ρ]'      = lift-wkAll [ρ]
+        ρdom'     = PE.subst (λ x → Δ' ⊢ x ⦂ _)
+                             (wk-step-wkAll {A = dstr-param-ctx Δ o} {s = dstr-param-sort o} [ρ])
+                             (wk (step [ρ]) ⊢Δ∙par dom)
+    in
+    PE.subst (λ x → Δ ⊢ dstr′ o (U.wk ρ a) (U.wk ρ p) ∷ x ⦂ dstr-𝕊 o)
+             (wk-dstr-type [ρ])
              (dstrⱼ ρdom
-                    (PE.subst (λ x → Δ ∙ wkAll Δ _ ⦂ _ ⊢ x ⦂ _) (wk-lift-wkAll [ρ]) (wk (lift-wkAll [ρ]) (⊢Δ ∙ ρdom) cod))
-                    (PE.subst (λ x → Δ ⊢ U.wk ρ a ∷ x ⦂ _) (wk-wkAll [ρ]) (wkTerm [ρ] ⊢Δ ⊢a)))
+                    ρpar
+                    (PE.subst (λ x → Δ' ∙ wkAll Δ' _ ⦂ _ ⊢ x ⦂ _)
+                              (wk-lift-lift-wkAll [ρ])
+                              (wk (lift-wkAll (lift-wkAll [ρ])) (⊢Δ ∙ ρpar ∙ ρdom') cod) )
+                    (PE.subst (λ x → Δ ⊢ U.wk ρ a ∷ x ⦂ _) (wk-wkAll [ρ]) (wkTerm [ρ] ⊢Δ ⊢a))
+                    (PE.subst (λ x → Δ ⊢ U.wk ρ p ∷ x ⦂ _) (wk-wkAll [ρ]) (wkTerm [ρ] ⊢Δ ⊢p)))
   wkEq : ∀ {Γ Δ A B s ρ} → ρ ∷ Δ ⊆ Γ →
        let ρA = U.wk ρ A
            ρB = U.wk ρ B
@@ -248,15 +283,31 @@ mutual
                          (PE.subst (λ x → Δ ⊢ U.wk ρ u ∷ x ⦂ sE)
                                    (wk-β-Boxrec ρ (U.wk ρ F) sF E)
                                    (wkTerm [ρ] ⊢Δ ⊢u))
-                         (wkTerm [ρ] ⊢Δ ⊢a)
-                         )
-  wkEqTerm {ρ = ρ₁} ρ ⊢Δ (rew (rew {ρ = ρ₂} {a = a} {t} x) ⊢ka) =
-    PE.subst (λ a → _ ⊢ _ ∘ a ≡ _ ∷ _ ⦂ _)
+                         (wkTerm [ρ] ⊢Δ ⊢a))
+  wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cstr-cong {a = a} {a' = a'} {k = k} a≡a') =
+    PE.subst (λ x → Δ ⊢ cstr k ∘ (U.wk ρ a) ≡ cstr k ∘ (U.wk ρ a') ∷ x ⦂ cstr-𝕊 k)
+             (wk-cstr-type [ρ])
+             (cstr-cong (PE.subst (λ x → Δ ⊢ U.wk ρ a ≡ U.wk ρ a' ∷ x ⦂ cstr-dom-sort k)
+                                  (wk-wkAll [ρ])
+                                  (wkEqTerm [ρ] ⊢Δ a≡a')))
+  wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (dstr-cong {a = a} {a' = a'} {p = p} {p' = p'} {k = k} a≡a' p≡p') =
+    PE.subst (λ x → Δ ⊢ dstr′ k (U.wk ρ a) (U.wk ρ p) ≡ dstr′ k (U.wk ρ a') (U.wk ρ p') ∷ x ⦂ dstr-𝕊 k)
+             (wk-dstr-type [ρ])
+             (dstr-cong (PE.subst (λ x → Δ ⊢ U.wk ρ a ≡ U.wk ρ a' ∷ x ⦂ dstr-dom-sort k)
+                                  (wk-wkAll [ρ])
+                                  (wkEqTerm [ρ] ⊢Δ a≡a'))
+                        (PE.subst (λ x → Δ ⊢ U.wk ρ p ≡ U.wk ρ p' ∷ x ⦂ dstr-param-sort k)
+                                  (wk-wkAll [ρ])
+                                  (wkEqTerm [ρ] ⊢Δ p≡p')) )
+  wkEqTerm {ρ = ρ₁} ρ ⊢Δ (rew (rew {ρ = ρ₂} {a = a} {p = p}  {t} x) ⊢ka) =
+    PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ≡ _ ∷ _ ⦂ _)
              (PE.sym (wk-subst a))
-             (PE.subst (λ t → _ ⊢ _ ∘ subst (ρ₁ •ₛ ρ₂) a ≡ t ∷ _ ⦂ _)
+             (PE.sym (wk-subst p))
+             (PE.subst (λ t → _ ⊢ dstr′ _ (subst (ρ₁ •ₛ ρ₂) a) (subst (ρ₁ •ₛ ρ₂) p) ≡ t ∷ _ ⦂ _)
                        (PE.sym (wk-subst t))
-                       (rew (rew x) (PE.subst (λ a → _ ⊢ _ ∘ a ∷ _ ⦂ _)
+                       (rew (rew x) (PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ∷ _ ⦂ _)
                                               (wk-subst a)
+                                              (wk-subst p)
                                               (wkTerm ρ ⊢Δ ⊢ka))))
 mutual
   wkRed : ∀ {Γ Δ A B s ρ} → ρ ∷ Δ ⊆ Γ →
@@ -314,14 +365,16 @@ mutual
   wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Emptyrec-subst {A = A} ⊢A n⇒n′) =
     (Emptyrec-subst (wk [ρ] ⊢Δ ⊢A)
                     (wkRedTerm [ρ] ⊢Δ n⇒n′))
-  wkRedTerm {ρ = ρ₁} ρ ⊢Δ (rew (rew {ρ = ρ₂} {a = a} {t} x) ⊢ka) =
-    PE.subst (λ a → _ ⊢ _ ∘ a ⇒ _ ∷ _ ⦂ _)
-             (PE.sym (wk-subst a))
-             (PE.subst (λ t → _ ⊢ _ ∘ subst (ρ₁ •ₛ ρ₂) a ⇒ t ∷ _ ⦂ _)
-                       (PE.sym (wk-subst t))
-                       (rew (rew x) (PE.subst (λ a → _ ⊢ _ ∘ a ∷ _ ⦂ _)
-                                              (wk-subst a)
-                                              (wkTerm ρ ⊢Δ ⊢ka))))
+  wkRedTerm {ρ = ρ₁} ρ ⊢Δ (rew (rew {ρ = ρ₂} {a = a} {p = p} {t} x) ⊢ka) =
+    PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ⇒ _ ∷ _ ⦂ _)
+              (PE.sym (wk-subst a))
+              (PE.sym (wk-subst p))
+              (PE.subst (λ t → _ ⊢ dstr′ _ (subst (ρ₁ •ₛ ρ₂) a) (subst (ρ₁ •ₛ ρ₂) p) ⇒ t ∷ _ ⦂ _)
+                        (PE.sym (wk-subst t))
+                        (rew (rew x) (PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ∷ _ ⦂ _)
+                                                (wk-subst a)
+                                                (wk-subst p)
+                                                (wkTerm ρ ⊢Δ ⊢ka))))
   wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Boxrec-subst {sF} {sE} {E} {F = F} {u = u} ⊢F ⊢E ⊢u t⇒t') =
     let [ρF] = wk [ρ] ⊢Δ ⊢F in
     PE.subst (λ x → _ ⊢ Boxrec _ _ _ _ _ ⇒ _ ∷ x ⦂ _)

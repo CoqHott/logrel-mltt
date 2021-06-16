@@ -162,13 +162,12 @@ record EqRelSet : Set₁ where
 
     -- cstr congruence
     ≅-cstr-cong : ∀ {a a' k Γ s}
-                 → cstr-cod k PE.≡ Univ s -- s is necessarily cstr-𝕊 k
-                 → ⊢ Γ
+                 → cstr-cod k PE.≡ Univ s
+                 → cstr-𝕊 k PE.≡ 𝕥y
                  → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
                  → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ⦂ s
 
     ≅ₜ-cstr-cong : ∀ {a a' k Γ}
-                 → ⊢ Γ
                  → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
                  → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ∷ (cstr-cod-ctx Γ k) [ a ] ⦂ cstr-𝕊 k
 
@@ -205,7 +204,10 @@ record EqRelSet : Set₁ where
              → Γ ⊢ Boxrec sG F G u t ~ Boxrec sG F' G' u' t'  ∷ G [ t ] ⦂ sG
 
     -- Destructor reflexivity
-    ~-dstr : ∀ {k Γ} → ⊢ Γ → Γ ⊢ dstr k ~ dstr k ∷ dstr-type Γ k ⦂ dstr-𝕊 k
+    ~-dstr : ∀ {k Γ a a' p p'}
+           → Γ ⊢ a ~ a' ∷ dstr-dom-ctx Γ k ⦂ dstr-dom-sort k
+           → Γ ⊢ p ≅ p' ∷ dstr-param-ctx Γ k ⦂ dstr-param-sort k
+           → Γ ⊢ dstr′ k a p ~ dstr′ k a' p' ∷ dstr-type Γ k a p ⦂ dstr-𝕊 k
 
   -- Composition of universe and generic equality compatibility
   ~-to-≅ : ∀ {k l s Γ} → Γ ⊢ k ~ l ∷ (Univ s) ⦂ 𝕥y → Γ ⊢ k ≅ l ⦂ s
