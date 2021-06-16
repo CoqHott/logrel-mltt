@@ -48,8 +48,8 @@ postulate B-cast-subst : ∀ σ A' A rA e B →
                          PE.≡
                          subst (repeat liftSubst (repeat liftSubst σ 1) 0) (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]↑)
 
-postulate Beq : ∀ ρ σ a B → subst (sgSubst a ₛ• lift ρ ₛ•ₛ liftSubst σ) B PE.≡
-                            U.wk (lift ρ) B [ a ]
+postulate Beq : ∀ ρ σ a B → subst (sgSubst a ₛ• lift ρ ₛ•ₛ liftSubst σ) (wk1d B) PE.≡
+                            U.wk (lift ρ) (wk1d B) [ a ]
 
 postulate hardcore : ∀ {σ rA} A A' B →  wk1d (wk1d B) [ cast ⁰ (U.wk (step (step id)) (subst σ (wk1 A')))
                                             (U.wk (step (step id)) (subst σ (wk1 A)))
@@ -171,7 +171,7 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                                                                      (proj₁ ([wA]⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ])))
                                        ⊢sndId-U-ΠΠ = snd-Id-U-ΠΠⱼ {G = wk1d B} ⊢Δ ⊢wA [wAρ]                                                                 
                                                                   (λ {ρ} {Δ₁} {a} [ρ] ⊢Δ₁ [a] → irrelevance′ (PE.trans (PE.sym (cons-wk-subst ρ σ a (wk1d B)))
-                                                                                                                       (Beq ρ σ a (wk1d B)))
+                                                                                                                       (Beq ρ σ a B))
                                                                     (proj₁ ([wB]⁰ {Δ₁} {consSubst (ρ •ₛ σ) a} ⊢Δ₁
                                                                       (let X = consSubstS {t = a} {A = wk1 A} [ΓA'] ⊢Δ₁
                                                                                (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]) [wA]⁰
@@ -230,7 +230,7 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                                                                      (proj₁ ([wA]⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ])))
                                        ⊢sndId-U-ΠΠ = snd-Id-U-ΠΠⱼ {G = wk1d B} ⊢Δ ⊢wA [wAρ]                                                                 
                                                                   (λ {ρ} {Δ₁} {a} [ρ] ⊢Δ₁ [a] → irrelevance′ (PE.trans (PE.sym (cons-wk-subst ρ σ a (wk1d B)))
-                                                                                                                       (Beq ρ σ a (wk1d B)))
+                                                                                                                       (Beq ρ σ a B))
                                                                     (proj₁ ([wB]⁰ {Δ₁} {consSubst (ρ •ₛ σ) a} ⊢Δ₁
                                                                       (let X = consSubstS {t = a} {A = wk1 A} [ΓA'] ⊢Δ₁
                                                                                (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]) [wA]⁰
