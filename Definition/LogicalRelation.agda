@@ -112,6 +112,25 @@ Cstr-prop-Whnf (ne x) = ne (_⊩neNf_∷_⦂_.neK x)
 [Cstr]-prop-right-Whnf (cstrᵣ kK x) = cstrₙ
 [Cstr]-prop-right-Whnf (ne x) = ne (_⊩neNf_≡_∷_⦂_.neM x)
 
+-- Reducibility of Boxes:
+-- Box-prop (λ x → Γ ⊩¹ x ∷ F ⦂ sF / [F]) Γ F sF
+
+data Box-prop (P : Term → Set) (Γ : Con Term) (F : Term) (sF : sorts) : Term → Set where
+  boxᵣ : ∀ {b} → P b → Box-prop P Γ F sF (box sF b)
+  ne   : ∀ {t} → Γ ⊩neNf t ∷ Box sF F ⦂ 𝕥y → Box-prop P Γ F sF t
+
+data [Box]-prop (P : Term → Term → Set) (Γ : Con Term) (F : Term) (sF : sorts) : Term → Term → Set where
+  boxᵣ : ∀ {b b'} → P b b' → [Box]-prop P Γ F sF (box sF b) (box sF b')
+  ne   : ∀ {t t'} → Γ ⊩neNf t ≡ t' ∷ Box sF F ⦂ 𝕥y → [Box]-prop P Γ F sF t t'
+
+Box-prop-Whnf : ∀ {P Γ F sF t} (d : Box-prop P Γ F sF t) → Whnf t
+Box-prop-Whnf (boxᵣ x) = boxₙ
+Box-prop-Whnf (ne x) = ne (_⊩neNf_∷_⦂_.neK x)
+
+[Box]-prop-Whnf : ∀ {P Γ F sF t t'} (d : [Box]-prop P Γ F sF t t') → Whnf t × Whnf t'
+[Box]-prop-Whnf (boxᵣ x) = boxₙ , boxₙ
+[Box]-prop-Whnf (ne (neNfₜ₌ neK neM k≡m)) = (ne neK) , (ne neM)
+
 -- Reducibility of natural numbers:
 
 -- Natural number type
@@ -211,6 +230,7 @@ record LogRelKit : Set₁ where
     _⊩U_ : (Γ : Con Term) (s : 𝕊) → Set
     _⊩Π_⦂_ : (Γ : Con Term) → Term → 𝕊 → Set
     _⊩cstr_⦂_ : (Γ : Con Term) → Term → 𝕊 → Set
+    _⊩Box_ : (Γ : Con Term) → Term → Set
 
     _⊩_⦂_ : (Γ : Con Term) → Term → 𝕊 → Set
     _⊩_≡_⦂_/_ : (Γ : Con Term) (A B : Term) (s : 𝕊) → Γ ⊩ A ⦂ s → Set
@@ -404,12 +424,58 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       ×  Γ ⊩¹cstr u ∷ A ⦂ s / [A]
       ×  [Cstr]-prop K Γ (λ ki kiK t u → Γ ⊩¹ t ≡ u ∷ wkAll Γ (cstr-dom ki) ⦂ cstr-dom-sort ki / [Yi] ki kiK) a s k k'
 
+
+    -- Reducibility of boxes
+
+    record _⊩¹Box_ (Γ : Con Term) (A : Term) : Set where
+      inductive
+      constructor Boxᵣ
+      eta-equality
+      field
+        F : Term
+        sF : sorts
+        D : Γ ⊢ A :⇒*: Box sF F ⦂ 𝕥y
+        ⊢F : Γ ⊢ F ⦂ ‼ sF
+        A≡A : Γ ⊢ Box sF F ≅ Box sF F ⦂ 𝕥y
+        [F] : Γ ⊩¹ F ⦂ ‼ sF
+
+    record _⊩¹Box_≡_/_ (Γ : Con Term) (A B : Term) ([A] : Γ ⊩¹Box A) : Set where
+      inductive
+      constructor Box₌
+      eta-equality
+      open _⊩¹Box_ [A]
+      field
+        F' : Term
+        D' : Γ ⊢ B :⇒*: Box sF F' ⦂ 𝕥y
+        A≡B : Γ ⊢ Box sF F ≅ Box sF F' ⦂ 𝕥y
+        [F≡F'] : Γ ⊩¹ F ≡ F' ⦂ ‼ sF / [F]
+
+
+    _⊩¹Box_∷_/_ : (Γ : Con Term) (t : Term) (A : Term) ([A] : Γ ⊩¹Box A) → Set
+    Γ ⊩¹Box t ∷ A / Boxᵣ F sF D ⊢F A≡A [F] =
+      ∃ λ b → Γ ⊢ t :⇒*: b ∷ Box sF F ⦂ 𝕥y
+            × Γ ⊢ b ≅ b ∷ Box sF F ⦂ 𝕥y
+            × Box-prop (λ x → Γ ⊩¹ x ∷ F ⦂ ‼ sF / [F]) Γ F sF b
+
+    _⊩¹Box_≡_∷_/_ : (Γ : Con Term) (t u : Term) (A : Term) ([A] : Γ ⊩¹Box A) → Set
+    Γ ⊩¹Box t ≡ u ∷ A / Boxᵣ F sF D ⊢F A≡A [F] =
+      let [A] = Boxᵣ F sF D ⊢F A≡A [F]
+      in ∃₂ λ b b' →
+         Γ ⊢ t :⇒*: b ∷ Box sF F ⦂ 𝕥y
+      ×  Γ ⊢ u :⇒*: b' ∷ Box sF F ⦂ 𝕥y
+      × Γ ⊢ b ≅ b' ∷ Box sF F ⦂ 𝕥y
+      × Γ ⊩¹Box t ∷ A / [A]
+      × Γ ⊩¹Box u ∷ A / [A]
+      × [Box]-prop (λ x x' → Γ ⊩¹ x ≡ x' ∷ F ⦂ ‼ sF / [F]) Γ F sF b b'
+
+
     -- Logical relation definition
 
     data _⊩¹_⦂_ (Γ : Con Term) : Term → 𝕊 → Set where
       Uᵣ  : ∀ {s} → Γ ⊩¹U s → Γ ⊩¹ Univ s ⦂ 𝕥y
       ℕᵣ  : ∀ {A} → Γ ⊩ℕ A → Γ ⊩¹ A ⦂ 𝕥y
       Emptyᵣ : ∀ {A} → Γ ⊩Empty A → Γ ⊩¹ A ⦂ 𝕥y
+      Boxᵣ : ∀ {A} → Γ ⊩¹Box A → Γ ⊩¹ A ⦂ 𝕥y
       ne  : ∀ {A s} → Γ ⊩ne A ⦂ s → Γ ⊩¹ A ⦂ s
       Πᵣ  : ∀ {A s} → Γ ⊩¹Π A ⦂ s → Γ ⊩¹ A ⦂ s
       cstrᵣ : ∀ {A s} → Γ ⊩¹cstr A ⦂ s → Γ ⊩¹ A ⦂ s
@@ -421,6 +487,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     Γ ⊩¹ A ≡ B ⦂ .𝕥y / Uᵣ {s = s} UA = Γ ⊩¹U[ s ]≡ B
     Γ ⊩¹ A ≡ B ⦂ .𝕥y / ℕᵣ D = Γ ⊩ℕ A ≡ B
     Γ ⊩¹ A ≡ B ⦂ .𝕥y / Emptyᵣ D = Γ ⊩Empty A ≡ B
+    Γ ⊩¹ A ≡ B ⦂ .𝕥y / Boxᵣ BoxA = Γ ⊩¹Box A ≡ B / BoxA
     Γ ⊩¹ A ≡ B ⦂ s / ne neA = Γ ⊩ne A ≡ B ⦂ s / neA
     Γ ⊩¹ A ≡ B ⦂ s / Πᵣ ΠA = Γ ⊩¹Π A ≡ B ⦂ s / ΠA
     Γ ⊩¹ A ≡ B ⦂ s / cstrᵣ cstrA = Γ ⊩¹cstr A ≡ B ⦂ s / cstrA
@@ -431,6 +498,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     Γ ⊩¹ t ∷ .(Univ s') ⦂ .𝕥y / Uᵣ {s = s'} (Uᵣ l′ l< ⊢Γ) = Γ ⊩¹U t ∷U s' / l<
     Γ ⊩¹ t ∷ A ⦂ .𝕥y / ℕᵣ D = Γ ⊩ℕ t ∷ℕ
     Γ ⊩¹ t ∷ A ⦂ .𝕥y / Emptyᵣ D = Γ ⊩Empty t ∷Empty
+    Γ ⊩¹ t ∷ A ⦂ .𝕥y / Boxᵣ BoxA = Γ ⊩¹Box t ∷ A / BoxA
     Γ ⊩¹ t ∷ A ⦂ s / ne neA = Γ ⊩ne t ∷ A ⦂ s / neA
     Γ ⊩¹ f ∷ A ⦂ s / Πᵣ ΠA  = Γ ⊩¹Π f ∷ A ⦂ s / ΠA
     Γ ⊩¹ t ∷ A ⦂ s / cstrᵣ cstrA  = Γ ⊩¹cstr t ∷ A ⦂ s / cstrA
@@ -441,6 +509,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
     Γ ⊩¹ t ≡ u ∷ .(Univ s') ⦂ .𝕥y / Uᵣ {s = s'} (Uᵣ l′ l< ⊢Γ) = Γ ⊩¹U t ≡ u ∷U s' / l<
     Γ ⊩¹ t ≡ u ∷ A ⦂ .𝕥y / ℕᵣ D = Γ ⊩ℕ t ≡ u ∷ℕ
     Γ ⊩¹ t ≡ u ∷ A ⦂ .𝕥y / Emptyᵣ D = Γ ⊩Empty t ≡ u ∷Empty
+    Γ ⊩¹ t ≡ u ∷ A ⦂ .𝕥y / Boxᵣ BoxA = Γ ⊩¹Box t ≡ u ∷ A / BoxA
     Γ ⊩¹ t ≡ u ∷ A ⦂ s / ne neA = Γ ⊩ne t ≡ u ∷ A ⦂ s / neA
     Γ ⊩¹ t ≡ u ∷ A ⦂ s / Πᵣ ΠA = Γ ⊩¹Π t ≡ u ∷ A ⦂ s / ΠA
     Γ ⊩¹ t ≡ u ∷ A ⦂ s / cstrᵣ cstrA  = Γ ⊩¹cstr t ≡ u ∷ A ⦂ s / cstrA
@@ -448,10 +517,10 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
       where open LogRelKit (rec l<)
 
     kit : LogRelKit
-    kit = Kit _⊩¹U_ _⊩¹Π_⦂_ _⊩¹cstr_⦂_
+    kit = Kit _⊩¹U_ _⊩¹Π_⦂_ _⊩¹cstr_⦂_ _⊩¹Box_
               _⊩¹_⦂_ _⊩¹_≡_⦂_/_ _⊩¹_∷_⦂_/_ _⊩¹_≡_∷_⦂_/_
 
-open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ; emb; Uₜ; Uₜ₌; Π₌; cstrᵣ; cstr₌)
+open LogRel public using (Uᵣ; ℕᵣ; Emptyᵣ; ne; Πᵣ; emb; Uₜ; Uₜ₌; Π₌; cstrᵣ; cstr₌ ; Boxᵣ ; Box₌)
 
 -- Patterns for the non-records of Π
 pattern Πₜ a b c d e f = a , b , c , d , e , f
