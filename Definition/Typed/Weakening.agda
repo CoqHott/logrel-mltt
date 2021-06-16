@@ -129,8 +129,13 @@ mutual
                     (PE.subst (λ x → Δ ∙ wkAll Δ _ ⦂ _ ⊢ x ⦂ _) (wk-lift-wkAll ρ) (wk (lift-wkAll ρ) (⊢Δ ∙ ρdomk) ⊢codk))
                     (λ ki kiK → PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll ρ) (wk ρ ⊢Δ (⊢domki ki kiK)))
                     (wk-cstr-dom ρ (wkTerm ρ ⊢Δ ⊢a)))
-  wkTerm {Δ = Δ} ρ ⊢Δ (dstrⱼ {o = o} x) =
-    PE.subst (λ x → Δ ⊢ dstr o ∷ x ⦂ dstr-𝕊 o) (PE.sym (wk-wkAll ρ)) (dstrⱼ ⊢Δ)
+  wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (dstrⱼ {o = o} {a = a} dom cod ⊢a) =
+    let ρdom      = PE.subst (λ x → Δ ⊢ x ⦂ _) (wk-wkAll [ρ]) (wk [ρ] ⊢Δ dom) in
+    PE.subst (λ x → Δ ⊢ dstr o ∘ U.wk ρ a ∷ x ⦂ dstr-𝕊 o)
+             (PE.sym (wk-wkAll [ρ]))
+             (dstrⱼ ρdom
+                    (PE.subst (λ x → Δ ∙ wkAll Δ _ ⦂ _ ⊢ x ⦂ _) (wk-lift-wkAll [ρ]) (wk (lift-wkAll [ρ]) (⊢Δ ∙ ρdom) cod))
+                    (PE.subst (λ x → Δ ⊢ U.wk ρ a ∷ x ⦂ _) (wk-wkAll [ρ]) (wkTerm [ρ] ⊢Δ ⊢a)))
   wkEq : ∀ {Γ Δ A B s ρ} → ρ ∷ Δ ⊆ Γ →
        let ρA = U.wk ρ A
            ρB = U.wk ρ B

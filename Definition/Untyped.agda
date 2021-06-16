@@ -125,6 +125,10 @@ cstr k = gen (Constructorkind k) []
 dstr : (k : destructors) → Term
 dstr k = gen (Destructorkind k) []
 
+-- dstr′ : (k : destructors) (p t : Term) → Term
+-- dstr′ k p t = (dstr k ∘ p) ∘ t
+pattern dstr′ k p t = gen Appkind (⟦ 0 , gen Appkind (⟦ 0 , gen (Destructorkind k) [] ⟧ ∷ ⟦ 0 , p ⟧ ∷ []) ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
+
 -- Discriminate terms starting with a constructor
 data [_]-cstr (K : constructors) : Term → Set where
   is-K-cstr : ∀ {t} → [ K ]-cstr (cstr K ∘ t)
@@ -166,7 +170,7 @@ data Neutral : Term → Set where
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
   Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
   Boxrecₙ : ∀ {sC A C t u} → Neutral t → Neutral (Boxrec sC A C u t)
-  destrₙ : ∀ {k t} → Neutral t → Neutral (dstr k ∘ t)
+  destrₙ : ∀ {k p t} → Neutral t → Neutral (dstr′ k t p)
 
 -- Weak head normal forms (whnfs).
 
