@@ -90,12 +90,11 @@ wk1Termᵛ {F} {G} {rF} {rG} {t} [Γ] [F] [G] [t]ₜ {Δ} {σ} ⊢Δ [σ] =
                             (PE.sym (subst-wk t)) (PE.sym (subst-wk t)) (PE.sym (subst-wk G))
                             [σG] [σG]' (proj₂ ([t]ₜ ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′]))
 
-wk1dᵛ : ∀ {F F' G rF rF' lG Γ l'}
+wk1dᵛ : ∀ {F F' G rF rF' lG Γ l l'}
          ([Γ] : ⊩ᵛ Γ)
          ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
          ([F'] : Γ ⊩ᵛ⟨ l' ⟩ F' ^ rF' / [Γ]) →
-       let l    = ∞
-           [ΓF] = _∙_ {A = F} [Γ] [F]
+       let [ΓF] = _∙_ {A = F} [Γ] [F]
            [ΓF'] = _∙_ {A = F'} [Γ] [F']
            [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
        in Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ [ ! , lG ] / [ΓF] →
@@ -127,16 +126,15 @@ wk1dᵛ {F} {F'} {G} [Γ] [F] [F'] [G] {Δ} {σ} ⊢Δ [σ] =
                                                 (proj₂ ([G] ⊢Δ [wσ]) [wσ′] [wσ≡σ′]))
 
 
-wk1dᵗᵛ : ∀ {F F' G rF rF' rG lG Γ l'}
+wk1dᵗᵛ : ∀ {F F' G rF rF' rG lG Γ l l'}
          ([Γ] : ⊩ᵛ Γ)
          ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
          ([F'] : Γ ⊩ᵛ⟨ l' ⟩ F' ^ rF' / [Γ]) →
-       let l    = ∞
-           [ΓF] = _∙_ {A = F} [Γ] [F]
+       let [ΓF] = _∙_ {A = F} [Γ] [F]
            [ΓF'] = _∙_ {A = F'} [Γ] [F']
            [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
-       in ([UG] : (Γ ∙ F ^ rF) ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [ΓF]) →
-          ([wUG] : (Γ ∙ F' ^ rF' ∙ wk1 F ^ rF) ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [ΓF'F]) →
+       in ([UG] : (Γ ∙ F ^ rF) ⊩ᵛ⟨ l ⟩ Univ rG lG ^ [ ! , next lG ] / [ΓF]) →
+          ([wUG] : (Γ ∙ F' ^ rF' ∙ wk1 F ^ rF) ⊩ᵛ⟨ l ⟩ Univ rG lG ^ [ ! , next lG ] / [ΓF'F]) →
           Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [ΓF] / (λ {Δ} {σ} → [UG] {Δ} {σ}) →
           Γ ∙ F' ^ rF' ∙ wk1 F ^ rF ⊩ᵛ⟨ l ⟩ wk1d G ∷ Univ rG lG ^ [ ! , next lG ] / [ΓF'F] / (λ {Δ} {σ} → [wUG] {Δ} {σ})
 wk1dᵗᵛ {F} {F'} {G} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [UG] [wUG] [G]ₜ {Δ} {σ} ⊢Δ [σ] =
