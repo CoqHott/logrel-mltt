@@ -89,3 +89,44 @@ wk1Termᵛ {F} {G} {rF} {rG} {t} [Γ] [F] [G] [t]ₜ {Δ} {σ} ⊢Δ [σ] =
             λ [σ′] [σ≡σ′] → irrelevanceEqTerm″ PE.refl PE.refl
                             (PE.sym (subst-wk t)) (PE.sym (subst-wk t)) (PE.sym (subst-wk G))
                             [σG] [σG]' (proj₂ ([t]ₜ ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′]))
+
+wk1dᵗᵛ : ∀ {F F' G rF rF' rG lG Γ l'}
+         ([Γ] : ⊩ᵛ Γ)
+         ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
+         ([F'] : Γ ⊩ᵛ⟨ l' ⟩ F' ^ rF' / [Γ]) →
+       let l    = ∞
+           [ΓF] = _∙_ {A = F} [Γ] [F]
+           [ΓF'] = _∙_ {A = F'} [Γ] [F']
+           [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
+           [wUG] = maybeEmbᵛ {A = Univ rG _} [ΓF'F] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) [ΓF'F] {Δ} {σ})
+       in ([UG] : (Γ ∙ F ^ rF) ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [ΓF]) →
+          Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [ΓF] / (λ {Δ} {σ} → [UG] {Δ} {σ}) →
+          Γ ∙ F' ^ rF' ∙ wk1 F ^ rF ⊩ᵛ⟨ l ⟩ wk1d G ∷ Univ rG lG ^ [ ! , next lG ] / [ΓF'F] / (λ {Δ} {σ} → [wUG] {Δ} {σ})
+wk1dᵗᵛ {F} {F'} {G} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [UG] [G]ₜ {Δ} {σ} ⊢Δ [σ] =
+     let l    = ∞
+         [ΓF'] = _∙_ {A = F'} [Γ] [F']
+         [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
+         [wUG] = maybeEmbᵛ {A = Univ rG _} [ΓF'F] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) [ΓF'F] {Δ} {σ})
+         [wσ] = proj₁ (proj₁ [σ]) , irrelevanceTerm″ (subst-wk F) PE.refl PE.refl PE.refl
+                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ])))
+                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ]))))
+                                                     (proj₂ [σ]) 
+         [σG] = proj₁ ([G]ₜ ⊢Δ [wσ])
+         [Geq] = PE.sym (subst-wk G)
+         [σG]′ = irrelevanceTerm″ PE.refl PE.refl PE.refl [Geq] (proj₁ ([UG] ⊢Δ [wσ])) (proj₁ ([wUG] {Δ} {σ} ⊢Δ [σ])) [σG]
+     in  [σG]′
+         ,   (λ {σ′} [σ′] [σ≡σ′] → let [wσ′] = proj₁ (proj₁ [σ′]) ,
+                                               irrelevanceTerm″ (subst-wk F) PE.refl PE.refl PE.refl
+                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ′])))
+                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ′]))))
+                                                     (proj₂ [σ′]) 
+                                       [wσ≡σ′] = (proj₁ (proj₁ [σ≡σ′])),
+                                                 irrelevanceEqTerm″ PE.refl PE.refl PE.refl PE.refl (subst-wk F)
+                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ])))
+                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ]))))
+                                                     (proj₂  [σ≡σ′])
+                              in irrelevanceEqTerm″ PE.refl PE.refl
+                                                    (PE.sym (subst-wk G))
+                                                    (PE.sym (subst-wk G)) PE.refl 
+                                                    (proj₁ ([UG] ⊢Δ [wσ])) (proj₁ ([wUG] {Δ} {σ} ⊢Δ [σ]))
+                                                    (proj₂ ([G]ₜ ⊢Δ [wσ]) [wσ′] [wσ≡σ′]))
