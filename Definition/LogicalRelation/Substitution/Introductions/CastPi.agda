@@ -71,10 +71,6 @@ postulate hardcore2 : ∀ {σ} B' → wk1d (subst (liftSubst σ) (wk1d B')) PE.�
                                         U.wk (lift (step id)) (subst (repeat liftSubst (repeat liftSubst σ 0) 1)
                                                                      (U.wk (repeat lift (repeat lift (step id) 0) 1) B'))
 
-
-postulate hardcore3 : ∀ {σ} a A → subst σ A PE.≡
-                                  subst (sgSubst a) (wk1 (subst σ A))
-
 postulate hardcore4 : ∀ {σ rA} e A A' B → subst (sgSubst (substVar σ 0))
                                         (subst (liftSubst (sgSubst (fst (subst σ (wk1 e))))) (U.wk (lift (step id))
                                         (subst (liftSubst σ) (U.wk (lift (step id)) B)) [
@@ -264,7 +260,7 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                                                                                     Y = proj₁ ([wUB'] {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
                                                                                                     (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ]))
                                                                                 in escapeTerm Y X))))) (let X = escapeTerm (proj₁ ([wA']' ⊢Δ [σ])) [σvar]ₜ
-                                                                                                        in PE.subst (λ X → Δ ⊢  subst σ (var 0) ∷ X ^ [ rA , ι ⁰ ]) (hardcore3 (fst (subst σ (wk1 e))) (wk1 A')) X))
+                                                                                                        in PE.subst (λ X → Δ ⊢  subst σ (var 0) ∷ X ^ [ rA , ι ⁰ ]) (PE.sym (wk1-singleSubst (subst σ (wk1 A')) (fst (subst σ (wk1 e))))) X))
       cast-Π-res A A' B B' e f = 
                  cast ⁰ (B [ cast-Π-a A A' e ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ cast-Π-a A A' e)
       [cast-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ lam A' ▹ cast-Π-res A A' B B' e f ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ^ [ ! , ι ⁰ ] / [Γ] / [ΠAB']
