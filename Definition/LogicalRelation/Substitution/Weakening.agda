@@ -90,6 +90,43 @@ wk1Termᵛ {F} {G} {rF} {rG} {t} [Γ] [F] [G] [t]ₜ {Δ} {σ} ⊢Δ [σ] =
                             (PE.sym (subst-wk t)) (PE.sym (subst-wk t)) (PE.sym (subst-wk G))
                             [σG] [σG]' (proj₂ ([t]ₜ ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′]))
 
+wk1dᵛ : ∀ {F F' G rF rF' lG Γ l'}
+         ([Γ] : ⊩ᵛ Γ)
+         ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
+         ([F'] : Γ ⊩ᵛ⟨ l' ⟩ F' ^ rF' / [Γ]) →
+       let l    = ∞
+           [ΓF] = _∙_ {A = F} [Γ] [F]
+           [ΓF'] = _∙_ {A = F'} [Γ] [F']
+           [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
+       in Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ [ ! , lG ] / [ΓF] →
+          Γ ∙ F' ^ rF' ∙ wk1 F ^ rF ⊩ᵛ⟨ l ⟩ wk1d G ^ [ ! , lG ] / [ΓF'F] 
+wk1dᵛ {F} {F'} {G} [Γ] [F] [F'] [G] {Δ} {σ} ⊢Δ [σ] =
+     let l    = ∞
+         [ΓF'] = _∙_ {A = F'} [Γ] [F']
+         [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
+         [wσ] = proj₁ (proj₁ [σ]) , irrelevanceTerm″ (subst-wk F) PE.refl PE.refl PE.refl
+                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ])))
+                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ]))))
+                                                     (proj₂ [σ]) 
+         [σG] = proj₁ ([G] ⊢Δ [wσ])
+         [Geq] = PE.sym (subst-wk G)
+         [σG]′ = irrelevance′ [Geq] [σG]
+     in  [σG]′
+         ,   (λ {σ′} [σ′] [σ≡σ′] → let [wσ′] = proj₁ (proj₁ [σ′]) ,
+                                               irrelevanceTerm″ (subst-wk F) PE.refl PE.refl PE.refl
+                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ′])))
+                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ′]))))
+                                                     (proj₂ [σ′]) 
+                                       [wσ≡σ′] = (proj₁ (proj₁ [σ≡σ′])),
+                                                 irrelevanceEqTerm″ PE.refl PE.refl PE.refl PE.refl (subst-wk F)
+                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ])))
+                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ]))))
+                                                     (proj₂  [σ≡σ′])
+                              in irrelevanceEq″ (PE.sym (subst-wk G)) (PE.sym (subst-wk G)) PE.refl PE.refl
+                                                (proj₁ ([G] ⊢Δ [wσ])) [σG]′
+                                                (proj₂ ([G] ⊢Δ [wσ]) [wσ′] [wσ≡σ′]))
+
+
 wk1dᵗᵛ : ∀ {F F' G rF rF' rG lG Γ l'}
          ([Γ] : ⊩ᵛ Γ)
          ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
@@ -98,15 +135,14 @@ wk1dᵗᵛ : ∀ {F F' G rF rF' rG lG Γ l'}
            [ΓF] = _∙_ {A = F} [Γ] [F]
            [ΓF'] = _∙_ {A = F'} [Γ] [F']
            [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
-           [wUG] = maybeEmbᵛ {A = Univ rG _} [ΓF'F] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) [ΓF'F] {Δ} {σ})
        in ([UG] : (Γ ∙ F ^ rF) ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [ΓF]) →
+          ([wUG] : (Γ ∙ F' ^ rF' ∙ wk1 F ^ rF) ⊩ᵛ⟨ ∞ ⟩ Univ rG lG ^ [ ! , next lG ] / [ΓF'F]) →
           Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ∷ Univ rG lG ^ [ ! , next lG ] / [ΓF] / (λ {Δ} {σ} → [UG] {Δ} {σ}) →
           Γ ∙ F' ^ rF' ∙ wk1 F ^ rF ⊩ᵛ⟨ l ⟩ wk1d G ∷ Univ rG lG ^ [ ! , next lG ] / [ΓF'F] / (λ {Δ} {σ} → [wUG] {Δ} {σ})
-wk1dᵗᵛ {F} {F'} {G} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [UG] [G]ₜ {Δ} {σ} ⊢Δ [σ] =
+wk1dᵗᵛ {F} {F'} {G} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [UG] [wUG] [G]ₜ {Δ} {σ} ⊢Δ [σ] =
      let l    = ∞
          [ΓF'] = _∙_ {A = F'} [Γ] [F']
          [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
-         [wUG] = maybeEmbᵛ {A = Univ rG _} [ΓF'F] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded lG)) [ΓF'F] {Δ} {σ})
          [wσ] = proj₁ (proj₁ [σ]) , irrelevanceTerm″ (subst-wk F) PE.refl PE.refl PE.refl
                                                      (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ])))
                                                      (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ]))))
