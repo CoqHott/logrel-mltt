@@ -72,6 +72,24 @@ postulate hardcore2 : ∀ {σ} B' → wk1d (subst (liftSubst σ) (wk1d B')) PE.�
                                                                      (U.wk (repeat lift (repeat lift (step id) 0) 1) B'))
 
 
+postulate hardcore3 : ∀ {σ} a A → subst σ A PE.≡
+                                  subst (sgSubst a) (wk1 (subst σ A))
+
+postulate hardcore4 : ∀ {σ rA} e A A' B → subst (sgSubst (substVar σ 0))
+                                        (subst (liftSubst (sgSubst (fst (subst σ (wk1 e))))) (U.wk (lift (step id))
+                                        (subst (liftSubst σ) (U.wk (lift (step id)) B)) [
+                                          cast ⁰ (wk1 (wk1 (subst σ (U.wk (step id) A'))))
+                                                 (wk1 (wk1 (subst σ (U.wk (step id) A))))
+                                                 (Idsym (Univ rA ⁰) (wk1 (wk1 (subst σ (U.wk (step id) A)))) (wk1 (wk1 (subst σ (U.wk (step id) A')))) (var 1)) (var 0) ]↑))
+                                  PE.≡
+                                  subst σ (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0)]↑)
+
+postulate hardcore5 : ∀ {σ} e B' → subst (sgSubst (substVar σ 0))
+                                                (subst (liftSubst (sgSubst (fst (subst σ (wk1 e)))))
+                                                (U.wk (lift (step id)) (subst (liftSubst σ) (U.wk (lift (step id)) B'))))
+                                          PE.≡ subst σ B'
+
+
 cast-Πᵗᵛ : ∀ {A B A' B' rA Γ e f} ([Γ] : ⊩ᵛ Γ) →
         let l    = ∞
             lΠ = ⁰
@@ -203,7 +221,50 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
       [wIdBB'] = Idᵛ {A = Univ ! ⁰} {t = B [ cast-Π-a A A' e ]↑} {u = B'} [ΓA'] (λ {Δ} {σ} → [UB'] {Δ} {σ})
                      B[cast-Π-a]↑ₜ [B']ₜ 
       [wsnde] : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (snd (wk1 e)) ∘ (var 0) ∷ Id (Univ ! ⁰) (B [ cast-Π-a A A' e ]↑) B' ^ [ % , ι ¹ ] / [ΓA'] / [wIdBB']
-      [wsnde] = {!!}
+      [wsnde] = validityIrr {A = Id (Univ ! ⁰) (B [ cast-Π-a A A' e ]↑) B'} {t = (snd (wk1 e)) ∘ (var 0)} [ΓA'] [wIdBB']
+                λ {Δ} {σ} ⊢Δ [σ] → let ⊢wAₜ  = escapeTerm (proj₁ ([wUA] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wA] {Δ} {σ} ⊢Δ [σ]))
+                                       ⊢wA'ₜ = escapeTerm (proj₁ ([wUA] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wA'] {Δ} {σ} ⊢Δ [σ]))
+                                       ⊢wA   = escape (proj₁ ([wA]' ⊢Δ [σ]))
+                                       ⊢wA'   = escape (proj₁ ([wA']' ⊢Δ [σ]))
+                                       ⊢wB   = escape (proj₁ ([wB]' {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
+                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ])))
+                                       ⊢wB'   = escape (proj₁ ([wB']' {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
+                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ])))
+                                       [wAρ] = λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → irrelevance′ (PE.sym (wk-subst (wk1 A)))
+                                                                     (proj₁ ([wA]⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ])))
+                                       ⊢sndId-U-ΠΠ = snd-Id-U-ΠΠⱼ {G = wk1d B} ⊢Δ ⊢wA [wAρ]                                                                 
+                                                                  (λ {ρ} {Δ₁} {a} [ρ] ⊢Δ₁ [a] → irrelevance′ (PE.trans (PE.sym (cons-wk-subst ρ σ a (wk1d B)))
+                                                                                                                       (Beq ρ σ a (wk1d B)))
+                                                                    (proj₁ ([wB]⁰ {Δ₁} {consSubst (ρ •ₛ σ) a} ⊢Δ₁
+                                                                      (let X = consSubstS {t = a} {A = wk1 A} [ΓA'] ⊢Δ₁
+                                                                               (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]) [wA]⁰
+                                                                                 (irrelevanceTerm″ (wk-subst (wk1 A)) PE.refl PE.refl PE.refl ([wAρ] {ρ} {Δ₁} [ρ] ⊢Δ₁)
+                                                                                                   (proj₁ ([wA]⁰ ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]))) [a])
+                                                                       in irrelevanceSubst {consSubst (ρ •ₛ σ) a}
+                                                                                           (_∙_ {A = wk1 A} [ΓA'] [wA]⁰) (_∙_ {A = wk1 A} [ΓA'] [wA]')
+                                                                                           ⊢Δ₁ ⊢Δ₁ X))))
+                                                                  ⊢wA' ⊢wB'
+                                                                  (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → irrelevance′ (PE.sym (wk-subst (wk1 A')))
+                                                                     (proj₁ ([wA']⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]))))
+                                       [σvar]ₜ = proj₁ ([var]ₜ {Δ} {σ} ⊢Δ [σ])
+                                    in PE.subst (λ X → Δ ⊢  subst σ (snd (wk1 e) ∘ var 0)  ∷ X ^ [ % , ι ¹ ] ) (PE.cong₂ (λ X Y → Id (U ⁰) X Y) (hardcore4 e A A' B) (hardcore5 e B'))
+                                            (_∘ⱼ_ (sndⱼ (escapeTerm (proj₁ ([SProp] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wIdAA']ₜ {Δ} {σ} ⊢Δ [σ])))
+                                                          (let X = (un-univ ⊢sndId-U-ΠΠ) in PE.subst (λ X → Δ ∙ Id (Univ rA ⁰) (subst σ (wk1 A)) (subst σ (wk1 A')) ^ [ % , ι ¹ ] ⊢
+                                                            Π wk1 (subst σ (wk1 A')) ^ rA ° ⁰ ▹ X ° ¹ ∷ SProp ¹ ^ [ ! , ∞ ]) (PE.cong₂ (λ X Y → Id (U ⁰) X Y) (hardcore A A' B) (hardcore2 B') ) X)
+                                                     (conv (escapeTerm ((proj₁ ([wId] {Δ} {σ} ⊢Δ [σ]))) (proj₁ ([we] ⊢Δ [σ])))
+                                                                (univ (Id-U-ΠΠ ⊢wAₜ
+                                                                               (let X = proj₁ ([wB] {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
+                                                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ]))
+                                                                                    Y = proj₁ ([wUB] {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
+                                                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ]))
+                                                                                in escapeTerm Y X)
+                                                                               ⊢wA'ₜ
+                                                                               (let X = proj₁ ([wB'] {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
+                                                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ]))
+                                                                                    Y = proj₁ ([wUB'] {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
+                                                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ]))
+                                                                                in escapeTerm Y X))))) (let X = escapeTerm (proj₁ ([wA']' ⊢Δ [σ])) [σvar]ₜ
+                                                                                                        in PE.subst (λ X → Δ ⊢  subst σ (var 0) ∷ X ^ [ rA , ι ⁰ ]) (hardcore3 (fst (subst σ (wk1 e))) (wk1 A')) X))
       cast-Π-res A A' B B' e f = 
                  cast ⁰ (B [ cast-Π-a A A' e ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ cast-Π-a A A' e)
       [cast-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ lam A' ▹ cast-Π-res A A' B B' e f ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ^ [ ! , ι ⁰ ] / [Γ] / [ΠAB']
@@ -231,3 +292,4 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                                   [ΠAB'] [cast-Π-res] 
 
    in modelsTermEq [ΠAB'] [id] [cast-Π-res] [eq]
+
