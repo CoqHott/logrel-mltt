@@ -27,7 +27,6 @@ open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
 open import Definition.LogicalRelation.Substitution.Introductions.Application
 open import Definition.LogicalRelation.Substitution.Introductions.Cast
-open import Definition.LogicalRelation.Substitution.Introductions.CastPi
 open import Definition.LogicalRelation.Substitution.Introductions.Id
 open import Definition.LogicalRelation.Substitution.Introductions.Transp
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
