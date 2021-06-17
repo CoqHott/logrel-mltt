@@ -15,6 +15,7 @@ open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.Properties
+import Tools.PropositionalEquality as PE
 
 open import Tools.Product
 
@@ -34,7 +35,7 @@ escapeEqᵛ [Γ] [A] [A≡B] =
       idSubst = idSubstS [Γ]
       [idA]  = proj₁ ([A] ⊢Γ idSubst)
       [idA]′ = irrelevance′ (subst-id _) [idA]
-  in  escapeEq [idA]′ (irrelevanceEq″ (subst-id _) (subst-id _)
+  in  escapeEq [idA]′ (irrelevanceEq″ (subst-id _) (subst-id _) PE.refl PE.refl
                                            [idA] [idA]′ ([A≡B] ⊢Γ idSubst))
 
 -- Valid terms are well-formed.
@@ -46,7 +47,7 @@ escapeTermᵛ [Γ] [A] [t] =
       [idA]  = proj₁ ([A] ⊢Γ idSubst)
       [idA]′ = irrelevance′ (subst-id _) (proj₁ ([A] ⊢Γ idSubst))
   in  escapeTerm [idA]′
-                    (irrelevanceTerm″ (subst-id _) (subst-id _)
+                    (irrelevanceTerm″ (subst-id _) PE.refl PE.refl (subst-id _)
                                        [idA] [idA]′ (proj₁ ([t] ⊢Γ idSubst)))
 
 -- Valid term equality respects the equality relation.
@@ -58,6 +59,6 @@ escapeEqTermᵛ [Γ] [A] [t≡u] =
       [idA]  = proj₁ ([A] ⊢Γ idSubst)
       [idA]′ = irrelevance′ (subst-id _) (proj₁ ([A] ⊢Γ idSubst))
   in  escapeTermEq [idA]′
-                       (irrelevanceEqTerm″ (subst-id _) (subst-id _)
+                       (irrelevanceEqTerm″ PE.refl PE.refl (subst-id _) (subst-id _)
                                             (subst-id _)
                                             [idA] [idA]′ ([t≡u] ⊢Γ idSubst))
