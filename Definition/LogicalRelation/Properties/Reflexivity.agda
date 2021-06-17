@@ -34,6 +34,14 @@ reflCstr-prop reflPi (cstrᵣ kK x) = cstrᵣ kK (reflPi _ kK _ x)
 reflCstr-prop reflPi (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 
 
+reflBox-prop : ∀ {P Γ F sF t Prel}
+             → (∀ x → P x → Prel x x)
+             → Box-prop P Γ F sF t
+             → [Box]-prop Prel Γ F sF t t
+reflBox-prop reflP (boxᵣ x) = boxᵣ (reflP _ x)
+reflBox-prop reflP (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
+
+
 reflEqTerm0 : ∀ {Γ A t s} ([A] : Γ ⊩⟨ ⁰ ⟩ A ⦂ s)
           → Γ ⊩⟨ ⁰ ⟩ t ∷ A ⦂ s / [A]
           → Γ ⊩⟨ ⁰ ⟩ t ≡ t ∷ A ⦂ s / [A]
@@ -53,6 +61,9 @@ reflEqTerm0 (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f
 reflEqTerm0 (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ k d k≡k [k]) =
   let ck = cstrₜ k d k≡k [k] in
   cstrₜ₌ k k d d k≡k ck ck (reflCstr-prop (λ ki kiK t₁ x → reflEqTerm0 ([Yi] ki kiK) x) [k])
+reflEqTerm0 (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
+  let bb = boxₜ b d b≡b [b] in
+  boxₜ₌ b b d d b≡b bb bb (reflBox-prop (λ x d → reflEqTerm0 [F] d) [b])
 
 reflEq0 : ∀ {Γ A s} ([A] : Γ ⊩⟨ ⁰ ⟩ A ⦂ s) → Γ ⊩⟨ ⁰ ⟩ A ≡ A ⦂ s / [A]
 reflEq0 (Uᵣ′ _ l′ l< ⊢Γ) = PE.refl
@@ -65,6 +76,8 @@ reflEq0 (Πᵣ′ sF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
     (λ ρ ⊢Δ → reflEq0 ([F] ρ ⊢Δ))
     (λ ρ ⊢Δ [a] → reflEq0 ([G] ρ ⊢Δ [a]))
 reflEq0 (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) = cstr₌ _ D A≡A (reflEqTerm0 [domK] [a])
+reflEq0 (Boxᵣ′ F sF D ⊢F A≡A [F]) =
+  Box₌ F D A≡A (reflEq0 [F])
 
 mutual
   -- Reflexivity of reducible types.
@@ -79,6 +92,7 @@ mutual
       (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
       (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
   reflEq {l} (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) = cstr₌ _ D A≡A (reflEqTerm {l} [domK] [a])
+  reflEq (Boxᵣ′ F sF D ⊢F A≡A [F]) = Box₌ F D A≡A (reflEq [F])
   reflEq (emb 0<1 [A]) = reflEq [A]
 
   -- Reflexivity of reducible terms.
@@ -103,4 +117,7 @@ mutual
   reflEqTerm (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ k d k≡k [k]) =
     let ck = cstrₜ k d k≡k [k] in
     cstrₜ₌ k k d d k≡k ck ck (reflCstr-prop (λ ki kiK t₁ x → reflEqTerm ([Yi] ki kiK) x) [k])
+  reflEqTerm (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
+    let bb = boxₜ b d b≡b [b] in
+    boxₜ₌ b b d d b≡b bb bb (reflBox-prop (λ x d → reflEqTerm [F] d) [b])
   reflEqTerm (emb 0<1 [A]) t = reflEqTerm [A] t

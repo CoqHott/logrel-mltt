@@ -81,6 +81,16 @@ trans[Cstr]-prop Pi-trans (cstrᵣ kK x) (ne (neNfₜ₌ (∘ₙ ()) neM k≡m))
 trans[Cstr]-prop Pi-trans (ne (neNfₜ₌ _ (∘ₙ ()) k≡m)) (cstrᵣ kK x₁)
 trans[Cstr]-prop Pi-trans (ne x) (ne x₁) = ne (transEqTermNe x x₁)
 
+trans[Box]-prop : ∀ {P P' P'' Γ sF sF' F F' b b' b''}
+                    (P-trans : ∀ b b' b'' → P b b' → P' b' b'' → P'' b b'')
+                    (d : [Box]-prop P Γ sF F b b')
+                    (d' : [Box]-prop P' Γ sF' F' b' b'')
+                    (sF≡sF' : sF PE.≡ sF')
+                    (F≡F' : F PE.≡ F')
+                  → [Box]-prop P'' Γ sF F b b''
+trans[Box]-prop P-trans (boxᵣ x) (boxᵣ x₁) PE.refl F≡F' = boxᵣ (P-trans _ _ _ x x₁)
+trans[Box]-prop P-trans (ne x) (ne x₁) PE.refl PE.refl = ne (transEqTermNe x x₁)
+
 mutual
   -- Helper function for transitivity of type equality using shape views.
   {-# TERMINATING #-}
@@ -169,6 +179,28 @@ mutual
                                         (irrelevanceEqTerm′ (PE.cong (λ k → wkAll Γ (cstr-dom k)) K₁≡K)
                                                             (PE.cong cstr-dom-sort K₁≡K)
                                                             [domK]₁ [domK] [a≡a']₁₂)))
+  transEqT {Γ = Γ} {C = C} {s = s}
+         (Boxᵥ (Boxᵣ Fx sFx Dx ⊢Fx A≡Ax [Fx])
+               (Boxᵣ Fy sFy Dy ⊢Fy A≡Ay [Fy])
+               (Boxᵣ Fz sFz Dz ⊢Fz A≡Az [Fz]))
+         (Box₌ Fxy Dxy A≡Bxy [F≡Fxy])
+         (Box₌ Fyz Dyz A≡Byz [F≡Fyz]) =
+    let BFy≡BFxy = whrDet* (red Dy , Boxₙ) (red Dxy , Boxₙ)
+        sFy≡sFx  = Box-sort-inj BFy≡BFxy
+        Fy≡Fxy   = Box-inj BFy≡BFxy
+        BFz≡BFyz = whrDet* (red Dz , Boxₙ) (red Dyz , Boxₙ)
+        sFz≡sFy  = Box-sort-inj BFz≡BFyz
+        Fz≡Fyz   = Box-inj BFz≡BFyz
+    in Box₌ Fyz
+            (PE.subst (λ s → Γ ⊢ C :⇒*: Box s Fyz ⦂ 𝕥y) sFy≡sFx Dyz)
+            (≅-trans A≡Bxy (PE.subst₂ (λ s F → Γ ⊢ Box s F ≅ Box s Fyz ⦂ 𝕥y) sFy≡sFx Fy≡Fxy A≡Byz))
+            (PE.subst (λ F → Γ ⊩⟨ _ ⟩ Fx ≡ F ⦂ _ / [Fx])
+                      Fz≡Fyz
+                      (transEq′ Fy≡Fxy Fz≡Fyz
+                                (PE.cong ‼ (PE.sym sFy≡sFx))
+                                (PE.cong ‼ (PE.sym (PE.trans sFz≡sFy sFy≡sFx)))
+                                [Fx] [Fy] [Fz] [F≡Fxy] [F≡Fyz]))
+            -- (transEq′ Fy≡Fxy {!!} {!!} {!!} [Fx] [Fy] {![Fz]!} [F≡Fxy] [F≡Fyz])
   transEqT (emb⁰¹¹ AB) A≡B B≡C = transEqT AB A≡B B≡C
   transEqT (emb¹⁰¹ AB) A≡B B≡C = transEqT AB A≡B B≡C
   transEqT (emb¹¹⁰ AB) A≡B B≡C = transEqT AB A≡B B≡C
@@ -233,4 +265,16 @@ mutual
                                                                                 (irrelevanceEqTerm ([Yi] ki kiK') ([Yi] ki kiK'') x₁))
                               [k≡k']
                               (PE.subst (λ k → [Cstr]-prop K _ _ a _ k k₁') k₁≡k' [k₁≡k₁'] ))
+  transEqTerm (Boxᵣ′ F sF D ⊢F A≡A [F])
+              (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b'])
+              (boxₜ₌ b₁ b₁' d₁ d₁' b₁≡b₁' [b₁] [b₁'] [b₁≡b₁']) with [Box]-prop-Whnf [b≡b'] with [Box]-prop-Whnf [b₁≡b₁']
+  ... | _ , whnb' | whnb₁ , _ =
+    let b₁≡b' = whrDet*Term (redₜ d₁ , whnb₁) (redₜ d' , whnb')
+    in boxₜ₌ b b₁' d d₁'
+             (≅ₜ-trans b≡b' (PE.subst (λ b → _ ⊢ b ≅ b₁' ∷ Box sF F ⦂ 𝕥y) b₁≡b' b₁≡b₁'))
+             [b] [b₁']
+             (trans[Box]-prop (λ _ _ _ d d' → transEqTerm [F] d d')
+                              [b≡b']
+                              (PE.subst (λ b → [Box]-prop _ _ F sF b b₁') b₁≡b' [b₁≡b₁'])
+                              PE.refl PE.refl)
   transEqTerm (emb 0<1 x) t≡u u≡v = transEqTerm x t≡u u≡v

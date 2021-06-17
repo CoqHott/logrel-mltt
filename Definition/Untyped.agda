@@ -159,6 +159,18 @@ cstr-app-PE-injectivity PE.refl = PE.refl
 cstr-app-PE-arg-injectivity : ∀ {k k' a a'} → cstr k ∘ a PE.≡ cstr k' ∘ a' → a PE.≡ a'
 cstr-app-PE-arg-injectivity PE.refl = PE.refl
 
+Box-inj : ∀ {s s' A A'} → Box s A PE.≡ Box s' A' → A PE.≡ A'
+Box-inj PE.refl = PE.refl
+
+Box-sort-inj : ∀ {s s' A A'} → Box s A PE.≡ Box s' A' → s PE.≡ s'
+Box-sort-inj PE.refl = PE.refl
+
+box-inj : ∀ {s s' a a'} → box s a PE.≡ box s' a' → a PE.≡ a'
+box-inj PE.refl = PE.refl
+
+box-sort-inj : ∀ {s s' a a'} → box s a PE.≡ box s' a' → s PE.≡ s'
+box-sort-inj PE.refl = PE.refl
+
 -- Neutral terms.
 
 -- A term is neutral if it has a variable in head position.
@@ -213,6 +225,9 @@ U≢Π ()
 U≢cstr : ∀ {s k t} → Univ s PE.≢ cstr k ∘ t
 U≢cstr ()
 
+U≢Box : ∀ {s s' A} → Univ s PE.≢ Box s' A
+U≢Box ()
+
 U≢ne : ∀ {s K} → Neutral K → Univ s PE.≢ K
 U≢ne () PE.refl
 
@@ -225,14 +240,26 @@ U≢ne () PE.refl
 ℕ≢cstr : ∀ {k t} →  ℕ PE.≢ cstr k ∘ t
 ℕ≢cstr ()
 
+ℕ≢Box : ∀ {s A} →  ℕ PE.≢ Box s A
+ℕ≢Box ()
+
 Empty≢ℕ : Empty PE.≢ ℕ
 Empty≢ℕ ()
 
 Empty≢cstr : ∀ {k t} →  Empty PE.≢ cstr k ∘ t
 Empty≢cstr ()
 
+Empty≢Box : ∀ {s A} →  Empty PE.≢ Box s A
+Empty≢Box ()
+
 cstr≢Π :  ∀ {k t F s G} → cstr k ∘ t PE.≢ Π F ⦂ s ▹ G
 cstr≢Π ()
+
+cstr≢Box : ∀ {k t s A} → cstr k ∘ t PE.≢ Box s A
+cstr≢Box ()
+
+Box≢Π :  ∀ {sA A F s G} → Box sA A PE.≢ Π F ⦂ s ▹ G
+Box≢Π ()
 
 ℕ≢ne : ∀ {K} → Neutral K → ℕ PE.≢ K
 ℕ≢ne () PE.refl
@@ -249,6 +276,9 @@ Empty≢Π ()
 cstr≢ne : ∀ {k t K} → Neutral K → cstr k ∘ t PE.≢ K
 cstr≢ne (∘ₙ ()) PE.refl
 
+Box≢ne : ∀ {s A K} → Neutral K → Box s A PE.≢ K
+Box≢ne () PE.refl
+
 zero≢suc : ∀ {n} → zero PE.≢ suc n
 zero≢suc ()
 
@@ -258,6 +288,8 @@ zero≢ne () PE.refl
 suc≢ne : ∀ {n k} → Neutral k → suc n PE.≢ k
 suc≢ne () PE.refl
 
+box≢ne : ∀ {s a k} → Neutral k → box s a PE.≢ k
+box≢ne () PE.refl
 
 -- Several views on whnfs (note: not recursive).
 

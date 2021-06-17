@@ -41,6 +41,14 @@ symEmpty-prop (ne prop) = ne (symNeutralTerm prop)
 [Cstr]-prop-sym Pi-sym (cstrᵣ kK x) = cstrᵣ kK (Pi-sym _ _ _ _ x)
 [Cstr]-prop-sym Pi-sym (ne x) = ne (symNeutralTerm x)
 
+
+[Box]-prop-sym : ∀ {P Γ sF F b b'}
+                   (P-sym : ∀ b b' → P b b' → P b' b)
+                   (d : [Box]-prop P Γ sF F b b')
+                 → [Box]-prop P Γ sF F b' b
+[Box]-prop-sym P-sym (boxᵣ x) = boxᵣ (P-sym _ _ x)
+[Box]-prop-sym P-sym (ne x) = ne (symNeutralTerm x)
+
 mutual
   -- Helper function for symmetry of type equality using shape views.
   {-# TERMINATING #-}
@@ -61,8 +69,6 @@ mutual
     let Ka≡K₁a₁ = PE.sym (whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ))
         K≡K₁    = cstr-app-PE-injectivity Ka≡K₁a₁
         a≡a₁    = cstr-app-PE-arg-injectivity Ka≡K₁a₁
-        -- cstrA   = (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-        -- cstrB   = (cstrᵣ′ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
     in cstr₌ a
             (PE.subst (λ k → Γ ⊢ _ :⇒*: cstr k ∘ a ⦂ s) K≡K₁ D)
             (≅ₜ-sym (PE.subst₂ (λ a' k → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ _) a≡a₁ K≡K₁ A≡B))
@@ -73,6 +79,16 @@ mutual
                                                      [domK]
                                                      [domK]₁
                                                      [a≡a'])))
+  symEqT {Γ} {A = A} {s = s}
+         (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F])
+               (Boxᵣ F' sF' D' ⊢F' A≡A' [F]'))
+         (Box₌ F'' D'' A≡B [F≡F']) =
+    let BF''≡BF' = whrDet* (red D'' , Boxₙ) (red D' , Boxₙ)
+        sF≡sF'   = Box-sort-inj BF''≡BF'
+        F''≡F'   = Box-inj BF''≡BF'
+    in Box₌ F (PE.subst (λ s → Γ ⊢ A :⇒*: Box s F ⦂ 𝕥y) sF≡sF' D)
+              (≅-sym (PE.subst₂ (λ s G → Γ ⊢ Box s F ≅ Box s G ⦂ 𝕥y) sF≡sF' F''≡F' A≡B))
+              (symEq′ (PE.cong ‼ sF≡sF') [F] [F]' (PE.subst (λ G → Γ ⊩⟨ _ ⟩ F ≡ G ⦂ _ / [F]) F''≡F' [F≡F']))
   symEqT {Γ = Γ} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                      (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
          (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
@@ -134,4 +150,7 @@ mutual
   symEqTerm (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
             (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
     cstrₜ₌ k' k d' d (≅ₜ-sym k≡k') [k'] [k] ([Cstr]-prop-sym (λ ki kiK t t' x → symEqTerm ([Yi] ki kiK) x) [k≡k'])
+  symEqTerm (Boxᵣ′ F sF D ⊢F A≡A [F])
+            (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) =
+    boxₜ₌ b' b d' d (≅ₜ-sym b≡b') [b'] [b] ([Box]-prop-sym (λ b b' d → symEqTerm [F] d) [b≡b'])
   symEqTerm (emb 0<1 x) t≡u = symEqTerm x t≡u

@@ -14,24 +14,43 @@ open import Definition.LogicalRelation.ShapeView
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
--- []-cstr-PE : ∀ {K K' t} (K≡K' : K PE.≡ K') (d : [ K ]-cstr t) → [ K' ]-cstr t
--- []-cstr-PE PE.refl d = d
+Cstr-prop-ext : ∀ {K K' Γ Pi Pi' t a a' s}
+                   (K≡K' : K PE.≡ K')
+                   (Pi→Pi' : ∀ ki kiK  kiK' t → Pi ki kiK t → Pi' ki kiK' t)
+                   (⊢Ka≡Ka' : Γ ⊢ cstr K ∘ a ≡ cstr K ∘ a' ⦂ s)
+                   (d : Cstr-prop K Γ Pi a s t)
+                 → Cstr-prop K' Γ Pi' a' s t
+Cstr-prop-ext PE.refl Pi→Pi' _ (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ x)
+Cstr-prop-ext PE.refl Pi→Pi' ⊢Ka≡Ka' (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ neK (conv ⊢k ⊢Ka≡Ka') (~-conv k≡k ⊢Ka≡Ka'))
 
-Cstr-prop-ext : ∀ {K K' Γ Pi Pi' t a s}
-                  (K≡K' : K PE.≡ K')
-                  (Pi→Pi' : ∀ ki kiK  kiK' t → Pi ki kiK t → Pi' ki kiK' t)
-                  (d : Cstr-prop K Γ Pi a s t)
-                → Cstr-prop K' Γ Pi' a s t
-Cstr-prop-ext PE.refl Pi→Pi' (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ x)
-Cstr-prop-ext PE.refl Pi→Pi' (ne x) = ne x
+[Cstr]-prop-ext : ∀ {K K' Γ Pi Pi' t t' a a' s}
+                   (K≡K' : K PE.≡ K')
+                   (Pi→Pi' : ∀ ki kiK  kiK' t t' → Pi ki kiK t t' → Pi' ki kiK' t t')
+                   (⊢Ka≡Ka' : Γ ⊢ cstr K ∘ a ≡ cstr K ∘ a' ⦂ s)
+                   (d : [Cstr]-prop K Γ Pi a s t t')
+                 → [Cstr]-prop K' Γ Pi' a' s t t'
+[Cstr]-prop-ext PE.refl Pi→Pi' _ (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ _ x)
+[Cstr]-prop-ext PE.refl Pi→Pi' ⊢Ka≡Ka' (ne (neNfₜ₌ neK neM k≡m)) = ne ((neNfₜ₌ neK neM (~-conv k≡m ⊢Ka≡Ka')))
 
-[Cstr]-prop-ext : ∀ {K K' Γ Pi Pi' t t' a s}
-                    (K≡K' : K PE.≡ K')
-                    (Pi→Pi' : ∀ ki kiK  kiK' t t' → Pi ki kiK t t' → Pi' ki kiK' t t')
-                    (d : [Cstr]-prop K Γ Pi a s t t')
-                  → [Cstr]-prop K' Γ Pi' a s t t'
-[Cstr]-prop-ext PE.refl Pi→Pi' (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ _ x)
-[Cstr]-prop-ext PE.refl Pi→Pi' (ne x) = ne x
+
+Box-prop-ext : ∀ {P P' Γ F F' sF sF' b}
+             → (∀ x → P x → P' x)
+             → sF PE.≡ sF'
+             → Γ ⊢ Box sF F ≡ Box sF' F' ⦂ 𝕥y
+             → Box-prop P Γ F sF b
+             → Box-prop P' Γ F' sF' b
+Box-prop-ext PP' e F≡F' (boxᵣ x) rewrite e = boxᵣ (PP' _ x)
+Box-prop-ext PP' e F≡F' (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ neK (conv ⊢k F≡F') (~-conv k≡k F≡F'))
+
+[Box]-prop-ext : ∀ {P P' Γ F F' sF sF' b b'}
+             → (∀ x x' → P x x' → P' x x')
+             → sF PE.≡ sF'
+             → Γ ⊢ Box sF F ≡ Box sF' F' ⦂ 𝕥y
+             → [Box]-prop P Γ F sF b b'
+             → [Box]-prop P' Γ F' sF' b b'
+[Box]-prop-ext PP' e F≡F' (boxᵣ x) rewrite e = boxᵣ (PP' _ _ x)
+[Box]-prop-ext PP' e F≡F' (ne (neNfₜ₌ neK neM k≡m)) = ne (neNfₜ₌ neK neM (~-conv k≡m F≡F'))
+
 
 -- Irrelevance for propositionally equal types
 irrelevance′ : ∀ {A A′ Γ s l}
@@ -122,6 +141,13 @@ mutual
               in  irrelevanceEq′ (PE.cong (λ y → wk (lift ρ) y [ _ ]) G≡G₁) PE.refl
                                  ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([G≡G′] [ρ] ⊢Δ [a]))
   irrelevanceEqT (Uᵥ (Uᵣ _ _ _) (Uᵣ _ _ _)) A≡B = A≡B
+  irrelevanceEqT {Γ = Γ} {B = B} (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) (Boxᵣ F' sF' D' ⊢F' A≡A' [F]')) (Box₌ F'' D'' A≡B [F≡F']) =
+    let BF≡BF' = whrDet* (red D , Boxₙ) (red D' , Boxₙ)
+        sF≡sF' = Box-sort-inj BF≡BF'
+        F≡F'   = Box-inj BF≡BF'
+    in Box₌ F'' (PE.subst (λ s → Γ ⊢ B :⇒*: Box s F'' ⦂ 𝕥y) sF≡sF' D'')
+            (PE.subst₂ (λ s F → Γ ⊢ Box s F ≅ Box s F'' ⦂ 𝕥y) sF≡sF' F≡F' A≡B)
+            (irrelevanceEq′ F≡F' (PE.cong ‼ sF≡sF') [F] [F]' [F≡F'])
   irrelevanceEqT (emb⁰¹ x) A≡B = irrelevanceEqT x A≡B
   irrelevanceEqT (emb¹⁰ x) A≡B = irrelevanceEqT x A≡B
 
@@ -168,10 +194,10 @@ mutual
     | PE.refl = neₜ k d nf
 
   irrelevanceTermT {Γ} {t = t} {s = s}
-                   (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
+                   (cstrᵥ (cstrᵣ K KcodU a [ ⊢A , ⊢Ka , D ] ⊢a A≡A [domK] [a] [Yi])
                           (cstrᵣ K₁ _ _ D₁ _ _ [domK]₁ [a]₁ [Yi]₁))
                    (cstrₜ k d k≡k [k]) =
-    let Ka≡K₁a₁ = whrDet* (red D , cstrₙ) (red D₁ , cstrₙ)
+    let Ka≡K₁a₁ = whrDet* (D , cstrₙ) (red D₁ , cstrₙ)
         K≡K₁    = cstr-app-PE-injectivity Ka≡K₁a₁
         a≡a₁    = cstr-app-PE-arg-injectivity Ka≡K₁a₁
     in
@@ -179,7 +205,10 @@ mutual
          (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) Ka≡K₁a₁ d)
          (PE.subst (λ x → Γ ⊢ k ≅ k ∷ x ⦂ s) Ka≡K₁a₁ k≡k)
          (PE.subst (λ a → Cstr-prop K₁ Γ _ a s k) a≡a₁
-                   (Cstr-prop-ext  K≡K₁  (λ ki kiK kiK' t d → irrelevanceTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) [k]))
+                   (Cstr-prop-ext  K≡K₁
+                                   (λ ki kiK kiK' t d → irrelevanceTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d)
+                                   (refl ⊢Ka)
+                                   [k]))
   irrelevanceTermT {Γ} {t = t} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                    (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                    (Πₜ f d funcF f≡f [f] [f]₁) =
@@ -211,6 +240,14 @@ mutual
              in  irrelevanceTerm′ (PE.cong (λ G → wk (lift ρ) G [ _ ]) G≡G₁) PE.refl
                                   ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([f]₁ [ρ] ⊢Δ [a]))
   irrelevanceTermT (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) t = t
+  irrelevanceTermT {Γ = Γ} {t = t} (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) (Boxᵣ F' sF' D' ⊢F' A≡A' [F]')) (boxₜ b d b≡b [b]) =
+    let BF≡BF' = whrDet* (red D , Boxₙ) (red D' , Boxₙ)
+        sF≡sF' = Box-sort-inj BF≡BF'
+        F≡F'   = Box-inj BF≡BF'
+    in boxₜ b (PE.subst (λ BF → Γ ⊢ t :⇒*: b ∷ BF ⦂ 𝕥y) BF≡BF' d)
+            (PE.subst (λ BF → Γ ⊢ b ≅ b ∷ BF ⦂ 𝕥y) BF≡BF' b≡b)
+            (Box-prop-ext (λ x d → irrelevanceTerm′ F≡F' (PE.cong ‼ sF≡sF') [F] [F]' d)
+                          sF≡sF' (PE.subst (λ BF → Γ ⊢ Box sF F ≡ BF ⦂ 𝕥y) BF≡BF' (refl (Boxⱼ ⊢F))) [b])
   irrelevanceTermT (emb⁰¹ x) t = irrelevanceTermT x t
   irrelevanceTermT (emb¹⁰ x) t = irrelevanceTermT x t
 
@@ -245,13 +282,13 @@ mutual
   irrelevanceEqTermT (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ₌ k m d d′ nf)
     | PE.refl = neₜ₌ k m d d′ nf
   irrelevanceEqTermT {Γ} {t = t} {u = u} {s = s}
-                     (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
+                     (cstrᵥ (cstrᵣ K KcodU a [ ⊢A , ⊢Ka , D ] ⊢a A≡A [domK] [a] [Yi])
                             (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁))
                      (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
-    let Ka≡K₁a₁ = whrDet* (red D , cstrₙ) (red D₁ , cstrₙ)
+    let Ka≡K₁a₁ = whrDet* ( D , cstrₙ) (red D₁ , cstrₙ)
         K≡K₁    = cstr-app-PE-injectivity Ka≡K₁a₁
         a≡a₁    = cstr-app-PE-arg-injectivity Ka≡K₁a₁
-        cstrA   = (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
+        cstrA   = (cstrᵣ′ K KcodU a [ ⊢A , ⊢Ka , D ] ⊢a A≡A [domK] [a] [Yi])
         cstrB   = (cstrᵣ′ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
     in
     cstrₜ₌ k k'
@@ -261,7 +298,7 @@ mutual
              (irrelevanceTerm cstrA cstrB [k])
              (irrelevanceTerm cstrA cstrB [k'])
              (PE.subst (λ a → [Cstr]-prop K₁ Γ _ a s k k') a≡a₁
-                       ([Cstr]-prop-ext K≡K₁ (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) [k≡k']))
+                       ([Cstr]-prop-ext K≡K₁ (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) (refl ⊢Ka) [k≡k']))
   irrelevanceEqTermT {Γ} {t = t} {u = u} {s = s}
                      (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
@@ -282,5 +319,19 @@ mutual
                in  irrelevanceEqTerm′ (PE.cong (λ G → wk (lift ρ) G [ _ ]) G≡G₁) PE.refl
                                      ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([f≡g] [ρ] ⊢Δ [a]))
   irrelevanceEqTermT (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) t≡u = t≡u
+  irrelevanceEqTermT {Γ = Γ} {t = t} {u = u} (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) (Boxᵣ F' sF' D' ⊢F' A≡A' [F]')) (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) =
+    let BF≡BF' = whrDet* (red D , Boxₙ) (red D' , Boxₙ)
+        sF≡sF' = Box-sort-inj BF≡BF'
+        F≡F'   = Box-inj BF≡BF'
+        BoxA   = Boxᵣ′ F sF D ⊢F A≡A [F]
+        BoxB   = Boxᵣ′ F' sF' D' ⊢F' A≡A' [F]'
+    in boxₜ₌ b b'
+             (PE.subst (λ BF → Γ ⊢ t :⇒*: b ∷ BF ⦂ 𝕥y) BF≡BF' d)
+             (PE.subst (λ BF → Γ ⊢ u :⇒*: b' ∷ BF ⦂ 𝕥y) BF≡BF' d')
+             (PE.subst (λ BF → Γ ⊢ b ≅ b' ∷ BF ⦂ 𝕥y) BF≡BF' b≡b')
+             (irrelevanceTerm BoxA BoxB [b])
+             (irrelevanceTerm BoxA BoxB [b'])
+             ([Box]-prop-ext (λ x x' d → irrelevanceEqTerm′ F≡F' (PE.cong ‼ sF≡sF') [F] [F]' d)
+                             sF≡sF' (PE.subst (λ BF → Γ ⊢ Box sF F ≡ BF ⦂ 𝕥y) BF≡BF' (refl (Boxⱼ ⊢F))) [b≡b'])
   irrelevanceEqTermT (emb⁰¹ x) t≡u = irrelevanceEqTermT x t≡u
   irrelevanceEqTermT (emb¹⁰ x) t≡u = irrelevanceEqTermT x t≡u

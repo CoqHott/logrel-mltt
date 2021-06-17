@@ -23,6 +23,7 @@ escape (Emptyᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) = ⊢A
 escape (Πᵣ′ sF F G [ ⊢A , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape (cstrᵣ′ K KcodU a [ ⊢A , ⊢B , D ] ⊢a A≡A [domK] [a] [Yi]) = ⊢A
+escape (Boxᵣ′ F sF [ ⊢A , ⊢B , D ] ⊢F A≡A [F]) = ⊢A
 escape (emb 0<1 A) = escape A
 
 -- Reducible type equality respect the equality relation.
@@ -38,7 +39,9 @@ escapeEq (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ Πₙ Πₙ A≡B
 escapeEq (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstr₌ a' D' A≡B [a≡a']) =
-  ≅-red (red D) (red D') cstrₙ cstrₙ (≅-cstr-cong KcodU (wfTerm ⊢a) A≡B)
+  ≅-red (red D) (red D') cstrₙ cstrₙ (≅-cstr-cong KcodU A≡B)
+escapeEq (Boxᵣ′ F sF D ⊢F A≡A [F]) (Box₌ F' D' A≡B [F≡F']) =
+  ≅-red (red D) (red D') Boxₙ Boxₙ A≡B
 escapeEq (emb 0<1 A) A≡B = escapeEq A A≡B
 
 -- Reducible terms are well-formed.
@@ -56,6 +59,8 @@ escapeTerm (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                (f , [ ⊢t , ⊢u , d ] , funcF , f≡f , [f] , [f]₁) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ k [ ⊢t , ⊢u , d ] k≡k [k]) =
+  conv ⊢t (sym (subset* (red D)))
+escapeTerm (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b [ ⊢t , ⊢u , d ] b≡b [b]) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (emb 0<1 A) t = escapeTerm A t
 
@@ -82,4 +87,6 @@ escapeTermEq (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
 escapeTermEq (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d') cstrₙ ([Cstr]-prop-left-Whnf [k≡k']) ([Cstr]-prop-right-Whnf [k≡k']) k≡k'
+escapeTermEq (Boxᵣ′ F sF D ⊢F A≡A [F]) (cstrₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) with [Box]-prop-Whnf [b≡b']
+... | whnb , whnb' = ≅ₜ-red (red D) (redₜ d) (redₜ d') Boxₙ whnb whnb' b≡b'
 escapeTermEq (emb 0<1 A) t≡u = escapeTermEq A t≡u

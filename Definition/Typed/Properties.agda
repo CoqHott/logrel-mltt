@@ -339,4 +339,12 @@ redU* (id x) = PE.refl
 redU* (x ⇨ A⇒*U) rewrite redU* A⇒*U = ⊥-elim (redU x)
 
 
+Univ-sort : ∀ {Γ s s'} → Γ ⊢ Univ s ⦂ s' → s' PE.≡ 𝕥y
+Univ-sort (Uⱼ x) = PE.refl
+Univ-sort (univ x) = ⊥-elim (UnotInA x)
 
+cstr-cod-Univ-sort : ∀ {k s} → cstr-cod k PE.≡ Univ s → cstr-𝕊 k PE.≡ 𝕥y
+cstr-cod-Univ-sort {k} kdomU =
+  Univ-sort (PE.subst (λ x → ε ∙ cstr-dom k ⦂ cstr-dom-sort k ⊢ x ⦂ cstr-𝕊 k)
+                      kdomU
+                      (cstr-cod-wty k))

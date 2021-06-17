@@ -4,6 +4,7 @@ module Definition.Typed.EqRelInstance where
 
 open import Definition.Untyped
 open import Definition.Typed
+open import Definition.Typed.Properties
 open import Definition.Typed.Weakening
 open import Definition.Typed.Reduction
 open import Definition.Typed.EqualityRelation
@@ -13,13 +14,12 @@ import Tools.PropositionalEquality as PE
 
 cstr-cong-univ : {a a' : Term} {k : constructors} {Γ : Con Term} {s : 𝕊}
                → cstr-cod k PE.≡ Univ s
-               → cstr-𝕊 k PE.≡ 𝕥y
                → Γ ⊢ a ≡ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
                → Γ ⊢ cstr k ∘ a ≡ cstr k ∘ a' ⦂ s
-cstr-cong-univ {a} {a'} {k} {Γ} kcodU ksort𝕥y a≡a =
+cstr-cong-univ {a} {a'} {k} {Γ} kcodU a≡a =
   univ (PE.subst₂ (λ x s → Γ ⊢ cstr k ∘ a ≡ cstr k ∘ a' ∷ x ⦂ s)
                   (cstr-codU-substS kcodU)
-                  ksort𝕥y
+                  (cstr-cod-Univ-sort kcodU)
                   (cstr-cong a≡a))
 
 -- Judgmental instance of the equality relation

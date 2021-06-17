@@ -22,26 +22,6 @@ convRed:*: : ∀ {t u A B s Γ} → Γ ⊢ t :⇒*: u ∷ A ⦂ s → Γ ⊢ A �
 convRed:*: [ ⊢t , ⊢u , d ] A≡B = [ conv ⊢t  A≡B , conv ⊢u  A≡B , conv* d  A≡B ]
 
 
-Cstr-prop-ext' : ∀ {K K' Γ Pi Pi' t a a' s}
-                   (K≡K' : K PE.≡ K')
-                   (Pi→Pi' : ∀ ki kiK  kiK' t → Pi ki kiK t → Pi' ki kiK' t)
-                   (⊢Ka≡Ka' : Γ ⊢ cstr K ∘ a ≡ cstr K ∘ a' ⦂ s)
-                   (d : Cstr-prop K Γ Pi a s t)
-                 → Cstr-prop K' Γ Pi' a' s t
-Cstr-prop-ext' PE.refl Pi→Pi' _ (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ x)
-Cstr-prop-ext' PE.refl Pi→Pi' ⊢Ka≡Ka' (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ neK (conv ⊢k ⊢Ka≡Ka') (~-conv k≡k ⊢Ka≡Ka'))
-
-[Cstr]-prop-ext' : ∀ {K K' Γ Pi Pi' t t' a a' s}
-                   (K≡K' : K PE.≡ K')
-                   (Pi→Pi' : ∀ ki kiK  kiK' t t' → Pi ki kiK t t' → Pi' ki kiK' t t')
-                   (⊢Ka≡Ka' : Γ ⊢ cstr K ∘ a ≡ cstr K ∘ a' ⦂ s)
-                   (d : [Cstr]-prop K Γ Pi a s t t')
-                 → [Cstr]-prop K' Γ Pi' a' s t t'
-[Cstr]-prop-ext' PE.refl Pi→Pi' _ (cstrᵣ kK x) = cstrᵣ kK (Pi→Pi' _ kK kK _ _ x)
-[Cstr]-prop-ext' PE.refl Pi→Pi' ⊢Ka≡Ka' (ne (neNfₜ₌ neK neM k≡m)) = ne ((neNfₜ₌ neK neM (~-conv k≡m ⊢Ka≡Ka')))
-
-
-
 mutual
   -- Helper function for conversion of terms converting from left to right.
   convTermT₁ : ∀ {l l′ Γ A B s t} {[A] : Γ ⊩⟨ l ⟩ A ⦂ s} {[B] : Γ ⊩⟨ l′ ⟩ B ⦂ s}
@@ -68,12 +48,30 @@ mutual
         a'≡a₁   = cstr-app-PE-arg-injectivity Ka'≡K₁a₁
         -- cstrA   = (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
         -- cstrB   = (cstrᵣ′ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
-        ⊢Ka≡Ka'  = ≅-eq (≅-cstr-cong KcodU (wfTerm ⊢a) A≡B)
+        ⊢Ka≡Ka'  = ≅-eq (≅-cstr-cong KcodU A≡B)
     in cstrₜ k
              (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) Ka'≡K₁a₁ (convRed:*: d ⊢Ka≡Ka'))
              (PE.subst (λ x → Γ ⊢ k ≅ k ∷ x ⦂ s) Ka'≡K₁a₁ (≅-conv k≡k ⊢Ka≡Ka'))
              (PE.subst (λ a → Cstr-prop K₁ Γ _ a _ k)  a'≡a₁
-                   (Cstr-prop-ext' K≡K₁ (λ ki kiK kiK' t d → irrelevanceTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) ⊢Ka≡Ka' [k]))
+                   (Cstr-prop-ext K≡K₁ (λ ki kiK kiK' t d → irrelevanceTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) ⊢Ka≡Ka' [k]))
+  convTermT₁ {Γ = Γ} {s = s} {t = t}
+             (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F])
+                   (Boxᵣ F' sF' D' ⊢F' A≡A' [F]'))
+             (Box₌ F'' D'' A≡B [F≡F'])
+             (boxₜ b d b≡b [b]) =
+    let BF''≡BF' = whrDet* (red D'' , Boxₙ) (red D' , Boxₙ)
+        sF≡sF' = Box-sort-inj BF''≡BF'
+        F''≡F'   = Box-inj BF''≡BF'
+        ⊢BF≡BF'' = ≅-eq A≡B
+    in boxₜ b
+         (PE.subst (λ x → Γ ⊢ t :⇒*: b ∷ x ⦂ 𝕥y) BF''≡BF'
+                    (convRed:*: d ⊢BF≡BF''))
+         (PE.subst (λ x → Γ ⊢ b ≅ b ∷ x ⦂ 𝕥y) BF''≡BF'
+                     (≅-conv b≡b ⊢BF≡BF''))
+         (Box-prop-ext (λ x d → convTerm₁′ (PE.cong ‼ sF≡sF') [F] [F]' (PE.subst (λ G → Γ ⊩⟨ _ ⟩ F ≡ G ⦂ ‼ sF / [F] ) F''≡F' [F≡F']) d)
+                       sF≡sF'
+                       (PE.subst (λ BF → Γ ⊢ Box sF F ≡ BF ⦂ 𝕥y) BF''≡BF' ⊢BF≡BF'')
+                       [b])
   convTermT₁ {Γ = Γ} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
@@ -131,12 +129,12 @@ mutual
     let K₁a₁≡Ka' = whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ)
         K₁≡K    = cstr-app-PE-injectivity K₁a₁≡Ka'
         a₁≡a'   = cstr-app-PE-arg-injectivity K₁a₁≡Ka'
-        ⊢Ka'≡Ka  = ≅-eq (≅-sym (≅-cstr-cong KcodU (wfTerm ⊢a) A≡B))
+        ⊢Ka'≡Ka  = ≅-eq (≅-sym (≅-cstr-cong KcodU A≡B))
         ⊢K₁a'≡K₁a  = PE.subst (λ k → Γ ⊢ cstr k ∘ a' ≡ cstr k ∘ a ⦂ s) (PE.sym K₁≡K) ⊢Ka'≡Ka
     in cstrₜ k
              (convRed:*: (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) K₁a₁≡Ka' d) ⊢Ka'≡Ka)
              (≅-conv (PE.subst (λ x → Γ ⊢ k ≅ k ∷ x ⦂ s) K₁a₁≡Ka' k≡k) ⊢Ka'≡Ka)
-             (Cstr-prop-ext' K₁≡K
+             (Cstr-prop-ext K₁≡K
                              (λ ki kiK kiK' t d → irrelevanceTerm ([Yi]₁ ki kiK) ([Yi] ki kiK') d)
                               ⊢K₁a'≡K₁a
                              (PE.subst (λ a → Cstr-prop K₁ Γ _ a _ k) a₁≡a' [k]))
@@ -171,6 +169,27 @@ mutual
                                            ([G≡G′] [ρ] ⊢Δ [a])
               in  convTerm₂ ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁)
                             [G≡G₁] ([f]₁ [ρ] ⊢Δ [a]₁))
+  convTermT₂ {Γ = Γ} {s = s} {t = t}
+             (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F])
+                   (Boxᵣ F' sF' D' ⊢F' A≡A' [F]'))
+             (Box₌ F'' D'' A≡B [F≡F'])
+             (boxₜ b d b≡b [b]) =
+    let BF'≡BF'' = whrDet* (red D' , Boxₙ) (red D'' , Boxₙ)
+        sF'≡sF = Box-sort-inj BF'≡BF''
+        F'≡F''   = Box-inj BF'≡BF''
+        ⊢BF''≡BF = ≅-eq (≅-sym A≡B)
+    in boxₜ b
+         (convRed:*: (PE.subst (λ x → Γ ⊢ t :⇒*: b ∷ x ⦂ 𝕥y) BF'≡BF'' d)
+                     ⊢BF''≡BF)
+         (≅-conv (PE.subst (λ x → Γ ⊢ b ≅ b ∷ x ⦂ 𝕥y) BF'≡BF'' b≡b)
+                  ⊢BF''≡BF)
+         (Box-prop-ext (λ x d →  convTerm₂′ F'≡F'' (PE.cong ‼ (PE.sym sF'≡sF)) [F] [F]' [F≡F'] d)
+                       sF'≡sF
+                       (PE.subst (λ BF → Γ ⊢ BF ≡ Box sF F ⦂ 𝕥y)
+                                 (PE.sym BF'≡BF'')
+                                 ⊢BF''≡BF)
+                       [b])
+
   convTermT₂ (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) A≡B t rewrite Univ-PE-injectivity A≡B = t
   convTermT₂ (emb⁰¹ x) A≡B t = convTermT₂ x A≡B t
   convTermT₂ (emb¹⁰ x) A≡B t = convTermT₂ x A≡B t
@@ -230,18 +249,18 @@ mutual
     let Ka'≡K₁a₁ = PE.sym (whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ))
         K≡K₁    = cstr-app-PE-injectivity Ka'≡K₁a₁
         a'≡a₁   = cstr-app-PE-arg-injectivity Ka'≡K₁a₁
-        cstrA   = (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-        cstrB   = (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
+        cstrA   = (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
+        cstrB   = (cstrᵣ′ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
         cstrA≡B = (cstr₌ a' D' A≡B [a≡a'])
-        ⊢Ka≡Ka' = ≅-eq (≅-cstr-cong KcodU (wfTerm ⊢a) A≡B)
+        ⊢Ka≡Ka' = ≅-eq (≅-cstr-cong KcodU A≡B)
       in cstrₜ₌ k k'
                  (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) Ka'≡K₁a₁ (convRed:*: d ⊢Ka≡Ka'))
                  (PE.subst (λ x → Γ ⊢ u :⇒*: k' ∷ x ⦂ s) Ka'≡K₁a₁ (convRed:*: d' ⊢Ka≡Ka'))
                  (PE.subst (λ x → Γ ⊢ k ≅ k' ∷ x ⦂ s) Ka'≡K₁a₁ (≅-conv k≡k' ⊢Ka≡Ka'))
-                 (convTermT₁ (cstrᵥ cstrA cstrB) cstrA≡B [k])
-                 (convTermT₁ (cstrᵥ cstrA cstrB) cstrA≡B [k'])
+                 (convTerm₁ cstrA cstrB cstrA≡B [k])
+                 (convTerm₁ cstrA cstrB cstrA≡B [k'])
                  (PE.subst (λ a → [Cstr]-prop K₁ Γ _ a _ k k')  a'≡a₁
-                           ([Cstr]-prop-ext' K≡K₁ (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d ) ⊢Ka≡Ka' [k≡k']))
+                           ([Cstr]-prop-ext K≡K₁ (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d ) ⊢Ka≡Ka' [k≡k']))
   convEqTermT₁ {Γ = Γ} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                            (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
@@ -266,6 +285,31 @@ mutual
                                             ([G≡G′] [ρ] ⊢Δ [a]₁)
                in  convEqTerm₁ ([G] [ρ] ⊢Δ [a]₁) ([G]₁ [ρ] ⊢Δ [a])
                                [G≡G₁] ([t≡u] [ρ] ⊢Δ [a]₁))
+  convEqTermT₁ {Γ = Γ} {s = s} {t = t} {u = u}
+               (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F])
+                     (Boxᵣ F' sF' D' ⊢F' A≡A' [F]'))
+               (Box₌ F'' D'' A≡B [F≡F'])
+               (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) =
+    let BF''≡BF' = whrDet* (red D'' , Boxₙ) (red D' , Boxₙ)
+        sF≡sF' = Box-sort-inj BF''≡BF'
+        F''≡F'   = Box-inj BF''≡BF'
+        ⊢BF≡BF'' = ≅-eq A≡B
+        BoxA     = Boxᵣ′ F sF D ⊢F A≡A [F]
+        BoxB     = Boxᵣ′ F' sF' D' ⊢F' A≡A' [F]'
+        BoxAB    = Box₌ F'' D'' A≡B [F≡F']
+    in boxₜ₌ b b'
+         (PE.subst (λ BF → Γ ⊢ t :⇒*: b ∷ BF ⦂ 𝕥y) BF''≡BF'
+          (convRed:*: d ⊢BF≡BF''))
+         (PE.subst (λ BF → Γ ⊢ u :⇒*: b' ∷ BF ⦂ 𝕥y) BF''≡BF'
+          (convRed:*: d' ⊢BF≡BF''))
+         (PE.subst (λ BF → Γ ⊢ b ≅ b' ∷ BF ⦂ 𝕥y) BF''≡BF'
+          (≅-conv b≡b' ⊢BF≡BF''))
+         (convTerm₁ BoxA BoxB BoxAB [b])
+         (convTerm₁ BoxA BoxB BoxAB [b'])
+         ([Box]-prop-ext
+           (λ x x' d → convEqTerm₁′ (PE.cong ‼ sF≡sF') [F] [F]'
+                                    (PE.subst (λ G → Γ ⊩⟨ _ ⟩ F ≡ G ⦂ _ / [F]) F''≡F' [F≡F']) d)
+           sF≡sF' (PE.subst (λ BF → Γ ⊢ Box sF F ≡ BF ⦂ 𝕥y) BF''≡BF' ⊢BF≡BF'') [b≡b'])
   convEqTermT₁ (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) A≡B t≡u rewrite Univ-PE-injectivity A≡B = t≡u
   convEqTermT₁ (emb⁰¹ x) A≡B t≡u = convEqTermT₁ x A≡B t≡u
   convEqTermT₁ (emb¹⁰ x) A≡B t≡u = convEqTermT₁ x A≡B t≡u
@@ -293,7 +337,7 @@ mutual
     let K₁a₁≡Ka' = whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ)
         K₁≡K    = cstr-app-PE-injectivity K₁a₁≡Ka'
         a₁≡a'   = cstr-app-PE-arg-injectivity K₁a₁≡Ka'
-        ⊢Ka'≡Ka  = ≅-eq (≅-sym (≅-cstr-cong KcodU (wfTerm ⊢a) A≡B))
+        ⊢Ka'≡Ka  = ≅-eq (≅-sym (≅-cstr-cong KcodU A≡B))
         ⊢K₁a'≡K₁a  = PE.subst (λ k → Γ ⊢ cstr k ∘ a' ≡ cstr k ∘ a ⦂ s) (PE.sym K₁≡K) ⊢Ka'≡Ka
         cstrA   = (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
         cstrB   = (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
@@ -305,7 +349,7 @@ mutual
                (≅-conv (PE.subst (λ x → Γ ⊢ k ≅ k' ∷ x ⦂ s) K₁a₁≡Ka' k≡k') ⊢Ka'≡Ka)
                (convTermT₂ (cstrᵥ cstrA cstrB) cstrA≡B [k])
                (convTermT₂ (cstrᵥ cstrA cstrB) cstrA≡B [k'])
-               ([Cstr]-prop-ext' K₁≡K
+               ([Cstr]-prop-ext K₁≡K
                              (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi]₁ ki kiK) ([Yi] ki kiK') d)
                               ⊢K₁a'≡K₁a
                              (PE.subst (λ a → [Cstr]-prop K₁ Γ _ a _ k k') a₁≡a' [k≡k']))
@@ -333,6 +377,29 @@ mutual
                                             ([G≡G′] [ρ] ⊢Δ [a])
                in  convEqTerm₂ ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁)
                                [G≡G₁] ([t≡u] [ρ] ⊢Δ [a]₁))
+  convEqTermT₂ {Γ = Γ} {t = t} {u = u} {s = s}
+               (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F])
+                     (Boxᵣ F' sF' D' ⊢F' A≡A' [F]'))
+               (Box₌ F'' D'' A≡B [F≡F'])
+               (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) =
+    let BF''≡BF' = whrDet* (red D'' , Boxₙ) (red D' , Boxₙ)
+        BF'≡BF'' = PE.sym BF''≡BF'
+        sF≡sF'   = Box-sort-inj BF''≡BF'
+        sF'≡sF   = PE.sym sF≡sF'
+        F''≡F'   = Box-inj BF''≡BF'
+        F'≡F''   = PE.sym F''≡F'
+        ⊢BF''≡BF = ≅-eq (≅-sym A≡B)
+        BoxA     = Boxᵣ′ F sF D ⊢F A≡A [F]
+        BoxB     = Boxᵣ′ F' sF' D' ⊢F' A≡A' [F]'
+        BoxAB    = Box₌ F'' D'' A≡B [F≡F']
+    in boxₜ₌ b b'
+         (convRed:*: (PE.subst (λ BF → Γ ⊢ t :⇒*: b ∷ BF ⦂ 𝕥y) BF'≡BF'' d) ⊢BF''≡BF)
+         (convRed:*: (PE.subst (λ BF → Γ ⊢ u :⇒*: b' ∷ BF ⦂ 𝕥y) BF'≡BF'' d') ⊢BF''≡BF)
+         (≅-conv (PE.subst (λ BF → Γ ⊢ b ≅ b' ∷ BF ⦂ 𝕥y) BF'≡BF'' b≡b') ⊢BF''≡BF)
+         (convTerm₂ BoxA BoxB BoxAB [b])
+         (convTerm₂ BoxA BoxB BoxAB [b'])
+         ([Box]-prop-ext (λ x x' d → convEqTerm₂′ (PE.cong ‼ sF≡sF') [F] [F]' (PE.subst (λ G → Γ ⊩⟨ _ ⟩ F ≡ G ⦂ _ / [F]) F''≡F' [F≡F']) d)
+           sF'≡sF (PE.subst (λ BF → Γ ⊢ BF ≡ Box sF F ⦂ 𝕥y) BF''≡BF' ⊢BF''≡BF) [b≡b'])
   convEqTermT₂ (Uᵥ (Uᵣ .⁰ 0<1 ⊢Γ) (Uᵣ .⁰ 0<1 ⊢Γ₁)) A≡B t≡u rewrite Univ-PE-injectivity A≡B = t≡u
   convEqTermT₂ (emb⁰¹ x) A≡B t≡u = convEqTermT₂ x A≡B t≡u
   convEqTermT₂ (emb¹⁰ x) A≡B t≡u = convEqTermT₂ x A≡B t≡u

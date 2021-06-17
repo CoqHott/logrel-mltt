@@ -44,6 +44,10 @@ redSubst* D (cstrᵣ′ K KcodU a [ ⊢B , ⊢cstr , D' ] ⊢a A≡A [domK] [a] 
   let ⊢A = redFirst* D
   in (cstrᵣ′ K KcodU a [ ⊢A , ⊢cstr , D ⇨* D' ] ⊢a A≡A [domK] [a] [Yi]),
      (cstr₌ a [ ⊢B , ⊢cstr , D' ] A≡A (reflEqTerm [domK] [a]))
+redSubst* D (Boxᵣ′ F sF [ ⊢B , ⊢Box , D' ] ⊢F A≡A [F]) =
+  let ⊢A = redFirst* D
+  in Boxᵣ′ F sF [ ⊢A , ⊢Box , D ⇨* D' ] ⊢F A≡A [F] ,
+     Box₌ F [ ⊢B , ⊢Box , D' ] A≡A (reflEq [F])
 redSubst* D (emb 0<1 x) with redSubst* D x
 redSubst* D (emb 0<1 x) | y , y₁ = emb 0<1 y , y₁
 
@@ -99,6 +103,15 @@ redSubst*Term t⇒u (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ
   ,  cstrₜ₌ k k [d'] [d] k≡k
             (cstrₜ k [d'] k≡k [k]) (cstrₜ k [d] k≡k [k])
             (reflCstr-prop (λ ki kiK t₁ x → reflEqTerm ([Yi] ki kiK) x) [k])
+redSubst*Term t⇒u (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b [ ⊢t , ⊢u , d ] b≡b [b]) =
+  let A≡Box = subset* (red D)
+      t⇒u' = conv* t⇒u A≡Box
+      [d]  = [ ⊢t , ⊢u , d ]
+      [d'] = [ conv (redFirst*Term t⇒u) A≡Box , ⊢u , conv* t⇒u A≡Box ⇨∷* d ]
+  in boxₜ b [d'] b≡b [b] ,
+     boxₜ₌ b b [d'] [d] b≡b
+           (boxₜ b [d'] b≡b [b]) (boxₜ b [d] b≡b [b])
+           (reflBox-prop (λ x d → reflEqTerm [F] d) [b])
 redSubst*Term t⇒u (emb 0<1 x) [u] = redSubst*Term t⇒u x [u]
 
 -- Weak head expansion of reducible types with single reduction step.

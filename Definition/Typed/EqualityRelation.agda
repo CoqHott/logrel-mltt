@@ -163,7 +163,6 @@ record EqRelSet : Set₁ where
     -- cstr congruence
     ≅-cstr-cong : ∀ {a a' k Γ s}
                  → cstr-cod k PE.≡ Univ s
-                 → cstr-𝕊 k PE.≡ 𝕥y
                  → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
                  → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ⦂ s
 

@@ -527,11 +527,14 @@ pattern Πₜ a b c d e f = a , b , c , d , e , f
 pattern Πₜ₌ a b c d e f g h i j = a , b , c , d , e , f , g , h , i , j
 pattern cstrₜ a b c d = a , b , c , d
 pattern cstrₜ₌ a b c d e f g h = a , b , c , d , e , f , g , h
+pattern boxₜ a b c d = a , b , c , d
+pattern boxₜ₌ a b c d e f g h = a , b , c , d , e , f , g , h
 
 pattern Uᵣ′ s a b c = Uᵣ {s = s} (Uᵣ a b c)
 pattern ne′ a b c d = ne (ne a b c d)
 pattern Πᵣ′  a b c d e f g h i j = Πᵣ (Πᵣ a b c d e f g h i j)
 pattern cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi] = cstrᵣ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
+pattern Boxᵣ′ F sF D ⊢F A≡A [F] = Boxᵣ (Boxᵣ F sF D ⊢F A≡A [F])
 
 logRelRec : ∀ l {l′} → l′ < l → LogRelKit
 logRelRec ⁰ = λ ()
@@ -550,6 +553,9 @@ _⊩′⟨_⟩Π_⦂_ : (Γ : Con Term) (l : TypeLevel) → Term → 𝕊 → Se
 
 _⊩′⟨_⟩cstr_⦂_ : (Γ : Con Term) (l : TypeLevel) → Term → 𝕊 → Set
 Γ ⊩′⟨ l ⟩cstr A ⦂ s = Γ ⊩cstr A ⦂ s where open LogRelKit (kit l)
+
+_⊩′⟨_⟩Box_ : (Γ : Con Term) (l : TypeLevel) → Term → Set
+Γ ⊩′⟨ l ⟩Box A = Γ ⊩Box A where open LogRelKit (kit l)
 
 _⊩⟨_⟩_⦂_ : (Γ : Con Term) (l : TypeLevel) → Term → 𝕊 → Set
 Γ ⊩⟨ l ⟩ A ⦂ s = Γ ⊩ A ⦂ s where open LogRelKit (kit l)

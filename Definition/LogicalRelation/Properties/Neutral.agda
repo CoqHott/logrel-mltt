@@ -104,6 +104,11 @@ mutual
         ⊢n    = conv n A≡cstr
         ⊢n~n  = ~-conv n~n A≡cstr
     in cstrₜ n₁ (idRedTerm:*:  ⊢n) (~-to-≅ₜ ⊢n~n) (ne (neNfₜ neN ⊢n ⊢n~n))
+  neuTerm {n = n'} (Boxᵣ′ F sF D ⊢F A≡A [F]) neN n n~n =
+    let A≡Box = subset* (red D)
+        ⊢n   = conv n A≡Box
+        ⊢n~n = ~-conv n~n A≡Box
+    in boxₜ n' (idRedTerm:*: ⊢n) (~-to-≅ₜ ⊢n~n) (ne (neNfₜ neN ⊢n ⊢n~n))
   neuTerm (emb 0<1 x) neN n = neuTerm x neN n
 
   -- Neutrally equal terms are of reducible equality.
@@ -168,5 +173,17 @@ mutual
     in cstrₜ₌ n₁ n₁′ (idRedTerm:*: ⊢n) (idRedTerm:*: ⊢n′) (~-to-≅ₜ ⊢n~n′)
               (neuTerm cstrA neN n n~n)
               (neuTerm cstrA neN′ n′ n′~n′)
+              (ne (neNfₜ₌ neN neN′ ⊢n~n′))
+  neuEqTerm {n = n₁} {n′ = n₁′} (Boxᵣ′ F sF D ⊢F A≡A [F]) neN neN′ n n′ n~n′ =
+    let A≡Box  = subset* (red D)
+        ⊢n    = conv n A≡Box
+        ⊢n′   = conv n′ A≡Box
+        ⊢n~n′ = ~-conv n~n′ A≡Box
+        BoxA  = Boxᵣ′ F sF D ⊢F A≡A [F]
+        n~n = ~-trans n~n′ (~-sym n~n′)
+        n′~n′ = ~-trans (~-sym n~n′) n~n′
+    in cstrₜ₌ n₁ n₁′ (idRedTerm:*: ⊢n) (idRedTerm:*: ⊢n′)
+              (~-to-≅ₜ ⊢n~n′)
+              (neuTerm BoxA neN n n~n) (neuTerm BoxA neN′ n′ n′~n′)
               (ne (neNfₜ₌ neN neN′ ⊢n~n′))
   neuEqTerm (emb 0<1 x) neN neN′ n:≡:n′ = neuEqTerm x neN neN′ n:≡:n′
