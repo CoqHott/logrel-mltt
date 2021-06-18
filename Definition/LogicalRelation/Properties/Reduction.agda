@@ -159,3 +159,21 @@ redSubstTerm : ∀ {A t u l ll Γ}
              → Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ll ] / [A]
              × Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , ll ] / [A]
 redSubstTerm t⇒u [A] [u] = redSubst*Term (t⇒u ⇨ id (escapeTerm [A] [u])) [A] [u]
+
+-- Equalities
+redSubst*EqTerm : ∀ {A B t t′ u u′ l ll Γ}
+                → Γ ⊢ t ⇒* t′ ∷ A ^ ll
+                → Γ ⊢ u ⇒* u′ ∷ B ^ ll
+                → ([A] : Γ ⊩⟨ l ⟩ A ^ [ ! , ll ])
+                → ([B] : Γ ⊩⟨ l ⟩ B ^ [ ! , ll ])
+                → Γ ⊩⟨ l ⟩ A ≡ B ^ [ ! , ll ] / [A]
+                → Γ ⊩⟨ l ⟩ t′ ∷ A ^ [ ! , ll ] / [A]
+                → Γ ⊩⟨ l ⟩ u′ ∷ B ^ [ ! , ll ] / [B]
+                → Γ ⊩⟨ l ⟩ t′ ≡ u′ ∷ A ^ [ ! , ll ] / [A]
+                → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , ll ] / [A]
+redSubst*EqTerm D D′ [A] [B] [A≡B] [t′] [u′] [t′≡u′] =
+  let
+    [t≡t′] = proj₂ (redSubst*Term D [A] [t′])
+    [u≡u′:B] = proj₂ (redSubst*Term D′ [B] [u′])
+    [u≡u′] = convEqTerm₂ [A] [B] [A≡B] [u≡u′:B]
+  in transEqTerm [A] [t≡t′] (transEqTerm [A] [t′≡u′] (symEqTerm [A] [u≡u′]))

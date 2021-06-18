@@ -73,7 +73,7 @@ reflEqTerm¹ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
            → Γ ⊩⟨ ι ¹ ⟩ t ≡ t ∷ A ^ r / [A]
 reflEqTerm¹ (Uᵣ (Uᵣ r ⁰ X PE.refl D)) (Uₜ A d typeA A≡A [A]) =
   Uₜ₌ (Uₜ A d typeA A≡A [A]) (Uₜ A d typeA A≡A [A])
-    A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) 
+    A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ))
 reflEqTerm¹ (Uᵣ (Uᵣ r ¹ () PE.refl D)) (Uₜ A d typeA A≡A [A])
 reflEqTerm¹ (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
@@ -95,9 +95,9 @@ reflEqTerm∞ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
            → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ ∞ ⟩ t ≡ t ∷ A ^ r / [A]
 reflEqTerm∞ (Uᵣ (Uᵣ r ⁰ X eq D)) (Uₜ A d typeA A≡A [A]) =
-  Uₜ₌ (Uₜ A d typeA A≡A [A]) (Uₜ A d typeA A≡A [A]) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) 
+  Uₜ₌ (Uₜ A d typeA A≡A [A]) (Uₜ A d typeA A≡A [A]) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ))
 reflEqTerm∞ (Uᵣ (Uᵣ r ¹ X eq D)) (Uₜ A d typeA A≡A [A]) =
-  Uₜ₌ (Uₜ A d typeA A≡A [A]) (Uₜ A d typeA A≡A [A]) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ)) 
+  Uₜ₌ (Uₜ A d typeA A≡A [A]) (Uₜ A d typeA A≡A [A]) A≡A (λ [ρ] ⊢Δ → reflEq ([A] [ρ] ⊢Δ))
 reflEqTerm∞ (ℕᵣ D) (ℕₜ n [[ ⊢t , ⊢u , d ]] t≡t prop) =
   ℕₜ₌ n n [[ ⊢t , ⊢u , d ]] [[ ⊢t , ⊢u , d ]] t≡t
       (reflNatural-prop prop)

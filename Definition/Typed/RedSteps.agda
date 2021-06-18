@@ -21,6 +21,9 @@ conv* : ∀ {Γ A B t u l } → Γ ⊢ t ⇒* u ∷ A ^ l → Γ ⊢ A ≡ B ^ [
 conv* (id x) A≡B = id (conv x A≡B)
 conv* (x ⇨ d) A≡B = conv x A≡B ⇨ conv* d A≡B
 
+conv:* : ∀ {Γ A B t u l } → Γ ⊢ t :⇒*: u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t :⇒*: u ∷ B ^ l
+conv:* [[ ⊢t , ⊢u , d ]] e = [[ (conv ⊢t e) , (conv ⊢u e) , (conv* d e) ]]
+
 -- Universe of reduction closures
 univ* : ∀ {Γ A B r l} → Γ ⊢ A ⇒* B ∷ (Univ r l) ^ next l → Γ ⊢ A ⇒* B ^ [ r , ι l ]
 univ* (id x) = id (univ x)

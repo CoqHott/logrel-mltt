@@ -10,6 +10,7 @@ open import Definition.Typed
 open import Definition.Typed.Weakening
 open import Definition.Typed.Properties
 open import Definition.LogicalRelation
+open import Definition.LogicalRelation.Properties.Reflexivity
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -91,3 +92,9 @@ escapeTermEq {r = [ % , l ] } (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
 escapeTermEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq {ι ¹} (emb X A) t≡u = escapeTermEq A t≡u
 escapeTermEq {∞} (emb X A) t≡u = escapeTermEq A t≡u
+
+escapeEqReflTerm : ∀ {l Γ A t r}
+            → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
+            → ([t] : Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A])
+            → Γ ⊢ t ≅ t ∷ A ^ r
+escapeEqReflTerm [A] [t] = escapeTermEq [A] (reflEqTerm [A] [t])
