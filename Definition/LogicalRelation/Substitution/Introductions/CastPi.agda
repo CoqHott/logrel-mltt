@@ -23,20 +23,25 @@ open import Definition.LogicalRelation.Substitution.Irrelevance as S
 open import Definition.LogicalRelation.Substitution.Reflexivity
 open import Definition.LogicalRelation.Substitution.Introductions.Sigma
 open import Definition.LogicalRelation.Substitution.Introductions.Fst
+open import Definition.LogicalRelation.Substitution.Introductions.Snd
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
 open import Definition.LogicalRelation.Substitution.Introductions.Application
 open import Definition.LogicalRelation.Substitution.Introductions.Cast
 open import Definition.LogicalRelation.Substitution.Introductions.Id
+open import Definition.LogicalRelation.Substitution.Introductions.IdUPiPi
+open import Definition.LogicalRelation.Substitution.Introductions.Transp
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Reduction
 open import Definition.LogicalRelation.Substitution.Weakening
+open import Definition.LogicalRelation.Substitution.Conversion
 open import Definition.LogicalRelation.Substitution.ProofIrrelevance
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+
 
 postulate wk1f-cast-subst : ∀ σ f A' A rA e →
                               (wk1 (subst σ f) ∘ cast ⁰ (wk1 (subst σ A')) (wk1 (subst σ A)) (Idsym (Univ rA ⁰) (wk1 (subst σ A)) (wk1 (subst σ A')) (fst (wk1 (subst σ e)))) (var 0))
@@ -48,43 +53,39 @@ postulate B-cast-subst : ∀ σ A' A rA e B →
                          PE.≡
                          subst (repeat liftSubst (repeat liftSubst σ 1) 0) (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]↑)
 
-postulate Beq : ∀ ρ σ a B → subst (sgSubst a ₛ• lift ρ ₛ•ₛ liftSubst σ) (wk1d B) PE.≡
-                            U.wk (lift ρ) (wk1d B) [ a ]
+postulate Beq : ∀ ρ σ a B → subst (sgSubst a ₛ• lift ρ ₛ•ₛ liftSubst σ) B PE.≡
+                            U.wk (lift ρ) B [ a ]
 
-postulate hardcore : ∀ {σ rA} A A' B →  wk1d (wk1d B) [ cast ⁰ (U.wk (step (step id)) (subst σ (wk1 A')))
-                                            (U.wk (step (step id)) (subst σ (wk1 A)))
-                                            (Idsym (Univ rA ⁰) (U.wk (step (step id)) (subst σ (wk1 A)))
-                                            (U.wk (step (step id)) (subst σ (wk1 A'))) (var 1)) (var 0) ]↑
-                                       PE.≡
-                                       U.wk (lift (step id))
-                                       (subst (repeat liftSubst (repeat liftSubst σ 0) 1)
-                                       (U.wk (repeat lift (repeat lift (step id) 0) 1) B))
-                                       [ cast ⁰ (wk1 (wk1 (subst (repeat liftSubst (repeat liftSubst σ 0) 0)
-                                       (U.wk (repeat lift (repeat lift (step id) 0) 0) A'))))
-                                       (wk1 (wk1 (subst (repeat liftSubst (repeat liftSubst σ 0) 0) (U.wk (repeat lift (repeat lift (step id) 0) 0) A))))
-                                       (Idsym (Univ rA ⁰)
-                                              (wk1 (wk1 (subst (repeat liftSubst (repeat liftSubst σ 0) 0) (U.wk (repeat lift (repeat lift (step id) 0) 0) A))))
-                                              (wk1 (wk1 (subst (repeat liftSubst (repeat liftSubst σ 0) 0)(U.wk (repeat lift (repeat lift (step id) 0) 0) A'))))
-                                              (var 1))
-                                              (var 0)]↑
-postulate hardcore2 : ∀ {σ} B' → wk1d (subst (liftSubst σ) (wk1d B')) PE.≡
-                                        U.wk (lift (step id)) (subst (repeat liftSubst (repeat liftSubst σ 0) 1)
-                                                                     (U.wk (repeat lift (repeat lift (step id) 0) 1) B'))
+wk1∃ : ∀ A A' rA B B' →  wk1 (∃ Id (Univ rA ⁰) A A' ▹ (Π wk1 A' ^ rA ° ⁰ ▹
+                             Id (U ⁰) (U.wk (lift (step id)) B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A))
+                                                                (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                                      (U.wk (lift (step id)) B') ° ¹))
+                         PE.≡
+                         (∃ Id (Univ rA ⁰) (wk1 A) (wk1 A') ▹ (Π wk1 (wk1 A') ^ rA ° ⁰ ▹
+                           Id (U ⁰) (U.wk (lift (step id)) (wk1d B) [ cast ⁰ (wk1 (wk1 (wk1 A'))) (wk1 (wk1 (wk1 A)))
+                                                                  (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1)) (var 0) ]↑)
+                                    (U.wk (lift (step id)) (wk1d B')) ° ¹))
+wk1∃ A A' rA B B' = PE.cong₃ (λ X Y Z → ∃ Id (Univ rA ⁰) (wk1 A) (wk1 A') ▹ Π X ^ rA ° ⁰ ▹ Id (U ⁰) Y Z ° ¹)
+                    (PE.trans (wk-comp (lift (step id)) (step id) A') (PE.sym (wk-comp (step id) (step id) A')))
+                    {!!} (PE.trans (wk-comp (lift (lift (step id))) (lift (step id)) B') (PE.sym (wk-comp (lift (step id)) (lift (step id)) B')))
 
-postulate hardcore4 : ∀ {σ rA} e A A' B → subst (sgSubst (substVar σ 0))
-                                        (subst (liftSubst (sgSubst (fst (subst σ (wk1 e))))) (U.wk (lift (step id))
-                                        (subst (liftSubst σ) (U.wk (lift (step id)) B)) [
-                                          cast ⁰ (wk1 (wk1 (subst σ (U.wk (step id) A'))))
-                                                 (wk1 (wk1 (subst σ (U.wk (step id) A))))
-                                                 (Idsym (Univ rA ⁰) (wk1 (wk1 (subst σ (U.wk (step id) A)))) (wk1 (wk1 (subst σ (U.wk (step id) A')))) (var 1)) (var 0) ]↑))
-                                  PE.≡
-                                  subst σ (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0)]↑)
 
-postulate hardcore5 : ∀ {σ} e B' → subst (sgSubst (substVar σ 0))
-                                                (subst (liftSubst (sgSubst (fst (subst σ (wk1 e)))))
-                                                (U.wk (lift (step id)) (subst (liftSubst σ) (U.wk (lift (step id)) B'))))
-                                          PE.≡ subst σ B'
+snd-cast-subst : ∀ A A' rA B B' e → Π wk1 (wk1 A') ^ rA ° ⁰ ▹
+                                      Id (U ⁰) (wk1d (wk1d B) [ cast ⁰ (wk1 (wk1 (wk1 A'))) (wk1 (wk1 (wk1 A))) (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1)) (var 0) ]↑)
+                                               (wk1d (wk1d B')) ° ¹ [ fst (wk1 e) ]
+                                    PE.≡
+                                      Π (wk1 A') ^ rA ° ⁰ ▹
+                                        Id (U ⁰) ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                                 (wk1d B') ° ¹ 
+snd-cast-subst A A' rA B B' e = {!!}
 
+Id-cast-subst : ∀ A A' rA B B' e → Id (U ⁰) (wk1d B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                            (wk1d B')
+                                      [ var 0 ]
+                                   PE.≡
+                                   Id (U ⁰) (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]↑)
+                                                  B'
+Id-cast-subst = {!!}
 
 cast-Πᵗᵛ : ∀ {A B A' B' rA Γ e f} ([Γ] : ⊩ᵛ Γ) →
         let l    = ∞
@@ -104,15 +105,60 @@ cast-Πᵗᵛ : ∀ {A B A' B' rA Γ e f} ([Γ] : ⊩ᵛ Γ) →
            ([e]ₜ : Γ ⊩ᵛ⟨ l ⟩ e ∷ Id (U lΠ) (Π A ^ rA ° lΠ ▹ B ° lΠ) (Π A' ^ rA ° lΠ  ▹ B' ° lΠ) ^ [ % , next lΠ ] / [Γ] / [Id])
            ([ΠAB] : Γ ⊩ᵛ⟨ l ⟩ Π A ^ rA ° lΠ ▹ B ° lΠ ^ [ ! , ι lΠ ] / [Γ])
            ([f]ₜ : Γ ⊩ᵛ⟨ l ⟩ f ∷ Π A ^ rA ° lΠ ▹ B ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠAB]) →
-           let [ΓA'] = (_∙_ {Γ} {A'} [Γ]  [A']) 
-           in ([var]ₜ : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ var 0 ∷ wk1 A' ^ [ rA , ι ⁰ ] / [ΓA'] / wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A'])
+           ([Id-U-ΠΠ] : [ Γ ⊩ᵛ⟨ l ⟩ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰))
+                    ≡ ∃ (Id (Univ rA ⁰) A A') ▹
+                      (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
+                        ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                        (U.wk (lift (step id)) B') ° ¹)
+                  ∷ SProp ¹ ^ [ ! , next ¹ ] / [Γ] ] )
+           →
+           let [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
+               [ΓId] = _∙_ {A = Id (Univ rA ⁰) A A'} [Γ] [IdAA']
+               [wA'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A'} {lG = ⁰} [Γ] [IdAA'] [A']ₜ
+               [wA']' = wk1ᵛ {A = A'} {F = Id (Univ rA ⁰) A A'} [Γ] [IdAA'] [A']
+               [wA]' = wk1ᵛ {A = A} {F = Id (Univ rA ⁰) A A'} [Γ] [IdAA'] [A]
+               [wA] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A} {lG = ⁰} [Γ] [IdAA'] [A]ₜ
+               [ΓIdA'] = _∙_ {A = wk1 A'} [ΓId] [wA']'
+               [wwA']' = wk1ᵛ {A = wk1 A'} {F = wk1 A'}  [ΓId] [wA']' [wA']'
+               [wwA'] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A'} {lG = ⁰} [ΓId] [wA']' [wA']
+               [wwA] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A} {lG = ⁰} [ΓId] [wA']' [wA]
+               [wwUA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓIdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓIdA'] {Δ} {σ}) {Δ} {σ}
+               [wwIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A)} {u = wk1 (wk1 A')} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA] [wwA']
+               [ΓA'] = (_∙_ {Γ} {A'} [Γ]  [A'])
+               [w'A] = wk1ᵗᵛ {F = A'} {G = A} {lG = ⁰} [Γ] [A'] [A]ₜ
+               [w'A'] = wk1ᵗᵛ {F = A'} {G = A'} {lG = ⁰} [Γ] [A'] [A']ₜ
+               [w'A']' = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']
+               [wUA] = maybeEmbᵛ {A = Univ rA _} [ΓA'] (λ {Δ} {σ} → Uᵛ emb< [ΓA'] {Δ} {σ})
+               [wIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] 
+               [ww'A']' = wk1ᵛ {A = wk1 A'} {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA'] [w'A']'
+               [ww'A'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1 A'} {lG = ⁰} [ΓA'] [wIdAA'] [w'A']
+               [ΓA'Id] = _∙_ {A = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA']
+               [ΓA'IdA'] = _∙_ {A = wk1 (wk1 A')} [ΓA'Id] [ww'A']'
+               [wwwUA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓA'IdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓA'IdA'] {Δ} {σ}) {Δ} {σ}
+               [www'A'] = wk1ᵗᵛ {F = wk1 (wk1 A')} {G = wk1 (wk1 A')} {lG = ⁰} [ΓA'Id] [ww'A']' [ww'A']
+               [ww'A] = wk1ᵗᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1 A} {lG = ⁰} [ΓA'] [wIdAA'] [w'A]
+               [www'A] = wk1ᵗᵛ {F = wk1 (wk1 A')} {G = wk1 (wk1 A)} {lG = ⁰} [ΓA'Id] [ww'A']' [ww'A]
+               [wwwIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 (wk1 A))} {u = wk1 (wk1 (wk1 A'))} [ΓA'IdA'] (λ {Δ} {σ} → [wwwUA'] {Δ} {σ} rA) [www'A] [www'A']
+               [wwwU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓA'Id] {Δ} {σ}              
+               [wwU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓA'] {Δ} {σ}              
+               Id-U-ΠΠ-res-end A A' B B' = Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
+                                             ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                                             (wk1d B') ° ¹               
+           in
+           ([Id-U-ΠΠ-res-end] : Γ ∙ A' ^ [ rA , ι ⁰ ] ∙ Id (Univ rA ⁰) (wk1 A) (wk1 A') ^ [ % , ι ¹ ] ⊩ᵛ⟨ ∞ ⟩
+                        Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B') ∷ SProp ¹ ^ [ ! , ∞ ] / [ΓA'Id] / (λ {Δ} {σ} → [wwwU¹] {Δ} {σ} %))
+           ([var]ₜ : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ var 0 ∷ wk1 A' ^ [ rA , ι ⁰ ] / [ΓA'] / wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A'])
+           ([var0']ₜ : Γ ∙ A' ^ [ rA , ι ⁰ ] ∙ Id (Univ rA ⁰) (wk1 A) (wk1 A') ^ [ % , ι ¹ ] ∙ wk1 (wk1 A') ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ var 0 ∷
+                         wk1 (wk1 (wk1 A')) ^ [ rA , ι ⁰ ] / [ΓA'IdA'] / wk1ᵛ {A = wk1 (wk1 A')} {F = wk1 (wk1 A')} [ΓA'Id] [ww'A']' [ww'A']')
+           ([var1']ₜ : Γ ∙ A' ^ [ rA , ι ⁰ ] ∙ Id (Univ rA ⁰) (wk1 A) (wk1 A') ^ [ % , ι ¹ ] ∙ wk1 (wk1 A') ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ var 1 ∷
+                         Id (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) ^ [ % , ι ¹ ] / [ΓA'IdA'] / [wwwIdAA'])
          → [ Γ ⊩ᵛ⟨ l ⟩ (cast lΠ (Π A ^ rA ° lΠ ▹ B ° lΠ) (Π A' ^ rA ° lΠ ▹ B' ° lΠ) e f) ≡
                        (lam A' ▹
                          let a = cast lΠ (wk1 A') (wk1 A) (Idsym (Univ rA lΠ) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
                          cast lΠ (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ a))
                        ∷ Π A' ^ rA ° lΠ ▹ B' ° lΠ ^ [ ! , ι lΠ ] / [Γ] ]
 cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
-        [Γ] [A] [A'] [UB] [UB'] [A]ₜ [B]ₜ [A']ₜ [B']ₜ [Id] [e]ₜ [ΠAB] [f]ₜ [var]ₜ =
+        [Γ] [A] [A'] [UB] [UB'] [A]ₜ [B]ₜ [A']ₜ [B']ₜ [Id] [e]ₜ [ΠAB] [f]ₜ [Id-U-ΠΠ] [Id-U-ΠΠ-res-end] [var]ₜ [var0']ₜ [var1']ₜ =
   let l = ∞
       lΠ = ⁰
       [UA] = maybeEmbᵛ {A = Univ rA _} [Γ] (Uᵛ emb< [Γ])
@@ -138,76 +184,119 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
       [ΠAB'] = Πᵛ {A'} {B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A'] [B']
       [ΓA'] = _∙_ {A = A'} [Γ]  [A']
       [wUA] = maybeEmbᵛ {A = Univ rA _} [ΓA'] (λ {Δ} {σ} → Uᵛ emb< [ΓA'] {Δ} {σ})
-      [wA] = wk1ᵗᵛ {F = A'} {G = A} {lG = ⁰} [Γ] [A'] [A]ₜ
-      [wA]' = wk1ᵛ {A = A} {F = A'} [Γ] [A'] [A]
-      [wA]⁰ = wk1ᵛ {A = A} {F = A'} [Γ] [A'] [A]'
-      [wA'] = wk1ᵗᵛ {F = A'} {G = A'} {lG = ⁰} [Γ] [A'] [A']ₜ
-      [wA']' = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']
-      [wA']⁰ = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']'
-      [wId] = wk1ᵛ {A = Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ )} {F = A'} [Γ] [A'] [Id]
-      [wIdAA'] : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ Id (Univ rA ⁰) (wk1 A') (wk1 A) ^ [ % , ι ¹ ] / [ΓA']
-      [wIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 A'} {u = wk1 A} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [wA'] [wA] 
-      [SProp] = maybeEmbᵛ {A = Univ % _} [ΓA'] (λ {Δ} {σ} → Uᵛ ∞< [ΓA'] {Δ} {σ})
-      [wIdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [wA] [wA'] 
-      [we] = wk1Termᵛ {F = A'} {G = Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ )} {t = e} [Γ] [A'] [Id] [e]ₜ
-      [wUB] = wk1dᵛ {F = A} {F' = A'} {G = U _} [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ})
-      [wB] = wk1dᵗᵛ {F = A} {F' = A'} {G = B} [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [wUB] {Δ} {σ}) [B]ₜ
-      [wB]' = wk1dᵛ {F = A} {F' = A'} {G = B} [Γ] [A] [A'] [B]
-      [wB]⁰ = wk1dᵛ {F = A} {F' = A'} {G = B} [Γ] [A] [A'] [B]'
-      [wUB'] = wk1dᵛ {F = A'} {F' = A'} {G = U _} [Γ] [A'] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ})
-      [wB'] = wk1dᵗᵛ {F = A'} {F' = A'} {G = B'} [Γ] [A'] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) (λ {Δ} {σ} → [wUB'] {Δ} {σ}) [B']ₜ
-      [wB']' = wk1dᵛ {F = A'} {F' = A'} {G = B'} [Γ] [A'] [A'] [B']
-      [wfste] : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e)) ∷ Id (Univ rA ⁰) (wk1 A') (wk1 A) ^ [ % , ι ¹ ] / [ΓA'] / [wIdAA']
-      [wfste] = validityIrr {A = Id (Univ rA ⁰) (wk1 A') (wk1 A)} {t = Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))} [ΓA'] [wIdAA']
-                λ {Δ} {σ} ⊢Δ [σ] → let ⊢wAₜ  = escapeTerm (proj₁ ([wUA] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wA] ⊢Δ [σ]))
-                                       ⊢wA'ₜ = escapeTerm (proj₁ ([wUA] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wA'] ⊢Δ [σ]))
-                                       ⊢wA   = escape (proj₁ ([wA]' ⊢Δ [σ]))
-                                       ⊢wA'   = escape (proj₁ ([wA']' ⊢Δ [σ]))
-                                       ⊢wB   = escape (proj₁ ([wB]' {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ])))
-                                       ⊢wB'   = escape (proj₁ ([wB']' {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ])))
-                                       [wAρ] = λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → irrelevance′ (PE.sym (wk-subst (wk1 A)))
-                                                                     (proj₁ ([wA]⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ])))
-                                       ⊢sndId-U-ΠΠ = snd-Id-U-ΠΠⱼ {G = wk1d B} ⊢Δ ⊢wA [wAρ]                                                                 
-                                                                  (λ {ρ} {Δ₁} {a} [ρ] ⊢Δ₁ [a] → irrelevance′ (PE.trans (PE.sym (cons-wk-subst ρ σ a (wk1d B)))
-                                                                                                                       (Beq ρ σ a B))
-                                                                    (proj₁ ([wB]⁰ {Δ₁} {consSubst (ρ •ₛ σ) a} ⊢Δ₁
-                                                                      (let X = consSubstS {t = a} {A = wk1 A} [ΓA'] ⊢Δ₁
-                                                                               (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]) [wA]⁰
-                                                                                 (irrelevanceTerm″ (wk-subst (wk1 A)) PE.refl PE.refl PE.refl ([wAρ] {ρ} {Δ₁} [ρ] ⊢Δ₁)
-                                                                                                   (proj₁ ([wA]⁰ ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]))) [a])
-                                                                       in irrelevanceSubst {consSubst (ρ •ₛ σ) a}
-                                                                                           (_∙_ {A = wk1 A} [ΓA'] [wA]⁰) (_∙_ {A = wk1 A} [ΓA'] [wA]')
-                                                                                           ⊢Δ₁ ⊢Δ₁ X))))
-                                                                  ⊢wA' ⊢wB'
-                                                                  (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → irrelevance′ (PE.sym (wk-subst (wk1 A')))
-                                                                     (proj₁ ([wA']⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]))))
-                                   in PE.subst (λ X → Δ ⊢ X ∷ subst σ (Id (Univ rA ⁰) (wk1 A') (wk1 A)) ^ [ % , ι ¹ ] ) (PE.sym (subst-Idsym σ (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))))
-                                            (Idsymⱼ (univ 0<1 ⊢Δ)
-                                                    ⊢wAₜ ⊢wA'ₜ                                                    
-                                                    (fstⱼ (escapeTerm (proj₁ ([SProp] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wIdAA']ₜ {Δ} {σ} ⊢Δ [σ])))
-                                                          (let X = (un-univ ⊢sndId-U-ΠΠ) in PE.subst (λ X → Δ ∙ Id (Univ rA ⁰) (subst σ (wk1 A)) (subst σ (wk1 A')) ^ [ % , ι ¹ ] ⊢
-                                                            Π wk1 (subst σ (wk1 A')) ^ rA ° ⁰ ▹ X ° ¹ ∷ SProp ¹ ^ [ ! , ∞ ]) (PE.cong₂ (λ X Y → Id (U ⁰) X Y) (hardcore A A' B) (hardcore2 B') ) X)
-                                                          (conv (escapeTerm ((proj₁ ([wId] {Δ} {σ} ⊢Δ [σ]))) (proj₁ ([we] ⊢Δ [σ])))
-                                                                (univ (Id-U-ΠΠ ⊢wAₜ
-                                                                               (let X = proj₁ ([wB] {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ]))
-                                                                                    Y = proj₁ ([wUB] {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ]))
-                                                                                in escapeTerm Y X)
-                                                                               ⊢wA'ₜ
-                                                                               (let X = proj₁ ([wB'] {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ]))
-                                                                                    Y = proj₁ ([wUB'] {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ]))
-                                                                                in escapeTerm Y X))))))
+      [wUA]ᵗ = Uᵗᵛ [ΓA']
+      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ 
+      [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ 
+      [ΓId] = _∙_ {A = Id (Univ rA ⁰) A A'} [Γ] [IdAA']
+      [wA'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A'} {lG = ⁰} [Γ] [IdAA'] [A']ₜ
+      [wA']' = wk1ᵛ {A = A'} {F = Id (Univ rA ⁰) A A'} [Γ] [IdAA'] [A']
+      [wA]' = wk1ᵛ {A = A} {F = Id (Univ rA ⁰) A A'} [Γ] [IdAA'] [A]
+      [wA] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A} {lG = ⁰} [Γ] [IdAA'] [A]ₜ
+      [ΓIdA'] = _∙_ {A = wk1 A'} [ΓId] [wA']'
+      [wwU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓIdA'] {Δ} {σ}
+      [wwUA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓIdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓIdA'] {Δ} {σ}) {Δ} {σ}
+      -- [wwUA']ᵗ = Uᵗᵛ [ΓIdA'] 
+      [ΓIdA] = _∙_ {A = wk1 A} [ΓId] [wA]'
+      [wwA'] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A'} {lG = ⁰} [ΓId] [wA']' [wA']
+      [wwA] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A} {lG = ⁰} [ΓId] [wA']' [wA]
+      [wwA']' = wk1ᵛ {A = wk1 A'} {F = wk1 A'}  [ΓId] [wA']' [wA']'
+      [wwA]' = wk1ᵛ {A = wk1 A} {F = wk1 A'}  [ΓId] [wA']' [wA]'
+      [wwU0A] = maybeEmbᵛ {A = Univ ! _ } [ΓIdA] (λ {Δ} {σ} → Uᵛ emb< [ΓIdA] {Δ} {σ})
+      [wB'] = wk1dᵗᵛ {F = A'} {F' = Id (Univ rA ⁰) A A'} {G = B'} [Γ] [A'] [IdAA'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) (λ {Δ} {σ} → [wwUA'] {Δ} {σ} !) [B']ₜ
+      [wB] = wk1dᵗᵛ {F = A} {F' = Id (Univ rA ⁰) A A'} {G = B} [Γ] [A] [IdAA'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [wwU0A] {Δ} {σ}) [B]ₜ
+      [wwIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A)} {u = wk1 (wk1 A')} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA] [wwA'] 
+      [wwIdA'A] = Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A')} {u = wk1 (wk1 A)} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA'] [wwA] 
+      Id-U-ΠΠ-res-end A A' B B' = Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
+                                    ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                                    (wk1d B') ° ¹
+      Id-U-ΠΠ-left = Id (U lΠ) (Π A ^ rA ° lΠ ▹ B ° lΠ) (Π A' ^ rA ° lΠ  ▹ B' ° lΠ)
+      Id-U-ΠΠ-res A A' B B' = ∃ (Id (Univ rA ⁰) A A') ▹ Id-U-ΠΠ-res-end A A' B B'
+      [wU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓA'] {Δ} {σ}
+      modelsTermEq [SProp] _ [Id-U-ΠΠ-res] [eq] = [Id-U-ΠΠ]
+      [Id-U-ΠΠ-res]' = maybeEmbᵛ {A = Id-U-ΠΠ-res  A A' B B'}  [Γ] (univᵛ {A = Id-U-ΠΠ-res  A A' B B'} [Γ] (≡is≤ PE.refl) [SProp] [Id-U-ΠΠ-res])
+      [conve]ₜ = convᵛ {t = e} {A = Id-U-ΠΠ-left} {B = Id-U-ΠΠ-res  A A' B B'}
+                       [Γ] [Id] [Id-U-ΠΠ-res]'
+                       (univEqᵛ {A = Id-U-ΠΠ-left} {B = Id-U-ΠΠ-res  A A' B B'} [Γ] [SProp] [Id] [eq]) [e]ₜ 
+      [we] = wk1Termᵛ {F = A'} {G = Id-U-ΠΠ-res A A' B B'} {t = e} [Γ] [A'] [Id-U-ΠΠ-res]' [conve]ₜ
+      [w'A] = wk1ᵗᵛ {F = A'} {G = A} {lG = ⁰} [Γ] [A'] [A]ₜ
+      [w'A]' = wk1ᵛ {A = A} {F = A'} [Γ] [A'] [A]
+      [w'A]⁰ = wk1ᵛ {A = A} {F = A'} [Γ] [A'] [A]'
+      [w'A'] = wk1ᵗᵛ {F = A'} {G = A'} {lG = ⁰} [Γ] [A'] [A']ₜ
+      [w'A']' = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']
+      [w'A']⁰ = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']'
+      -- [wId] = wk1ᵛ {A = Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ )} {F = A'} [Γ] [A'] [Id]
+      [wIdA'A] = Idᵛ {A = Univ rA ⁰} {t = wk1 A'} {u = wk1 A} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A'] [w'A] 
+      [wIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] 
+      [wIdAA']ᵗ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] 
+      [wIdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] 
+      [ww'A']' = wk1ᵛ {A = wk1 A'} {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA'] [w'A']'
+      [ww'A'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1 A'} {lG = ⁰} [ΓA'] [wIdAA'] [w'A']
+      [ww'A]' = wk1ᵛ {A = wk1 A} {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA'] [w'A]'
+      [ww'A] = wk1ᵗᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1 A} {lG = ⁰} [ΓA'] [wIdAA'] [w'A]
+      [ΓA'A'] = _∙_ {A = wk1 A'} [ΓA'] [w'A']'
+      [ww'UA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓA'A'] (λ {Δ} {σ} → Uᵛ emb< [ΓA'A'] {Δ} {σ}) {Δ} {σ}
+      [ΓA'A] = _∙_ {A = wk1 A} [ΓA'] [w'A]'
+      [ww'UA] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓA'A] (λ {Δ} {σ} → Uᵛ emb< [ΓA'A] {Δ} {σ}) {Δ} {σ}
+      [ΓA'Id] = _∙_ {A = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA']
+      [ΓA'IdA'] = _∙_ {A = wk1 (wk1 A')} [ΓA'Id] [ww'A']'
+      [www'UA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓA'IdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓA'IdA'] {Δ} {σ}) {Δ} {σ}
+      [ΓA'IdA] = _∙_ {A = wk1 (wk1 A)} [ΓA'Id] [ww'A]'
+      [www'UA] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓA'IdA] (λ {Δ} {σ} → Uᵛ emb< [ΓA'IdA] {Δ} {σ}) {Δ} {σ}
+      [w'B'] = wk1dᵗᵛ {F = A'} {F' = A'} {G = B'} [Γ] [A'] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) ((λ {Δ} {σ} → [ww'UA'] {Δ} {σ} !)) [B']ₜ 
+      [ww'B'] = wk1dᵗᵛ {F = wk1 A'} {F' = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1d B'} [ΓA'] [w'A']' [wIdAA'] (λ {Δ} {σ} → [ww'UA'] {Δ} {σ} !) (λ {Δ} {σ} → [www'UA'] {Δ} {σ} !) [w'B']
+      [w'B] = wk1dᵗᵛ {F = A} {F' = A'} {G = B} [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) ((λ {Δ} {σ} → [ww'UA] {Δ} {σ} !)) [B]ₜ 
+      [ww'B] = wk1dᵗᵛ {F = wk1 A} {F' = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1d B} [ΓA'] [w'A]' [wIdAA'] (λ {Δ} {σ} → [ww'UA] {Δ} {σ} !) (λ {Δ} {σ} → [www'UA] {Δ} {σ} !) [w'B]
+      [www'A']' = wk1ᵛ {A = wk1 (wk1 A')} {F = wk1 (wk1 A') } [ΓA'Id] [ww'A']' [ww'A']'
+      [www'A'] = wk1ᵗᵛ {F = wk1 (wk1 A')} {G = wk1 (wk1 A')} {lG = ⁰} [ΓA'Id] [ww'A']' [ww'A']
+      [www'A]' = wk1ᵛ {A = wk1 (wk1 A)} {F = wk1 (wk1 A')} [ΓA'Id] [ww'A']' [ww'A]'
+      [www'A] = wk1ᵗᵛ {F = wk1 (wk1 A')} {G = wk1 (wk1 A)} {lG = ⁰} [ΓA'Id] [ww'A']' [ww'A]
+      [wwU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓA'A'] {Δ} {σ}
+      -- [ΓA'IdA'] = _∙_ {A = wk1 (wk1 A')} [ΓA'Id] [ww'A']'
+      [wwwU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓA'Id] {Δ} {σ}
+      -- [wwwUA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓA'IdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓA'IdA'] {Δ} {σ}) {Δ} {σ}
+      [we]' = S.irrelevanceTerm′ {A = wk1 (Id-U-ΠΠ-res A A' B B')} {A′ = Id-U-ΠΠ-res (wk1 A) (wk1 A') (wk1d B) (wk1d B')} {t = wk1 e}
+                                 (wk1∃ A A' rA B B') PE.refl [ΓA'] [ΓA'] (wk1ᵛ {A = Id-U-ΠΠ-res A A' B B'} {F = A'} [Γ] [A'] [Id-U-ΠΠ-res]')
+                                 (∃ᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} [ΓA'] [wIdAA']
+                                                       (maybeEmbᵛ {A = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')}
+                                                       [ΓA'Id] (univᵛ {A = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} [ΓA'Id] (≡is≤ PE.refl) (λ {Δ} {σ} → [wwwU¹] {Δ} {σ} %) [Id-U-ΠΠ-res-end])))
+                                                       [we]
+      -- [wIdBB'] : Γ ∙ A' ^ [ rA , ι ⁰ ] ∙ Id (Univ rA ⁰) (wk1 A) (wk1 A') ^ [ % , ι ¹ ] ⊩ᵛ⟨ ∞ ⟩
+      --                   Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B') ∷ SProp ¹ ^ [ ! , ∞ ] / [ΓA'Id] / (λ {Δ} {σ} → [wwwU¹] {Δ} {σ} %)
+      -- [wIdBB'] = {!!}
+      -- [wIdBB'] = Πᵗᵛ {wk1 A'} {Id (U ⁰) (wk1d (wk1d B) [ cast ⁰ (wk1 (wk1 (wk1 A'))) (wk1 (wk1 (wk1 A)))
+      --                              (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1)) (var 0) ]↑)
+      --                                         (wk1d (wk1d B'))} (<is≤ 0<1) (≡is≤ PE.refl) [ΓA'] [w'A']' (λ {Δ} {σ} → [wwU¹] {Δ} {σ} %) [w'A']
+      --                       (Idᵗᵛ {A = U ⁰} {t = (wk1d (wk1d B) [ cast ⁰ (wk1 (wk1 (wk1 A'))) (wk1 (wk1 (wk1 A)))
+      --                                 (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1)) (var 0) ]↑)}
+      --                            {u = wk1d (wk1d B')} [ΓA'A'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} !) ?
+                            -- (subst↑STerm {F = wk1 A'} {F' = wk1 A} {G = wk1d B}
+                            --              {t = cast ⁰ (wk1 (wk1 (wk1 A'))) (wk1 (wk1 (wk1 A))) (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1)) (var 0)}
+                            --              [ΓId] [wA']' [wA]' (λ {Δ} {σ} → [wwUA'] {Δ} {σ} !) (λ {Δ} {σ} → [wwU0A] {Δ} {σ}) [wB]
+                            --              (castᵗᵛ {A = wk1 (wk1 (wk1 A'))} {B = wk1 (wk1 (wk1 A))} {t = var 0} {e = (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1))}
+                            --                      [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA'] [wwA] [wwA']' [wwA]' [var0]ₜ
+                            --                      (Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 (wk1 A'))} {u = wk1 (wk1 (wk1 A))} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA'] [wwA])
+                            --                      (IdSymᵗᵛ {A = Univ rA ⁰} {t = wk1 (wk1 (wk1 A))} {u = wk1 (wk1 (wk1 A'))} {e = var 1} [ΓIdA'] ((λ {Δ} {σ} → [wwU¹] {Δ} {σ} !))
+                            --                               (λ {Δ} {σ} → [www'UA']ᵗ {Δ} {σ}) (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA)
+                            --                               [wwA] [wwA'] [wwIdAA'] [wwIdA'A] [var1]ₜ)))
+                                                          -- ? )
+      [Id-U-ΠΠ-res-end]' = maybeEmbᵛ {A = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} [ΓA'Id]
+                                    (univᵛ {A = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} [ΓA'Id] (≡is≤ PE.refl)
+                                    (λ {Δ} {σ} → [wwwU¹] {Δ} {σ} %) [Id-U-ΠΠ-res-end])
+      [fst] = fstᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} {tu = wk1 e}
+                             [ΓA'] [wIdAA'] [Id-U-ΠΠ-res-end]'
+                               (λ {Δ} {σ} → [wwwU¹] {Δ} {σ} %) [wIdAA']ᵗ [Id-U-ΠΠ-res-end] 
+                               [we]'
+      [wfste] : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e)) ∷ Id (Univ rA ⁰) (wk1 A') (wk1 A) ^ [ % , ι ¹ ] / [ΓA'] / [wIdA'A]
+      [wfste] = IdSymᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} {e = fst (wk1 e)} [ΓA'] (λ {Δ} {σ} → [wU¹] {Δ} {σ} !)
+                       (λ {Δ} {σ} → [wUA]ᵗ {Δ} {σ}) (λ {Δ} {σ} → [wUA] {Δ} {σ})
+                       [w'A] [w'A'] [wIdAA'] [wIdA'A] [fst]                      
+
       cast-Π-a A A' e = cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0)
       [cast-Π-a] : Γ ∙ A' ^ [ rA , ι ⁰ ]  ⊩ᵛ⟨ ∞ ⟩ cast-Π-a A A' e ∷ wk1 A ^ [ rA , ι ⁰ ] / [ΓA'] / wk1ᵛ {A = A} {F = A'} [Γ] [A'] [A]
       [cast-Π-a] = castᵗᵛ {wk1 A'} {wk1 A} {t = var 0} {e = Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))} [ΓA']
-                          (λ {Δ} {σ} → [wUA] {Δ} {σ}) [wA'] [wA] 
+                          (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A'] [w'A] 
                          (wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A'])   (wk1ᵛ {A = A} {F = A'} [Γ] [A'] [A])
-                         [var]ₜ [wIdAA'] [wfste]
+                         [var]ₜ [wIdA'A] [wfste]
       B[cast-Π-a]↑ₜ = subst↑STerm {F = A'} {F' = A} {G = B} {t = cast-Π-a A A' e} [Γ] [A'] [A]
                                   (λ {Δ} {σ} → [UB'] {Δ} {σ}) (λ {Δ} {σ} → [UB] {Δ} {σ}) [B]ₜ [cast-Π-a]
       [f°cast-Π-a] = appᵛ↑ {F = A} {F' = A'} {G = B} {t = wk1 f} {u = cast-Π-a A A' e} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A] [A'] [B] [ΠAB]
@@ -215,52 +304,49 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                           [cast-Π-a]
       [wIdBB'] : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ Id (Univ ! ⁰) (B [ cast-Π-a A A' e ]↑) B' ^ [ % , ι ¹ ] / [ΓA']
       [wIdBB'] = Idᵛ {A = Univ ! ⁰} {t = B [ cast-Π-a A A' e ]↑} {u = B'} [ΓA'] (λ {Δ} {σ} → [UB'] {Δ} {σ})
-                     B[cast-Π-a]↑ₜ [B']ₜ 
+                     B[cast-Π-a]↑ₜ [B']ₜ
+      [snd] = sndᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} {tu = wk1 e}
+                             [ΓA'] [wIdAA'] [Id-U-ΠΠ-res-end]'
+                               (λ {Δ} {σ} → [wwwU¹] {Δ} {σ} %) [wIdAA']ᵗ [Id-U-ΠΠ-res-end] 
+                               [we]'
+      [sndType]' = S.irrelevance′ {A = Π wk1 (wk1 A') ^ rA ° ⁰ ▹
+                                      Id (U ⁰) (wk1d (wk1d B) [ cast ⁰ (wk1 (wk1 (wk1 A'))) (wk1 (wk1 (wk1 A))) (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1)) (var 0) ]↑)
+                                               (wk1d (wk1d B')) ° ¹ [ fst (wk1 e) ]}
+                                  {A′ = Π (wk1 A') ^ rA ° ⁰ ▹
+                                        Id (U ⁰) ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                                 (wk1d B') ° ¹}
+                                  (snd-cast-subst A A' rA B B' e) [ΓA'] [ΓA']
+                                  (substS {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} {fst (wk1 e)} [ΓA']
+                                            [wIdAA'] [Id-U-ΠΠ-res-end]' [fst]) 
+      [snd]' = S.irrelevanceTerm′ {A = Π wk1 (wk1 A') ^ rA ° ⁰ ▹
+                                      Id (U ⁰) (wk1d (wk1d B) [ cast ⁰ (wk1 (wk1 (wk1 A'))) (wk1 (wk1 (wk1 A))) (Idsym (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1)) (var 0) ]↑)
+                                               (wk1d (wk1d B')) ° ¹ [ fst (wk1 e) ]}
+                                  {A′ = Π (wk1 A') ^ rA ° ⁰ ▹
+                                        Id (U ⁰) ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                                 (wk1d B') ° ¹}
+                                  {t = snd (wk1 e)}
+                                  (snd-cast-subst A A' rA B B' e) PE.refl [ΓA'] [ΓA']
+                                  (substS {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = Id-U-ΠΠ-res-end (wk1 A) (wk1 A') (wk1d B) (wk1d B')} {fst (wk1 e)} [ΓA']
+                                           [wIdAA'] [Id-U-ΠΠ-res-end]' [fst]) [sndType]' [snd]      
       [wsnde] : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ (snd (wk1 e)) ∘ (var 0) ∷ Id (Univ ! ⁰) (B [ cast-Π-a A A' e ]↑) B' ^ [ % , ι ¹ ] / [ΓA'] / [wIdBB']
-      [wsnde] = validityIrr {A = Id (Univ ! ⁰) (B [ cast-Π-a A A' e ]↑) B'} {t = (snd (wk1 e)) ∘ (var 0)} [ΓA'] [wIdBB']
-                λ {Δ} {σ} ⊢Δ [σ] → let ⊢wAₜ  = escapeTerm (proj₁ ([wUA] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wA] {Δ} {σ} ⊢Δ [σ]))
-                                       ⊢wA'ₜ = escapeTerm (proj₁ ([wUA] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wA'] {Δ} {σ} ⊢Δ [σ]))
-                                       ⊢wA   = escape (proj₁ ([wA]' ⊢Δ [σ]))
-                                       ⊢wA'   = escape (proj₁ ([wA']' ⊢Δ [σ]))
-                                       ⊢wB   = escape (proj₁ ([wB]' {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ])))
-                                       ⊢wB'   = escape (proj₁ ([wB']' {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ])))
-                                       [wAρ] = λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → irrelevance′ (PE.sym (wk-subst (wk1 A)))
-                                                                     (proj₁ ([wA]⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ])))
-                                       ⊢sndId-U-ΠΠ = snd-Id-U-ΠΠⱼ {G = wk1d B} ⊢Δ ⊢wA [wAρ]                                                                 
-                                                                  (λ {ρ} {Δ₁} {a} [ρ] ⊢Δ₁ [a] → irrelevance′ (PE.trans (PE.sym (cons-wk-subst ρ σ a (wk1d B)))
-                                                                                                                       (Beq ρ σ a B))
-                                                                    (proj₁ ([wB]⁰ {Δ₁} {consSubst (ρ •ₛ σ) a} ⊢Δ₁
-                                                                      (let X = consSubstS {t = a} {A = wk1 A} [ΓA'] ⊢Δ₁
-                                                                               (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]) [wA]⁰
-                                                                                 (irrelevanceTerm″ (wk-subst (wk1 A)) PE.refl PE.refl PE.refl ([wAρ] {ρ} {Δ₁} [ρ] ⊢Δ₁)
-                                                                                                   (proj₁ ([wA]⁰ ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]))) [a])
-                                                                       in irrelevanceSubst {consSubst (ρ •ₛ σ) a}
-                                                                                           (_∙_ {A = wk1 A} [ΓA'] [wA]⁰) (_∙_ {A = wk1 A} [ΓA'] [wA]')
-                                                                                           ⊢Δ₁ ⊢Δ₁ X))))
-                                                                  ⊢wA' ⊢wB'
-                                                                  (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → irrelevance′ (PE.sym (wk-subst (wk1 A')))
-                                                                     (proj₁ ([wA']⁰ {Δ₁} {ρ •ₛ σ} ⊢Δ₁ (wkSubstS {ρ = ρ} {σ = σ} [ΓA'] ⊢Δ ⊢Δ₁ [ρ] [σ]))))
-                                       [σvar]ₜ = proj₁ ([var]ₜ {Δ} {σ} ⊢Δ [σ])
-                                    in PE.subst (λ X → Δ ⊢  subst σ (snd (wk1 e) ∘ var 0)  ∷ X ^ [ % , ι ¹ ] ) (PE.cong₂ (λ X Y → Id (U ⁰) X Y) (hardcore4 e A A' B) (hardcore5 e B'))
-                                            (_∘ⱼ_ (sndⱼ (escapeTerm (proj₁ ([SProp] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([wIdAA']ₜ {Δ} {σ} ⊢Δ [σ])))
-                                                          (let X = (un-univ ⊢sndId-U-ΠΠ) in PE.subst (λ X → Δ ∙ Id (Univ rA ⁰) (subst σ (wk1 A)) (subst σ (wk1 A')) ^ [ % , ι ¹ ] ⊢
-                                                            Π wk1 (subst σ (wk1 A')) ^ rA ° ⁰ ▹ X ° ¹ ∷ SProp ¹ ^ [ ! , ∞ ]) (PE.cong₂ (λ X Y → Id (U ⁰) X Y) (hardcore A A' B) (hardcore2 B') ) X)
-                                                     (conv (escapeTerm ((proj₁ ([wId] {Δ} {σ} ⊢Δ [σ]))) (proj₁ ([we] ⊢Δ [σ])))
-                                                                (univ (Id-U-ΠΠ ⊢wAₜ
-                                                                               (let X = proj₁ ([wB] {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ]))
-                                                                                    Y = proj₁ ([wUB] {Δ ∙ subst σ (U.wk (step id) A) ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA) (liftSubstS {F = wk1 A} [ΓA'] ⊢Δ [wA]' [σ]))
-                                                                                in escapeTerm Y X)
-                                                                               ⊢wA'ₜ
-                                                                               (let X = proj₁ ([wB'] {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ]))
-                                                                                    Y = proj₁ ([wUB'] {Δ ∙ subst σ (U.wk (step id) A') ^ [ rA , ι ⁰ ]} {liftSubst σ}
-                                                                                                    (⊢Δ ∙ ⊢wA') (liftSubstS {F = wk1 A'} [ΓA'] ⊢Δ [wA']' [σ]))
-                                                                                in escapeTerm Y X))))) (let X = escapeTerm (proj₁ ([wA']' ⊢Δ [σ])) [σvar]ₜ
-                                                                                                        in PE.subst (λ X → Δ ⊢  subst σ (var 0) ∷ X ^ [ rA , ι ⁰ ]) (PE.sym (wk1-singleSubst (subst σ (wk1 A')) (fst (subst σ (wk1 e))))) X))
+      [wsnde] = let X = appᵛ {F = wk1 A'}
+                            {G = Id (U ⁰) 
+                                    ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                    (wk1d B')}
+                                    {t = snd (wk1 e)} {u = var 0} [ΓA'] [w'A']'
+                                    [sndType]' [snd]' [var]ₜ
+                 in S.irrelevanceTerm′ {A = (Id (U ⁰) ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                                      (wk1d B'))  [ var 0 ]}
+                                       {A′ = Id (Univ ! ⁰) (B [ cast-Π-a A A' e ]↑) B'}
+                                       {t = (snd (wk1 e)) ∘ (var 0)}
+                                       (Id-cast-subst A A' rA B B' e) PE.refl [ΓA'] [ΓA']
+                                       (substSΠ {wk1 A'}
+                                                {Id (U ⁰) (wk1d B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                                          (wk1d B')}
+                                                {var 0} [ΓA'] [w'A']'
+                                                [sndType]' [var]ₜ )
+                                       [wIdBB'] X
+                
       cast-Π-res A A' B B' e f = 
                  cast ⁰ (B [ cast-Π-a A A' e ]↑) B' ((snd (wk1 e)) ∘ (var 0)) ((wk1 f) ∘ cast-Π-a A A' e)
       [cast-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ lam A' ▹ cast-Π-res A A' B B' e f ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ^ [ ! , ι ⁰ ] / [Γ] / [ΠAB']
@@ -288,4 +374,3 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                                   [ΠAB'] [cast-Π-res] 
 
    in modelsTermEq [ΠAB'] [id] [cast-Π-res] [eq]
-

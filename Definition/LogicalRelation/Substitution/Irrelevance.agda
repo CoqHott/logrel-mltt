@@ -68,6 +68,12 @@ irrelevance [Γ] [Γ]′ [A] ⊢Δ [σ] =
    ,  λ [σ′] [σ≡σ′] → proj₂ ([A] ⊢Δ [σ]′)
                        (irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ′])
                        (irrelevanceSubstEq [Γ]′ [Γ] ⊢Δ ⊢Δ [σ] [σ]′ [σ≡σ′])
+irrelevance′ : ∀ {l A A′ r Γ} (eq : A PE.≡ A′)
+              ([Γ] [Γ]′ : ⊩ᵛ Γ)
+            → Γ ⊩ᵛ⟨ l ⟩ A ^ r / [Γ]
+            → Γ ⊩ᵛ⟨ l ⟩ A′ ^ r / [Γ]′
+irrelevance′ {l} {A} PE.refl [Γ] [Γ]′ [A] ⊢Δ [σ] = irrelevance {A = A} [Γ] [Γ]′ [A] ⊢Δ [σ]
+
 
 open import Definition.LogicalRelation.Properties
 
@@ -137,6 +143,16 @@ irrelevanceTerm′ : ∀ {l l′ A A′ t r r' Γ}
                  → Γ ⊩ᵛ⟨ l  ⟩ t ∷ A ^ r / [Γ]  / [A]
                  → Γ ⊩ᵛ⟨ l′ ⟩ t ∷ A′ ^ r' / [Γ]′ / [A′]
 irrelevanceTerm′ {A = A} {t = t} PE.refl PE.refl [Γ] [Γ]′ [A] [A]′ [t] =
+  irrelevanceTerm {A = A} {t = t} [Γ] [Γ]′ [A] [A]′ [t]
+
+irrelevanceTerm′′ : ∀ {l l′ A A′ t t′ r r' Γ}
+                   (eq : A PE.≡ A′) (eqt : t PE.≡ t′) (eqr : r PE.≡ r')
+                   ([Γ] [Γ]′ : ⊩ᵛ Γ)
+                   ([A]  : Γ ⊩ᵛ⟨ l  ⟩ A ^ r / [Γ])
+                   ([A′] : Γ ⊩ᵛ⟨ l′ ⟩ A′ ^ r' / [Γ]′)
+                 → Γ ⊩ᵛ⟨ l  ⟩ t ∷ A ^ r / [Γ]  / [A]
+                 → Γ ⊩ᵛ⟨ l′ ⟩ t′ ∷ A′ ^ r' / [Γ]′ / [A′]
+irrelevanceTerm′′ {A = A} {t = t} PE.refl PE.refl PE.refl [Γ] [Γ]′ [A] [A]′ [t] =
   irrelevanceTerm {A = A} {t = t} [Γ] [Γ]′ [A] [A]′ [t]
 
 -- Irrelevance of valid terms with different derivations of
