@@ -8,6 +8,7 @@ open EqRelSet {{...}}
 open import Definition.Untyped
 open import Definition.Untyped.Properties
 open import Definition.Typed
+open import Definition.Typed.Properties as T
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
@@ -38,7 +39,8 @@ mutual
   fundamental (ℕⱼ x) = valid x , ℕᵛ (valid x)
   fundamental (Emptyⱼ x) = valid x , Emptyᵛ (valid x)
   fundamental (Uⱼ x) = valid x , Uᵛ (valid x)
-  fundamental (Boxⱼ ⊢A) = {!!}
+  fundamental (Boxⱼ {A = A} ⊢A) with fundamental ⊢A
+  ... | [Γ] , [A] = [Γ] , Boxᵛ {A = A} [Γ] [A]
   fundamental (Πⱼ_▹_ {F} {sF} {G} ⊢F ⊢G) with fundamental ⊢F | fundamental ⊢G
   fundamental (Πⱼ_▹_ {F} {sF} {G} ⊢F ⊢G) | [Γ] , [F] | [Γ∙F] , [G] =
     [Γ] , Πᵛ {F} {G} [Γ] [F] (S.irrelevance {A = G} [Γ∙F] ([Γ] ∙ [F]) [G])
@@ -59,7 +61,9 @@ mutual
     ,   (λ ⊢Δ [σ] → univEqEq (proj₁ ([U] ⊢Δ [σ]))
                              (proj₁ ([A] ⊢Δ [σ]))
                              ([t≡u] ⊢Δ [σ]))
-  fundamentalEq (Box-cong F F≡H) = {!!}
+  fundamentalEq (Box-cong {F} {H} ⊢F F≡H) =
+    let [Γ] , [F] , [H] , [F≡H] = fundamentalEq F≡H
+    in  [Γ] , Boxᵛ {A = F} [Γ] [F] , Boxᵛ {A = H} [Γ] [H] , {!!}
   fundamentalEq (refl D) =
     let [Γ] , [B] = fundamental D
     in  [Γ] , [B] , [B] , (λ ⊢Δ [σ] → reflEq (proj₁ ([B] ⊢Δ [σ])))
@@ -204,8 +208,21 @@ mutual
   fundamentalTerm (Boxⱼ ⊢A) = {!!}
   fundamentalTerm (boxⱼ ⊢t) = {!!}
   fundamentalTerm (Boxrecⱼ ⊢A ⊢C ⊢u ⊢t) = {!!}
-  fundamentalTerm (cstrⱼ ⊢Γ dom cod pi) = {!!}
-  fundamentalTerm (dstrⱼ ⊢Γ) = {!!}
+  fundamentalTerm {Γ = Γ} (cstrⱼ {k = k} {a} dom cod domi ⊢a) =
+    let [Γ]  , [dom]  = fundamental dom
+        [Γ]₁ , [cod]₁  = fundamental cod
+        [Γ]₃ , [dom]₃ , [a]₃ = fundamentalTerm ⊢a
+        [cod]  = S.irrelevance {A = cstr-cod-ctx Γ k} [Γ]₁ ([Γ] ∙ [dom]) [cod]₁
+        [a]    = S.irrelevanceTerm {A = cstr-dom-ctx Γ k} {t = a} [Γ]₃ [Γ] [dom]₃ [dom] [a]₃
+        [domi] : ∀ ki → [ k ]-cstr (cstr-cod ki)
+               → Γ ⊩ᵛ⟨ _ ⟩ cstr-dom-ctx Γ ki ⦂ cstr-dom-sort ki / [Γ]
+        [domi] ki kiK =
+          let [Γ]₂ , [domi]₂ = fundamental (domi ki kiK)
+          in S.irrelevance {A = cstr-dom-ctx Γ ki} [Γ]₂ [Γ] [domi]₂
+    in [Γ] ,
+       cstr-cod-subst [Γ] [dom] [cod] [a] ,
+       cstrᵛ [Γ] [dom] [cod] [domi] [a]
+  fundamentalTerm (dstrⱼ dom par cod ⊢a ⊢p) = {!!}
 
   -- Fundamental theorem for term equality.
   fundamentalTermEq : ∀{Γ A t t′ sA} → Γ ⊢ t ≡ t′ ∷ A ⦂ sA
@@ -547,6 +564,8 @@ mutual
   fundamentalTermEq (box-cong F ⊢a ⊢a' a≡a') = {!!}
   fundamentalTermEq (Boxrec-cong F F≡F' E≡E' u≡u' t≡t') = {!!}
   fundamentalTermEq (Boxrec-box F E ⊢u ⊢a) = {!!}
+  fundamentalTermEq (cstr-cong ⊢a≡a') = {!!}
+  fundamentalTermEq (dstr-cong ⊢a≡a' ⊢p≡p') = {!!}
   fundamentalTermEq (rew ka⇒t ⊢ka) = {!!}
 
 -- Fundamental theorem for substitutions.

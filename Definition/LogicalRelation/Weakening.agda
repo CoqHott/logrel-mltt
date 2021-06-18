@@ -100,6 +100,26 @@ wk[Cstr]-prop : ∀ {ρ K Γ Δ Pi Qi a s k k'}
 wk[Cstr]-prop ρ ⊢Δ PQ (cstrᵣ kK x) = cstrᵣ kK (PQ _ kK _ _ x)
 wk[Cstr]-prop ρ ⊢Δ PQ (ne x) = ne (wkEqTermNe ρ ⊢Δ x)
 
+
+wkBox-prop : ∀ {ρ P Q Γ Δ F sF b} →
+               ([ρ] : ρ ∷ Δ ⊆ Γ)
+               (⊢Δ : ⊢ Δ)
+               (PQ : ∀ b → P b → Q (U.wk ρ b))
+               (d : Box-prop P Γ F sF b)
+               → Box-prop Q Δ (U.wk ρ F) sF (U.wk ρ b)
+wkBox-prop [ρ] ⊢Δ PQ (boxᵣ x) = boxᵣ (PQ _ x)
+wkBox-prop [ρ] ⊢Δ PQ (ne x) = ne (wkTermNe [ρ] ⊢Δ x)
+
+wk[Box]-prop : ∀ {ρ P Q Γ Δ F sF b b'} →
+               ([ρ] : ρ ∷ Δ ⊆ Γ)
+               (⊢Δ : ⊢ Δ)
+               (PQ : ∀ b b' → P b b' → Q (U.wk ρ b) (U.wk ρ b'))
+               (d : [Box]-prop P Γ F sF b b')
+               → [Box]-prop Q Δ (U.wk ρ F) sF (U.wk ρ b) (U.wk ρ b')
+wk[Box]-prop [ρ] ⊢Δ PQ (boxᵣ x) = boxᵣ (PQ _ _ x)
+wk[Box]-prop [ρ] ⊢Δ PQ (ne x) = ne (wkEqTermNe [ρ] ⊢Δ x)
+
+
 mutual
   -- Weakening of the logical relation
 
@@ -127,6 +147,8 @@ mutual
           λ ki kiK → PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _)
                                (T.wk-wkAll [ρ])
                                (wk [ρ] ⊢Δ ([Yi] ki kiK))
+  wk {ρ} [ρ] ⊢Δ (Boxᵣ′ F sF D ⊢F A≡A [F]) =
+    Boxᵣ′ (U.wk ρ F) sF (wkRed:*: [ρ] ⊢Δ D) (T.wk [ρ] ⊢Δ ⊢F) (≅-wk [ρ] ⊢Δ A≡A) (wk [ρ] ⊢Δ [F])
   wk {ρ} [ρ] ⊢Δ (ne′ K D neK K≡K) =
     ne′ (U.wk ρ K) (wkRed:*: [ρ] ⊢Δ D) (wkNeutral ρ neK) (~-wk [ρ] ⊢Δ K≡K)
   wk {ρ} {Γ} {Δ} {A} {sA} {l} [ρ] ⊢Δ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
@@ -190,6 +212,8 @@ mutual
                        (≅ₜ-wk [ρ] ⊢Δ A≡B))
              (irrelevanceEqTerm′ (T.wk-wkAll [ρ]) PE.refl ρ[domK] ρ[domK]'
                                  (wkEqTerm [ρ] ⊢Δ [domK] [a≡a']) )
+  wkEq {ρ} [ρ] ⊢Δ (Boxᵣ′ F sF D ⊢F A≡A [F]) (Box₌ F' D' A≡B [F≡F']) =
+    Box₌ (U.wk ρ F') (wkRed:*: [ρ] ⊢Δ D') (≅-wk [ρ] ⊢Δ A≡B) (wkEq [ρ] ⊢Δ [F] [F≡F'])
   wkEq {ρ} [ρ] ⊢Δ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                   (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
     Π₌ (U.wk ρ F′) (U.wk (lift ρ) G′) (T.wkRed* [ρ] ⊢Δ D′) (≅-wk [ρ] ⊢Δ A≡B)
@@ -234,6 +258,8 @@ mutual
                    ρYi  = wk [ρ] ⊢Δ Yi
                    ρYi' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρYi
                in irrelevanceTerm′ (T.wk-wkAll [ρ]) PE.refl ρYi ρYi' (wkTerm [ρ] ⊢Δ Yi x)) [k])
+  wkTerm {ρ} [ρ] ⊢Δ (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
+    boxₜ (U.wk ρ b) (wkRed:*:Term [ρ] ⊢Δ d) (≅ₜ-wk [ρ] ⊢Δ b≡b) (wkBox-prop [ρ] ⊢Δ (λ b d → wkTerm [ρ] ⊢Δ [F] d) [b])
   wkTerm {ρ} [ρ] ⊢Δ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
     Πₜ (U.wk ρ f) (wkRed:*:Term [ρ] ⊢Δ d) (wkFunction ρ funcF)
       (≅ₜ-wk [ρ] ⊢Δ f≡f)
@@ -294,6 +320,15 @@ mutual
                                     ρYi' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρYi
                                 in irrelevanceEqTerm′ (T.wk-wkAll [ρ]) PE.refl ρYi ρYi' (wkEqTerm [ρ] ⊢Δ Yi x))
                              [k≡k'])
+  wkEqTerm {ρ} [ρ] ⊢Δ (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) =
+    let BoxA = Boxᵣ′ F sF D ⊢F A≡A [F]
+    in boxₜ₌ (U.wk ρ b) (U.wk ρ b')
+             (wkRed:*:Term [ρ] ⊢Δ d)
+             (wkRed:*:Term [ρ] ⊢Δ d')
+             (≅ₜ-wk [ρ] ⊢Δ b≡b')
+             (wkTerm [ρ] ⊢Δ BoxA [b])
+             (wkTerm [ρ] ⊢Δ BoxA [b'])
+             (wk[Box]-prop [ρ] ⊢Δ (λ _ _ d → wkEqTerm [ρ] ⊢Δ [F] d) [b≡b'])
   wkEqTerm {ρ} [ρ] ⊢Δ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                       (Πₜ₌ f g d d′ funcF funcG f≡g [t] [u] [f≡g]) =
     let [A] = Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext

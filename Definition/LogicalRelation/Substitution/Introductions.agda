@@ -1,4 +1,5 @@
-{-# OPTIONS --without-K  #-}
+{-# OPTIONS --without-K #-}
+
 
 open import Definition.Typed.EqualityRelation
 
@@ -13,3 +14,6 @@ open import Definition.LogicalRelation.Substitution.Introductions.Emptyrec publi
 open import Definition.LogicalRelation.Substitution.Introductions.Pi public
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst public
 open import Definition.LogicalRelation.Substitution.Introductions.Universe public
+open import Definition.LogicalRelation.Substitution.Introductions.Box public
+open import Definition.LogicalRelation.Substitution.Introductions.cstr public
+open import Definition.LogicalRelation.Substitution.Introductions.dstr public
