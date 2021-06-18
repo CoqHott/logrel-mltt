@@ -119,22 +119,19 @@ box s t = gen (Boxconskind s) (⟦ 0 , t ⟧ ∷ [])
 Boxrec : (sC : 𝕊)(A C t u : Term) → Term
 Boxrec sC A C u t = gen (Boxreckind sC) (⟦ 0 , A ⟧ ∷ ⟦ 1 , C ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , t ⟧  ∷ [])
 
-cstr : (k : constructors) → Term
-cstr k = gen (Constructorkind k) []
+cstr : (k : constructors) (t : Term) → Term
+cstr k t = gen (Constructorkind k) (⟦ 0 , t ⟧ ∷ [])
 
-dstr : (k : destructors) → Term
-dstr k = gen (Destructorkind k) []
+dstr : (k : destructors) (p : Term) (a : Term) → Term
+dstr k p a = gen (Destructorkind k) (⟦ 0 , p ⟧ ∷ ⟦ 0 , a ⟧ ∷ [])
 
--- dstr′ : (k : destructors) (p t : Term) → Term
--- dstr′ k p t = (dstr k ∘ p) ∘ t
-pattern dstr′ k p t = gen Appkind (⟦ 0 , gen Appkind (⟦ 0 , gen (Destructorkind k) [] ⟧ ∷ ⟦ 0 , p ⟧ ∷ []) ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
 -- Discriminate terms starting with a constructor
 data [_]-cstr (K : constructors) : Term → Set where
-  is-K-cstr : ∀ {t} → [ K ]-cstr (cstr K ∘ t)
+  is-K-cstr : ∀ {t} → [ K ]-cstr (cstr K t)
 
 [_]-cstr-params : (K : constructors) {t : Term} ([K] : [ K ]-cstr t) → Term
-[ K ]-cstr-params {t = gen Appkind (_ ∷ ⟦ _ , t ⟧ ∷ [])} [K] = t
+[ K ]-cstr-params {t = gen _ (⟦ _ , t ⟧ ∷ [])} [K] = t
 
 
 -- Injectivity of term constructors w.s.t. propositional equality.
@@ -153,10 +150,10 @@ suc-PE-injectivity PE.refl = PE.refl
 Univ-PE-injectivity : ∀ {s s'} → Univ s PE.≡ Univ s' → s PE.≡ s'
 Univ-PE-injectivity PE.refl = PE.refl
 
-cstr-app-PE-injectivity : ∀ {k k' a a'} → cstr k ∘ a PE.≡ cstr k' ∘ a' → k PE.≡ k'
+cstr-app-PE-injectivity : ∀ {k k' a a'} → cstr k a PE.≡ cstr k' a' → k PE.≡ k'
 cstr-app-PE-injectivity PE.refl = PE.refl
 
-cstr-app-PE-arg-injectivity : ∀ {k k' a a'} → cstr k ∘ a PE.≡ cstr k' ∘ a' → a PE.≡ a'
+cstr-app-PE-arg-injectivity : ∀ {k k' a a'} → cstr k a PE.≡ cstr k' a' → a PE.≡ a'
 cstr-app-PE-arg-injectivity PE.refl = PE.refl
 
 Box-inj : ∀ {s s' A A'} → Box s A PE.≡ Box s' A' → A PE.≡ A'
@@ -182,7 +179,7 @@ data Neutral : Term → Set where
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
   Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
   Boxrecₙ : ∀ {sC A C t u} → Neutral t → Neutral (Boxrec sC A C u t)
-  destrₙ : ∀ {k p t} → Neutral t → Neutral (dstr′ k t p)
+  destrₙ : ∀ {k p t} → Neutral t → Neutral (dstr k t p)
 
 -- Weak head normal forms (whnfs).
 
@@ -202,7 +199,7 @@ data Whnf : Term → Set where
   zeroₙ : Whnf zero
   sucₙ  : ∀ {t} → Whnf (suc t)
   boxₙ : ∀ {s t} → Whnf (box s t)
-  cstrₙ : ∀ {k t} → Whnf (cstr k ∘ t)
+  cstrₙ : ∀ {k t} → Whnf (cstr k t)
 
   -- Neutrals are whnfs.
   ne   : ∀ {n} → Neutral n → Whnf n
@@ -222,7 +219,7 @@ U≢Empty ()
 U≢Π : ∀ {s s' F G} → Univ s PE.≢ Π F ⦂ s' ▹ G
 U≢Π ()
 
-U≢cstr : ∀ {s k t} → Univ s PE.≢ cstr k ∘ t
+U≢cstr : ∀ {s k t} → Univ s PE.≢ cstr k t
 U≢cstr ()
 
 U≢Box : ∀ {s s' A} → Univ s PE.≢ Box s' A
@@ -237,7 +234,7 @@ U≢ne () PE.refl
 ℕ≢Empty : ℕ PE.≢ Empty
 ℕ≢Empty ()
 
-ℕ≢cstr : ∀ {k t} →  ℕ PE.≢ cstr k ∘ t
+ℕ≢cstr : ∀ {k t} →  ℕ PE.≢ cstr k t
 ℕ≢cstr ()
 
 ℕ≢Box : ∀ {s A} →  ℕ PE.≢ Box s A
@@ -246,16 +243,16 @@ U≢ne () PE.refl
 Empty≢ℕ : Empty PE.≢ ℕ
 Empty≢ℕ ()
 
-Empty≢cstr : ∀ {k t} →  Empty PE.≢ cstr k ∘ t
+Empty≢cstr : ∀ {k t} →  Empty PE.≢ cstr k t
 Empty≢cstr ()
 
 Empty≢Box : ∀ {s A} →  Empty PE.≢ Box s A
 Empty≢Box ()
 
-cstr≢Π :  ∀ {k t F s G} → cstr k ∘ t PE.≢ Π F ⦂ s ▹ G
+cstr≢Π :  ∀ {k t F s G} → cstr k t PE.≢ Π F ⦂ s ▹ G
 cstr≢Π ()
 
-cstr≢Box : ∀ {k t s A} → cstr k ∘ t PE.≢ Box s A
+cstr≢Box : ∀ {k t s A} → cstr k t PE.≢ Box s A
 cstr≢Box ()
 
 Box≢Π :  ∀ {sA A F s G} → Box sA A PE.≢ Π F ⦂ s ▹ G
@@ -273,8 +270,8 @@ Empty≢Π ()
 Π≢ne : ∀ {F s G K} → Neutral K → Π F ⦂ s ▹ G PE.≢ K
 Π≢ne () PE.refl
 
-cstr≢ne : ∀ {k t K} → Neutral K → cstr k ∘ t PE.≢ K
-cstr≢ne (∘ₙ ()) PE.refl
+cstr≢ne : ∀ {k t K} → Neutral K → cstr k t PE.≢ K
+cstr≢ne () PE.refl
 
 Box≢ne : ∀ {s A K} → Neutral K → Box s A PE.≢ K
 Box≢ne () PE.refl
@@ -307,7 +304,7 @@ data Type : Term → Set where
   Πₙ : ∀ {A s B} → Type (Π A ⦂ s ▹ B)
   ℕₙ : Type ℕ
   Emptyₙ : Type Empty
-  cstrₙ : ∀ {k a} → Type (cstr k ∘ a) -- this is not valid for all constructors
+  cstrₙ : ∀ {k a} → Type (cstr k a) -- this is not valid for all constructors
   Boxₙ : ∀ {A s} → Type (Box s A)
   ne : ∀{n} → Neutral n → Type n
 

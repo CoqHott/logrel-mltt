@@ -310,9 +310,9 @@ UnotInA[t] () x₁ (natrecⱼ x₂ x₃ x₄ x₅)
 UnotInA[t] () x₁ (Emptyrecⱼ x₂ x₃)
 UnotInA[t] x x₁ (conv x₂ x₃) = UnotInA[t] x x₁ x₂
 
-postulate RewSR : ∀ {Γ ρ A s k p a t} → Γ ⊢ dstr′ k (subst ρ a) (subst ρ p) ∷ A ⦂ s → Rew⊢ k ⊚ a ⊚ p ⇒ t → Γ ⊢ subst ρ t ∷ A ⦂ s
+postulate RewSR : ∀ {Γ ρ A s k p a t} → Γ ⊢ dstr k (subst ρ a) (subst ρ p) ∷ A ⦂ s → Rew⊢ k ⊚ a ⊚ p ⇒ t → Γ ⊢ subst ρ t ∷ A ⦂ s
 
-red𝕊SR : ∀ {Γ A s k p a t} → Γ ⊢ dstr′ k a p ∷ A ⦂ s → Γ 𝕊⊢ k ⊚ a ⊚ p ⇒ t ⦂ s → Γ ⊢ t ∷ A ⦂ s
+red𝕊SR : ∀ {Γ A s k p a t} → Γ ⊢ dstr k a p ∷ A ⦂ s → Γ 𝕊⊢ k ⊚ a ⊚ p ⇒ t ⦂ s → Γ ⊢ t ∷ A ⦂ s
 red𝕊SR d (rew x) = RewSR d x
 
 redU*Term′ : ∀ {A B U′ Γ s s'} → U′ PE.≡ (Univ s) → Γ ⊢ A ⇒ U′ ∷ B ⦂ s' → ⊥

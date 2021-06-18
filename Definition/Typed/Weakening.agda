@@ -162,7 +162,7 @@ mutual
                              (wk-step-wkAll {A = dstr-param-ctx Δ o} {s = dstr-param-sort o} [ρ])
                              (wk (step [ρ]) ⊢Δ∙par dom)
     in
-    PE.subst (λ x → Δ ⊢ dstr′ o (U.wk ρ a) (U.wk ρ p) ∷ x ⦂ dstr-𝕊 o)
+    PE.subst (λ x → Δ ⊢ dstr o (U.wk ρ a) (U.wk ρ p) ∷ x ⦂ dstr-𝕊 o)
              (wk-dstr-type [ρ])
              (dstrⱼ ρdom
                     ρpar
@@ -291,7 +291,7 @@ mutual
                                   (wk-wkAll [ρ])
                                   (wkEqTerm [ρ] ⊢Δ a≡a')))
   wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (dstr-cong {a = a} {a' = a'} {p = p} {p' = p'} {k = k} a≡a' p≡p') =
-    PE.subst (λ x → Δ ⊢ dstr′ k (U.wk ρ a) (U.wk ρ p) ≡ dstr′ k (U.wk ρ a') (U.wk ρ p') ∷ x ⦂ dstr-𝕊 k)
+    PE.subst (λ x → Δ ⊢ dstr k (U.wk ρ a) (U.wk ρ p) ≡ dstr k (U.wk ρ a') (U.wk ρ p') ∷ x ⦂ dstr-𝕊 k)
              (wk-dstr-type [ρ])
              (dstr-cong (PE.subst (λ x → Δ ⊢ U.wk ρ a ≡ U.wk ρ a' ∷ x ⦂ dstr-dom-sort k)
                                   (wk-wkAll [ρ])
@@ -300,12 +300,12 @@ mutual
                                   (wk-wkAll [ρ])
                                   (wkEqTerm [ρ] ⊢Δ p≡p')) )
   wkEqTerm {ρ = ρ₁} ρ ⊢Δ (rew (rew {ρ = ρ₂} {a = a} {p = p}  {t} x) ⊢ka) =
-    PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ≡ _ ∷ _ ⦂ _)
+    PE.subst₂ (λ a p → _ ⊢ dstr _ a p ≡ _ ∷ _ ⦂ _)
              (PE.sym (wk-subst a))
              (PE.sym (wk-subst p))
-             (PE.subst (λ t → _ ⊢ dstr′ _ (subst (ρ₁ •ₛ ρ₂) a) (subst (ρ₁ •ₛ ρ₂) p) ≡ t ∷ _ ⦂ _)
+             (PE.subst (λ t → _ ⊢ dstr _ (subst (ρ₁ •ₛ ρ₂) a) (subst (ρ₁ •ₛ ρ₂) p) ≡ t ∷ _ ⦂ _)
                        (PE.sym (wk-subst t))
-                       (rew (rew x) (PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ∷ _ ⦂ _)
+                       (rew (rew x) (PE.subst₂ (λ a p → _ ⊢ dstr _ a p ∷ _ ⦂ _)
                                               (wk-subst a)
                                               (wk-subst p)
                                               (wkTerm ρ ⊢Δ ⊢ka))))
@@ -366,12 +366,12 @@ mutual
     (Emptyrec-subst (wk [ρ] ⊢Δ ⊢A)
                     (wkRedTerm [ρ] ⊢Δ n⇒n′))
   wkRedTerm {ρ = ρ₁} ρ ⊢Δ (rew (rew {ρ = ρ₂} {a = a} {p = p} {t} x) ⊢ka) =
-    PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ⇒ _ ∷ _ ⦂ _)
+    PE.subst₂ (λ a p → _ ⊢ dstr _ a p ⇒ _ ∷ _ ⦂ _)
               (PE.sym (wk-subst a))
               (PE.sym (wk-subst p))
-              (PE.subst (λ t → _ ⊢ dstr′ _ (subst (ρ₁ •ₛ ρ₂) a) (subst (ρ₁ •ₛ ρ₂) p) ⇒ t ∷ _ ⦂ _)
+              (PE.subst (λ t → _ ⊢ dstr _ (subst (ρ₁ •ₛ ρ₂) a) (subst (ρ₁ •ₛ ρ₂) p) ⇒ t ∷ _ ⦂ _)
                         (PE.sym (wk-subst t))
-                        (rew (rew x) (PE.subst₂ (λ a p → _ ⊢ dstr′ _ a p ∷ _ ⦂ _)
+                        (rew (rew x) (PE.subst₂ (λ a p → _ ⊢ dstr _ a p ∷ _ ⦂ _)
                                                 (wk-subst a)
                                                 (wk-subst p)
                                                 (wkTerm ρ ⊢Δ ⊢ka))))

@@ -206,7 +206,7 @@ record EqRelSet : Set₁ where
     ~-dstr : ∀ {k Γ a a' p p'}
            → Γ ⊢ a ~ a' ∷ dstr-dom-ctx Γ k ⦂ dstr-dom-sort k
            → Γ ⊢ p ≅ p' ∷ dstr-param-ctx Γ k ⦂ dstr-param-sort k
-           → Γ ⊢ dstr′ k a p ~ dstr′ k a' p' ∷ dstr-type Γ k a p ⦂ dstr-𝕊 k
+           → Γ ⊢ dstr k a p ~ dstr k a' p' ∷ dstr-type Γ k a p ⦂ dstr-𝕊 k
 
   -- Composition of universe and generic equality compatibility
   ~-to-≅ : ∀ {k l s Γ} → Γ ⊢ k ~ l ∷ (Univ s) ⦂ 𝕥y → Γ ⊢ k ≅ l ⦂ s
