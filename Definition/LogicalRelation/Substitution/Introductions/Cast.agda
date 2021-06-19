@@ -63,19 +63,36 @@ import Data.Nat as Nat
                         → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) B′ A′ ^ [ % , ι ¹ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ≡ cast ⁰ B′ A′ e′ t′ ∷ A ^ [ r , ι ⁰ ] / [A])
 [cast] ⊢Γ (ℕᵣ x) (ℕᵣ x₁) = {!!}
-[cast] ⊢Γ (ℕᵣ x) (ne x₁) = {!!}
+[cast] {A} {B} ⊢Γ (ℕᵣ x) (ne′ K [[ ⊢B , ⊢K , D ]] neK K≡K) =
+  (λ {t} {e} [t] ⊢e → let ⊢A≡ℕ = let [[ _ , _ , Dx ]] = x in un-univ≡ (subset* Dx)
+                          ⊢A≡ℕ' = let [[ _ , _ , Dx ]] = x in subset* Dx
+                          ⊢t = conv (escapeTerm {l = ι ⁰} (ℕᵣ x) [t]) ⊢A≡ℕ'                      
+                      in neₜ (cast ⁰ ℕ K e t)
+                          (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ℕᵣ x) [t]) (un-univ:⇒*: x))
+                                                   (CastRed*Termℕ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) )) ⊢A≡ℕ
+                                                                  (refl (un-univ ⊢B))))) ⊢t [[ ⊢B , ⊢K , D ]])) (subset* D) )
+                          (neNfₜ (castℕₙ neK) (castⱼ (ℕⱼ (wf ⊢B)) (un-univ ⊢K) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))
+                                                     ⊢A≡ℕ (un-univ≡ (subset* D)))))
+                                                     ⊢t)
+                                              (~-castℕ (wf ⊢B) K≡K (≅-conv (escapeTermEq {l = ι ⁰} {A = A} (ℕᵣ x) (reflEqTerm {l = ι ⁰} (ℕᵣ x) [t])) ⊢A≡ℕ' )))) ,
+   {!!}
 [cast] ⊢Γ (ℕᵣ x) (Πᵣ x₁) = {!!}
 [cast] ⊢Γ (ne x) (ℕᵣ x₁) = {!!}
 [cast] ⊢Γ (ne x) (ne x₁) = {!!}
 [cast] ⊢Γ (ne x) (Πᵣ x₁) = {!!}
 [cast] ⊢Γ (Πᵣ x) (ℕᵣ x₁) = {!!}
 [cast] ⊢Γ (Πᵣ x) (ne x₁) = {!!}
-[cast] ⊢Γ [A]₁ (Emptyᵣ x) = ?
-[cast] ⊢Γ (Emptyᵣ x) (ne x₁) = ?
-[cast] ⊢Γ (∃ᵣ x) (ne x₁) = ?
-[cast] ⊢Γ (Emptyᵣ x) (Πᵣ x₁) = ?
-[cast] ⊢Γ (∃ᵣ x) (Πᵣ x₁) = ?
-[cast] ⊢Γ [A]₁ (∃ᵣ x) = ?
+[cast] ⊢Γ [A]₁ (Emptyᵣ x) = {!!}
+[cast] ⊢Γ (Emptyᵣ x) (ne x₁) = {!!}
+[cast] ⊢Γ (∃ᵣ x) (ne x₁) = {!!}
+[cast] ⊢Γ (Emptyᵣ x) (Πᵣ x₁) = {!!}
+[cast] ⊢Γ (∃ᵣ x) (Πᵣ x₁) = {!!}
+[cast] ⊢Γ [A]₁ (∃ᵣ x) = {!!}
+[cast]  {A} {B} {Γ} {r = %} ⊢Γ (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+  (Πᵣ′ rF₁ lF₁ lG₁ lF₁≤⁰ lG₁≤⁰ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁) = {!!}
+[cast]  {A} {B} {Γ} {r = !} ⊢Γ (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+  (Πᵣ′ rF₁ lF₁ lG₁ lF₁≤⁰ lG₁≤⁰ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁) = {!!} -- already done
+{-
 [cast] {A} {B} {Γ} {r = !} ⊢Γ (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext) =
   [cast]₁ , [cast]₂
@@ -113,9 +130,6 @@ import Data.Nat as Nat
                                 proj₂ ([castext] ⊢Δ ([G] [ρ] ⊢Δ [x]) ([G] [ρ] ⊢Δ [x′]) (G-ext [ρ] ⊢Δ [x] [x′] [x≡x′])
                                                     ([G₁] [ρ] ⊢Δ [y]) ([G₁] [ρ] ⊢Δ [y′]) (G₁-ext [ρ] ⊢Δ [y] [y′] [y≡y′])))
                               ⊢t Df [fext] [f] b₂.[b] b₂.[bext]
-
-[cast] ⊢Γ (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-  (Πᵣ′ rF₁ lF₁ lG₁ lF₁≤⁰ lG₁≤⁰ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁) = {!!}
 
 [castext] {A₁} {A₂} {A₃} {A₄} {Γ} {r = !} ⊢Γ
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
@@ -295,9 +309,10 @@ import Data.Nat as Nat
                 proj₂ ([castext] ⊢Δ ([G₁] [ρ] ⊢Δ [x₁]) ([G₂] [ρ] ⊢Δ [x₂]) [G₁x₁≡G₂x₂]
                                     ([G₃] [ρ] ⊢Δ [x₃]) ([G₄] [ρ] ⊢Δ [x₄]) [G₃x₃≡G₄x₄]))
               b₃.[b] b₃.[bext] b₄.[b] b₄.[bext] [b₃≡b₄]
-
+-}
 [castext] {A} {C} {B} {D} {Γ} ⊢Γ [A] [C] [A≡C] [B] [D] [B≡D] = {!!}
 
+{-
 
 cast∞ : ∀ {A B r t e Γ}
          (⊢Γ : ⊢ Γ)
@@ -358,3 +373,4 @@ cast-congᵗᵛ : ∀ {A A' B B' t t' e e' Γ}
          ([e'] : Γ ⊩ᵛ⟨ ∞ ⟩ e' ∷ Id (U ⁰) A' B' ^ [ % , ι ¹ ] / [Γ] / [Id'] ) →
          Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ ! , ι ⁰ ] / [Γ] / [B]
 cast-congᵗᵛ = {!!}
+-}
