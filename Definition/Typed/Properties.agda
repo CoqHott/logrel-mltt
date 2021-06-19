@@ -136,6 +136,26 @@ subset* : ∀ {Γ A B r} → Γ ⊢ A ⇒* B ^ r → Γ ⊢ A ≡ B ^ r
 subset* (id A) = refl A
 subset* (A⇒A′ ⇨ A′⇒*B) = trans (subset A⇒A′) (subset* A′⇒*B)
 
+-- Transitivity of reduction
+
+transTerm⇒* : ∀ {Γ A t u v l } → Γ ⊢ t ⇒* u ∷ A ^ l → Γ ⊢ u ⇒* v ∷ A ^ l → Γ ⊢ t ⇒* v ∷ A ^ l
+transTerm⇒* (id x) y = y
+transTerm⇒* (x ⇨ x₁) y = x ⇨ transTerm⇒* x₁ y
+
+trans⇒* : ∀ {Γ A B C r} → Γ ⊢ A ⇒* B ^ r → Γ ⊢ B ⇒* C ^ r → Γ ⊢ A ⇒* C ^ r
+trans⇒* (id x) y = y
+trans⇒* (x ⇨ x₁) y = x ⇨ trans⇒* x₁ y
+
+transTerm:⇒:* : ∀ {Γ A t u v l } → Γ ⊢ t :⇒*: u ∷ A ^ l → Γ ⊢ u :⇒*: v ∷ A ^ l → Γ ⊢ t :⇒*: v ∷ A ^ l
+transTerm:⇒:* [[ ⊢t , ⊢u , d ]] [[ ⊢t₁ , ⊢u₁ , d₁ ]] = [[ ⊢t , ⊢u₁ , (transTerm⇒* d d₁) ]]
+
+conv⇒* : ∀ {Γ A B l t u} → Γ ⊢ t ⇒* u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t ⇒* u ∷ B ^ l
+conv⇒* (id x) e = id (conv x e)
+conv⇒* (x ⇨ D) e = conv x e ⇨ conv⇒* D e
+
+conv:⇒*: : ∀ {Γ A B l t u} → Γ ⊢ t :⇒*: u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t :⇒*: u ∷ B ^ l
+conv:⇒*: [[ ⊢t , ⊢u , d ]] e = [[ (conv ⊢t e) , (conv ⊢u e) , (conv⇒* d e) ]]
+
 
 -- Can extract left-part of a reduction
 
@@ -692,6 +712,27 @@ CastRed*Term : ∀ {Γ A B X t e}
 CastRed*Term {Γ} {A} {B} (univ ⊢X) ⊢e ⊢t [[ ⊢A , ⊢B , D ]] =
   [[ castⱼ ⊢A ⊢X ⊢e ⊢t , castⱼ ⊢B ⊢X (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢t))) (subset*Term D) (refl ⊢X)) )) (conv ⊢t (univ (subset*Term D))) ,
      CastRed*Term′ (univ ⊢X) ⊢e ⊢t (univ* D) ]]
+
+CastRed*Termℕ′ : ∀ {Γ A B e t}
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ A ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
+         (D : Γ ⊢ A ⇒* B ^ [ ! , ι ⁰ ])
+       → Γ ⊢ cast ⁰ ℕ A e t ⇒* cast ⁰ ℕ B e t ∷ A ^ ι ⁰
+CastRed*Termℕ′ ⊢e ⊢t  (id (univ ⊢A)) = id (castⱼ (ℕⱼ (wfTerm ⊢A)) ⊢A ⊢e ⊢t)
+CastRed*Termℕ′ ⊢e ⊢t  (univ d ⇨ D) = cast-ℕ-subst d ⊢e ⊢t ⇨
+                                     conv* (CastRed*Termℕ′ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl (ℕⱼ (wfTerm ⊢e))) (subsetTerm d))) ) ⊢t D)
+                                           (sym (subset (univ d)))
+
+CastRed*Termℕ : ∀ {Γ A B e t}
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ A ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
+         (D : Γ ⊢ A :⇒*: B ^ [ ! , ι ⁰ ])
+       → Γ ⊢ cast ⁰ ℕ A e t :⇒*: cast ⁰ ℕ B e t ∷ A ^ ι ⁰
+CastRed*Termℕ ⊢e ⊢t  [[ ⊢A , ⊢B , D ]] =
+  [[ castⱼ (ℕⱼ (wfTerm ⊢e)) (un-univ ⊢A) ⊢e ⊢t ,
+     conv (castⱼ (ℕⱼ (wfTerm ⊢e)) (un-univ ⊢B) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl (ℕⱼ (wfTerm ⊢e))) (subset*Term (un-univ⇒* D))))) ⊢t) (sym (subset* D)) ,
+       CastRed*Termℕ′ ⊢e ⊢t D ]]
+
 
 IdℕRed*Term′ : ∀ {Γ t t′ u}
                (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
