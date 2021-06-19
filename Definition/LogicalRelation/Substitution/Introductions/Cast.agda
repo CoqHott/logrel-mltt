@@ -36,32 +36,32 @@ import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
-[cast] : ∀ {A B Γ}
+[cast] : ∀ {A B Γ r}
          (⊢Γ : ⊢ Γ)
-         ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ ! , ι ⁰ ])
-         ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ ! , ι ⁰ ])
-       → (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [A]) → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / [B])
-       × (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ ! , ι ⁰ ] / [B]) → (⊢e : Γ ⊢ e ∷ Id (U ⁰) B A ^ [ % , ι ¹ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ∷ A ^ [ ! , ι ⁰ ] / [A])
-[castext] : ∀ {A A′ B B′ Γ}
+         ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ])
+         ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ r , ι ⁰ ])
+       → (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B])
+       × (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ r , ι ⁰ ] / [B]) → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ¹ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ∷ A ^ [ r , ι ⁰ ] / [A])
+[castext] : ∀ {A A′ B B′ Γ r}
          (⊢Γ : ⊢ Γ)
-         ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ ! , ι ⁰ ])
-         ([A′] : Γ ⊩⟨ ι ⁰ ⟩ A′ ^ [ ! , ι ⁰ ])
-         ([A≡A′] : Γ ⊩⟨ ι ⁰ ⟩ A ≡ A′ ^ [ ! , ι ⁰ ] / [A])
-         ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ ! , ι ⁰ ])
-         ([B′] : Γ ⊩⟨ ι ⁰ ⟩ B′ ^ [ ! , ι ⁰ ])
-         ([B≡B′] : Γ ⊩⟨ ι ⁰ ⟩ B ≡ B′ ^ [ ! , ι ⁰ ] / [B])
-       → (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [A])
-                        → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ A′ ^ [ ! , ι ⁰ ] / [A′])
-                        → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ A ^ [ ! , ι ⁰ ] / [A])
-                        → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (U ⁰) A′ B′ ^ [ % , ι ¹ ])
-                        → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ ! , ι ⁰ ] / [B])
-       × (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ ! , ι ⁰ ] / [B])
-                        → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ B′ ^ [ ! , ι ⁰ ] / [B′])
-                        → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ B ^ [ ! , ι ⁰ ] / [B])
-                        → (⊢e : Γ ⊢ e ∷ Id (U ⁰) B A ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (U ⁰) B′ A′ ^ [ % , ι ¹ ])
-                        → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ≡ cast ⁰ B′ A′ e′ t′ ∷ A ^ [ ! , ι ⁰ ] / [A])
+         ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ])
+         ([A′] : Γ ⊩⟨ ι ⁰ ⟩ A′ ^ [ r , ι ⁰ ])
+         ([A≡A′] : Γ ⊩⟨ ι ⁰ ⟩ A ≡ A′ ^ [ r , ι ⁰ ] / [A])
+         ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ r , ι ⁰ ])
+         ([B′] : Γ ⊩⟨ ι ⁰ ⟩ B′ ^ [ r , ι ⁰ ])
+         ([B≡B′] : Γ ⊩⟨ ι ⁰ ⟩ B ≡ B′ ^ [ r , ι ⁰ ] / [B])
+       → (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
+                        → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ A′ ^ [ r , ι ⁰ ] / [A′])
+                        → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ A ^ [ r , ι ⁰ ] / [A])
+                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) A′ B′ ^ [ % , ι ¹ ])
+                        → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
+       × (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ r , ι ⁰ ] / [B])
+                        → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ B′ ^ [ r , ι ⁰ ] / [B′])
+                        → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
+                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ¹ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) B′ A′ ^ [ % , ι ¹ ])
+                        → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ≡ cast ⁰ B′ A′ e′ t′ ∷ A ^ [ r , ι ⁰ ] / [A])
 [cast] ⊢Γ (ℕᵣ x) (ℕᵣ x₁) = {!!}
 [cast] ⊢Γ (ℕᵣ x) (ne x₁) = {!!}
 [cast] ⊢Γ (ℕᵣ x) (Πᵣ x₁) = {!!}
@@ -70,7 +70,13 @@ import Data.Nat as Nat
 [cast] ⊢Γ (ne x) (Πᵣ x₁) = {!!}
 [cast] ⊢Γ (Πᵣ x) (ℕᵣ x₁) = {!!}
 [cast] ⊢Γ (Πᵣ x) (ne x₁) = {!!}
-[cast] {A} {B} {Γ} ⊢Γ (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
+[cast] ⊢Γ [A]₁ (Emptyᵣ x) = ?
+[cast] ⊢Γ (Emptyᵣ x) (ne x₁) = ?
+[cast] ⊢Γ (∃ᵣ x) (ne x₁) = ?
+[cast] ⊢Γ (Emptyᵣ x) (Πᵣ x₁) = ?
+[cast] ⊢Γ (∃ᵣ x) (Πᵣ x₁) = ?
+[cast] ⊢Γ [A]₁ (∃ᵣ x) = ?
+[cast] {A} {B} {Γ} {r = !} ⊢Γ (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext) =
   [cast]₁ , [cast]₂
   where
@@ -111,7 +117,7 @@ import Data.Nat as Nat
 [cast] ⊢Γ (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
   (Πᵣ′ rF₁ lF₁ lG₁ lF₁≤⁰ lG₁≤⁰ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁) = {!!}
 
-[castext] {A₁} {A₂} {A₃} {A₄} {Γ} ⊢Γ
+[castext] {A₁} {A₂} {A₃} {A₄} {Γ} {r = !} ⊢Γ
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₂ G₂ [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]] ⊢F₂ ⊢G₂ A₂≡A₂ [F₂] [G₂] G₂-ext)
   (Π₌ F₂′ G₂′ D₂′ A₁≡A₂′ [F₁≡F₂′] [G₁≡G₂′])
@@ -293,92 +299,6 @@ import Data.Nat as Nat
 [castext] {A} {C} {B} {D} {Γ} ⊢Γ [A] [C] [A≡C] [B] [D] [B≡D] = {!!}
 
 
-snd-Id-U-ΠΠⱼ : ∀ {F rF G F₁ G₁ Γ}
-      (⊢Γ : ⊢ Γ)
-      (⊢F : Γ ⊢ F ^ [ rF , ι ⁰ ])
-      ([F] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F ^ [ rF , ι ⁰ ])
-      ([G] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-         ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F ^ [ rF , ι ⁰ ] / ([F] [ρ] ⊢Δ))
-         → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G [ a ] ^ [ ! , ι ⁰ ]))
-      (⊢F₁    : Γ ⊢ F₁ ^ [ rF , ι ⁰ ])
-      (⊢G₁    : (Γ ∙ F₁ ^ [ rF , ι ⁰ ]) ⊢ G₁ ^ [ ! , ι ⁰ ])
-      ([F₁] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ^ [ rF , ι ⁰ ])
-      → let b = λ ρ e x → cast ⁰ (wk ρ F₁) (wk ρ F) (Idsym (Univ rF ⁰) (wk ρ F) (wk ρ F₁) e) x
-            ρ₀ = (step (step id))
-        in Γ ∙ Id (Univ rF ⁰) F F₁ ^ [ % , ι ¹ ] ⊢ Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ° ¹ ^ [ % , ι ¹ ]
-snd-Id-U-ΠΠⱼ {F} {rF} {G} {F₁} {G₁} {Γ} ⊢Γ ⊢F [F] [G] ⊢F₁ ⊢G₁ [F₁] =
-  let
-    b = λ ρ e x → cast ⁰ (wk ρ F₁) (wk ρ F) (Idsym (Univ rF ⁰) (wk ρ F) (wk ρ F₁) e) x
-
-    [b] : ∀ {ρ Δ e x} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-        → (Δ ⊢ e ∷ Id (Univ rF ⁰) (wk ρ F) (wk ρ F₁) ^ [ % , ι ¹ ])
-        → (Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
-        → Δ ⊩⟨ ι ⁰ ⟩ b ρ e x ∷ wk ρ F ^ [ rF , ι ⁰ ] / [F] [ρ] ⊢Δ
-    [b] [ρ] ⊢Δ ⊢e [x] =
-      let
-        ⊢e′ = Idsymⱼ (univ 0<1 ⊢Δ) (un-univ (escape ([F] [ρ] ⊢Δ)))
-                     (un-univ (escape ([F₁] [ρ] ⊢Δ))) ⊢e
-      in {!!} -- proj₂ ([cast] ⊢Δ ([F] [ρ] ⊢Δ) ([F₁] [ρ] ⊢Δ)) [x] ⊢e′
-
-    ⊢IdFF₁ = univ (Idⱼ (univ 0<1 ⊢Γ) (un-univ ⊢F) (un-univ ⊢F₁))
-    Δ₀ = Γ ∙ Id (Univ rF ⁰) F F₁ ^ [ % , ι ¹ ] ∙ wk1 F₁ ^ [ rF , ι ⁰ ]
-    ρ₀ = (step (step id))
-
-    ⊢IdG₁G =
-      let
-        ⊢Δ₀ : ⊢ Δ₀
-        ⊢Δ₀ = ⊢Γ ∙ ⊢IdFF₁ ∙ univ (Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁) (un-univ ⊢F₁))
-        [ρ₀] : ρ₀ Twk.∷ Δ₀ ⊆ Γ
-        [ρ₀] = Twk.step (Twk.step Twk.id)
-        [0] : Δ₀ ⊩⟨ ι ⁰ ⟩ var 0 ∷ wk ρ₀ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ₀] ⊢Δ₀
-        [0] = let x = (var ⊢Δ₀ (PE.subst (λ X → 0 ∷ X ^ [ rF , ι ⁰ ] ∈ Δ₀) (wk1-wk (step id) F₁) here)) in
-          neuTerm ([F₁] [ρ₀] ⊢Δ₀) (var 0) x (~-var x)
-        ⊢1 : Δ₀ ⊢ (var 1) ∷ Id (Univ rF ⁰) (wk ρ₀ F) (wk ρ₀ F₁) ^ [ % , ι ¹ ]
-        ⊢1 = var ⊢Δ₀ (PE.subst₂ (λ X Y → 1 ∷ Id (Univ rF ⁰) X Y ^ [ % , ι ¹ ] ∈ Δ₀)
-          (wk1-wk (step id) F) (wk1-wk (step id) F₁) (there here))
-        ⊢G₀ : Δ₀ ⊢ wk (lift ρ₀) G [ b ρ₀ (var 1) (var 0) ] ^ [ ! , ι ⁰ ]
-        ⊢G₀ = escape ([G] [ρ₀] ⊢Δ₀ ([b] [ρ₀] ⊢Δ₀ ⊢1 [0]))
-        ⊢G₀′ = PE.subst (λ X → Δ₀ ⊢ X ^ [ ! , ι ⁰ ]) (PE.sym (cast-subst-lemma2 G (b ρ₀ (var 1) (var 0)))) ⊢G₀
-        x₀ : Δ₀ ⊢ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ∷ SProp ¹ ^ [ ! , ∞ ]
-        x₀ = Idⱼ (univ 0<1 ⊢Δ₀) (un-univ ⊢G₀′)
-            (un-univ (Twk.wk (Twk.lift (Twk.step Twk.id)) ⊢Δ₀ ⊢G₁))
-        x₁ = Πⱼ <is≤ 0<1 ▹ ≡is≤ PE.refl ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁) (un-univ ⊢F₁) ▹ x₀
-      in univ x₁
-
-  in ⊢IdG₁G
-
-
-Id-U-ΠΠⱼ : ∀ {F rF G F₁ G₁ Γ}
-      (⊢Γ : ⊢ Γ)
-      (⊢F : Γ ⊢ F ^ [ rF , ι ⁰ ])
-      ([F] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F ^ [ rF , ι ⁰ ])
-      ([G] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-         ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F ^ [ rF , ι ⁰ ] / ([F] [ρ] ⊢Δ))
-         → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G [ a ] ^ [ ! , ι ⁰ ]))
-      (⊢F₁    : Γ ⊢ F₁ ^ [ rF , ι ⁰ ])
-      (⊢G₁    : (Γ ∙ F₁ ^ [ rF , ι ⁰ ]) ⊢ G₁ ^ [ ! , ι ⁰ ])
-      ([F₁] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ^ [ rF , ι ⁰ ])
-      → Γ ⊢ ∃ (Id (Univ rF ⁰) F F₁) ▹
-              (Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰)
-                 ((wk (lift (step id)) G) [ cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (Univ rF ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0) ]↑)
-                   (wk (lift (step id)) G₁) ° ¹) ^ [ % , ι ¹ ]
-Id-U-ΠΠⱼ {F} {rF} {G} {F₁} {G₁} {Γ} ⊢Γ ⊢F [F] [G] ⊢F₁ ⊢G₁ [F₁] =
-  let
-    b = λ ρ e x → cast ⁰ (wk ρ F₁) (wk ρ F) (Idsym (Univ rF ⁰) (wk ρ F) (wk ρ F₁) e) x
-
-    ⊢IdFF₁ = univ (Idⱼ (univ 0<1 ⊢Γ) (un-univ ⊢F) (un-univ ⊢F₁))
-    Δ₀ = Γ ∙ Id (Univ rF ⁰) F F₁ ^ [ % , ι ¹ ] ∙ wk1 F₁ ^ [ ! , ι ⁰ ]
-    ρ₀ = (step (step id))
-
-    b₀ = cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (Univ rF ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0)
-    b≡b₀ : b ρ₀ (var 1) (var 0) PE.≡ b₀
-    b≡b₀ = PE.cong₂ (λ X Y → cast ⁰ Y X (Idsym (Univ rF ⁰) X Y (var 1)) (var 0))
-      (PE.sym (wk1-wk (step id) F)) (PE.sym (wk1-wk (step id) F₁))
-    x₀ : Γ ⊢ ∃ (Id (Univ rF ⁰) F F₁) ▹ (Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ° ¹) ^ [ % , ι ¹ ]
-    x₀ = univ (∃ⱼ un-univ ⊢IdFF₁ ▹ un-univ (snd-Id-U-ΠΠⱼ {F} {rF} {G} {F₁} {G₁} {Γ} ⊢Γ ⊢F [F] [G] ⊢F₁ ⊢G₁ [F₁]))
-  in PE.subst (λ X → Γ ⊢ ∃ (Id (Univ rF ⁰) F F₁) ▹ (Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ X ]↑) (wk1d G₁) ° ¹) ^ [ % , ι ¹ ]) b≡b₀ x₀
-
-
 cast∞ : ∀ {A B r t e Γ}
          (⊢Γ : ⊢ Γ)
          ([U] : Γ ⊩⟨ ∞ ⟩ Univ r ⁰ ^ [ ! , ι ¹ ])
@@ -401,7 +321,7 @@ cast∞ {A} {B} {r} {t} {e} {Γ} ⊢Γ [U] [AU] [BU] [A] [B] [t] [Id] [e] =
     ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]
     ⊢e = escapeTerm [Id] [e]
     x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B]′
-    x = {!!} -- proj₁ ([cast] ⊢Γ [A]′ [B]′) [t]′ ⊢e
+    x = proj₁ ([cast] ⊢Γ [A]′ [B]′) [t]′ ⊢e
   in irrelevanceTerm (emb ∞< (emb emb< [B]′)) [B] x
 
 
