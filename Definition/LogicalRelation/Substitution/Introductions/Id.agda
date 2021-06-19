@@ -35,6 +35,27 @@ import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
+Id-subst-lemma : ∀ ρ u a → wk ρ u PE.≡ wk (lift ρ) (wk1 u) [ a ]
+Id-subst-lemma ρ u a = PE.trans (PE.sym (wk1-singleSubst (wk ρ u) a)) (PE.cong (λ X → X [ a ]) (wk1-wk≡lift-wk1 ρ u))
+
+[nondep] : ∀ {Γ A B l} → Γ ⊩⟨ l ⟩ B ^ [ % , l ]
+  → ([A] : ∀ {ρ} {Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ wk ρ A ^ [ % , l ])
+  → ∀ {ρ} {Δ} {a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
+  → ([a] : Δ ⊩⟨ l ⟩ a ∷ wk ρ A ^ [ % , l ] / [A] [ρ] ⊢Δ)
+  → Δ ⊩⟨ l ⟩ wk (lift ρ) (wk1 B) [ a ] ^ [ % , l ]
+[nondep] {Γ} {A} {B} {l} [B] [A] {ρ} {Δ} {a} [ρ] ⊢Δ [a] = PE.subst (λ X → Δ ⊩⟨ l ⟩ X ^ [ % , l ]) (Id-subst-lemma ρ B a) (Lwk.wk [ρ] ⊢Δ [B])
+
+[nondepext] : ∀ {Γ A B l} → ([B] : Γ ⊩⟨ l ⟩ B ^ [ % , l ])
+  → ([A] : ∀ {ρ} {Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ wk ρ A ^ [ % , l ])
+  → ∀ {ρ} {Δ} {a} {b} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
+  → ([a] : Δ ⊩⟨ l ⟩ a ∷ wk ρ A ^ [ % , l ] / [A] [ρ] ⊢Δ)
+  → ([b] : Δ ⊩⟨ l ⟩ b ∷ wk ρ A ^ [ % , l ] / [A] [ρ] ⊢Δ)
+  → ([a≡b] : Δ ⊩⟨ l ⟩ a ≡ b ∷ wk ρ A ^ [ % , l ] / [A] [ρ] ⊢Δ)
+  → Δ ⊩⟨ l ⟩ wk (lift ρ) (wk1 B) [ a ] ≡ wk (lift ρ) (wk1 B) [ b ] ^ [ % , l ] / [nondep] [B] [A] [ρ] ⊢Δ [a]
+[nondepext] {Γ} {A} {B} {l} [B] [A] {ρ} {Δ} {a} {b} [ρ] ⊢Δ [a] [b] [a≡b] =
+  irrelevanceEq″ (Id-subst-lemma ρ B a) (Id-subst-lemma ρ B b) PE.refl PE.refl
+    (Lwk.wk [ρ] ⊢Δ [B]) ([nondep] [B] [A] [ρ] ⊢Δ [a]) (reflEq (Lwk.wk [ρ] ⊢Δ [B]))
+
 aux : ∀ {Γ t u} →
       (⊢Γ : ⊢ Γ)
       ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ ℕ ^ [ ! , ι ⁰ ] / ℕᵣ (idRed:*: (univ (ℕⱼ ⊢Γ))))
@@ -69,7 +90,41 @@ IdTypeExt : ∀ {A B t u v w Γ l lA}
          ([w] : Γ ⊩⟨ l ⟩ w ∷ B ^ [ ! , ι lA ] / [B])
          ([u≡w] : Γ ⊩⟨ l ⟩ u ≡ w ∷ A ^ [ ! , ι lA ] / [A])
        → Γ ⊩⟨ l ⟩ Id A t u ≡ Id B v w ^ [ % , ι lA ] / IdType ⊢Γ [A] [t] [u]
-IdType ⊢Γ (Uᵣ (Uᵣ r l′ l< eq d)) [t] [u] = {!!}
+IdType ⊢Γ (Uᵣ (Uᵣ r ¹ l< () d)) [t] [u]
+IdType {A} {t} {u} {Γ} {ι .¹} {.¹} ⊢Γ (Uᵣ (Uᵣ ! ⁰ emb< PE.refl [[ ⊢A , ⊢B , D ]])) (Uₜ K d typeK K≡K [t]) (Uₜ K₁ d₁ typeK₁ K≡K₁ [t]₁) = {!!}
+
+IdType {A} {t} {u} {Γ} {ι .¹} {.¹} ⊢Γ (Uᵣ (Uᵣ % ⁰ emb< PE.refl [[ ⊢A , ⊢B , D ]])) (Uₜ K d typeK K≡K [t]) (Uₜ M d₁ typeM M≡M [u]) =
+  let
+    [t0] : Γ ⊩⟨ ι ⁰ ⟩ t ^ [ % , ι ⁰ ]
+    [t0] = PE.subst (λ X → Γ ⊩⟨ ι ⁰ ⟩ X ^ [ % , ι ⁰ ]) (wk-id t) ([t] Twk.id ⊢Γ)
+    [u0] = PE.subst (λ X → Γ ⊩⟨ ι ⁰ ⟩ X ^ [ % , ι ⁰ ]) (wk-id u) ([u] Twk.id ⊢Γ)
+    ⊢t = escape [t0]
+    ⊢u = escape [u0]
+    ⊢wkt = Twk.wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) ⊢t
+    ⊢wku = Twk.wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) ⊢u
+
+    [t▹u] : Γ ⊩⟨ ι ⁰ ⟩ t ^ % ° ⁰ ▹▹ u ° ⁰ ^ [ % , ι ¹ ]
+    [t▹u] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) t (wk1 u)
+      (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢t ▹ un-univ ⊢wku))) ⊢t ⊢wku
+      (≅-univ (≅ₜ-Π-cong ⊢t (≅-un-univ (escapeEqRefl [t0])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) (escapeEqRefl [u0])))))
+      [t] ([nondep] [u0] [t]) ([nondepext] [u0] [t])
+    [u▹t] : Γ ⊩⟨ ι ⁰ ⟩ u ^ % ° ⁰ ▹▹ t ° ⁰ ^ [ % , ι ¹ ]
+    [u▹t] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) u (wk1 t)
+      (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢u ▹ un-univ ⊢wkt))) ⊢u ⊢wkt
+      (≅-univ (≅ₜ-Π-cong ⊢u (≅-un-univ (escapeEqRefl [u0])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) (escapeEqRefl [t0])))))
+      [u] ([nondep] [t0] [u]) ([nondepext] [t0] [u])
+    [wkt▹u] = λ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Lwk.wk [ρ] ⊢Δ (emb emb< [t▹u])
+    ⊢t▹u = escape [t▹u]
+    ⊢u▹t = Twk.wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t▹u) (escape [u▹t])
+
+    ⊢tA = conv (un-univ ⊢t) (sym (subset* D))
+    ⊢uA = conv (un-univ ⊢u) (sym (subset* D))
+    ⊢Id = univ (Idⱼ (un-univ ⊢A) ⊢tA ⊢uA)
+    ⊢Eq = univ (∃ⱼ un-univ ⊢t▹u ▹ un-univ ⊢u▹t)
+  in ∃ᵣ′ (t ^ % ° ⁰ ▹▹ u ° ⁰) (wk1 (u ^ % ° ⁰ ▹▹ t ° ⁰))
+    [[ ⊢Id , ⊢Eq , IdRed* ⊢tA ⊢uA D ⇨* (univ (Id-SProp (un-univ ⊢t) (un-univ ⊢u)) ⇨ id ⊢Eq) ]] ⊢t▹u ⊢u▹t
+    (≅-univ (≅ₜ-∃-cong ⊢t▹u (≅-un-univ (escapeEqRefl [t▹u])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t▹u) (escapeEqRefl [u▹t])))))
+    [wkt▹u] ([nondep] (emb emb< [u▹t]) [wkt▹u]) ([nondepext] (emb emb< [u▹t]) [wkt▹u])
 
 IdType ⊢Γ (ℕᵣ x) [t] [u] = {!!}
 
