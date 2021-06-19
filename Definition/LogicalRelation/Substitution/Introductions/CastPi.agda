@@ -53,9 +53,6 @@ postulate B-cast-subst : ∀ σ A' A rA e B →
                          PE.≡
                          subst (repeat liftSubst (repeat liftSubst σ 1) 0) (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]↑)
 
-postulate Beq : ∀ ρ σ a B → subst (sgSubst a ₛ• lift ρ ₛ•ₛ liftSubst σ) B PE.≡
-                            U.wk (lift ρ) B [ a ]
-
 wk1∃ : ∀ A A' rA B B' →  wk1 (∃ Id (Univ rA ⁰) A A' ▹ (Π wk1 A' ^ rA ° ⁰ ▹
                              Id (U ⁰) (U.wk (lift (step id)) B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A))
                                                                 (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
