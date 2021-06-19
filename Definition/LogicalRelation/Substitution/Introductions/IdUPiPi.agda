@@ -246,7 +246,6 @@ Id-U-ΠΠᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
       [ΓIdA'] = _∙_ {A = wk1 A'} [ΓId] [wA']'
       [wwU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓIdA'] {Δ} {σ}
       [wwUA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓIdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓIdA'] {Δ} {σ}) {Δ} {σ}
-      [wwUA']ᵗ = Uᵗᵛ [ΓIdA']
       [ΓIdA] = _∙_ {A = wk1 A} [ΓId] [wA]'
       [wwA'] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A'} {lG = ⁰} [ΓId] [wA']' [wA']
       [wwA] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A} {lG = ⁰} [ΓId] [wA']' [wA]
