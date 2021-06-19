@@ -77,7 +77,13 @@ snd-cast-subst : ∀ A A' rA B B' e → Π wk1 (wk1 A') ^ rA ° ⁰ ▹
                                       Π (wk1 A') ^ rA ° ⁰ ▹
                                         Id (U ⁰) ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
                                                  (wk1d B') ° ¹ 
-snd-cast-subst A A' rA B B' e = {!!}
+snd-cast-subst A A' rA B B' e = PE.cong₃ (λ X Y Z → Π X ^ rA ° ⁰ ▹ Id (U ⁰) Y Z ° ¹)
+                                         (wk1-singleSubst (wk1 A') _)
+                                         {!!}
+                                         (PE.trans (PE.trans (wk1d-singleSubst (wk1d B') _)
+                                                   (PE.trans (PE.cong wk1d (PE.sym (wk1d-singleSubst B' _)) ) (PE.trans (PE.sym (Idsym-subst-lemma-wk1d (sgSubst (fst (wk1 e))) (wk1d B')))
+                                                     (PE.cong (subst (liftSubst (liftSubst (sgSubst (fst (wk1 e)))))) (wk-comp (lift (step id)) (lift (step id)) B'))) )) 
+                                                   (cast-subst-lemma3 B' (fst (wk1 e))))
 
 Id-cast-subst : ∀ A A' rA B B' e → Id (U ⁰) (wk1d B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
                                             (wk1d B')
@@ -85,7 +91,9 @@ Id-cast-subst : ∀ A A' rA B B' e → Id (U ⁰) (wk1d B [ cast ⁰ (wk1 (wk1 A
                                    PE.≡
                                    Id (U ⁰) (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]↑)
                                                   B'
-Id-cast-subst = {!!}
+Id-cast-subst A A' rA B B' e = PE.cong₂ (Id (U ⁰)) {!!} {!!}
+
+{-
 
 cast-Πᵗᵛ-aux : ∀ {A B A' B' rA Γ e f} ([Γ] : ⊩ᵛ Γ) →
         let l    = ∞
@@ -434,3 +442,4 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                           [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A]ₜ [B]ₜ [A']ₜ [B']ₜ [var0]ₜ [var1]ₜ)
                (Id-U-ΠΠ-resᵗᵛ {wk1 A} {wk1d B} {wk1 A'} {wk1d B'}  
                              [ΓA'] [wA] [wA'] (λ {Δ} {σ} → [wwUA] {Δ} {σ} !) (λ {Δ} {σ} → [wwUA'] {Δ} {σ} !) [wA]ₜ [wB]ₜ [wA']ₜ [wB']ₜ [var0']ₜ [var1']ₜ) [var]ₜ [var0']ₜ [var1']ₜ
+-}

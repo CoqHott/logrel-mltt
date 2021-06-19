@@ -40,8 +40,8 @@ open import Definition.LogicalRelation.Substitution.ProofIrrelevance
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
-postulate lemma1 : ∀ {σ rA} A A' B →
-                   U.wk (lift (step id)) (subst (liftSubst σ) B) [
+lemma1 : ∀ {σ rA} A A' B →
+                   wk1d (subst (liftSubst σ) B) [
                         cast ⁰ (wk1 (wk1 (subst σ A')))
                                (wk1 (wk1 (subst σ A)))
                                (Idsym (Univ rA ⁰) (wk1 (wk1 (subst σ A))) (wk1 (wk1 (subst σ A'))) (var 1))
@@ -53,10 +53,13 @@ postulate lemma1 : ∀ {σ rA} A A' B →
                             (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1))
                             (var 0)]↑)
 
-postulate lemma2 : ∀ {σ} B → U.wk (lift (step id)) (subst (liftSubst σ) B)
+lemma1 {σ} {rA} A A' B = {!!}
+
+
+lemma2 : ∀ {σ} B → U.wk (lift (step id)) (subst (liftSubst σ) B)
                              PE.≡
                              subst (liftSubst (liftSubst σ)) (U.wk (lift (step id)) B)
-
+lemma2 B = PE.sym (Idsym-subst-lemma-wk1d _ B)
 
 Id-U-ΠΠ-resᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →
         let l    = ∞
