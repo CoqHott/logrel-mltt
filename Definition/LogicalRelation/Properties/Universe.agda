@@ -21,6 +21,17 @@ open import Tools.Empty using (⊥; ⊥-elim)
 import Data.Fin as Fin
 import Data.Nat as Nat
 
+
+U¹ : ∀ {Γ rU} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ ∞ ⟩ Univ rU ¹ ^ [ ! , ∞ ] 
+U¹ {Γ} {rU} ⊢Γ = Uᵣ′ (Univ rU ¹) ∞ rU ¹ ∞< PE.refl (idRed:*: (Uⱼ ⊢Γ))
+
+U⁰ⱼ : ∀ {r Γ} → ⊢ Γ → Γ ⊢ Univ r ⁰ ^ [ ! , ι ¹ ]
+U⁰ⱼ ⊢Γ = univ (univ 0<1 ⊢Γ)
+
+
+U⁰ : ∀ {Γ rU} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ ι ¹ ⟩ Univ rU ⁰ ^ [ ! , ι ¹ ] 
+U⁰ {Γ} {rU} ⊢Γ = Uᵣ′ (Univ rU ⁰) (ι ¹) rU ⁰ emb< PE.refl ((idRed:*: (U⁰ⱼ ⊢Γ)))
+
 U-Relevance-Level : ∀ {l ll Γ A} ([U] : Γ ⊩⟨ l ⟩U A ^ ll) → Relevance × Level
 U-Relevance-Level (noemb (Uᵣ r l′ l< eq d)) =  r , l′
 U-Relevance-Level (emb x X) = U-Relevance-Level X

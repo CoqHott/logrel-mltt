@@ -23,17 +23,11 @@ import Definition.LogicalRelation.Weakening as wkLR
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
-U¹ : ∀ {Γ rU} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ ∞ ⟩ Univ rU ¹ ^ [ ! , ∞ ] 
-U¹ {Γ} {rU} ⊢Γ = Uᵣ′ (Univ rU ¹) ∞ rU ¹ ∞< PE.refl (idRed:*: (Uⱼ ⊢Γ))
-
 -- Validity of the universe type.
 U¹ᵛ : ∀ {Γ rU l} → (ι ¹ <∞ l) → ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ l ⟩ Univ rU ¹ ^ [ ! , ∞ ] / [Γ]
 U¹ᵛ {Γ} {rU} ∞< [Γ] ⊢Δ [σ] =
   U¹ ⊢Δ , (λ [σ′] [σ≡σ′] → id (Uⱼ ⊢Δ))
-
-U⁰ⱼ : ∀ {r Γ} → ⊢ Γ → Γ ⊢ Univ r ⁰ ^ [ ! , ι ¹ ]
-U⁰ⱼ ⊢Γ = univ (univ 0<1 ⊢Γ)
 
 U⁰ᵛ : ∀ {Γ rU l' l} → (⁰ ≤ l') → (ι l' <∞ l) → ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ l ⟩ Univ rU ⁰ ^ [ ! , ι ¹ ] / [Γ]
