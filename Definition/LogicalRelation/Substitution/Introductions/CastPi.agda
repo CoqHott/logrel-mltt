@@ -81,15 +81,19 @@ snd-cast-subst : ∀ A A' rA B B' e → Π wk1 (wk1 A') ^ rA ° ⁰ ▹
                                                (wk1d (wk1d B')) ° ¹ [ fst (wk1 e) ]
                                     PE.≡
                                       Π (wk1 A') ^ rA ° ⁰ ▹
-                                        Id (U ⁰) ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
+                                        Id (U ⁰) ((wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 (wk1 e)))) (var 0) ]↑)
                                                  (wk1d B') ° ¹
 snd-cast-subst A A' rA B B' e = PE.cong₃ (λ X Y Z → Π X ^ rA ° ⁰ ▹ Id (U ⁰) Y Z ° ¹)
-                                         (wk1-singleSubst (wk1 A') _)
-                                         {!!}
-                                         (PE.trans (PE.trans (wk1d-singleSubst (wk1d B') _)
-                                                   (PE.trans (PE.cong wk1d (PE.sym (wk1d-singleSubst B' _)) ) (PE.trans (PE.sym (Idsym-subst-lemma-wk1d (sgSubst (fst (wk1 e))) (wk1d B')))
-                                                     (PE.cong (subst (liftSubst (liftSubst (sgSubst (fst (wk1 e)))))) (wk-comp (lift (step id)) (lift (step id)) B'))) ))
-                                                   (cast-subst-lemma3 B' (fst (wk1 e))))
+  (wk1-singleSubst (wk1 A') _)
+  (PE.trans (singleSubstLift↑ (sgSubst (fst (wk1 e))) (wk1d (wk1d B)) _)
+    (PE.cong₂ (λ X Y → X [ Y ]↑) (wk1d-singleSubst (wk1d B) (fst (wk1 e)))
+      (PE.cong₃ (λ X Y Z → cast ⁰ X Y Z (var 0)) (subst3wk A' (fst (wk1 e))) (subst3wk A (fst (wk1 e)))
+        (PE.trans (subst-Idsym (liftSubst (sgSubst (fst (wk1 e)))) (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) (var 1))
+          (PE.cong₂ (λ X Y → Idsym (Univ rA ⁰) X Y (fst (wk1 (wk1 e)))) (subst3wk A (fst (wk1 e))) (subst3wk A' (fst (wk1 e))))))))
+  (wk1d-singleSubst (wk1d B') (fst (wk1 e)))
+  where
+    subst3wk : ∀ t u → subst (liftSubst (sgSubst u)) (wk1 (wk1 (wk1 t))) PE.≡ wk1 (wk1 t)
+    subst3wk t u = PE.trans (Idsym-subst-lemma (sgSubst u) (wk1 (wk1 t))) (PE.cong wk1 (wk1-singleSubst (wk1 t) u))
 
 Id-cast-subst : ∀ A A' rA B B' e → Id (U ⁰) (wk1d B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 e))) (var 0) ]↑)
                                             (wk1d B')
@@ -97,7 +101,9 @@ Id-cast-subst : ∀ A A' rA B B' e → Id (U ⁰) (wk1d B [ cast ⁰ (wk1 (wk1 A
                                    PE.≡
                                    Id (U ⁰) (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]↑)
                                                   B'
-Id-cast-subst A A' rA B B' e = PE.cong₂ (Id (U ⁰)) {!!} {!!}
+Id-cast-subst A A' rA B B' e = PE.cong₂ (Id (U ⁰))
+  {!PE.trans (wk1d[]-[]↑ )!}
+  (wkSingleSubstId B')
 
 {-
 
