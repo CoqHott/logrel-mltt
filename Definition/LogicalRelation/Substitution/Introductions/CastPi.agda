@@ -43,10 +43,14 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 
-postulate wk1f-cast-subst : ∀ σ f A' A rA e →
-                              (wk1 (subst σ f) ∘ cast ⁰ (wk1 (subst σ A')) (wk1 (subst σ A)) (Idsym (Univ rA ⁰) (wk1 (subst σ A)) (wk1 (subst σ A')) (fst (wk1 (subst σ e)))) (var 0))
-                              PE.≡
-                              subst (repeat liftSubst (repeat liftSubst σ 1) 0) (wk1 f ∘ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0))
+wk1f-cast-subst : ∀ σ f A' A rA e →
+  (wk1 (subst σ f) ∘ cast ⁰ (wk1 (subst σ A')) (wk1 (subst σ A)) (Idsym (Univ rA ⁰) (wk1 (subst σ A)) (wk1 (subst σ A')) (fst (wk1 (subst σ e)))) (var 0))
+  PE.≡
+  subst (repeat liftSubst (repeat liftSubst σ 1) 0) (wk1 f ∘ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0))
+wk1f-cast-subst σ f A' A rA e = PE.cong₂ (λ X Y → X ∘ Y) (PE.sym (Idsym-subst-lemma σ f))
+  (PE.cong₃ (λ X Y Z → cast ⁰ X Y Z (var 0)) (PE.sym (Idsym-subst-lemma σ A')) (PE.sym (Idsym-subst-lemma σ A))
+    (PE.trans (PE.cong₃ (λ X Y Z → Idsym (Univ rA ⁰) X Y Z) (PE.sym (Idsym-subst-lemma σ A)) (PE.sym (Idsym-subst-lemma σ A')) (PE.sym (Idsym-subst-lemma σ (fst e))))
+      (PE.sym (subst-Idsym (liftSubst σ) (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))))))
 
 B-cast-subst : ∀ σ A' A rA e B →
   subst (liftSubst σ) B [ cast ⁰ (wk1 (subst σ A')) (wk1 (subst σ A)) (Idsym (Univ rA ⁰) (wk1 (subst σ A)) (wk1 (subst σ A')) (fst (wk1 (subst σ e)))) (var 0) ]↑
