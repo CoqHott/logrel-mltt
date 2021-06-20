@@ -191,8 +191,12 @@ IdTypeU ⊢Γ (Πᵣ x) (ne x₁) = {!!}
 IdTypeU {A} {B} {Γ} ⊢Γ (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ B≡B [F₁] [G₁] G₁-ext) =
   ∃ᵣ′ (Id (U ⁰) F F₁) (IdGG₁ (step id) (var 0))
-    [[ (univ (Idⱼ (univ 0<1 ⊢Γ) (un-univ ⊢A) (un-univ ⊢B))) , {!!} , univ⇒* (IdURed*Term′ (un-univ ⊢A) (un-univ ⊢ΠFG) (un-univ⇒* D) (un-univ ⊢B) ⇨∷* IdUΠRed*Term′ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢B) (un-univ ⊢ΠF₁G₁) (un-univ⇒* D₁)) ⇨*  PE.subst (λ X → Γ ⊢ Id (U ⁰) (Π F ^ ! ° ⁰ ▹ G ° ⁰) (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰) ⇒* X ^ [ % , ι ¹ ]) (PE.sym IdTel≡IdUΠΠ) (univ (Id-U-ΠΠ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁)) ⇨ id {!!})  ]]
-    ⊢IdFF₁ {!!} {!!} [IdFF₁] {!!} {!!}
+    [[ (univ (Idⱼ (univ 0<1 ⊢Γ) (un-univ ⊢A) (un-univ ⊢B))) , ⊢∃ , D∃ ]]
+    ⊢IdFF₁ ⊢IdGG₁ ∃≡∃ [IdFF₁]
+    (λ {ρ} {Δ} {a} [ρ] ⊢Δ [a] → PE.subst (λ X → Δ ⊩⟨ ι ¹ ⟩ X ^ [ % , ι ¹ ]) (PE.sym (wksubst-IdTel ρ a)) ([IdGG₁] [ρ] ⊢Δ [a]))
+    (λ {ρ} {Δ} {a} {b} [ρ] ⊢Δ [a] [b] [a≡b] → irrelevanceEq″ (PE.sym (wksubst-IdTel ρ a)) (PE.sym (wksubst-IdTel ρ b)) PE.refl PE.refl
+      ([IdGG₁] [ρ] ⊢Δ [a]) (PE.subst (λ X → Δ ⊩⟨ ι ¹ ⟩ X ^ [ % , ι ¹ ]) (PE.sym (wksubst-IdTel ρ a)) ([IdGG₁] [ρ] ⊢Δ [a]))
+      ([IdGG₁-ext] [ρ] ⊢Δ [a] [b] [a≡b]))
   where
     ⊢IdFF₁ = univ (Idⱼ (univ 0<1 ⊢Γ) (un-univ ⊢F) (un-univ ⊢F₁))
     [IdFF₁] : ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ¹ ⟩ wk ρ (Id (U ⁰) F F₁) ^ [ % , ι ¹ ]
@@ -325,6 +329,31 @@ IdTypeU {A} {B} {Γ} ⊢Γ (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE
           x₀ = (PE.trans (PE.cong (subst (liftSubst (sgSubst e))) (wk-β (wk (lift (step (step id))) G)))
             (PE.trans (singleSubstLift (wk (lift (lift (lift ρ))) (wk (lift (step (step id))) G)) (wk (lift (lift ρ)) (b (step (step id)) (var 1) (var 0)))) x₁))
         in PE.cong₃ (λ X Y Z → Π X ^ ! ° ⁰ ▹ Id (U ⁰) Y Z ° ¹) (irrelevant-subst′ ρ F₁ e) x₀ (cast-subst-lemma4 ρ e G₁)
+
+    [IdGG₁0] : Γ ∙ Id (U ⁰) F F₁ ^ [ % , ι ¹ ] ⊩⟨ ι ¹ ⟩ IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
+    [IdGG₁0] = let
+        ⊢0 = var (⊢Γ ∙ ⊢IdFF₁) here
+        [0] = neuTerm ([IdFF₁] (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁)) (var 0) ⊢0 (~-var ⊢0)
+      in [IdGG₁] (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁) [0]
+
+    ⊢IdGG₁ : Γ ∙ Id (U ⁰) F F₁ ^ [ % , ι ¹ ] ⊢ IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
+    ⊢IdGG₁ = escape [IdGG₁0]
+
+    ⊢∃ : Γ ⊢ ∃ Id (U ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
+    ⊢∃ = univ (∃ⱼ un-univ ⊢IdFF₁ ▹ un-univ ⊢IdGG₁)
+
+    ∃≡∃ : Γ ⊢ ∃ Id (U ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ≅ ∃ Id (U ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
+    ∃≡∃ = (≅-univ (≅ₜ-∃-cong
+      ⊢IdFF₁
+      (≅-un-univ (escapeEqRefl (PE.subst (λ X → Γ ⊩⟨ ι ¹ ⟩ X ^ [ % , ι ¹ ]) (wk-id (Id (U ⁰) F F₁)) ([IdFF₁] Twk.id ⊢Γ))))
+      (≅-un-univ (escapeEqRefl [IdGG₁0]))))
+
+    D∃ : Γ ⊢ Id (U ⁰) A B ⇒* ∃ Id (U ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
+    D∃ = univ⇒* (IdURed*Term′ (un-univ ⊢A) (un-univ ⊢ΠFG) (un-univ⇒* D) (un-univ ⊢B)
+      ⇨∷* IdUΠRed*Term′ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢B) (un-univ ⊢ΠF₁G₁) (un-univ⇒* D₁))
+      ⇨* PE.subst (λ X → Γ ⊢ Id (U ⁰) (Π F ^ ! ° ⁰ ▹ G ° ⁰) (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰) ⇒* X ^ [ % , ι ¹ ]) (PE.sym IdTel≡IdUΠΠ)
+        (univ (Id-U-ΠΠ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁))
+      ⇨ id (PE.subst (λ X → Γ ⊢ X ^ [ % , ι ¹ ]) IdTel≡IdUΠΠ ⊢∃))
 
 IdTypeU ⊢Γ (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   (Πᵣ′ rF₁ .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ B≡B [F₁] [G₁] G₁-ext) = {!!}
