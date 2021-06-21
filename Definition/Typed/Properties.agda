@@ -752,6 +752,40 @@ CastRed*Termℕ ⊢e ⊢t  [[ ⊢A , ⊢B , D ]] =
      conv (castⱼ (ℕⱼ (wfTerm ⊢e)) (un-univ ⊢B) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl (ℕⱼ (wfTerm ⊢e))) (subset*Term (un-univ⇒* D))))) ⊢t) (sym (subset* D)) ,
        CastRed*Termℕ′ ⊢e ⊢t D ]]
 
+CastRed*Termℕℕ′ : ∀ {Γ e t u}
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ⇒* u ∷ ℕ ^ ι ⁰ )
+       → Γ ⊢ cast ⁰ ℕ ℕ e t ⇒* cast ⁰ ℕ ℕ e u ∷ ℕ ^ ι ⁰
+CastRed*Termℕℕ′ ⊢e (id ⊢t) = id (castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢t)
+CastRed*Termℕℕ′ ⊢e (d ⇨ D) = cast-ℕ-cong ⊢e d ⇨ CastRed*Termℕℕ′ ⊢e D
+
+CastRed*Termℕℕ : ∀ {Γ e t u}
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t :⇒*: u ∷ ℕ ^ ι ⁰ )
+       → Γ ⊢ cast ⁰ ℕ ℕ e t :⇒*: cast ⁰ ℕ ℕ e u ∷ ℕ ^ ι ⁰
+CastRed*Termℕℕ ⊢e [[ ⊢t , ⊢u , D ]] =
+  [[ castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢t ,
+     castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢u ,
+       CastRed*Termℕℕ′ ⊢e D ]]
+
+CastRed*Termℕsuc : ∀ {Γ e n}
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
+         (⊢n : Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ])
+       → Γ ⊢ cast ⁰ ℕ ℕ e (suc n) :⇒*: suc (cast ⁰ ℕ ℕ e n) ∷ ℕ ^ ι ⁰
+CastRed*Termℕsuc ⊢e ⊢n =
+  [[ castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e (sucⱼ ⊢n) ,
+     sucⱼ (castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢n) ,
+       cast-ℕ-S ⊢e ⊢n ⇨ id (sucⱼ (castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢n)) ]]
+
+CastRed*Termℕzero : ∀ {Γ e}
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
+       → Γ ⊢ cast ⁰ ℕ ℕ e zero :⇒*: zero ∷ ℕ ^ ι ⁰
+CastRed*Termℕzero ⊢e =
+  [[ castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e (zeroⱼ (wfTerm ⊢e)) ,
+     zeroⱼ (wfTerm ⊢e) ,
+       cast-ℕ-0 ⊢e ⇨ id (zeroⱼ (wfTerm ⊢e)) ]]
+
+
 CastRed*TermΠ′ : ∀ {Γ F rF G A B e t}
          (⊢F : Γ ⊢ F ∷ (Univ rF ⁰) ^ [ ! , next ⁰ ])
          (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ∷ U ⁰ ^ [ ! , next ⁰ ])
@@ -819,6 +853,7 @@ castΠRed* : ∀ {Γ F rF G A B e t}
        → Γ ⊢ cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) A e t ⇒* cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) B e t ∷ A ^ ι ⁰
 castΠRed* ⊢F ⊢G ⊢e ⊢t (id (univ ⊢A)) = id (castⱼ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G) ⊢A ⊢e ⊢t)
 castΠRed* ⊢F ⊢G ⊢e ⊢t ((univ d) ⇨ D) = cast-Π-subst (un-univ ⊢F) (un-univ ⊢G) d ⊢e ⊢t ⇨ conv* (castΠRed* ⊢F ⊢G (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢F))) (refl (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G)) (subsetTerm d)))) ⊢t D) (sym (subset (univ d)))
+
 
 notredUterm* : ∀ {Γ r l l' A B} → Γ ⊢ Univ r l ⇒ A ∷ B ^ l' → ⊥
 notredUterm* (conv D x) = notredUterm* D
