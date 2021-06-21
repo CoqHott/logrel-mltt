@@ -243,9 +243,8 @@ record EqRelSet : Set₁ where
 
     ~-castℕΠ : ∀ {A A' rA P P' e e' t t' Γ}
              → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ A ≅ A' ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ P ≅ P' ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ t ≅ t' ∷ ℕ ^ [ ! , ι ⁰ ]
              → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰) e' t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰) ^ [ ! , ι ⁰ ]
 
