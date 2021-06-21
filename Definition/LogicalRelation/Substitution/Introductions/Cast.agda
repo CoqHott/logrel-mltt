@@ -36,41 +36,6 @@ import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
-CastRed*Termℕℕ′ : ∀ {Γ e t u}
-         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
-         (⊢t : Γ ⊢ t :⇒*: u ∷ ℕ ^ ι ⁰ )
-       → Γ ⊢ cast ⁰ ℕ ℕ e t ⇒* cast ⁰ ℕ ℕ e u ∷ ℕ ^ ι ⁰
-CastRed*Termℕℕ′ ⊢e [[ ⊢t , ⊢u , D ]] = {!!}
--- CastRed*Termℕ′ ⊢e ⊢t  (id (univ ⊢A)) = id (castⱼ (ℕⱼ (wfTerm ⊢A)) ⊢A ⊢e ⊢t)
--- CastRed*Termℕ′ ⊢e ⊢t  (univ d ⇨ D) = cast-ℕ-subst d ⊢e ⊢t ⇨
---                                      conv* (CastRed*Termℕ′ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl (ℕⱼ (wfTerm ⊢e))) (subsetTerm d))) ) ⊢t D)
---                                            (sym (subset (univ d)))
-
-CastRed*Termℕℕ : ∀ {Γ e t u}
-         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
-         (⊢t : Γ ⊢ t :⇒*: u ∷ ℕ ^ ι ⁰ )
-       → Γ ⊢ cast ⁰ ℕ ℕ e t :⇒*: cast ⁰ ℕ ℕ e u ∷ ℕ ^ ι ⁰
-CastRed*Termℕℕ ⊢e [[ ⊢t , ⊢u , D ]] =
-  [[ castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢t ,
-     castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢u ,
-       CastRed*Termℕℕ′ ⊢e [[ ⊢t , ⊢u , D ]] ]]
-
-CastRed*Termℕsuc : ∀ {Γ e n}
-         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
-         (⊢n : Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ])
-       → Γ ⊢ cast ⁰ ℕ ℕ e (suc n) :⇒*: suc (cast ⁰ ℕ ℕ e n) ∷ ℕ ^ ι ⁰
-CastRed*Termℕsuc ⊢e ⊢n =
-  [[ castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e (sucⱼ ⊢n) ,
-     sucⱼ (castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢n) ,
-       cast-ℕ-S ⊢e ⊢n ⇨ id (sucⱼ (castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e ⊢n)) ]]
-
-CastRed*Termℕzero : ∀ {Γ e}
-         (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ])
-       → Γ ⊢ cast ⁰ ℕ ℕ e zero :⇒*: zero ∷ ℕ ^ ι ⁰
-CastRed*Termℕzero ⊢e =
-  [[ castⱼ (ℕⱼ (wfTerm ⊢e)) (ℕⱼ (wfTerm ⊢e)) ⊢e (zeroⱼ (wfTerm ⊢e)) ,
-     zeroⱼ (wfTerm ⊢e) ,
-       cast-ℕ-0 ⊢e ⇨ id (zeroⱼ (wfTerm ⊢e)) ]]
 
 [cast]irr : ∀ {A B Γ}
          (⊢Γ : ⊢ Γ)
@@ -272,9 +237,6 @@ CastRed*Termℕzero ⊢e =
                                               (~-castΠ (≅-un-univ B≡B) K≡K (≅-conv (escapeTermEq {l = ι ⁰} {A = A} [Π] (reflEqTerm {l = ι ⁰} [Π] [t])) ⊢B≡Π' )))) ,
   (λ {t} {e} [t] ⊢e → [cast]Ne ⊢Γ (ne K [[ ⊢A , ⊢K , D ]] neK K≡K) (Πᵣ′ rF lF lG (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢B , ⊢Π , DΠ ]] ⊢F ⊢G B≡B [F] [G] G-ext) [t] ⊢e)
 [cast] {r = %} ⊢Γ [A] [B] = [cast]irr ⊢Γ [A] [B] , [cast]irr ⊢Γ [B] [A] 
-[cast]  {A} {B} {Γ} {r = !} ⊢Γ (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-  (Πᵣ′ rF₁ lF₁ lG₁ lF₁≤⁰ lG₁≤⁰ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁) = {!!} -- already done
-{-
 [cast] {A} {B} {Γ} {r = !} ⊢Γ (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢ΠFG , D ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext) =
   [cast]₁ , [cast]₂
@@ -313,6 +275,7 @@ CastRed*Termℕzero ⊢e =
                                                     ([G₁] [ρ] ⊢Δ [y]) ([G₁] [ρ] ⊢Δ [y′]) (G₁-ext [ρ] ⊢Δ [y] [y′] [y≡y′])))
                               ⊢t Df [fext] [f] b₂.[b] b₂.[bext]
 
+{-
 [castext] {A₁} {A₂} {A₃} {A₄} {Γ} {r = !} ⊢Γ
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
   (Πᵣ′ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₂ G₂ [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]] ⊢F₂ ⊢G₂ A₂≡A₂ [F₂] [G₂] G₂-ext)
