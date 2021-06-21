@@ -131,7 +131,7 @@ record EqRelSet : Set₁ where
     -- Zero reflexivity
     ≅ₜ-zerorefl : ∀ {Γ} → ⊢ Γ → Γ ⊢ zero ≅ zero ∷ ℕ ^ [ ! , ι ⁰ ]
 
-    -- Successor congurence
+    -- Successor congruence
     ≅-suc-cong : ∀ {m n Γ} → Γ ⊢ m ≅ n ∷ ℕ ^ [ ! , ι ⁰ ] → Γ ⊢ suc m ≅ suc n ∷ ℕ ^ [ ! , ι ⁰ ]
 
     -- η-equality
@@ -234,9 +234,7 @@ record EqRelSet : Set₁ where
 
     ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ} →
            let l = ⁰ in
-             Γ ⊢ A ^ [ rA , ι l ]
-           → Γ ⊢ A ≅ A' ∷ Univ rA l ^ [ ! , next l ]
-           → Γ ∙ A ^ [ rA , ι l ] ⊢ P ≅ P' ∷ U l ^ [ ! , next l ]
+           Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
            → Γ ⊢ B ~ B' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ t ≅ t' ∷ Π A ^ rA ° l ▹ P ° l  ^ [ ! , ι l ]
            → Γ ⊢ cast l (Π A ^ rA ° l ▹ P ° l) B e t ~ cast l (Π A' ^ rA ° l ▹ P' ° l ) B' e' t' ∷ B ^ [ ! , ι l ]
@@ -251,9 +249,8 @@ record EqRelSet : Set₁ where
     ~-castΠℕ : ∀ {A A' rA P P' e e' t t' Γ} →
              let l = ⁰ in
                Γ ⊢ A ∷ Univ rA l ^ [ ! , next l ]
-             → Γ ⊢ A ≅ A' ∷ Univ rA l ^ [ ! , next l ]
              → Γ ∙ A ^ [ rA , ι l ] ⊢ P ∷ U l ^ [ ! , next l ]
-             → Γ ∙ A ^ [ rA , ι l ] ⊢ P ≅ P' ∷ U l ^ [ ! , next l ]
+             → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰) ^ [ ! , ι l ]
              → Γ ⊢ cast l (Π A ^ rA ° ⁰ ▹ P ° ⁰) ℕ e t ~ cast l (Π A' ^ rA ° ⁰ ▹ P' ° ⁰) ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 

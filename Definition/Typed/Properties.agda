@@ -733,7 +733,31 @@ CastRed*Termℕ ⊢e ⊢t  [[ ⊢A , ⊢B , D ]] =
      conv (castⱼ (ℕⱼ (wfTerm ⊢e)) (un-univ ⊢B) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl (ℕⱼ (wfTerm ⊢e))) (subset*Term (un-univ⇒* D))))) ⊢t) (sym (subset* D)) ,
        CastRed*Termℕ′ ⊢e ⊢t D ]]
 
+CastRed*TermΠ′ : ∀ {Γ F rF G A B e t}
+         (⊢F : Γ ⊢ F ∷ (Univ rF ⁰) ^ [ ! , next ⁰ ])
+         (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ∷ U ⁰ ^ [ ! , next ⁰ ])
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) A ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ∷ (Π F ^ rF ° ⁰ ▹ G ° ⁰) ^ [ ! , ι ⁰ ])
+         (D : Γ ⊢ A ⇒* B ^ [ ! , ι ⁰ ])
+       → Γ ⊢ cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) A e t ⇒* cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) B e t ∷ A ^ ι ⁰
+CastRed*TermΠ′ ⊢F ⊢G ⊢e ⊢t (id (univ ⊢A)) = id (castⱼ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G) ⊢A ⊢e ⊢t)
+CastRed*TermΠ′ ⊢F ⊢G ⊢e ⊢t (univ d ⇨ D) = cast-Π-subst ⊢F ⊢G d ⊢e ⊢t ⇨
+                                     conv* (CastRed*TermΠ′ ⊢F ⊢G (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G)) (subsetTerm d))) ) ⊢t D)
+                                           (sym (subset (univ d)))
 
+CastRed*TermΠ : ∀ {Γ F rF G A B e t}
+         (⊢F : Γ ⊢ F ∷ (Univ rF ⁰) ^ [ ! , next ⁰ ])
+         (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ∷ U ⁰ ^ [ ! , next ⁰ ])
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) A ^ [ % , next ⁰ ])
+         (⊢t : Γ ⊢ t ∷ (Π F ^ rF ° ⁰ ▹ G ° ⁰) ^ [ ! , ι ⁰ ])
+         (D : Γ ⊢ A :⇒*: B ^ [ ! , ι ⁰ ])
+       → Γ ⊢ cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) A e t :⇒*: cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) B e t ∷ A ^ ι ⁰
+CastRed*TermΠ ⊢F ⊢G ⊢e ⊢t  [[ ⊢A , ⊢B , D ]] =
+  let [Π] = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G
+  in [[ castⱼ [Π] (un-univ ⊢A) ⊢e ⊢t ,
+        conv (castⱼ [Π] (un-univ ⊢B) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl [Π]) (subset*Term (un-univ⇒* D))))) ⊢t) (sym (subset* D)) ,
+          CastRed*TermΠ′ ⊢F ⊢G ⊢e ⊢t D ]]
+          
 IdℕRed*Term′ : ∀ {Γ t t′ u}
                (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
                (⊢t′ : Γ ⊢ t′ ∷ ℕ ^ [ ! , ι ⁰ ])
