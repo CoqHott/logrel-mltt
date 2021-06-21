@@ -413,7 +413,8 @@ mutual
     PE.subst (λ x → Δ ⊢ U.wk ρ (cast l (Π A ^ rA ° lA ▹ B ° lB) (Π A' ^ rA ° lA ▹ B' ° lB) e f) ⇒ (lam (U.wk ρ A') ▹ let a = U.wk (lift ρ) (cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0)) in cast l x (U.wk (lift ρ) B') ((snd (U.wk (lift ρ) (wk1 e))) ∘ (var 0)) ((U.wk (lift ρ) (wk1 f)) ∘ a)) ∷ U.wk ρ (Π A' ^ rA ° lA ▹ B' ° lB) ^ ι l) (PE.sym (wk-β↑ {ρ = ρ} {a = (cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0))} B)) j5
   wkRedTerm ρ ⊢Δ (cast-ℕ-0 e) = cast-ℕ-0 (wkTerm ρ ⊢Δ e)
   wkRedTerm ρ ⊢Δ (cast-ℕ-S e n) = cast-ℕ-S (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ n)
-
+  wkRedTerm ρ ⊢Δ (cast-ℕ-cong e n) = cast-ℕ-cong (wkTerm ρ ⊢Δ e) (wkRedTerm ρ ⊢Δ n)
+  
 wkRed* : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
            let ρA = U.wk ρ A
                ρB = U.wk ρ B

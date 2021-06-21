@@ -472,6 +472,13 @@ mutual
                    ⇒ suc (cast ⁰ ℕ ℕ e n)
                    ∷ ℕ ^ ι ⁰
 
+    cast-ℕ-cong : ∀ {e t u}
+               → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]
+               → Γ ⊢ t ⇒ u ∷ ℕ ^ ι ⁰
+               → Γ ⊢ cast ⁰ ℕ ℕ e t
+                   ⇒ cast ⁰ ℕ ℕ e u
+                   ∷ ℕ ^ ι ⁰
+
   -- Type reduction
   data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ : ∀ {A B r l}

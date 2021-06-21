@@ -125,6 +125,9 @@ subsetTerm (cast-Π-subst A P B e t) = let ⊢Γ = wfTerm A
 subsetTerm (cast-Π A B A' B' e f) = cast-Π A B A' B' e f
 subsetTerm (cast-ℕ-0 e) = cast-ℕ-0 e
 subsetTerm (cast-ℕ-S e n) = cast-ℕ-S e n
+subsetTerm (cast-ℕ-cong e n) = let ⊢Γ = wfTerm e
+                                   ⊢ℕ = ℕⱼ ⊢Γ
+                               in cast-cong (refl ⊢ℕ) (refl ⊢ℕ) (subsetTerm n) e e
 
 subset (univ A⇒B) = univ (subsetTerm A⇒B)
 
@@ -191,6 +194,7 @@ redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ (
 redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A' ▹ B') e f
 redFirstTerm (cast-ℕ-0 e) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (zeroⱼ (wfTerm e))
 redFirstTerm (cast-ℕ-S e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (sucⱼ n)
+redFirstTerm (cast-ℕ-cong e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (redFirstTerm n)
 
 redFirst (univ A⇒B) = univ (redFirstTerm A⇒B)
 
@@ -275,6 +279,9 @@ neRedTerm (cast-ℕ-0 x) (castℕℕₙ ())
 neRedTerm (cast-ℕ-S x x₁) (castₙ ())
 neRedTerm (cast-ℕ-S x x₁) (castℕₙ ())
 neRedTerm (cast-ℕ-S x x₁) (castℕℕₙ ())
+neRedTerm (cast-ℕ-cong x x₁) (castₙ ())
+neRedTerm (cast-ℕ-cong x x₁) (castℕₙ ())
+neRedTerm (cast-ℕ-cong x x₁) (castℕℕₙ t) = neRedTerm x₁ t 
 
 neRed (univ x) N = neRedTerm x N
 
@@ -338,6 +345,9 @@ whnfRedTerm (cast-ℕ-0 x) (ne (castℕℕₙ ()))
 whnfRedTerm (cast-ℕ-S x x₁) (ne (castₙ ()))
 whnfRedTerm (cast-ℕ-S x x₁) (ne (castℕₙ ()))
 whnfRedTerm (cast-ℕ-S x x₁) (ne (castℕℕₙ ()))
+whnfRedTerm (cast-ℕ-cong x x₁) (ne (castₙ ()))
+whnfRedTerm (cast-ℕ-cong x x₁) (ne (castℕₙ ()))
+whnfRedTerm (cast-ℕ-cong x x₁) (ne (castℕℕₙ t)) = neRedTerm x₁ t
 
 whnfRed (univ x) w = whnfRedTerm x w
 
@@ -503,6 +513,15 @@ whrDetTerm (cast-ℕ-0 x) (cast-ℕ-0 x₁) = PE.refl
 whrDetTerm (cast-ℕ-S x x₁) (cast-subst d' x₂ x₃ x₄) = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (cast-ℕ-S x x₁) (cast-ℕ-subst d' x₂ x₃) = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (cast-ℕ-S x x₁) (cast-ℕ-S x₂ x₃) = PE.refl
+whrDetTerm (cast-ℕ-cong x x₁) (cast-subst d' x₂ x₃ x₄) = ⊥-elim (whnfRedTerm d' ℕₙ)
+whrDetTerm (cast-ℕ-cong x x₁) (cast-ℕ-subst d' x₂ x₃) = ⊥-elim (whnfRedTerm d' ℕₙ)
+whrDetTerm (cast-ℕ-cong x x₁) (cast-ℕ-cong x₂ x₃) rewrite whrDetTerm x₁ x₃ = PE.refl -- 
+whrDetTerm (cast-subst d x x₁ x₂) (cast-ℕ-cong x₃ d′) = ⊥-elim (whnfRedTerm d ℕₙ)
+whrDetTerm (cast-ℕ-subst d x x₁) (cast-ℕ-cong x₂ d′) = ⊥-elim (whnfRedTerm d ℕₙ)
+whrDetTerm (cast-ℕ-0 x) (cast-ℕ-cong x₁ d′) = ⊥-elim (whnfRedTerm d′ zeroₙ)
+whrDetTerm (cast-ℕ-S x x₁) (cast-ℕ-cong x₂ d′) = ⊥-elim (whnfRedTerm d′ sucₙ)
+whrDetTerm (cast-ℕ-cong x d) (cast-ℕ-0 x₁) = ⊥-elim (whnfRedTerm d zeroₙ)
+whrDetTerm (cast-ℕ-cong x d) (cast-ℕ-S x₁ x₂) = ⊥-elim (whnfRedTerm d sucₙ)
 
 {-# CATCHALL #-}
 whrDetTerm d (conv d′ x₁) = whrDetTerm d d′
