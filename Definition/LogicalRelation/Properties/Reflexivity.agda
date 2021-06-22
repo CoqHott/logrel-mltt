@@ -87,7 +87,7 @@ reflEqTerm0 {Γ = Γ} {s = s} (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]
                LogRel.cstr-arg-dispatch ⁰ (λ ()) Γ s K [domK] [Yi] ki kiK t →
                LogRel.cstr≡-arg-dispatch ⁰ (λ ()) Γ s K [domK] [Yi] ki kiK t t
     refl-aux ki kiK t d with [Yi] ki kiK
-    ... | LogRel.cstᵣ [A] = reflEqTerm0 [A] d
+    ... | LogRel.cstᵣ _ [A] = reflEqTerm0 [A] d
     ... | LogRel.monᵣ _ _ = d
 reflEqTerm0 (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
   let bb = boxₜ b d b≡b [b] in
@@ -150,7 +150,7 @@ mutual
                 LogRel.cstr-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t →
                 LogRel.cstr≡-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t t
       refl-aux ki kiK t d with [Yi] ki kiK
-      ... | LogRel.cstᵣ [A] = reflEqTerm [A] d
+      ... | LogRel.cstᵣ _ [A] = reflEqTerm [A] d
       ... | LogRel.monᵣ _ _ = d
   reflEqTerm (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
     let bb = boxₜ b d b≡b [b] in

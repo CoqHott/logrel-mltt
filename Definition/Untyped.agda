@@ -136,6 +136,9 @@ data [_]-cstr (K : constructors) : Term → Set where
 [_]-cstr-params : (K : constructors) {t : Term} ([K] : [ K ]-cstr t) → Term
 [ K ]-cstr-params {t = gen _ (⟦ _ , t ⟧ ∷ [])} [K] = t
 
+[]-cstr-params-irr : ∀ {K K' t} {kiK : [ K ]-cstr t} {kiK' : [ K' ]-cstr t} → [ K ]-cstr-params kiK PE.≡ [ K' ]-cstr-params kiK'
+[]-cstr-params-irr {t = gen k (⟦ _ , t ⟧ ∷ [])} = PE.refl
+
 postulate dec-cstr : decEq constructors
 
 is-[_]-cstr : (K : constructors) → Term → Bool

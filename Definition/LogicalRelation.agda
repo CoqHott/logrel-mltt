@@ -10,6 +10,7 @@ open import Definition.Typed
 open import Definition.Typed.Weakening
 
 open import Tools.Product
+open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
 
@@ -418,7 +419,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
 
 
     data _⊩¹[_]_⦂_ Γ K t s where
-      cstᵣ : Γ ⊩¹ t ⦂ s → Γ ⊩¹[ K ] t ⦂ s
+      cstᵣ : (n : [ K ]-cstr t → ⊥) → Γ ⊩¹ t ⦂ s → Γ ⊩¹[ K ] t ⦂ s
       monᵣ : (d : [ K ]-cstr t) → s PE.≡ cstr-𝕊 K → Γ ⊩¹[ K ] t ⦂ s
 
     type[domi] : (Γ : Con Term) (K : constructors) → Set
@@ -465,7 +466,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
                         ([domi] : type[domi] Γ K)
                         (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki)) (t : Term) → Set
     cstr-arg-dispatch Γ s K [domK] [domi] ki kiK t with [domi] ki kiK
-    ... | cstᵣ [A]  = Γ ⊩¹ t ∷ cstr-dom-ctx Γ ki ⦂ cstr-dom-sort ki / [A]
+    ... | cstᵣ _ [A]  = Γ ⊩¹ t ∷ cstr-dom-ctx Γ ki ⦂ cstr-dom-sort ki / [A]
     ... | monᵣ kidomK ki𝕊 = Γ ⊩¹ [ K ]-cstr-params kidomK ∷ cstr-dom-ctx Γ K ⦂ cstr-dom-sort K / [domK] -- hm, I don't use t here...
 
     _⊩¹cstr_∷_⦂_/_ : (Γ : Con Term) (t A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
@@ -478,7 +479,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ < l → LogRelKit) wher
                          ([domi] : type[domi] Γ K)
                          (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki)) (t t' : Term) → Set
     cstr≡-arg-dispatch Γ s K [domK] [domi] ki kiK t t' with [domi] ki kiK
-    ... | cstᵣ [A]  = Γ ⊩¹ t ≡ t' ∷ cstr-dom-ctx Γ ki ⦂ cstr-dom-sort ki / [A]
+    ... | cstᵣ _ [A]  = Γ ⊩¹ t ≡ t' ∷ cstr-dom-ctx Γ ki ⦂ cstr-dom-sort ki / [A]
     ... | monᵣ kidomK ki𝕊 = Γ ⊩¹ [ K ]-cstr-params kidomK ∷ cstr-dom-ctx Γ K ⦂ cstr-dom-sort K / [domK] -- hm, I don't use t or t' here...
 
     _⊩¹cstr_≡_∷_⦂_/_ : (Γ : Con Term) (t u A : Term) (s : 𝕊) ([A] : Γ ⊩¹cstr A ⦂ s) → Set
