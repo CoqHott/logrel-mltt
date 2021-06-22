@@ -254,6 +254,26 @@ record EqRelSet : Set₁ where
              → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰) ^ [ ! , ι l ]
              → Γ ⊢ cast l (Π A ^ rA ° ⁰ ▹ P ° ⁰) ℕ e t ~ cast l (Π A' ^ rA ° ⁰ ▹ P' ° ⁰) ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 
+    ~-castΠΠ%! : ∀ {A A' P P' B B' Q Q' e e' t t' Γ}
+             → Γ ⊢ A ∷ Univ % ⁰ ^ [ ! , next ⁰ ]
+             → Γ ∙ A ^ [ % , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ % ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ B ∷ Univ ! ⁰ ^ [ ! , next ⁰ ]
+             → Γ ∙ B ^ [ ! , ι ⁰ ] ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ≅ Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ t ≅ t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰) (Π B ^ ! ° ⁰ ▹ Q ° ⁰) e t ~ cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰) e' t' ∷ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ^ [ ! , ι ⁰ ]
+
+    ~-castΠΠ!% : ∀ {A A' P P' B B' Q Q' e e' t t' Γ}
+             → Γ ⊢ A ∷ Univ ! ⁰ ^ [ ! , next ⁰ ]
+             → Γ ∙ A ^ [ ! , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ B ∷ Univ % ⁰ ^ [ ! , next ⁰ ]
+             → Γ ∙ B ^ [ % , ι ⁰ ] ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ≅ Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ t ≅ t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰) (Π B ^ % ° ⁰ ▹ Q ° ⁰) e t ~ cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰) e' t' ∷ Π B ^ % ° ⁰ ▹ Q ° ⁰ ^ [ ! , ι ⁰ ]
+
     ~-irrelevance : ∀ {n n′ A l Γ} → Γ ⊢ n ∷ A ^ [ % , l ] → Γ ⊢ n′ ∷ A ^ [ % , l ]
                   → Γ ⊢ n ~ n′ ∷ A ^ [ % , l ]
 
