@@ -129,8 +129,18 @@ Id-cast-subst : ∀ A A' rA B B' e → Id (U ⁰) (wk1d B [ cast ⁰ (wk1 (wk1 A
                                    Id (U ⁰) (B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]↑)
                                                   B'
 Id-cast-subst A A' rA B B' e = PE.cong₂ (Id (U ⁰))
-  (PE.trans ({!!}) {!!})
+  (PE.trans
+    (PE.cong (λ X → X [ var 0 ]) (wk1d[]-[]↑ (wk1d B) _))
+    (PE.trans aux (PE.sym (wk1d[]-[]↑ B _))) )
   (wkSingleSubstId B')
+  where
+    aux : (wk1d (wk1d B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (fst (wk1 (wk1 e)))) (var 0) ]) [ var 0 ]
+      PE.≡ wk1d B [ cast ⁰ (wk1 A') (wk1 A) (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) ]
+    aux = PE.trans (singleSubstLift (wk1d (wk1d B)) _)
+      (PE.cong₄ (λ X Y Z T → X [ cast ⁰ Y Z T (var 0) ])
+        (wk1d-singleSubst (wk1d B) (var 0)) (wk1-singleSubst (wk1 A') (var 0)) (wk1-singleSubst (wk1 A) (var 0))
+        (PE.trans (subst-Idsym _ (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (wk1 (wk1 (fst e))))
+          (PE.cong₃ (λ X Y Z → Idsym (Univ rA ⁰) X Y Z) (wk1-singleSubst (wk1 A) (var 0)) (wk1-singleSubst (wk1 A') (var 0)) (wk1-singleSubst (wk1 (fst e)) (var 0)))))
 
 
 cast-Πᵗᵛ-aux : ∀ {A B A' B' rA Γ e f} ([Γ] : ⊩ᵛ Γ) →
