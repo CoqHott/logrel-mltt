@@ -223,11 +223,17 @@ IdTypeUExt {A₁} {A₂} {A₃} {A₄} {Γ} ⊢Γ (Πᵣ′ ! .⁰ .⁰ (≡is�
           (λ [ρ₁] ⊢Δ₁ → Lwk.wkEq [ρ₁] ⊢Δ₁ ([F₃] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ))
           (λ [ρ₁] ⊢Δ₁ [a] → [Ideq] [ρ] ⊢Δ [e] [ρ₁] ⊢Δ₁ [a])
 
+    [IdGG₁≡IdGG₂0] : Γ ∙ Id (U ⁰) F₁ F₃ ^ [ % , ι ¹ ] ⊩⟨ ι ¹ ⟩ E₁.IdGG₁ (step id) (var 0) ≡ E₂.IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ] / E₁.[IdGG₁0]
+    [IdGG₁≡IdGG₂0] = let
+        ⊢0 = var (⊢Γ ∙ E₁.⊢IdFF₁) here
+        [0] = neuTerm (E₁.[IdFF₁] (Twk.step Twk.id) (⊢Γ ∙ E₁.⊢IdFF₁)) (var 0) ⊢0 (~-var ⊢0)
+      in [IdGG₁≡IdGG₂] (Twk.step Twk.id) (⊢Γ ∙ E₁.⊢IdFF₁) [0]
+
     ∃₁≡∃₂ : Γ ⊢ ∃ Id (U ⁰) F₁ F₃ ▹ E₁.IdGG₁ (step id) (var 0) ≅ ∃ Id (U ⁰) F₂ F₄ ▹ E₂.IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
     ∃₁≡∃₂ = (≅-univ (≅ₜ-∃-cong
       E₁.⊢IdFF₁
-      (≅-un-univ {!!})
-      (≅-un-univ {!!})))
+      (≅-un-univ (PE.subst₂ (λ X Y → Γ ⊢ X ≅ Y ^ [ % , ι ¹ ]) (wk-id (Id (U ⁰) F₁ F₃)) (wk-id (Id (U ⁰) F₂ F₄)) (escapeEq (E₁.[IdFF₁] Twk.id ⊢Γ) ([IdFF₁≡IdFF₂] Twk.id ⊢Γ))))
+      (≅-un-univ (escapeEq E₁.[IdGG₁0] [IdGG₁≡IdGG₂0]))))
 
 IdTypeUExt [A₁] [A₂] [A₁≡A₂] [A₃] [A₄] [A₃≡A₄] = {!!}
 
