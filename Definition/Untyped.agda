@@ -251,6 +251,8 @@ data Neutral : Term → Set where
   castℕℕₙ : ∀ {l e t} → Neutral t → Neutral (cast l ℕ ℕ e t)
   castℕΠₙ : ∀ {l A rA lA B lB e t} → Neutral (cast l ℕ (Π A ^ rA ° lA ▹ B ° lB) e t)
   castΠℕₙ : ∀ {l A rA lA B lB e t} → Neutral (cast l (Π A ^ rA ° lA ▹ B ° lB ) ℕ e t)
+  castΠΠ%!ₙ : ∀ {l A lA B lB A' lA' B' lB' e t} → Neutral (cast l (Π A ^ % ° lA ▹ B ° lB ) (Π A' ^ ! ° lA' ▹ B' ° lB' ) e t)
+  castΠΠ!%ₙ : ∀ {l A lA B lB A' lA' B' lB' e t} → Neutral (cast l (Π A ^ ! ° lA ▹ B ° lB ) (Π A' ^ % ° lA' ▹ B' ° lB' ) e t)
   Emptyrecₙ : ∀ {A e} -> Neutral (Emptyrec A e)
 
 -- Weak head normal forms (whnfs).
@@ -468,6 +470,8 @@ wkNeutral ρ (castΠₙ A) = castΠₙ (wkNeutral ρ A)
 wkNeutral ρ (castℕℕₙ t) = castℕℕₙ (wkNeutral ρ t)
 wkNeutral ρ castℕΠₙ = castℕΠₙ
 wkNeutral ρ castΠℕₙ = castΠℕₙ
+wkNeutral ρ castΠΠ%!ₙ = castΠΠ%!ₙ
+wkNeutral ρ castΠΠ!%ₙ = castΠΠ!%ₙ
 
 -- Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 u)
 -- IdℕSₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 (suc u))
