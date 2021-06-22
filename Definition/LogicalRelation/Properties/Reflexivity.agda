@@ -26,12 +26,33 @@ reflEmpty-prop : ∀ {Γ n}
 reflEmpty-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 
 
-reflCstr-prop : ∀ {K Γ Pi t a s Pirel}
-              → (∀ ki kiK t → Pi ki kiK t → Pirel ki kiK t t)
-              → Cstr-prop K Γ Pi a s t
-              → [Cstr]-prop K Γ Pirel a s t t
-reflCstr-prop reflPi (cstrᵣ kK x) = cstrᵣ kK (reflPi _ kK _ x)
-reflCstr-prop reflPi (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
+module ReflCstr (K : constructors)
+            {Pi : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Set}
+            {Pirel : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Term → Set}
+            (reflPi : ∀ ki kiK t → Pi ki kiK t → Pirel ki kiK t t)
+            where
+
+  open Cstr K Pi
+  open [Cstr] K Pirel
+
+  reflEqCstr : ∀ {Γ t a s} → Γ ⊩cstr t ∷K a ⦂ s → Γ ⊩cstr t ≡ t ∷K a ⦂ s
+  reflCstr-prop : ∀ {Γ t a s}
+                → Cstr-prop Γ a s t
+                → [Cstr]-prop Γ a s t t
+
+  reflEqCstr (cstrₜ k D k≡k [k]) = cstrₜ k k D D k≡k (reflCstr-prop [k])
+
+  reflCstr-prop (cstrᵣ kK x) = cstrᵣ kK (reflPi _ _ _ x)
+  reflCstr-prop (cstr-recᵣ kK kdomK x ⊢Kx [x]) = cstr-recᵣ kK kdomK (reflPi _ _ _ x) ⊢Kx (reflEqCstr [x])
+  reflCstr-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
+
+
+-- reflCstr-prop : ∀ {K Γ Pi t a s Pirel}
+--               → (∀ ki kiK t → Pi ki kiK t → Pirel ki kiK t t)
+--               → Cstr-prop K Γ Pi a s t
+--               → [Cstr]-prop K Γ Pirel a s t t
+-- reflCstr-prop reflPi (cstrᵣ kK x) = cstrᵣ kK (reflPi _ kK _ x)
+-- reflCstr-prop reflPi (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 
 
 reflBox-prop : ∀ {P Γ F sF t Prel}
@@ -58,9 +79,16 @@ reflEqTerm0 (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm0 ([F] ρ ⊢Δ) [a]))
-reflEqTerm0 (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ k d k≡k [k]) =
-  let ck = cstrₜ k d k≡k [k] in
-  cstrₜ₌ k k d d k≡k ck ck (reflCstr-prop (λ ki kiK t₁ x → reflEqTerm0 ([Yi] ki kiK) x) [k])
+reflEqTerm0 {Γ = Γ} {s = s} (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) d =
+  cstrₜ₌ d d (ReflCstr.reflEqCstr K refl-aux d)
+  where
+    refl-aux : (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki))
+               (t : Term) →
+               LogRel.cstr-arg-dispatch ⁰ (λ ()) Γ s K [domK] [Yi] ki kiK t →
+               LogRel.cstr≡-arg-dispatch ⁰ (λ ()) Γ s K [domK] [Yi] ki kiK t t
+    refl-aux ki kiK t d with [Yi] ki kiK
+    ... | LogRel.cstᵣ [A] = reflEqTerm0 [A] d
+    ... | LogRel.monᵣ _ _ = d
 reflEqTerm0 (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
   let bb = boxₜ b d b≡b [b] in
   boxₜ₌ b b d d b≡b bb bb (reflBox-prop (λ x d → reflEqTerm0 [F] d) [b])
@@ -114,9 +142,16 @@ mutual
         (Πₜ f d funcF f≡f [f] [f]₁)
         (Πₜ f d funcF f≡f [f] [f]₁)
         (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm ([F] ρ ⊢Δ) [a]))
-  reflEqTerm (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ k d k≡k [k]) =
-    let ck = cstrₜ k d k≡k [k] in
-    cstrₜ₌ k k d d k≡k ck ck (reflCstr-prop (λ ki kiK t₁ x → reflEqTerm ([Yi] ki kiK) x) [k])
+  reflEqTerm {l} {Γ} {s = s} (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) d =
+    cstrₜ₌ d d (ReflCstr.reflEqCstr K refl-aux d)
+    where
+      refl-aux : (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki))
+                (t : Term) →
+                LogRel.cstr-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t →
+                LogRel.cstr≡-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t t
+      refl-aux ki kiK t d with [Yi] ki kiK
+      ... | LogRel.cstᵣ [A] = reflEqTerm [A] d
+      ... | LogRel.monᵣ _ _ = d
   reflEqTerm (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
     let bb = boxₜ b d b≡b [b] in
     boxₜ₌ b b d d b≡b bb bb (reflBox-prop (λ x d → reflEqTerm [F] d) [b])

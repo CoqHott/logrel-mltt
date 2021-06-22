@@ -17,10 +17,6 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 
--- Conversion of syntactic reduction closures.
-convRed:*: : ∀ {t u A B s Γ} → Γ ⊢ t :⇒*: u ∷ A ⦂ s → Γ ⊢ A ≡ B ⦂ s → Γ ⊢ t :⇒*: u ∷ B ⦂ s
-convRed:*: [ ⊢t , ⊢u , d ] A≡B = [ conv ⊢t  A≡B , conv ⊢u  A≡B , conv* d  A≡B ]
-
 
 mutual
   -- Helper function for conversion of terms converting from left to right.

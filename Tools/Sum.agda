@@ -19,3 +19,4 @@ id (inj₂ x) = x
 sym : ∀ {A B} → A ⊎ B → B ⊎ A
 sym (inj₁ x) = inj₂ x
 sym (inj₂ x) = inj₁ x
+

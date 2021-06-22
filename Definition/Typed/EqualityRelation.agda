@@ -164,11 +164,11 @@ record EqRelSet : Set₁ where
     ≅-cstr-cong : ∀ {a a' k Γ s}
                  → cstr-cod k PE.≡ Univ s
                  → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
-                 → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ⦂ s
+                 → Γ ⊢ cstr k a ≅ cstr k a' ⦂ s
 
     ≅ₜ-cstr-cong : ∀ {a a' k Γ}
                  → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k
-                 → Γ ⊢ cstr k ∘ a ≅ cstr k ∘ a' ∷ (cstr-cod-ctx Γ k) [ a ] ⦂ cstr-𝕊 k
+                 → Γ ⊢ cstr k a ≅ cstr k a' ∷ (cstr-cod-ctx Γ k) [ a ] ⦂ cstr-𝕊 k
 
     -- Variable reflexivity
     ~-var : ∀ {x A s Γ} → Γ ⊢ var x ∷ A ⦂ s → Γ ⊢ var x ~ var x ∷ A ⦂ s
@@ -204,9 +204,10 @@ record EqRelSet : Set₁ where
 
     -- Destructor reflexivity
     ~-dstr : ∀ {k Γ a a' p p'}
-           → Γ ⊢ a ~ a' ∷ dstr-dom-ctx Γ k ⦂ dstr-dom-sort k
-           → Γ ⊢ p ≅ p' ∷ dstr-param-ctx Γ k ⦂ dstr-param-sort k
-           → Γ ⊢ dstr k a p ~ dstr k a' p' ∷ dstr-type Γ k a p ⦂ dstr-𝕊 k
+           → let open Dstr Γ k in
+             Γ ⊢ p ≅ p' ∷ param-type ⦂ dstr-param-sort k
+           → Γ ⊢ a ~ a' ∷ dom-type p ⦂ dstr-dom-sort k
+           → Γ ⊢ dstr k p a ~ dstr k p' a' ∷ cod-type p a ⦂ dstr-𝕊 k
 
   -- Composition of universe and generic equality compatibility
   ~-to-≅ : ∀ {k l s Γ} → Γ ⊢ k ~ l ∷ (Univ s) ⦂ 𝕥y → Γ ⊢ k ≅ l ⦂ s

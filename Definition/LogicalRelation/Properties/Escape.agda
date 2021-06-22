@@ -58,7 +58,7 @@ escapeTerm (ne′ K D neK K≡K) (neₜ k [ ⊢t , ⊢u , d ] nf) =
 escapeTerm (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                (f , [ ⊢t , ⊢u , d ] , funcF , f≡f , [f] , [f]₁) =
   conv ⊢t (sym (subset* (red D)))
-escapeTerm (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ k [ ⊢t , ⊢u , d ] k≡k [k]) =
+escapeTerm (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (Cstr.cstrₜ k [ ⊢t , ⊢u , d ] k≡k [k]) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b [ ⊢t , ⊢u , d ] b≡b [b]) =
   conv ⊢t (sym (subset* (red D)))
@@ -85,8 +85,8 @@ escapeTermEq (ne′ K D neK K≡K)
 escapeTermEq (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
-escapeTermEq (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
-  ≅ₜ-red (red D) (redₜ d) (redₜ d') cstrₙ ([Cstr]-prop-left-Whnf [k≡k']) ([Cstr]-prop-right-Whnf [k≡k']) k≡k'
-escapeTermEq (Boxᵣ′ F sF D ⊢F A≡A [F]) (cstrₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) with [Box]-prop-Whnf [b≡b']
+escapeTermEq (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) (cstrₜ₌ _ _ ([Cstr].cstrₜ k k' d d' k≡k' [k≡k'])) =
+  ≅ₜ-red (red D) (redₜ d) (redₜ d') cstrₙ ([Cstr].prop-left-Whnf _ _ [k≡k']) ([Cstr].prop-right-Whnf _ _ [k≡k']) k≡k'
+escapeTermEq (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) with [Box]-prop-Whnf [b≡b']
 ... | whnb , whnb' = ≅ₜ-red (red D) (redₜ d) (redₜ d') Boxₙ whnb whnb' b≡b'
 escapeTermEq (emb 0<1 A) t≡u = escapeTermEq A t≡u

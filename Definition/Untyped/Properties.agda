@@ -151,6 +151,9 @@ lift-wk1 pr A = trans (wk-comp (lift pr) (step id) A)
 wk1-wk≡lift-wk1 : ∀ ρ t → wk1 (wk ρ t) ≡ wk (lift ρ) (wk1 t)
 wk1-wk≡lift-wk1 ρ t = trans (wk1-wk ρ t) (sym (lift-wk1 ρ t))
 
+wk12-wk≡lift2-wk12 : ∀ ρ t → wk1 (wk1 (wk ρ t)) ≡ wk (lift (lift ρ)) (wk1 (wk1 t))
+wk12-wk≡lift2-wk12 ρ t = trans (cong wk1 (wk1-wk≡lift-wk1 ρ t)) (wk1-wk≡lift-wk1 (lift ρ) (wk1 t))
+
 -- Substitution properties.
 
 -- Two substitutions σ and σ′ are equal if they are pointwise equal,
@@ -354,6 +357,9 @@ wk-comp-subst {a} ρ ρ′ G =
 wk-β : ∀ {ρ a} t → wk ρ (t [ a ]) ≡ wk (lift ρ) t [ wk ρ a ]
 wk-β t = trans (wk-subst t) (sym (trans (subst-wk t)
                (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) t)))
+
+wk-β-eq : ∀ {ρ a t t' a'} → wk (lift ρ) t ≡ t' → wk ρ a ≡ a' → wk ρ (t [ a ]) ≡ t' [ a' ]
+wk-β-eq {t = t} eqt eqa = trans (wk-β t) (cong₂ _[_] eqt eqa)
 
 -- Pushing a weakening into a single shifting substitution.
 -- If  ρ′ = lift ρ  then  ρ′(t[a]↑) = ρ′(t) [ρ′(a)]↑

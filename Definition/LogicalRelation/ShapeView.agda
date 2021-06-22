@@ -160,7 +160,7 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K]
 
 
 -- TODO
-cstr-elim′ : ∀ {A Γ K a s s' l} → Γ ⊢ A ⇒* cstr K ∘ a ⦂ s → Γ ⊩⟨ l ⟩ A ⦂ s' → Γ ⊩⟨ l ⟩cstr A ⦂ s'
+cstr-elim′ : ∀ {A Γ K a s s' l} → Γ ⊢ A ⇒* cstr K a ⦂ s → Γ ⊩⟨ l ⟩ A ⦂ s' → Γ ⊩⟨ l ⟩cstr A ⦂ s'
 cstr-elim′ D (Uᵣ′ _ l′ l< ⊢Γ) = ⊥-elim (U≢cstr (whrDet* (id (Uⱼ ⊢Γ) , Uₙ) (D , cstrₙ)))
 cstr-elim′ D (Emptyᵣ D') =
   ⊥-elim (Empty≢cstr (whrDet* (red D' , Emptyₙ) (D , cstrₙ)))
@@ -177,7 +177,7 @@ cstr-elim′ D (emb 0<1 x) with cstr-elim′ D x
 cstr-elim′ D (emb 0<1 x) | noemb x₁ = emb 0<1 (noemb x₁)
 cstr-elim′ D (emb 0<1 x) | emb () x₂
 
-cstr-elim : ∀ {Γ K a s l} → Γ ⊩⟨ l ⟩ cstr K ∘ a ⦂ s → Γ ⊩⟨ l ⟩cstr cstr K ∘ a ⦂ s
+cstr-elim : ∀ {Γ K a s l} → Γ ⊩⟨ l ⟩ cstr K a ⦂ s → Γ ⊩⟨ l ⟩cstr cstr K a ⦂ s
 cstr-elim [cstr] = cstr-elim′ (id (escape [cstr])) [cstr]
 
 Box-elim′ : ∀ {A Γ s s' s'' B l} → Γ ⊢ A ⇒* Box s B ⦂ s' → Γ ⊩⟨ l ⟩ A ⦂ s'' → Γ ⊩⟨ l ⟩Box A
@@ -374,7 +374,7 @@ combine (Uᵥ UA UB) (ne (ne K D neK K≡K) neB) =
   ⊥-elim (U≢ne neK (whnfRed* (red D) Uₙ))
 combine (Uᵥ UA UB) (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
   ⊥-elim (U≢Π (whnfRed* (red D) Uₙ))
-combine (Uᵥ UA UB) (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) cstrB) =
+combine (Uᵥ UA UB) (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a]) cstrB) =
   ⊥-elim (U≢cstr (whnfRed* (red D) Uₙ))
 combine (Uᵥ UA UB) (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) BoxB) =
   ⊥-elim (U≢Box (whnfRed* (red D) Uₙ))
@@ -386,7 +386,7 @@ combine (ℕᵥ ℕA ℕB) (ne (ne K D neK K≡K) neB) =
   ⊥-elim (ℕ≢ne neK (whrDet* (red ℕB , ℕₙ) (red D , ne neK)))
 combine (ℕᵥ ℕA ℕB) (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
   ⊥-elim (ℕ≢Π (whrDet* (red ℕB , ℕₙ) (red D , Πₙ)))
-combine (ℕᵥ ℕA ℕB) (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) cstrB) =
+combine (ℕᵥ ℕA ℕB) (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a]) cstrB) =
   ⊥-elim (ℕ≢cstr (whrDet* (red ℕB , ℕₙ) (red D , cstrₙ)))
 combine (ℕᵥ ℕA ℕB) (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) BoxB) =
   ⊥-elim (ℕ≢Box (whrDet* (red ℕB , ℕₙ) (red D , Boxₙ)))
@@ -398,7 +398,7 @@ combine (Emptyᵥ EmptyA EmptyB) (ne (ne K D neK K≡K) neB) =
   ⊥-elim (Empty≢ne neK (whrDet* (red EmptyB , Emptyₙ) (red D , ne neK)))
 combine (Emptyᵥ EmptyA EmptyB) (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
   ⊥-elim (Empty≢Π (whrDet* (red EmptyB , Emptyₙ) (red D , Πₙ)))
-combine (Emptyᵥ EmptyA EmptyB) (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) cstrB) =
+combine (Emptyᵥ EmptyA EmptyB) (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a]) cstrB) =
   ⊥-elim (Empty≢cstr (whrDet* (red EmptyB , Emptyₙ) (red D , cstrₙ)))
 combine (Emptyᵥ EmptyA EmptyB) (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) BoxB) =
   ⊥-elim (Empty≢Box (whrDet* (red EmptyB , Emptyₙ) (red D , Boxₙ)))
@@ -411,7 +411,7 @@ combine (ne neA (ne K D neK K≡K)) (Emptyᵥ EmptyA EmptyB) =
 combine (ne neA₁ neB₁) (ne neA neB) = ne neA₁ neB₁ neB
 combine (ne neA (ne K D₁ neK K≡K)) (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
   ⊥-elim (Π≢ne neK (whrDet* (red D , Πₙ) (red D₁ , ne neK)))
-combine (ne neA (ne K D₁ neK K≡K)) (cstrᵥ (cstrᵣ _ KcodU a D ⊢a A≡A [domK] [a] [Yi]) cstrB) =
+combine (ne neA (ne K D₁ neK K≡K)) (cstrᵥ (cstrᵣ _ KcodU [domK] [Yi] a D ⊢a A≡A [a]) cstrB) =
   ⊥-elim (cstr≢ne neK (whrDet* (red D , cstrₙ) (red D₁ , ne neK)))
 combine (ne neA (ne K D₁ neK K≡K)) (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) BoxB) =
   ⊥-elim (Box≢ne neK (whrDet* (red D , Boxₙ) (red D₁ , ne neK)))
@@ -424,22 +424,22 @@ combine (Πᵥ ΠA (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (Emptyᵥ Emp
 combine (Πᵥ ΠA (Πᵣ sF F G D₁ ⊢F ⊢G A≡A [F] [G] G-ext)) (ne (ne K D neK K≡K) neB) =
   ⊥-elim (Π≢ne neK (whrDet* (red D₁ , Πₙ) (red D , ne neK)))
 combine (Πᵥ ΠA₁ ΠB₁) (Πᵥ ΠA ΠB) = Πᵥ ΠA₁ ΠB₁ ΠB
-combine (Πᵥ ΠA (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (cstrᵥ (cstrᵣ K KcodU a D' ⊢a _ [domK] [a] [Yi]) constrB) =
+combine (Πᵥ ΠA (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D' ⊢a _ [a]) constrB) =
   ⊥-elim (cstr≢Π (whrDet* (red D' , cstrₙ) (red D , Πₙ)))
 combine (Πᵥ ΠA (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (Boxᵥ (Boxᵣ _ _ D' _ _ _) constrB) =
   ⊥-elim (Box≢Π (whrDet* (red D' , Boxₙ) (red D , Πₙ)))
-combine (cstrᵥ _ (cstrᵣ K KcodU a D₁ ⊢a _ [domK] [a] [Yi])) (Uᵥ UA UB) =
+combine (cstrᵥ _ (cstrᵣ K KcodU [domK] [Yi] a D₁ ⊢a _ [a])) (Uᵥ UA UB) =
   ⊥-elim (U≢cstr (whnfRed* (red D₁) Uₙ))
-combine (cstrᵥ _ (cstrᵣ K KcodU a D₁ ⊢a _ [domK] [a] [Yi])) (ℕᵥ ℕA ℕB) =
+combine (cstrᵥ _ (cstrᵣ K KcodU [domK] [Yi] a D₁ ⊢a _ [a])) (ℕᵥ ℕA ℕB) =
   ⊥-elim (ℕ≢cstr (whrDet* (red ℕA , ℕₙ) (red D₁ , cstrₙ)))
-combine (cstrᵥ _ (cstrᵣ K KcodU a D₁ ⊢a _ [domK] [a] [Yi])) (Emptyᵥ EmptyA EmptyB) =
+combine (cstrᵥ _ (cstrᵣ K KcodU [domK] [Yi] a D₁ ⊢a _ [a])) (Emptyᵥ EmptyA EmptyB) =
   ⊥-elim (Empty≢cstr (whrDet* (red EmptyA , Emptyₙ) (red D₁ , cstrₙ)))
-combine (cstrᵥ _ (cstrᵣ K KcodU a D₁ ⊢a _ [domK] [a] [Yi])) (ne (ne _ D neK K≡K) neB) =
+combine (cstrᵥ _ (cstrᵣ K KcodU [domK] [Yi] a D₁ ⊢a _ [a])) (ne (ne _ D neK K≡K) neB) =
   ⊥-elim (cstr≢ne neK (whrDet* (red D₁ , cstrₙ) (red D , ne neK)))
-combine (cstrᵥ _ (cstrᵣ K KcodU a D₁ ⊢a _ [domK] [a] [Yi])) (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
+combine (cstrᵥ _ (cstrᵣ K KcodU [domK] [Yi] a D₁ ⊢a _ [a])) (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
   ⊥-elim (cstr≢Π (whrDet* (red D₁ , cstrₙ) (red D , Πₙ)))
 combine (cstrᵥ cstrA  cstrB) (cstrᵥ _ cstrC) = cstrᵥ cstrA cstrB cstrC
-combine (cstrᵥ _ (cstrᵣ K KcodU a D₁ ⊢a _ [domK] [a] [Yi])) (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) constrB) =
+combine (cstrᵥ _ (cstrᵣ K KcodU [domK] [Yi] a D₁ ⊢a _ [a])) (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F]) constrB) =
   ⊥-elim (cstr≢Box (whrDet* (red D₁ , cstrₙ) (red D , Boxₙ)))
 combine (Boxᵥ _ (Boxᵣ _ _ D₁ _ _ _)) (Uᵥ UA UB) =
   ⊥-elim (U≢Box (whnfRed* (red D₁) Uₙ))
@@ -451,7 +451,7 @@ combine (Boxᵥ _ (Boxᵣ _ _ D₁ _ _ _)) (ne (ne _ D neK K≡K) neB) =
   ⊥-elim (Box≢ne neK (whrDet* (red D₁ , Boxₙ) (red D , ne neK)))
 combine (Boxᵥ _ (Boxᵣ _ _ D₁ _ _ _)) (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
   ⊥-elim (Box≢Π (whrDet* (red D₁ , Boxₙ) (red D , Πₙ)))
-combine (Boxᵥ _ (Boxᵣ _ _ D₁ _ _ _))  (cstrᵥ (cstrᵣ K KcodU a D' ⊢a _ [domK] [a] [Yi]) constrB) =
+combine (Boxᵥ _ (Boxᵣ _ _ D₁ _ _ _))  (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D' ⊢a _ [a]) constrB) =
   ⊥-elim (cstr≢Box (whrDet* (red D' , cstrₙ) (red D₁ , Boxₙ)))
 combine (Boxᵥ BoxA  BoxB) (Boxᵥ _ BoxC) = Boxᵥ BoxA BoxB BoxC
 combine (emb⁰¹ [AB]) [BC] = emb⁰¹¹ (combine [AB] [BC])

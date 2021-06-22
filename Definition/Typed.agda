@@ -26,14 +26,6 @@ postulate cstr-dom-sort : constructors → 𝕊
 postulate cstr-cod-sort : constructors → 𝕊
 
 
-postulate dstr-param : destructors → Term
-postulate dstr-dom : destructors → Term
-postulate dstr-cod : destructors → Term
--- KM: Shouldn't this constructor target 𝕊 directly ?
-postulate dstr-param-sort : destructors → 𝕊
-postulate dstr-dom-sort : destructors → 𝕊
-postulate dstr-cod-sort : destructors → 𝕊
-
 cstr-𝕊 : constructors → 𝕊
 cstr-𝕊 k = cstr-cod-sort k
 
@@ -47,22 +39,46 @@ cstr-type : Con Term → constructors → Term → Term
 cstr-type Γ k a = (cstr-cod-ctx Γ k) [ a ]
 -- cstr-type Γ k = wkAll Γ (Π cstr-dom k ⦂ cstr-dom-sort k ▹ cstr-cod k)
 
+{- Destructors -}
 
+postulate dstr-param : destructors → Term
+postulate dstr-dom : destructors → Term
+postulate dstr-cod : destructors → Term
+
+postulate dstr-param-sort : destructors → 𝕊
+postulate dstr-dom-sort : destructors → 𝕊
+postulate dstr-cod-sort : destructors → 𝕊
 
 dstr-𝕊 : destructors → 𝕊
 dstr-𝕊 o = dstr-cod-sort o
 
-dstr-param-ctx : Con Term → destructors → Term
-dstr-param-ctx Γ k = wkAll Γ (dstr-param k)
+module Dstr (Γ : Con Term) (d : destructors) where
 
-dstr-dom-ctx : Con Term → destructors → Term
-dstr-dom-ctx Γ k = wk (lift (empty-wk Γ)) (dstr-dom k)
+  param-ctx : Term
+  param-ctx = wkAll Γ (dstr-param d)
 
-dstr-cod-ctx : Con Term → destructors → Term
-dstr-cod-ctx Γ k = wk (lift (lift (empty-wk Γ))) (dstr-cod k)
+  ctx-dom : Con Term
+  ctx-dom = Γ ∙ param-ctx ⦂ dstr-param-sort d
 
-dstr-type : Con Term → destructors → Term → Term → Term
-dstr-type Γ o p t = (dstr-cod-ctx Γ o) [ t ] [ p ]
+  dom-ctx : Term
+  dom-ctx = wk (lift (empty-wk Γ)) (dstr-dom d)
+
+  ctx-cod : Con Term
+  ctx-cod = ctx-dom ∙ dom-ctx ⦂ dstr-dom-sort d
+
+  cod-ctx : Term
+  cod-ctx = wk (lift (lift (empty-wk Γ))) (dstr-cod d)
+
+  param-type : Term
+  param-type = param-ctx
+
+  dom-type : (p : Term) → Term
+  dom-type p = dom-ctx [ p ]
+
+  cod-type : (p a : Term) → Term
+  cod-type p a = (cod-ctx [ wk1 a ]) [ p ]
+
+
 
 {- Rewrite rules -}
 
@@ -74,16 +90,19 @@ module Rew {d : destructors} {l r : Term} (rule : Rew⊢ d ⊚ l ⇒ r) where
   postulate binder-sort : 𝕊
   postulate is-recursive : Bool
 
+  binder-type-ctx : (Γ : Con Term) → Term
+  binder-type-ctx Γ = wkAll Γ binder-type
+
   nonrec-ctx : Con Term
   nonrec-ctx =
     ε ∙ dstr-param d ⦂ dstr-param-sort d
       ∙ binder-type ⦂ binder-sort
 
   nonrec-type : Term
-  nonrec-type = dstr-type ε d (var 1) l
+  nonrec-type = Dstr.cod-type ε d (var 1) l
 
   rec-ctx : Con Term
-  rec-ctx = nonrec-ctx ∙ dstr-type nonrec-ctx d (var 1) (var 0) ⦂ dstr-𝕊 d
+  rec-ctx = nonrec-ctx ∙ Dstr.cod-type nonrec-ctx d (var 1) (var 0) ⦂ dstr-𝕊 d
 
   rec-type : Term
   rec-type = wk1 nonrec-type
@@ -101,10 +120,18 @@ module Rew {d : destructors} {l r : Term} (rule : Rew⊢ d ⊚ l ⇒ r) where
   lhs : (p u : Term) → Term
   lhs p u = dstr d p (l [ u ])
 
+  lhs-ctx : (Γ : Con Term) (p u : Term) → Term
+  lhs-ctx Γ p u = dstr d p ((wk (lift (empty-wk Γ)) l) [ u ])
+
   rhs : (p u : Term) → Term
   rhs p u with is-recursive
-  ... | false = r [ u ] [ p ]
-  ... | true  = r [ dstr d p u ] [ u ] [ p ]
+  ... | false = r [ wk1 u ] [ p ]
+  ... | true  = r [ wk1 (wk1 (dstr d p u)) ] [ wk1 u ] [ p ]
+
+  rhs-ctx : (Γ : Con Term) (p u : Term) → Term
+  rhs-ctx Γ p u with is-recursive
+  ... | false = (wk (lift (lift (empty-wk Γ))) r) [ wk1 u ] [ p ]
+  ... | true  = (wk (lift (lift (lift (empty-wk Γ)))) r) [ wk1 (wk1 (dstr d p u)) ] [ wk1 u ] [ p ]
 
 -- record RewriteRules : Set where
 --   field
@@ -220,21 +247,19 @@ mutual
            -- through [ k ]-monomial that provides the opportunity to refer to k in these domains
            -- in a strictly positive fashion.
            → (∀ ki → [ k ]-cstr (cstr-cod ki) → [ k ]-monomial (cstr-dom ki) (cstr-dom-sort ki))
-           -- → (∀ di → [ k ]-cstr (dstr-dom di) → Γ ⊢ dstr-dom-ctx Γ ki ⦂ dstr-dom-sort ki) TODO: negative cstr types
+           -- → (∀ di → [ k ]-cstr (dstr-dom di) → Γ ⊢ dstr-cod-ctx Γ di ⦂ dstr-cod-sort di)
+           -- TODO: negative cstr types
            → Γ ⊢ a ∷ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k
            → Γ ⊢ cstr k a ∷  (cstr-cod-ctx Γ k) [ a ] ⦂ cstr-𝕊 k
     dstrⱼ  : ∀ {d p a}
-           → Γ ⊢ dstr-dom-ctx Γ d ⦂ dstr-dom-sort d
-           → Γ ⊢ dstr-param-ctx Γ d ⦂ dstr-param-sort d
-           → let Γ' = Γ ∙ dstr-param-ctx Γ d ⦂ dstr-param-sort d in
-             Γ' ∙ dstr-dom-ctx Γ' d ⦂ dstr-dom-sort d ⊢ dstr-cod-ctx Γ d ⦂ dstr-cod-sort d
-           → Γ ⊢ a ∷ dstr-dom-ctx Γ d ⦂ dstr-dom-sort d
-           → Γ ⊢ p ∷ dstr-param-ctx Γ d ⦂ dstr-param-sort d
-           → (∀ l r (rule : Rew⊢ d ⊚ l ⇒ r) →
-                -- what's the role of Γ here ?
-                -- without "loops" (assumptions on the typability of dstr d) everything looks fine
-                Rew.ctx rule ⊢ r ∷ Rew.type rule ⦂ dstr-𝕊 d)
-           → Γ ⊢ dstr d a p ∷ dstr-type Γ d a p ⦂ dstr-𝕊 d
+           → let open Dstr Γ d in
+             Γ ⊢ param-ctx ⦂ dstr-param-sort d
+           → ctx-dom ⊢ dom-ctx ⦂ dstr-dom-sort d
+           → ctx-cod ⊢ cod-ctx ⦂ dstr-cod-sort d
+           → Γ ⊢ p ∷ param-type ⦂ dstr-param-sort d
+           → Γ ⊢ a ∷ dom-type p ⦂ dstr-dom-sort d
+           → (∀ l r (rule : Rew⊢ d ⊚ l ⇒ r) → Rew.ctx rule ⊢ r ∷ Rew.type rule ⦂ dstr-𝕊 d)
+           → Γ ⊢ dstr d p a ∷ cod-type p a ⦂ dstr-𝕊 d
     conv   : ∀ {t A B s}
            → Γ ⊢ t ∷ A ⦂ s
            → Γ ⊢ A ≡ B ⦂ s
@@ -272,6 +297,7 @@ mutual
              → Γ ⊢ F ⦂ ‼ s
              → Γ ⊢ F ≡ H ⦂ ‼ s
              → Γ ⊢ Box s F ≡ Box s H ⦂ 𝕥y
+
   -- Term equality
   data _⊢_≡_∷_⦂_ (Γ : Con Term) : Term → Term → Term → 𝕊 → Set where
     refl        : ∀ {t A s}
@@ -360,14 +386,15 @@ mutual
                → Γ ⊢ a ≡ a' ∷ cstr-dom-ctx Γ k ⦂ cstr-dom-sort k
                → Γ ⊢ cstr k a ≡ cstr k a' ∷ cstr-type Γ k a ⦂ cstr-𝕊 k
     dstr-cong  : ∀ {a a' p p' k}
-               → Γ ⊢ a ≡ a' ∷ dstr-dom-ctx Γ k ⦂ dstr-dom-sort k
-               → Γ ⊢ p ≡ p' ∷ dstr-param-ctx Γ k ⦂ dstr-param-sort k
-               → Γ ⊢ dstr k a p ≡ dstr k a' p' ∷ dstr-type Γ k a p ⦂ dstr-𝕊 k
+               → let open Dstr Γ k in
+                 Γ ⊢ p ≡ p' ∷ param-type ⦂ dstr-param-sort k
+               → Γ ⊢ a ≡ a' ∷ dom-type p ⦂ dstr-dom-sort k
+               → Γ ⊢ dstr k p a ≡ dstr k p' a' ∷ cod-type  p a ⦂ dstr-𝕊 k
     rew        : ∀ {A s d p u l r}
                → (rule : Rew⊢ d ⊚ l ⇒ r)
-               → Γ ⊢ u ∷ Rew.binder-type rule ⦂ Rew.binder-sort rule
-               → Γ ⊢ Rew.lhs rule p u ∷ A ⦂ s
-               → Γ ⊢ Rew.lhs rule p u ≡ Rew.rhs rule p u ∷ A ⦂ s
+               → Γ ⊢ u ∷ Rew.binder-type-ctx rule Γ ⦂ Rew.binder-sort rule
+               → Γ ⊢ Rew.lhs-ctx rule Γ p u ∷ A ⦂ s
+               → Γ ⊢ Rew.lhs-ctx rule Γ p u ≡ Rew.rhs-ctx rule Γ p u ∷ A ⦂ s
 
 -- Term reduction
 data _⊢_⇒_∷_⦂_ (Γ : Con Term) : Term → Term → Term → 𝕊 → Set where
@@ -418,11 +445,13 @@ data _⊢_⇒_∷_⦂_ (Γ : Con Term) : Term → Term → Term → 𝕊 → Set
                → Γ ⊢ u ∷ Π F ⦂ ‼ sF ▹ (E [ box sF (var 0) ]↑) ⦂ sE
                → Γ ⊢ a ∷ F ⦂ ‼ sF
                → Γ ⊢ Boxrec sE F E u (box sF a) ⇒ u ∘ a ∷ E [ box sF a ] ⦂ sE
-  rew          : ∀ {A s d p u l r}
+  rew          : ∀ {A s d p u l l' r r'}
                → (rule : Rew⊢ d ⊚ l ⇒ r)
-               → Γ ⊢ u ∷ Rew.binder-type rule ⦂ Rew.binder-sort rule
-               → Γ ⊢ dstr d p (l [ u ]) ∷ A ⦂ s
-               → Γ ⊢ dstr d p (l [ u ])  ⇒ Rew.rhs rule u p ∷ A ⦂ s
+               → Γ ⊢ u ∷ Rew.binder-type-ctx rule Γ ⦂ Rew.binder-sort rule
+               → Γ ⊢ Rew.lhs-ctx rule Γ p u ∷ A ⦂ s
+               → r' PE.≡ Rew.rhs-ctx rule Γ p u
+               → l' PE.≡ (wk (lift (empty-wk Γ)) l) [ u ]
+               → Γ ⊢ dstr d p l' ⇒ r' ∷ A ⦂ s
 
 
 -- Type reduction

@@ -8,6 +8,9 @@ open import Tools.Nat
 open import Tools.Product
 open import Tools.List
 import Tools.PropositionalEquality as PE
+open import Tools.Decidable
+open import Tools.Sum using (inj₁ ; inj₂)
+open import Tools.Bool
 
 
 infixl 30 _∙_⦂_
@@ -133,6 +136,22 @@ data [_]-cstr (K : constructors) : Term → Set where
 [_]-cstr-params : (K : constructors) {t : Term} ([K] : [ K ]-cstr t) → Term
 [ K ]-cstr-params {t = gen _ (⟦ _ , t ⟧ ∷ [])} [K] = t
 
+postulate dec-cstr : decEq constructors
+
+is-[_]-cstr : (K : constructors) → Term → Bool
+is-[ K ]-cstr (gen (Constructorkind k) (⟦ 0 , _ ⟧ ∷ [])) with dec-cstr K k
+... | inj₁ x = true
+... | inj₂ _ = false
+is-[ K ]-cstr _ = false
+
+is-[]-cstr-prop : ∀ {K t} → is-[ K ]-cstr t PE.≡ true → [ K ]-cstr t
+is-[]-cstr-prop {K} {gen (Constructorkind x) (⟦ 0 , _ ⟧ ∷ [])} e with dec-cstr K x
+... | inj₁ PE.refl = is-K-cstr
+
+[]-cstr-dec : ∀ {K t} → [ K ]-cstr t → is-[ K ]-cstr t PE.≡ true
+[]-cstr-dec {K} is-K-cstr rewrite dec-refl dec-cstr K  = PE.refl
+
+
 
 -- Injectivity of term constructors w.s.t. propositional equality.
 
@@ -168,6 +187,21 @@ box-inj PE.refl = PE.refl
 box-sort-inj : ∀ {s s' a a'} → box s a PE.≡ box s' a' → s PE.≡ s'
 box-sort-inj PE.refl = PE.refl
 
+∘-inj-head : ∀ {k k' a a'} → k ∘ a PE.≡ k' ∘ a' → k PE.≡ k'
+∘-inj-head PE.refl = PE.refl
+
+natrec-inj-head : ∀ {A A' t t' u u' v v'} → natrec A t u v PE.≡ natrec A' t' u' v' → v PE.≡ v'
+natrec-inj-head PE.refl = PE.refl
+
+Emptyrec-inj-head : ∀ {A A' e e'} → Emptyrec A e PE.≡ Emptyrec A' e' → e PE.≡ e'
+Emptyrec-inj-head PE.refl = PE.refl
+
+Boxrec-inj-head : ∀ {sC sC' A A' C C' u u' t t'} → Boxrec sC A C u t PE.≡ Boxrec sC' A' C' u' t' → t PE.≡ t'
+Boxrec-inj-head PE.refl = PE.refl
+
+dstr-inj-head : ∀ {d d' p p' a a'} → dstr d p a PE.≡ dstr d' p' a' → a PE.≡ a'
+dstr-inj-head PE.refl = PE.refl
+
 -- Neutral terms.
 
 -- A term is neutral if it has a variable in head position.
@@ -179,7 +213,7 @@ data Neutral : Term → Set where
   natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
   Emptyrecₙ : ∀ {A e} -> Neutral e -> Neutral (Emptyrec A e)
   Boxrecₙ : ∀ {sC A C t u} → Neutral t → Neutral (Boxrec sC A C u t)
-  destrₙ : ∀ {k p t} → Neutral t → Neutral (dstr k t p)
+  destrₙ : ∀ {k p t} → Neutral t → Neutral (dstr k p t)
 
 -- Weak head normal forms (whnfs).
 
@@ -587,7 +621,7 @@ t [ s ] = subst (sgSubst s) t
 -- Substitute the first variable of a term with an other term,
 -- but let the two terms share the same context.
 --
--- If Γ∙A ⊢ t : B and Γ∙A ⊢ s : A then Γ∙A ⊢ t[s]↑ : B[s]↑.
+-- If Γ∙A ⊢ t : B and Γ∙A' ⊢ s : A then Γ∙A' ⊢ t[s]↑ : B[s]↑.
 
 _[_]↑ : (t : Term) (s : Term) → Term
 t [ s ]↑ = subst (consSubst (wk1Subst idSubst) s) t

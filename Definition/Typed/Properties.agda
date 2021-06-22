@@ -28,7 +28,7 @@ wfTerm (conv t A≡B) = wfTerm t
 wfTerm (Boxⱼ d) = wfTerm d
 wfTerm (boxⱼ d) = wfTerm d
 wfTerm (cstrⱼ _ _ _ ⊢a) = wfTerm ⊢a
-wfTerm (dstrⱼ _ _ _ ⊢a _) = wfTerm ⊢a
+wfTerm (dstrⱼ _ _ _ ⊢p _ _) = wfTerm ⊢p
 wfTerm (Boxrecⱼ _ x d d₁) = wfTerm d
 
 wf : ∀ {Γ A s} → Γ ⊢ A ⦂ s → ⊢ Γ
@@ -57,7 +57,7 @@ wfEqTerm (Box-cong x d) = wfTerm x
 wfEqTerm (box-cong _ _ _ d) = wfEqTerm d
 wfEqTerm (Boxrec-cong _ _ x d₁ d) = wfEqTerm d
 wfEqTerm (Boxrec-box _ x x₁ x₂) = wfTerm x₁
-wfEqTerm (rew _ ⊢ka) = wfTerm ⊢ka
+wfEqTerm (rew _ _ ⊢ka) = wfTerm ⊢ka
 wfEqTerm (cstr-cong d) = wfEqTerm d
 wfEqTerm (dstr-cong d d₁) = wfEqTerm d
 
@@ -81,9 +81,9 @@ subsetTerm (Emptyrec-subst A n⇒n′) =
 subsetTerm (app-subst t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
 subsetTerm (β-red A t a) = β-red A t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
-subsetTerm (Boxrec-subst F E u t⇒t') = Boxrec-cong F (refl F) (refl E) (refl u) (subsetTerm t⇒t') 
+subsetTerm (Boxrec-subst F E u t⇒t') = Boxrec-cong F (refl F) (refl E) (refl u) (subsetTerm t⇒t')
 subsetTerm (Boxrec-box F E a u) = Boxrec-box F E a u
-subsetTerm (rew ka⇒t ⊢ka) = rew ka⇒t ⊢ka
+subsetTerm (rew r ka⇒t ⊢ka PE.refl PE.refl) = rew r ka⇒t ⊢ka
 
 subset : ∀ {Γ A B s} → Γ ⊢ A ⇒ B ⦂ s → Γ ⊢ A ≡ B ⦂ s
 subset (univ A⇒B) = univ (subsetTerm A⇒B)
@@ -109,7 +109,7 @@ redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
 redFirstTerm (Emptyrec-subst A n⇒n′) = Emptyrecⱼ A (redFirstTerm n⇒n′)
 redFirstTerm (Boxrec-subst F E u t⇒t') = Boxrecⱼ F E u (redFirstTerm t⇒t')
 redFirstTerm (Boxrec-box F E u a) = Boxrecⱼ F E u (boxⱼ a)
-redFirstTerm (rew ka⇒t ⊢ka) = ⊢ka
+redFirstTerm (rew _ ka⇒t ⊢ka eqrhs PE.refl) = ⊢ka
 
 redFirst : ∀ {Γ A B s} → Γ ⊢ A ⇒ B ⦂ s → Γ ⊢ A ⦂ s
 redFirst (univ A⇒B) = univ (redFirstTerm A⇒B)
@@ -133,30 +133,40 @@ mutual
   noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
   noNe (Emptyrecⱼ A ⊢e) (Emptyrecₙ neT) = noNe ⊢e neT
   noNe (Boxrecⱼ _ ⊢C  ⊢u ⊢t) (Boxrecₙ net) = noNe ⊢t net
-  noNe (cstrⱼ x x₁ x₂ d) (∘ₙ ())
-  noNe (dstrⱼ x x₁ d d₁ _) (∘ₙ (∘ₙ ()))
-  noNe (dstrⱼ x x₁ d ⊢a _) (destrₙ n) = noNe ⊢a n
-  noNe (d ∘ⱼ d₁) (destrₙ n) = noNe-dstr d n
-
-  noNe-dstr : ∀ {o t A s} → ε ⊢ dstr o ∘ t ∷ A ⦂ s → Neutral t → ⊥
-  noNe-dstr (d ∘ⱼ ⊢t) n = noNe ⊢t n
-  noNe-dstr (conv d x) n = noNe-dstr d n
+  noNe (dstrⱼ x x₁ d ⊢p ⊢a _) (destrₙ n) = noNe ⊢a n
 
 -- Neutrals do not weak head reduce
 
-noRed-cstr : ∀ {Γ k u A s} (c : Γ ⊢ cstr k ⇒ u ∷ A ⦂ s) → ⊥
-noRed-cstr (conv c x) = noRed-cstr c
+-- noRed-cstr : ∀ {Γ k u A s} (c : Γ ⊢ cstr k ⇒ u ∷ A ⦂ s) → ⊥
+-- noRed-cstr (conv c x) = noRed-cstr c
 
-noRed-dstr : ∀ {Γ d u A s} → Γ ⊢ dstr d ⇒ u ∷ A ⦂ s → ⊥
-noRed-dstr (conv d x) = noRed-dstr d
+-- noRed-dstr : ∀ {Γ d u A s} → Γ ⊢ dstr d ⇒ u ∷ A ⦂ s → ⊥
+-- noRed-dstr (conv d x) = noRed-dstr d
 
-noRed-dstr-app : ∀ {Γ d t u A s} (d : Γ ⊢ dstr d ∘ t ⇒ u ∷ A ⦂ s) → ⊥
-noRed-dstr-app (conv d x) = noRed-dstr-app d
-noRed-dstr-app (app-subst d x) = noRed-dstr d
+-- noRed-dstr-app : ∀ {Γ d t u A s} (d : Γ ⊢ dstr d ∘ t ⇒ u ∷ A ⦂ s) → ⊥
+-- noRed-dstr-app (conv d x) = noRed-dstr-app d
+-- noRed-dstr-app (app-subst d x) = noRed-dstr d
 
+open import Tools.List renaming (_∷_ to _⦂⦂_)
+
+neWk : ∀ {t t' ρ} → wk ρ t PE.≡ t' → Neutral t' → Neutral t
+neWk {var x} e _ = var x
+neWk {gen Appkind (⟦ 0 , k ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ [])} e (∘ₙ n) = ∘ₙ (neWk (∘-inj-head e) n)
+neWk {gen Natreckind (⟦ 1 , _ ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , k ⟧ ⦂⦂ [])} e (natrecₙ n) = natrecₙ (neWk (natrec-inj-head e) n)
+neWk {gen Emptyreckind (⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , t ⟧ ⦂⦂ [])} e (Emptyrecₙ n) = Emptyrecₙ (neWk (Emptyrec-inj-head e) n)
+neWk {gen (Boxreckind _) (⟦ 0 , _ ⟧ ⦂⦂ ⟦ 1 , _ ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , t ⟧  ⦂⦂ [])} e (Boxrecₙ n) = Boxrecₙ (neWk (Boxrec-inj-head e) n)
+neWk {gen (Destructorkind _) (⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , a ⟧ ⦂⦂ [])} e (destrₙ n) = destrₙ (neWk (dstr-inj-head e) n)
+
+neSubst : ∀ {t t' u} → t [ u ] PE.≡ t' → Neutral t' → Neutral t
+neSubst {var x} e _ = var x
+neSubst {gen Appkind (⟦ 0 , k ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ [])} e (∘ₙ n) = ∘ₙ (neSubst (∘-inj-head e) n)
+neSubst {gen Natreckind (⟦ 1 , _ ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , k ⟧ ⦂⦂ [])} e (natrecₙ n) = natrecₙ (neSubst (natrec-inj-head e) n)
+neSubst {gen Emptyreckind (⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , t ⟧ ⦂⦂ [])} e (Emptyrecₙ n) = Emptyrecₙ (neSubst (Emptyrec-inj-head e) n)
+neSubst {gen (Boxreckind _) (⟦ 0 , _ ⟧ ⦂⦂ ⟦ 1 , _ ⟧ ⦂⦂ ⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , t ⟧  ⦂⦂ [])} e (Boxrecₙ n) = Boxrecₙ (neSubst (Boxrec-inj-head e) n)
+neSubst {gen (Destructorkind _) (⟦ 0 , _ ⟧ ⦂⦂ ⟦ 0 , a ⟧ ⦂⦂ [])} e (destrₙ n) = destrₙ (neSubst (dstr-inj-head e) n)
 
 -- KM: would it be possible to only assume something on Rew⊢_⊚_⇒_ ?
-postulate neRed𝕊 : ∀ {Δ k a p t s} (d : Δ 𝕊⊢ k ⊚ a ⊚ p ⇒ t ⦂ s) (n : Neutral a) → ⊥
+postulate neRedRew : ∀ {k l r} (d : Rew⊢ k ⊚ l ⇒ r) (n : Neutral l) → ⊥
 
 neRedTerm : ∀ {Γ t u A s} (d : Γ ⊢ t ⇒ u ∷ A ⦂ s) (n : Neutral t) → ⊥
 neRedTerm (conv d x) n = neRedTerm d n
@@ -168,12 +178,7 @@ neRedTerm (natrec-suc x x₁ x₂ x₃) (natrecₙ ())
 neRedTerm (Emptyrec-subst x d) (Emptyrecₙ n₁) = neRedTerm d n₁
 neRedTerm (Boxrec-subst x x₁ x₂ d) (Boxrecₙ n) = neRedTerm d n
 neRedTerm (Boxrec-box x x₁ x₂ x₃) (Boxrecₙ ())
-neRedTerm (rew ka⇒t ⊢ka) (destrₙ n) = neRed𝕊 ka⇒t n
-neRedTerm (rew ka⇒t ⊢ka) (∘ₙ (∘ₙ ()))
-neRedTerm (app-subst d ⊢a) (destrₙ n) = noRed-dstr-app d
-
--- noNe ⊢a n
---(destrₙ n) = noRedDstr d
+neRedTerm (rew ka⇒t _ ⊢ka _ eqlhs) (destrₙ n) = neRedRew ka⇒t (neWk PE.refl (neSubst (PE.sym eqlhs) n))
 
 neRed : ∀ {Γ A B s} (d : Γ ⊢ A ⇒ B ⦂ s) (N : Neutral A) → ⊥
 neRed (univ x) N = neRedTerm x N
@@ -188,12 +193,9 @@ whnfRedTerm (natrec-subst x x₁ x₂ d) (ne (natrecₙ x₃)) = neRedTerm d x�
 whnfRedTerm (natrec-zero x x₁ x₂) (ne (natrecₙ ()))
 whnfRedTerm (natrec-suc x x₁ x₂ x₃) (ne (natrecₙ ()))
 whnfRedTerm (Emptyrec-subst x d) (ne (Emptyrecₙ x₂)) = neRedTerm d x₂
-whnfRedTerm (app-subst d x) cstrₙ = noRed-cstr d
 whnfRedTerm (Boxrec-subst x x₁ x₂ d) (ne (Boxrecₙ x₃)) = neRedTerm d x₃
 whnfRedTerm (Boxrec-box x x₁ x₂ x₃) (ne n) = neRedTerm (Boxrec-box x x₁ x₂ x₃) n
-whnfRedTerm (rew ka⇒t ⊢ka) (ne (destrₙ nea)) = neRed𝕊 ka⇒t nea
-whnfRedTerm (app-subst d x) (ne (destrₙ _)) = noRed-dstr-app d
-whnfRedTerm (rew _ _) (ne (∘ₙ (∘ₙ ())))
+whnfRedTerm (rew ka⇒t _ _ _ eqlhs) (ne (destrₙ n)) = neRedRew ka⇒t (neWk PE.refl (neSubst (PE.sym eqlhs) n))
 
 whnfRed : ∀ {Γ A B s} (d : Γ ⊢ A ⇒ B ⦂ s) (w : Whnf A) → ⊥
 whnfRed (univ x) w = whnfRedTerm x w
@@ -221,13 +223,16 @@ whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 -- KM: I am doing something a bit fishy with the substitutions:
 -- Morally, the rhs of a rewrite rule should only depend on the free variables of the pattern on the lhs
 -- and whenever a [ ρ ] ≡ a' [ ρ' ] then ρ and ρ' agree on these free variables
-postulate redRewDet : ∀ {k ρ ρ' a a' p p' u u'} (d : Rew⊢ k ⊚ a ⊚ p ⇒ u) (d' : Rew⊢ k ⊚ a' ⊚ p' ⇒ u') → subst ρ a PE.≡ subst ρ' a' → subst ρ p PE.≡ subst ρ' p' → subst ρ u PE.≡ subst ρ' u'
+-- It should be enough to restrict the substitution to the domain of l/r
+postulate redRewDet : ∀ {Γ k p u u' l l' r r'} (d : Rew⊢ k ⊚ l ⇒ r) (d' : Rew⊢ k ⊚ l' ⇒ r') → Rew.lhs-ctx d Γ p u PE.≡ Rew.lhs-ctx d' Γ p u' → Rew.rhs-ctx d Γ p u PE.≡ Rew.rhs-ctx d' Γ p u'
+-- l [ u ] PE.≡ l' [ u' ] →
+-- subst ρ l PE.≡ subst ρ' l' → subst ρ r PE.≡ subst ρ' r'
 
-red𝕊Det : ∀ {Δ k a p u u' s s'} (d : Δ 𝕊⊢ k ⊚ a ⊚ p ⇒ u ⦂ s) (d' : Δ 𝕊⊢ k ⊚ a ⊚ p ⇒ u' ⦂ s') → u PE.≡ u'
-red𝕊Det d d' = red𝕊Det-aux d d' PE.refl PE.refl PE.refl
-  where
-    red𝕊Det-aux : ∀ {Δ Δ' k a a' p p' u u' s s'} (d : Δ 𝕊⊢ k ⊚ a ⊚ p ⇒ u ⦂ s) (d' : Δ' 𝕊⊢ k ⊚ a' ⊚ p' ⇒ u' ⦂ s') → Δ PE.≡ Δ' → a PE.≡ a' → p PE.≡ p' → u PE.≡ u'
-    red𝕊Det-aux (rew d) (rew d') Δ≡Δ' a≡a' = redRewDet d d' a≡a'
+-- red𝕊Det : ∀ {Δ k a p u u' s s'} (d : Δ 𝕊⊢ k ⊚ a ⊚ p ⇒ u ⦂ s) (d' : Δ 𝕊⊢ k ⊚ a ⊚ p ⇒ u' ⦂ s') → u PE.≡ u'
+-- red𝕊Det d d' = red𝕊Det-aux d d' PE.refl PE.refl PE.refl
+--   where
+--     red𝕊Det-aux : ∀ {Δ Δ' k a a' p p' u u' s s'} (d : Δ 𝕊⊢ k ⊚ a ⊚ p ⇒ u ⦂ s) (d' : Δ' 𝕊⊢ k ⊚ a' ⊚ p' ⇒ u' ⦂ s') → Δ PE.≡ Δ' → a PE.≡ a' → p PE.≡ p' → u PE.≡ u'
+--     red𝕊Det-aux (rew _ d) (rew _ d') Δ≡Δ' a≡a' = redRewDet d d' a≡a'
 
 whrDetTerm : ∀{Γ t u A u′ A′ s s'} (d : Γ ⊢ t ⇒ u ∷ A ⦂ s) (d′ : Γ ⊢ t ⇒ u′ ∷ A′ ⦂ s') → u PE.≡ u′
 whrDetTerm (conv d x) d′ = whrDetTerm d d′
@@ -248,9 +253,10 @@ whrDetTerm (Boxrec-subst x x₁ x₂ d) (Boxrec-subst x₃ x₄ x₅ d') rewrite
 whrDetTerm (Boxrec-subst x x₁ x₂ d) (Boxrec-box x₃ x₄ x₅ x₆) = ⊥-elim (whnfRedTerm d boxₙ)
 whrDetTerm (Boxrec-box x x₁ x₂ x₃) (Boxrec-subst x₄ x₅ x₆ d') = ⊥-elim (whnfRedTerm d' boxₙ)
 whrDetTerm (Boxrec-box x x₁ x₂ x₃) (Boxrec-box x₄ x₅ x₆ x₇) = PE.refl
-whrDetTerm (app-subst d x) (rew ka⇒t ⊢ka) = ⊥-elim (noRed-dstr-app d)
-whrDetTerm (rew ka⇒t ⊢ka) (app-subst d x) = ⊥-elim (noRed-dstr-app d)
-whrDetTerm (rew ka⇒t ⊢ka) (rew ka⇒t' ⊢ka') = red𝕊Det ka⇒t ka⇒t'
+-- whrDetTerm (app-subst d x) (rew _ ka⇒t ⊢ka) = ⊥-elim (noRed-dstr-app d)
+-- whrDetTerm (rew _ ka⇒t ⊢ka) (app-subst d x) = ⊥-elim (noRed-dstr-app d)
+whrDetTerm (rew {d = d} {p = p} ka⇒t _ ⊢ka PE.refl eqlhs) (rew ka⇒t' _ ⊢ka' PE.refl eqlhs') =
+  redRewDet ka⇒t ka⇒t' (PE.cong (dstr d p) (PE.trans (PE.sym eqlhs) eqlhs'))
 
 whrDet : ∀{Γ A B B′ s s'} (d : Γ ⊢ A ⇒ B ⦂ s) (d′ : Γ ⊢ A ⇒ B′ ⦂ s') → B PE.≡ B′
 whrDet (univ x) (univ x₁) = whrDetTerm x x₁
@@ -310,10 +316,7 @@ UnotInA[t] () x₁ (natrecⱼ x₂ x₃ x₄ x₅)
 UnotInA[t] () x₁ (Emptyrecⱼ x₂ x₃)
 UnotInA[t] x x₁ (conv x₂ x₃) = UnotInA[t] x x₁ x₂
 
-postulate RewSR : ∀ {Γ ρ A s k p a t} → Γ ⊢ dstr k (subst ρ a) (subst ρ p) ∷ A ⦂ s → Rew⊢ k ⊚ a ⊚ p ⇒ t → Γ ⊢ subst ρ t ∷ A ⦂ s
-
-red𝕊SR : ∀ {Γ A s k p a t} → Γ ⊢ dstr k a p ∷ A ⦂ s → Γ 𝕊⊢ k ⊚ a ⊚ p ⇒ t ⦂ s → Γ ⊢ t ∷ A ⦂ s
-red𝕊SR d (rew x) = RewSR d x
+postulate RewSR : ∀ {Γ A s k l r p u} → (d : Rew⊢ k ⊚ l ⇒ r) → Γ ⊢ Rew.lhs-ctx d Γ p u ∷ A ⦂ s → Γ ⊢ Rew.rhs-ctx d Γ p u ∷ A ⦂ s
 
 redU*Term′ : ∀ {A B U′ Γ s s'} → U′ PE.≡ (Univ s) → Γ ⊢ A ⇒ U′ ∷ B ⦂ s' → ⊥
 redU*Term′ U′≡U (conv A⇒U x) = redU*Term′ U′≡U A⇒U
@@ -323,7 +326,8 @@ redU*Term′ () (natrec-subst x x₁ x₂ A⇒U)
 redU*Term′ U′≡U (natrec-zero x x₁ x₂) rewrite U′≡U = UnotInA x₁
 redU*Term′ () (natrec-suc x x₁ x₂ x₃)
 redU*Term′ () (Emptyrec-subst x A⇒U)
-redU*Term′ U′≡U (rew ka⇒t ⊢ka) rewrite U′≡U = UnotInA (red𝕊SR ⊢ka ka⇒t)
+redU*Term′ U′≡U (rew ka⇒t _ ⊢ka eqrhs eqlhs) rewrite U′≡U =
+  UnotInA (PE.subst (λ t → _ ⊢ t ∷ _ ⦂ _) (PE.sym eqrhs) (RewSR ka⇒t ⊢ka))
 
 redU*Term : ∀ {A B Γ s s'} → Γ ⊢ A ⇒* (Univ s) ∷ B ⦂ s' → ⊥
 redU*Term (id x) = UnotInA x
