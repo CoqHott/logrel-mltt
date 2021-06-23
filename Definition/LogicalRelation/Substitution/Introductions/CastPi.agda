@@ -477,11 +477,6 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
       [wwUA] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓA'A] (λ {Δ} {σ} → Uᵛ emb< [ΓA'A] {Δ} {σ}) {Δ} {σ}
       [wB']ₜ = wk1dᵗᵛ {F = A'} {F' = A'} {G = B'} [Γ] [A'] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) ((λ {Δ} {σ} → [wwUA'] {Δ} {σ} !)) [B']ₜ
       [wB]ₜ = wk1dᵗᵛ {F = A} {F' = A'} {G = B} [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) ((λ {Δ} {σ} → [wwUA] {Δ} {σ} !)) [B]ₜ
-      [var0]ₜ : (Γ ∙ Id (Univ rA ⁰) A A' ^ [ % , ι ¹ ] ∙ wk1 A' ^ [ rA , ι ⁰ ]) ⊩ᵛ⟨ ∞ ⟩ var 0 ∷ wk1 (wk1 A') ^ [ rA , ι ⁰ ] / [ΓIdA'] / [wwA']'
-      [var0]ₜ = proj₂ (fundamentalVar here [ΓIdA']) 
-      [var1]ₜ : (Γ ∙ Id (Univ rA ⁰) A A' ^ [ % , ι ¹ ] ∙ wk1 A' ^ [ rA , ι ⁰ ]) ⊩ᵛ⟨ ∞ ⟩ var 1 ∷  Id (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) ^ [ % , ι ¹ ] / [ΓIdA'] / [wwIdAA']
-      [var1]ₜ = let X = fundamentalVar (there here) [ΓIdA'] in S.irrelevanceTerm {A = Id (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A'))} {t = var 1}
-                                                                                 [ΓIdA'] [ΓIdA'] (proj₁ X) [wwIdAA'] (proj₂ X) 
       [var]ₜ : Γ ∙ A' ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ var 0 ∷ wk1 A' ^ [ rA , ι ⁰ ] / [ΓA'] / wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']
       [var]ₜ = proj₂ (fundamentalVar here [ΓA'])
       [var0']ₜ : Γ ∙ A' ^ [ rA , ι ⁰ ] ∙ Id (Univ rA ⁰) (wk1 A) (wk1 A') ^ [ % , ι ¹ ] ∙ wk1 (wk1 A') ^ [ rA , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ var 0 ∷
@@ -494,7 +489,7 @@ cast-Πᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
   in cast-Πᵗᵛ-aux {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A]ₜ [B]ₜ [A']ₜ [B']ₜ [Id] [e]ₜ [ΠAB] [f]ₜ
                (Id-U-ΠΠᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
-                          [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A]ₜ [B]ₜ [A']ₜ [B']ₜ [var0]ₜ [var1]ₜ)
+                          [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A]ₜ [B]ₜ [A']ₜ [B']ₜ)
                (Id-U-ΠΠ-resᵗᵛ {wk1 A} {wk1d B} {wk1 A'} {wk1d B'}
                              [ΓA'] [wA] [wA'] (λ {Δ} {σ} → [wwUA] {Δ} {σ} !) (λ {Δ} {σ} → [wwUA'] {Δ} {σ} !) [wA]ₜ [wB]ₜ [wA']ₜ [wB']ₜ [var0']ₜ [var1']ₜ)
                [var]ₜ [var0']ₜ [var1']ₜ

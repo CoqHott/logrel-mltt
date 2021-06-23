@@ -36,6 +36,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Reduction
 open import Definition.LogicalRelation.Substitution.Weakening
 open import Definition.LogicalRelation.Substitution.ProofIrrelevance
+open import Definition.LogicalRelation.Fundamental.Variable
 
 open import Tools.Product
 open import Tools.Nat
@@ -75,8 +76,8 @@ Id-U-ΠΠ-resᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →
             [UΠ] = maybeEmbᵛ {A = Univ ! _} [Γ] (Uᵛ emb< [Γ])
             Id-U-ΠΠ-res A A' B B' =
                         (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
-                            ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
-                            (U.wk (lift (step id)) B') ° ¹)
+                            (wk1d B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
+                            (wk1d B') ° ¹)
 
         in
            ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ [ rA , ι lΠ ] / [Γ])
@@ -184,22 +185,7 @@ Id-U-ΠΠᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →
            ([A]ₜ : Γ ⊩ᵛ⟨ l ⟩ A ∷ Univ rA lΠ ^ [ ! , next lΠ ] / [Γ] / [UA])
            ([B]ₜ : Γ ∙ A ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ B ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A] / (λ {Δ} {σ} → [UB] {Δ} {σ}))
            ([A']ₜ : Γ ⊩ᵛ⟨ l ⟩ A' ∷ Univ rA lΠ ^ [ ! , next lΠ ] / [Γ] / [UA])
-           ([B']ₜ :  Γ ∙ A' ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ B' ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A'] / (λ {Δ} {σ} → [UB'] {Δ} {σ})) →
-           let [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
-               [ΓId] = _∙_ {A = Id (Univ rA ⁰) A A'} [Γ] [IdAA']
-               [wA'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A'} {lG = ⁰} [Γ] [IdAA'] [A']ₜ
-               [wA']' = wk1ᵛ {A = A'} {F = Id (Univ rA ⁰) A A'} [Γ] [IdAA'] [A']
-               [wA]' = wk1ᵛ {A = A} {F = Id (Univ rA ⁰) A A'} [Γ] [IdAA'] [A]
-               [wA] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A} {lG = ⁰} [Γ] [IdAA'] [A]ₜ
-               [ΓIdA'] = _∙_ {A = wk1 A'} [ΓId] [wA']'
-               [wwA']' = wk1ᵛ {A = wk1 A'} {F = wk1 A'}  [ΓId] [wA']' [wA']'
-               [wwA'] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A'} {lG = ⁰} [ΓId] [wA']' [wA']
-               [wwA] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A} {lG = ⁰} [ΓId] [wA']' [wA]
-               [wwUA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓIdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓIdA'] {Δ} {σ}) {Δ} {σ}
-               [wwIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A)} {u = wk1 (wk1 A')} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA] [wwA']
-           in
-           ([var0]ₜ : (Γ ∙ Id (Univ rA ⁰) A A' ^ [ % , ι ¹ ] ∙ wk1 A' ^ [ rA , ι ⁰ ]) ⊩ᵛ⟨ ∞ ⟩ var 0 ∷ wk1 (wk1 A') ^ [ rA , ι ⁰ ] / [ΓIdA'] / [wwA']')
-           ([var1]ₜ : (Γ ∙ Id (Univ rA ⁰) A A' ^ [ % , ι ¹ ] ∙ wk1 A' ^ [ rA , ι ⁰ ]) ⊩ᵛ⟨ ∞ ⟩ var 1 ∷  Id (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) ^ [ % , ι ¹ ] / [ΓIdA'] / [wwIdAA'])
+           ([B']ₜ :  Γ ∙ A' ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ B' ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A'] / (λ {Δ} {σ} → [UB'] {Δ} {σ})) 
          → [ Γ ⊩ᵛ⟨ l ⟩ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰))
                     ≡ ∃ (Id (Univ rA ⁰) A A') ▹
                       (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
@@ -207,7 +193,7 @@ Id-U-ΠΠᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →
                         (U.wk (lift (step id)) B') ° ¹)
                   ∷ SProp ¹ ^ [ ! , next ¹ ] / [Γ] ]
 Id-U-ΠΠᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
-        [Γ] [A] [A'] [UB] [UB'] [A]ₜ [B]ₜ [A']ₜ [B']ₜ [var0]ₜ [var1]ₜ =
+        [Γ] [A] [A'] [UB] [UB'] [A]ₜ [B]ₜ [A']ₜ [B']ₜ =
   let l = ∞
       lΠ = ⁰
       [SProp] = Uᵛ {rU = %} ∞< [Γ]
@@ -256,6 +242,11 @@ Id-U-ΠΠᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
       [wB] = wk1dᵗᵛ {F = A} {F' = Id (Univ rA ⁰) A A'} {G = B} [Γ] [A] [IdAA'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [wwU0A] {Δ} {σ}) [B]ₜ
       [wwIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A)} {u = wk1 (wk1 A')} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA] [wwA']
       [wwIdA'A] = Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A')} {u = wk1 (wk1 A)} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA'] [wwA]
+      [var0]ₜ : (Γ ∙ Id (Univ rA ⁰) A A' ^ [ % , ι ¹ ] ∙ wk1 A' ^ [ rA , ι ⁰ ]) ⊩ᵛ⟨ ∞ ⟩ var 0 ∷ wk1 (wk1 A') ^ [ rA , ι ⁰ ] / [ΓIdA'] / [wwA']'
+      [var0]ₜ = proj₂ (fundamentalVar here [ΓIdA']) 
+      [var1]ₜ : (Γ ∙ Id (Univ rA ⁰) A A' ^ [ % , ι ¹ ] ∙ wk1 A' ^ [ rA , ι ⁰ ]) ⊩ᵛ⟨ ∞ ⟩ var 1 ∷  Id (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) ^ [ % , ι ¹ ] / [ΓIdA'] / [wwIdAA']
+      [var1]ₜ = let X = fundamentalVar (there here) [ΓIdA'] in S.irrelevanceTerm {A = Id (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A'))} {t = var 1}
+                                                                                 [ΓIdA'] [ΓIdA'] (proj₁ X) [wwIdAA'] (proj₂ X) 
       [Id-U-ΠΠ-res] : Γ ⊩ᵛ⟨ ∞ ⟩ Id-U-ΠΠ-res  A A' B B' ∷ SProp ¹ ^ [ ! , ∞ ] / [Γ] / [SProp]
       [Id-U-ΠΠ-res] = ∃ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
                         ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
