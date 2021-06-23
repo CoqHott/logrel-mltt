@@ -110,7 +110,7 @@ module Cstr (K : constructors)
       cstr-recᵣ : ∀ {k x}
                 → (kK : [ K ]-cstr (cstr-cod k))
                 → (kdomK : [ K ]-cstr (cstr-dom k))
-                → let a' = [ K ]-cstr-params kdomK
+                → let a' = wkAll Γ ([ K ]-cstr-params kdomK)
                   in Pi k kK a' -- This is somewhat a hack...
                 → Γ ⊢ cstr K a' ⦂ s
                 → Γ ⊩cstr x ∷K a' ⦂ s
@@ -142,7 +142,7 @@ module [Cstr] (K : constructors) (Pi : ∀ ki → [ K ]-cstr (cstr-cod ki) → T
       cstr-recᵣ : ∀ {k x x'}
                 → (kK : [ K ]-cstr (cstr-cod k))
                 → (kdomK : [ K ]-cstr (cstr-dom k))
-                → let a' = [ K ]-cstr-params kdomK
+                → let a' = wkAll Γ ([ K ]-cstr-params kdomK)
                   in Pi k kK a' a' -- Is that right ??? Looks funny
                 → Γ ⊢ cstr K a' ⦂ s
                 → Γ ⊩cstr x ≡ x' ∷K a' ⦂ s

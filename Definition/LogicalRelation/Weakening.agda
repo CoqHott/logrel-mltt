@@ -82,23 +82,53 @@ wkEqTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ₌ k k′ d d′ t≡u prop) =
       (wkRed:*:Term [ρ] ⊢Δ d′) (≅ₜ-wk [ρ] ⊢Δ t≡u)
       (wk[Empty]-prop [ρ] ⊢Δ prop)
 
-wkCstr-prop : ∀ {ρ K Γ Δ Pi Qi a s k}
-                ([ρ] : ρ ∷ Δ ⊆ Γ)
-                (⊢Δ : ⊢ Δ)
-                (PQ : ∀ ki kiK t → Pi ki kiK t → Qi ki kiK (U.wk ρ t))
-                (d : Cstr-prop K Γ Pi a s k)
-              → Cstr-prop K Δ Qi (U.wk ρ a) s (U.wk ρ k)
-wkCstr-prop ρ ⊢Δ PQ (cstrᵣ kK x) = cstrᵣ kK (PQ _ kK _ x)
-wkCstr-prop ρ ⊢Δ PQ (ne x) = ne (wkTermNe ρ ⊢Δ x)
 
-wk[Cstr]-prop : ∀ {ρ K Γ Δ Pi Qi a s k k'}
+module wkCstr {K : constructors}
+              {Pi Qi : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Set}
+              {ρ Γ Δ}
+              ([ρ] : ρ ∷ Δ ⊆ Γ)
+              (⊢Δ : ⊢ Δ)
+              (PQ : ∀ ki kiK t → Pi ki kiK t → Qi ki kiK (U.wk ρ t))
+              where
+  module C = Cstr K Pi
+  module C' = Cstr K Qi
+
+  wkcstr : ∀ {a s k} → Γ C.⊩cstr k ∷K a ⦂ s → Δ C'.⊩cstr U.wk ρ k ∷K U.wk ρ a ⦂ s
+  wk-prop : ∀ {a s k} → C.Cstr-prop Γ a s k → C'.Cstr-prop Δ (U.wk ρ a) s (U.wk ρ k)
+
+  wkcstr (Cstr.cstrₜ k D k≡k [k]) = Cstr.cstrₜ (U.wk ρ k) (wkRed:*:Term [ρ] ⊢Δ D) (≅ₜ-wk [ρ] ⊢Δ k≡k) (wk-prop [k])
+
+  wk-prop (Cstr.cstrᵣ kK x) = C'.cstrᵣ kK (PQ _ kK _ x)
+  wk-prop (Cstr.cstr-recᵣ kK kdomK x ⊢Kx [x]) =
+    C'.cstr-recᵣ kK kdomK
+                 (PE.subst (Qi _ kK) (wk-wkAll [ρ]) (PQ _ kK _ x))
+                 (PE.subst (λ t → Δ ⊢ cstr K t ⦂ _) (wk-wkAll [ρ]) (T.wk [ρ] ⊢Δ ⊢Kx))
+                 (PE.subst (λ t → Δ C'.⊩cstr U.wk ρ _ ∷K t ⦂ _) (wk-wkAll [ρ]) (wkcstr [x]))
+  wk-prop (Cstr.ne x) = C'.ne (wkTermNe [ρ] ⊢Δ x)
+
+module wk[Cstr] {K : constructors}
+                {Pi Qi : ∀ ki → [ K ]-cstr (cstr-cod ki) → Term → Term → Set}
+                {ρ Γ Δ}
                 ([ρ] : ρ ∷ Δ ⊆ Γ)
                 (⊢Δ : ⊢ Δ)
                 (PQ : ∀ ki kiK t t' → Pi ki kiK t t' → Qi ki kiK (U.wk ρ t) (U.wk ρ t'))
-                (d : [Cstr]-prop K Γ Pi a s k k')
-              → [Cstr]-prop K Δ Qi (U.wk ρ a) s (U.wk ρ k) (U.wk ρ k')
-wk[Cstr]-prop ρ ⊢Δ PQ (cstrᵣ kK x) = cstrᵣ kK (PQ _ kK _ _ x)
-wk[Cstr]-prop ρ ⊢Δ PQ (ne x) = ne (wkEqTermNe ρ ⊢Δ x)
+                where
+  module C = [Cstr] K Pi
+  module C' = [Cstr] K Qi
+
+  wkcstr : ∀ {a s k k'} → Γ C.⊩cstr k ≡ k' ∷K a ⦂ s → Δ C'.⊩cstr U.wk ρ k ≡ U.wk ρ k' ∷K U.wk ρ a ⦂ s
+  wk-prop : ∀ {a s k k'} → C.[Cstr]-prop Γ a s k k' → C'.[Cstr]-prop Δ (U.wk ρ a) s (U.wk ρ k) (U.wk ρ k')
+
+  wkcstr ([Cstr].cstrₜ k k' D D' k≡k' [k≡k']) =
+    [Cstr].cstrₜ (U.wk ρ k) (U.wk ρ k') (wkRed:*:Term [ρ] ⊢Δ D) (wkRed:*:Term [ρ] ⊢Δ D') (≅ₜ-wk [ρ] ⊢Δ k≡k') (wk-prop [k≡k'])
+
+  wk-prop ([Cstr].cstrᵣ kK x) = C'.cstrᵣ kK (PQ _ kK _ _ x)
+  wk-prop ([Cstr].cstr-recᵣ kK kdomK x ⊢Kx [x]) =
+    C'.cstr-recᵣ kK kdomK
+                 (PE.subst₂ (Qi _ kK) (wk-wkAll [ρ]) (wk-wkAll [ρ]) (PQ _ kK _ _ x))
+                 (PE.subst (λ t → Δ ⊢ cstr K t ⦂ _) (wk-wkAll [ρ]) (T.wk [ρ] ⊢Δ ⊢Kx))
+                 (PE.subst (λ t → Δ C'.⊩cstr U.wk ρ _ ≡ U.wk ρ _ ∷K t ⦂ _) (wk-wkAll [ρ]) (wkcstr [x]))
+  wk-prop ([Cstr].ne x) = C'.ne (wkEqTermNe [ρ] ⊢Δ x)
 
 
 wkBox-prop : ∀ {ρ P Q Γ Δ F sF b} →
@@ -131,7 +161,7 @@ mutual
   wk ρ ⊢Δ (Uᵣ′ s l′ l< ⊢Γ) = Uᵣ′ s l′ l< ⊢Δ
   wk ρ ⊢Δ (ℕᵣ D) = ℕᵣ (wkRed:*: ρ ⊢Δ D)
   wk ρ ⊢Δ (Emptyᵣ D) = Emptyᵣ (wkRed:*: ρ ⊢Δ D)
-  wk {ρ} [ρ] ⊢Δ (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) =
+  wk {ρ} {Γ} {Δ = Δ} {l = l} [ρ] ⊢Δ (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]) =
     let ρ[domK]  = wk [ρ] ⊢Δ [domK]
         ρ[domK]' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρ[domK]
     in
@@ -144,9 +174,7 @@ mutual
                     (≅ₜ-wk [ρ] ⊢Δ A≡A))
           ρ[domK]'
           (irrelevanceTerm′ (T.wk-wkAll [ρ]) PE.refl ρ[domK] ρ[domK]' (wkTerm [ρ] ⊢Δ [domK] [a]))
-          λ ki kiK → PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _)
-                               (T.wk-wkAll [ρ])
-                               (wk [ρ] ⊢Δ ([Yi] ki kiK))
+          (wk[domi] [ρ] ⊢Δ [Yi])
   wk {ρ} [ρ] ⊢Δ (Boxᵣ′ F sF D ⊢F A≡A [F]) =
     Boxᵣ′ (U.wk ρ F) sF (wkRed:*: [ρ] ⊢Δ D) (T.wk [ρ] ⊢Δ ⊢F) (≅-wk [ρ] ⊢Δ A≡A) (wk [ρ] ⊢Δ [F])
   wk {ρ} [ρ] ⊢Δ (ne′ K D neK K≡K) =
@@ -190,6 +218,11 @@ mutual
                                           ([a]′ [ρ₁] [ρ] ⊢Δ₁ [b])
                                           [a≡b]′))
   wk ρ ⊢Δ (emb 0<1 x) = emb 0<1 (wk ρ ⊢Δ x)
+
+  wk[domi] : ∀ {ρ K Γ Δ l} ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → LogRel.type[domi] l (logRelRec l) Γ K → LogRel.type[domi] l (logRelRec l) Δ K
+  wk[domi] {K = K} [ρ] ⊢Δ  [domi] ki kiK with [domi] ki kiK
+  ... | (LogRel.cstᵣ n x) = LogRel.cstᵣ (λ x → n (wk-[]-cstr (wk-[]-cstr-rev x))) (PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) (wk [ρ] ⊢Δ x))
+  ... | (LogRel.monᵣ d x) = LogRel.monᵣ (PE.subst ([ K ]-cstr) (wk-wkAll [ρ]) (wk-[]-cstr d)) x
 
   wkEq : ∀ {ρ Γ Δ A B s l} → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
         ([A] : Γ ⊩⟨ l ⟩ A ⦂ s)
@@ -247,17 +280,27 @@ mutual
   wkTerm ρ ⊢Δ (Emptyᵣ D) [t] = wkTermEmpty ρ ⊢Δ [t]
   wkTerm {ρ} [ρ] ⊢Δ (ne′ K D neK K≡K) (neₜ k d nf) =
     neₜ (U.wk ρ k) (wkRed:*:Term [ρ] ⊢Δ d) (wkTermNe [ρ] ⊢Δ nf)
-  wkTerm {ρ} [ρ] ⊢Δ
+  wkTerm {ρ} {Γ} {Δ} {t} {s = s} {l = l} [ρ] ⊢Δ
       (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-      (cstrₜ k d k≡k [k]) =
-    let ρ[domK]  = wk [ρ] ⊢Δ [domK]
-        ρ[domK]' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρ[domK]
-    in cstrₜ (U.wk ρ k) (wkRed:*:Term [ρ] ⊢Δ d) (≅ₜ-wk [ρ] ⊢Δ k≡k)
-             (wkCstr-prop [ρ] ⊢Δ (λ ki kiK t₁ x →
-               let Yi   = [Yi] ki kiK
-                   ρYi  = wk [ρ] ⊢Δ Yi
-                   ρYi' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρYi
-               in irrelevanceTerm′ (T.wk-wkAll [ρ]) PE.refl ρYi ρYi' (wkTerm [ρ] ⊢Δ Yi x)) [k])
+      d =
+    wkCstr.wkcstr [ρ] ⊢Δ wk-aux d
+    where
+      [domK]' = PE.subst (λ x → Δ ⊩⟨ l ⟩ x ⦂ cstr-dom-sort K) (wk-wkAll [ρ]) (wk [ρ] ⊢Δ [domK])
+      wk-aux : (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki)) (t : Term) →
+               LogRel.cstr-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t →
+               LogRel.cstr-arg-dispatch l (logRelRec l) Δ s K [domK]' (wk[domi] [ρ] ⊢Δ [Yi]) ki kiK (U.wk ρ t)
+      wk-aux ki kiK t d with [Yi] ki kiK
+      ... | LogRel.cstᵣ n [A] =
+            let ρ[A]  = wk [ρ] ⊢Δ [A]
+                ρ[A]' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρ[A]
+            in irrelevanceTerm′ (T.wk-wkAll [ρ]) PE.refl ρ[A] ρ[A]' (wkTerm [ρ] ⊢Δ [A] d)
+      ... | LogRel.monᵣ kidomK x =
+          let kidomK' = wk-[]-cstr kidomK
+              kidomK'' = PE.subst [ K ]-cstr (wk-wkAll [ρ]) kidomK'
+          in
+          PE.subst (λ t → Δ ⊩⟨ l ⟩ t ∷ cstr-dom-ctx Δ K ⦂ cstr-dom-sort K / [domK]')
+                   (wk-[]-cstr-params' kidomK kidomK'' (wk-wkAll [ρ]))
+                   (irrelevanceTerm′ (wk-wkAll [ρ]) PE.refl (wk [ρ] ⊢Δ [domK]) [domK]' (wkTerm [ρ] ⊢Δ [domK] d))
   wkTerm {ρ} [ρ] ⊢Δ (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ b d b≡b [b]) =
     boxₜ (U.wk ρ b) (wkRed:*:Term [ρ] ⊢Δ d) (≅ₜ-wk [ρ] ⊢Δ b≡b) (wkBox-prop [ρ] ⊢Δ (λ b d → wkTerm [ρ] ⊢Δ [F] d) [b])
   wkTerm {ρ} [ρ] ⊢Δ (Πᵣ′ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
@@ -303,23 +346,45 @@ mutual
     neₜ₌ (U.wk ρ k) (U.wk ρ m)
         (wkRed:*:Term [ρ] ⊢Δ d) (wkRed:*:Term [ρ] ⊢Δ d′)
         (wkEqTermNe [ρ] ⊢Δ nf)
-  wkEqTerm {ρ} [ρ] ⊢Δ
+  wkEqTerm {ρ} {Γ} {Δ} {s = s} {l} [ρ] ⊢Δ
           (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-          (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
-    let ρ[domK]  = wk [ρ] ⊢Δ [domK]
-        ρ[domK]' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρ[domK]
-        cstrA    = cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]
-    in cstrₜ₌ (U.wk ρ k) (U.wk ρ k')
-              (wkRed:*:Term [ρ] ⊢Δ d) (wkRed:*:Term [ρ] ⊢Δ d')
-              (≅ₜ-wk [ρ] ⊢Δ k≡k')
-              (wkTerm [ρ] ⊢Δ cstrA [k]) (wkTerm [ρ] ⊢Δ cstrA [k'])
-              (wk[Cstr]-prop [ρ] ⊢Δ
-                             (λ ki kiK t t' x →
-                                let Yi   = [Yi] ki kiK
-                                    ρYi  = wk [ρ] ⊢Δ Yi
-                                    ρYi' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρYi
-                                in irrelevanceEqTerm′ (T.wk-wkAll [ρ]) PE.refl ρYi ρYi' (wkEqTerm [ρ] ⊢Δ Yi x))
-                             [k≡k'])
+          (cstrₜ₌ [k] [k'] d) =
+    let cstrA = cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]
+    in cstrₜ₌ (wkTerm [ρ] ⊢Δ cstrA [k]) (wkTerm [ρ] ⊢Δ cstrA [k'])
+              (wk[Cstr].wkcstr [ρ] ⊢Δ wk-aux d)
+    where
+      [domK]' = PE.subst (λ x → Δ ⊩⟨ l ⟩ x ⦂ cstr-dom-sort K) (wk-wkAll [ρ]) (wk [ρ] ⊢Δ [domK])
+      wk-aux : (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki)) (t t' : Term) →
+               LogRel.cstr≡-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t t' →
+               LogRel.cstr≡-arg-dispatch l (logRelRec l) Δ s K [domK]' (wk[domi] [ρ] ⊢Δ [Yi]) ki kiK (U.wk ρ t) (U.wk ρ t')
+      wk-aux ki kiK t t' d with [Yi] ki kiK
+      ... | LogRel.cstᵣ n [A] =
+            let ρ[A]  = wk [ρ] ⊢Δ [A]
+                ρ[A]' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρ[A]
+            in irrelevanceEqTerm′ (T.wk-wkAll [ρ]) PE.refl ρ[A] ρ[A]' (wkEqTerm [ρ] ⊢Δ [A] d)
+      ... | LogRel.monᵣ kidomK x =
+          let kidomK' = wk-[]-cstr kidomK
+              kidomK'' = PE.subst [ K ]-cstr (wk-wkAll [ρ]) kidomK'
+          in
+          PE.subst (λ t → Δ ⊩⟨ l ⟩ t ∷ cstr-dom-ctx Δ K ⦂ cstr-dom-sort K / [domK]')
+                   (wk-[]-cstr-params' kidomK kidomK'' (wk-wkAll [ρ]))
+                   (irrelevanceTerm′ (wk-wkAll [ρ]) PE.refl (wk [ρ] ⊢Δ [domK]) [domK]' (wkTerm [ρ] ⊢Δ [domK] d))
+
+          -- (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
+    -- let ρ[domK]  = wk [ρ] ⊢Δ [domK]
+    --     ρ[domK]' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρ[domK]
+    --     cstrA    = cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi]
+    -- in cstrₜ₌ (U.wk ρ k) (U.wk ρ k')
+    --           (wkRed:*:Term [ρ] ⊢Δ d) (wkRed:*:Term [ρ] ⊢Δ d')
+    --           (≅ₜ-wk [ρ] ⊢Δ k≡k')
+    --           (wkTerm [ρ] ⊢Δ cstrA [k]) (wkTerm [ρ] ⊢Δ cstrA [k'])
+    --           (wk[Cstr]-prop [ρ] ⊢Δ
+    --                          (λ ki kiK t t' x →
+    --                             let Yi   = [Yi] ki kiK
+    --                                 ρYi  = wk [ρ] ⊢Δ Yi
+    --                                 ρYi' = PE.subst (λ x → _ ⊩⟨ _ ⟩ x ⦂ _) (T.wk-wkAll [ρ]) ρYi
+    --                             in irrelevanceEqTerm′ (T.wk-wkAll [ρ]) PE.refl ρYi ρYi' (wkEqTerm [ρ] ⊢Δ Yi x))
+    --                          [k≡k'])
   wkEqTerm {ρ} [ρ] ⊢Δ (Boxᵣ′ F sF D ⊢F A≡A [F]) (boxₜ₌ b b' d d' b≡b' [b] [b'] [b≡b']) =
     let BoxA = Boxᵣ′ F sF D ⊢F A≡A [F]
     in boxₜ₌ (U.wk ρ b) (U.wk ρ b')

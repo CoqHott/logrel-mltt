@@ -14,6 +14,7 @@ open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Irrelevance
 
 open import Tools.Product
+open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
 
@@ -34,22 +35,28 @@ mutual
                         (≅-eq (~-to-≅ K≡M))
     in  neₜ k (convRed:*: d K≡K₁)
             (neNfₜ neK₂ (conv ⊢k K≡K₁) (~-conv k≡k K≡K₁))
-  convTermT₁ {Γ = Γ} {s = s} {t = t}
-         (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-                (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁))
+  convTermT₁ {l = l} {l′} {Γ = Γ} {s = s} {t = t}
+         (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a])
+                (cstrᵣ K₁ KcodU₁ [domK]₁ [Yi]₁ a₁ D₁ ⊢a₁ A≡A₁ [a]₁))
          (cstr₌ a' D' A≡B [a≡a'])
-         (cstrₜ k d k≡k [k]) =
-    let Ka'≡K₁a₁ = PE.sym (whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ))
-        K≡K₁    = cstr-app-PE-injectivity Ka'≡K₁a₁
-        a'≡a₁   = cstr-app-PE-arg-injectivity Ka'≡K₁a₁
-        -- cstrA   = (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-        -- cstrB   = (cstrᵣ′ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
-        ⊢Ka≡Ka'  = ≅-eq (≅-cstr-cong KcodU A≡B)
-    in cstrₜ k
-             (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) Ka'≡K₁a₁ (convRed:*: d ⊢Ka≡Ka'))
-             (PE.subst (λ x → Γ ⊢ k ≅ k ∷ x ⦂ s) Ka'≡K₁a₁ (≅-conv k≡k ⊢Ka≡Ka'))
-             (PE.subst (λ a → Cstr-prop K₁ Γ _ a _ k)  a'≡a₁
-                   (Cstr-prop-ext K≡K₁ (λ ki kiK kiK' t d → irrelevanceTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d) ⊢Ka≡Ka' [k]))
+         d =
+    extCstr.irrelevance aux-ext K≡K₁ ⊢Ka≡Ka₁ d
+    where
+      Ka'≡K₁a₁ = PE.sym (whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ))
+      K≡K₁    = cstr-app-PE-injectivity Ka'≡K₁a₁
+      a'≡a₁   = cstr-app-PE-arg-injectivity Ka'≡K₁a₁
+      ⊢Ka≡Ka₁  = ≅-eq (≅-cstr-cong KcodU (PE.subst (λ x → Γ ⊢ a ≅ x ∷ _ ⦂ _) a'≡a₁ A≡B))
+      aux-ext : (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki)) (kiK' : [ K₁ ]-cstr (cstr-cod ki)) (t : Term) →
+                LogRel.cstr-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t →
+                LogRel.cstr-arg-dispatch l′ (logRelRec l′) Γ s K₁ [domK]₁ [Yi]₁ ki kiK' t
+      aux-ext ki kiK kiK' t d with [Yi] ki kiK with [Yi]₁ ki kiK'
+      ... | LogRel.cstᵣ n [A] | LogRel.cstᵣ n₁ [A]₁ = irrelevanceTerm [A] [A]₁ d
+      ... | LogRel.cstᵣ n [A] | LogRel.monᵣ d₁ x = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) (PE.sym K≡K₁) d₁))
+      ... | LogRel.monᵣ d _ | LogRel.cstᵣ n x = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) K≡K₁ d))
+      ... | LogRel.monᵣ kidomK _ | LogRel.monᵣ kidomK₁ _ =
+        PE.subst (λ t → Γ ⊩⟨ l′ ⟩ t ∷ cstr-dom-ctx Γ K₁ ⦂ cstr-dom-sort K₁ / [domK]₁ )
+                 ([]-cstr-params-irr {kiK = kidomK} {kiK' = kidomK₁})
+                 (irrelevanceTerm′ (PE.cong (cstr-dom-ctx Γ) K≡K₁) (PE.cong cstr-dom-sort K≡K₁) [domK] [domK]₁ d)
   convTermT₁ {Γ = Γ} {s = s} {t = t}
              (Boxᵥ (Boxᵣ F sF D ⊢F A≡A [F])
                    (Boxᵣ F' sF' D' ⊢F' A≡A' [F]'))
@@ -117,23 +124,29 @@ mutual
                         (sym (≅-eq (~-to-≅ K≡M)))
     in  neₜ k (convRed:*: d K₁≡K)
             (neNfₜ neK₂ (conv ⊢k K₁≡K) (~-conv k≡k K₁≡K))
-  convTermT₂ {Γ = Γ} {s = s} {t = t}
-         (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-                (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁))
+  convTermT₂ {l = l} {l′} {Γ = Γ} {s = s} {t = t}
+         (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a])
+                (cstrᵣ K₁ KcodU₁ [domK]₁ [Yi]₁ a₁ D₁ ⊢a₁ A≡A₁ [a]₁))
          (cstr₌ a' D' A≡B [a≡a'])
-         (cstrₜ k d k≡k [k]) =
-    let K₁a₁≡Ka' = whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ)
-        K₁≡K    = cstr-app-PE-injectivity K₁a₁≡Ka'
-        a₁≡a'   = cstr-app-PE-arg-injectivity K₁a₁≡Ka'
-        ⊢Ka'≡Ka  = ≅-eq (≅-sym (≅-cstr-cong KcodU A≡B))
-        ⊢K₁a'≡K₁a  = PE.subst (λ k → Γ ⊢ cstr k ∘ a' ≡ cstr k ∘ a ⦂ s) (PE.sym K₁≡K) ⊢Ka'≡Ka
-    in cstrₜ k
-             (convRed:*: (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) K₁a₁≡Ka' d) ⊢Ka'≡Ka)
-             (≅-conv (PE.subst (λ x → Γ ⊢ k ≅ k ∷ x ⦂ s) K₁a₁≡Ka' k≡k) ⊢Ka'≡Ka)
-             (Cstr-prop-ext K₁≡K
-                             (λ ki kiK kiK' t d → irrelevanceTerm ([Yi]₁ ki kiK) ([Yi] ki kiK') d)
-                              ⊢K₁a'≡K₁a
-                             (PE.subst (λ a → Cstr-prop K₁ Γ _ a _ k) a₁≡a' [k]))
+         d =
+    extCstr.irrelevance aux-ext K₁≡K ⊢K₁a₁≡K₁a d
+    where
+      K₁a₁≡Ka' = whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ)
+      K₁≡K    = cstr-app-PE-injectivity K₁a₁≡Ka'
+      a₁≡a'   = cstr-app-PE-arg-injectivity K₁a₁≡Ka'
+      ⊢Ka'≡Ka  = ≅-eq (≅-cstr-cong KcodU (≅ₜ-sym A≡B))
+      ⊢K₁a₁≡K₁a  = PE.subst₂ (λ k x → Γ ⊢ cstr k x ≡ cstr k a ⦂ s) (PE.sym K₁≡K) (PE.sym a₁≡a') ⊢Ka'≡Ka
+      aux-ext : (ki : constructors) (kiK : [ K₁ ]-cstr (cstr-cod ki)) (kiK' : [ K ]-cstr (cstr-cod ki)) (t : Term) →
+              LogRel.cstr-arg-dispatch l′ (logRelRec l′) Γ s K₁ [domK]₁ [Yi]₁ ki kiK t →
+              LogRel.cstr-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK' t
+      aux-ext ki kiK kiK' t d  with [Yi]₁ ki kiK with [Yi] ki kiK'
+      ... | LogRel.cstᵣ _ [A]₁ | LogRel.cstᵣ _ [A] = irrelevanceTerm [A]₁ [A] d
+      ... | LogRel.cstᵣ n _ | LogRel.monᵣ d _ = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) (PE.sym K₁≡K) d))
+      ... | LogRel.monᵣ d _ | LogRel.cstᵣ n x = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) K₁≡K d))
+      ... | LogRel.monᵣ kidomK₁ _ | LogRel.monᵣ kidomK _ =
+        PE.subst (λ t → Γ ⊩⟨ l ⟩ t ∷ cstr-dom-ctx Γ K ⦂ cstr-dom-sort K / [domK] )
+                 ([]-cstr-params-irr {kiK = kidomK₁} {kiK' = kidomK})
+                 (irrelevanceTerm′ (PE.cong (cstr-dom-ctx Γ) K₁≡K) (PE.cong cstr-dom-sort K₁≡K) [domK]₁ [domK] d)
   convTermT₂ {Γ = Γ} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
@@ -237,26 +250,34 @@ mutual
     in  neₜ₌ k m (convRed:*: d K≡K₁)
                  (convRed:*: d′ K≡K₁)
                  (neNfₜ₌ neK₂ neM₁ (~-conv k≡m K≡K₁))
-  convEqTermT₁ {Γ = Γ} {s = s} {t = t} {u = u}
-         (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-                (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁))
+  convEqTermT₁ {l = l} {l′} {Γ = Γ} {s = s} {t = t} {u = u}
+         (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a])
+                (cstrᵣ K₁ KcodU₁ [domK]₁ [Yi]₁ a₁ D₁ ⊢a₁ A≡A₁ [a]₁))
          (cstr₌ a' D' A≡B [a≡a'])
-         (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
-    let Ka'≡K₁a₁ = PE.sym (whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ))
-        K≡K₁    = cstr-app-PE-injectivity Ka'≡K₁a₁
-        a'≡a₁   = cstr-app-PE-arg-injectivity Ka'≡K₁a₁
-        cstrA   = (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
+         (cstrₜ₌ [k] [k'] d) =
+    let cstrA   = (cstrᵣ′ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
         cstrB   = (cstrᵣ′ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
         cstrA≡B = (cstr₌ a' D' A≡B [a≡a'])
-        ⊢Ka≡Ka' = ≅-eq (≅-cstr-cong KcodU A≡B)
-      in cstrₜ₌ k k'
-                 (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) Ka'≡K₁a₁ (convRed:*: d ⊢Ka≡Ka'))
-                 (PE.subst (λ x → Γ ⊢ u :⇒*: k' ∷ x ⦂ s) Ka'≡K₁a₁ (convRed:*: d' ⊢Ka≡Ka'))
-                 (PE.subst (λ x → Γ ⊢ k ≅ k' ∷ x ⦂ s) Ka'≡K₁a₁ (≅-conv k≡k' ⊢Ka≡Ka'))
-                 (convTerm₁ cstrA cstrB cstrA≡B [k])
-                 (convTerm₁ cstrA cstrB cstrA≡B [k'])
-                 (PE.subst (λ a → [Cstr]-prop K₁ Γ _ a _ k k')  a'≡a₁
-                           ([Cstr]-prop-ext K≡K₁ (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi] ki kiK) ([Yi]₁ ki kiK') d ) ⊢Ka≡Ka' [k≡k']))
+    in
+    cstrₜ₌ (convTerm₁ cstrA cstrB cstrA≡B [k])
+           (convTerm₁ cstrA cstrB cstrA≡B [k'])
+           (ext[Cstr].irrelevance aux-ext K≡K₁ ⊢Ka≡Ka₁ d)
+    where
+      Ka'≡K₁a₁ = PE.sym (whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ))
+      K≡K₁    = cstr-app-PE-injectivity Ka'≡K₁a₁
+      a'≡a₁   = cstr-app-PE-arg-injectivity Ka'≡K₁a₁
+      ⊢Ka≡Ka₁ = ≅-eq (≅-cstr-cong KcodU (PE.subst (λ x → Γ ⊢ a ≅ x ∷ _ ⦂ _) a'≡a₁ A≡B))
+      aux-ext : (ki : constructors) (kiK : [ K ]-cstr (cstr-cod ki)) (kiK' : [ K₁ ]-cstr (cstr-cod ki)) (t t' : Term) →
+                LogRel.cstr≡-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK t t' →
+                LogRel.cstr≡-arg-dispatch l′ (logRelRec l′) Γ s K₁ [domK]₁ [Yi]₁ ki kiK' t t'
+      aux-ext ki kiK kiK' t t' d with [Yi] ki kiK with [Yi]₁ ki kiK'
+      ... | LogRel.cstᵣ n [A] | LogRel.cstᵣ _ [A]₁ = irrelevanceEqTerm [A] [A]₁ d
+      ... | LogRel.cstᵣ n _ | LogRel.monᵣ d _ = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) (PE.sym K≡K₁) d))
+      ... | LogRel.monᵣ d _ | LogRel.cstᵣ n _ = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) K≡K₁ d))
+      ... | LogRel.monᵣ kidomK _ | LogRel.monᵣ kidomK₁ _ =
+        PE.subst (λ t → Γ ⊩⟨ l′ ⟩ t ∷ cstr-dom-ctx Γ K₁ ⦂ cstr-dom-sort K₁ / [domK]₁ )
+                 ([]-cstr-params-irr {kiK = kidomK} {kiK' = kidomK₁})
+                 (irrelevanceTerm′ (PE.cong (cstr-dom-ctx Γ) K≡K₁) (PE.cong cstr-dom-sort K≡K₁) [domK] [domK]₁ d)
   convEqTermT₁ {Γ = Γ} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                            (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
@@ -325,30 +346,35 @@ mutual
                         (sym (≅-eq (~-to-≅ K≡M)))
     in  neₜ₌ k m (convRed:*: d K₁≡K) (convRed:*: d′ K₁≡K)
                  (neNfₜ₌ neK₂ neM₁ (~-conv k≡m K₁≡K))
-  convEqTermT₂ {Γ = Γ} {t = t} {u = u} {s = s}
-         (cstrᵥ (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-                (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁))
+  convEqTermT₂ {l = l} {l′} {Γ = Γ} {t = t} {u = u} {s = s}
+         (cstrᵥ (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a])
+                (cstrᵣ K₁ KcodU₁ [domK]₁ [Yi]₁ a₁ D₁ ⊢a₁ A≡A₁ [a]₁))
          (cstr₌ a' D' A≡B [a≡a'])
-         (cstrₜ₌ k k' d d' k≡k' [k] [k'] [k≡k']) =
-    let K₁a₁≡Ka' = whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ)
+         (cstrₜ₌ [k] [k'] d) =
+    let cstrA   = (cstrᵣ K KcodU [domK] [Yi] a D ⊢a A≡A [a])
+        cstrB   = (cstrᵣ K₁ KcodU₁ [domK]₁ [Yi]₁ a₁ D₁ ⊢a₁ A≡A₁ [a]₁)
+        cstrA≡B = (cstr₌ a' D' A≡B [a≡a'])
+    in
+    cstrₜ₌ (convTermT₂ (cstrᵥ cstrA cstrB) cstrA≡B [k])
+           (convTermT₂ (cstrᵥ cstrA cstrB) cstrA≡B [k'])
+           (ext[Cstr].irrelevance aux-ext K₁≡K ⊢K₁a₁≡K₁a d )
+      where
+        K₁a₁≡Ka' = whrDet* (red D₁ , cstrₙ) (red D' , cstrₙ)
         K₁≡K    = cstr-app-PE-injectivity K₁a₁≡Ka'
         a₁≡a'   = cstr-app-PE-arg-injectivity K₁a₁≡Ka'
         ⊢Ka'≡Ka  = ≅-eq (≅-sym (≅-cstr-cong KcodU A≡B))
-        ⊢K₁a'≡K₁a  = PE.subst (λ k → Γ ⊢ cstr k ∘ a' ≡ cstr k ∘ a ⦂ s) (PE.sym K₁≡K) ⊢Ka'≡Ka
-        cstrA   = (cstrᵣ K KcodU a D ⊢a A≡A [domK] [a] [Yi])
-        cstrB   = (cstrᵣ K₁ KcodU₁ a₁ D₁ ⊢a₁ A≡A₁ [domK]₁ [a]₁ [Yi]₁)
-        cstrA≡B = (cstr₌ a' D' A≡B [a≡a'])
-        -- ⊢Ka≡Ka' = ≅-eq (≅-cstr-cong KcodU₁ (wfTerm ⊢a₁) (PE.subst (λ k → Γ ⊢ a ≅ a' ∷ wkAll Γ (cstr-dom k) ⦂ cstr-dom-sort k) (PE.sym K≡K₁) A≡B))
-      in cstrₜ₌ k k'
-               (convRed:*: (PE.subst (λ x → Γ ⊢ t :⇒*: k ∷ x ⦂ s) K₁a₁≡Ka' d) ⊢Ka'≡Ka)
-               (convRed:*: (PE.subst (λ x → Γ ⊢ u :⇒*: k' ∷ x ⦂ s) K₁a₁≡Ka' d') ⊢Ka'≡Ka)
-               (≅-conv (PE.subst (λ x → Γ ⊢ k ≅ k' ∷ x ⦂ s) K₁a₁≡Ka' k≡k') ⊢Ka'≡Ka)
-               (convTermT₂ (cstrᵥ cstrA cstrB) cstrA≡B [k])
-               (convTermT₂ (cstrᵥ cstrA cstrB) cstrA≡B [k'])
-               ([Cstr]-prop-ext K₁≡K
-                             (λ ki kiK kiK' t t' d → irrelevanceEqTerm ([Yi]₁ ki kiK) ([Yi] ki kiK') d)
-                              ⊢K₁a'≡K₁a
-                             (PE.subst (λ a → [Cstr]-prop K₁ Γ _ a _ k k') a₁≡a' [k≡k']))
+        ⊢K₁a₁≡K₁a  = PE.subst₂ (λ k x → Γ ⊢ cstr k x ≡ cstr k a ⦂ s) (PE.sym K₁≡K) (PE.sym a₁≡a') ⊢Ka'≡Ka
+        aux-ext : (ki : constructors) (kiK : [ K₁ ]-cstr (cstr-cod ki)) (kiK' : [ K ]-cstr (cstr-cod ki)) (t t' : Term) →
+                  LogRel.cstr≡-arg-dispatch l′ (logRelRec l′) Γ s K₁ [domK]₁ [Yi]₁ ki kiK t t' →
+                  LogRel.cstr≡-arg-dispatch l (logRelRec l) Γ s K [domK] [Yi] ki kiK' t t'
+        aux-ext ki kiK kiK' t t' d with [Yi]₁ ki kiK with [Yi] ki kiK'
+        ... | LogRel.cstᵣ n [A]₁ | LogRel.cstᵣ _ [A] = irrelevanceEqTerm [A]₁ [A] d
+        ... | LogRel.cstᵣ n _ | LogRel.monᵣ d _ = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) (PE.sym K₁≡K) d))
+        ... | LogRel.monᵣ d _ | LogRel.cstᵣ n _ = ⊥-elim (n (PE.subst (λ k → [ k ]-cstr _) K₁≡K d))
+        ... | LogRel.monᵣ kidomK₁ _ | LogRel.monᵣ kidomK _ =
+          PE.subst (λ t → Γ ⊩⟨ l ⟩ t ∷ cstr-dom-ctx Γ K ⦂ cstr-dom-sort K / [domK] )
+                  ([]-cstr-params-irr {kiK = kidomK₁} {kiK' = kidomK})
+                  (irrelevanceTerm′ (PE.cong (cstr-dom-ctx Γ) K₁≡K) (PE.cong cstr-dom-sort K₁≡K) [domK]₁ [domK] d)
   convEqTermT₂ {Γ = Γ} {s = s} (Πᵥ (Πᵣ sF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                            (Πᵣ sF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])

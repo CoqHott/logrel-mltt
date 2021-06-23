@@ -612,3 +612,18 @@ wk-sgSubst {ρ} {t} u =
   trans (wk-subst u)
     (trans (substVar-to-subst (wk-sgSubst-pointwise ρ) u)
       (sym (subst-wk u))))
+
+wk-[]-cstr : ∀ {ρ K t} → [ K ]-cstr t → [ K ]-cstr (wk ρ t)
+wk-[]-cstr is-K-cstr = is-K-cstr
+
+wk-[]-cstr-rev : ∀ {ρ K t} → [ K ]-cstr (wk ρ t) → [ K ]-cstr t
+wk-[]-cstr-rev {ρ} {K} {t} d = aux t d refl
+  where
+    aux : ∀ t {t'} → [ K ]-cstr t' → t' ≡ wk ρ t → [ K ]-cstr t
+    aux (gen (Constructorkind x) (⟦ 0 , _ ⟧ ∷ [])) is-K-cstr e rewrite cstr-app-PE-injectivity e = is-K-cstr
+
+wk-[]-cstr-params' : ∀ {ρ K t t'} (kK : [ K ]-cstr t) (kK' : [ K ]-cstr t') (e : wk ρ t ≡ t') → wk ρ ([ K ]-cstr-params kK) ≡ [ K ]-cstr-params kK'
+wk-[]-cstr-params' is-K-cstr is-K-cstr e = cstr-app-PE-arg-injectivity e
+
+wk-[]-cstr-params : ∀ {ρ K t} (kK : [ K ]-cstr t) (kK' : [ K ]-cstr (wk ρ t)) → wk ρ ([ K ]-cstr-params kK) ≡ [ K ]-cstr-params kK'
+wk-[]-cstr-params kK kK' = wk-[]-cstr-params' kK kK' refl
