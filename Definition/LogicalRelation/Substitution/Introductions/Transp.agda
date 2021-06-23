@@ -60,22 +60,20 @@ IdSymᵗᵛ {A} {l} {t} {u} {e} {Γ} [Γ] [U] [AU] [A] [t] [u] [Id] [Idinv] [e] 
 abstract 
   transpᵗᵛ : ∀ {A P l t s u e Γ}
            ([Γ] : ⊩ᵛ Γ)
-           ([U] : Γ ⊩ᵛ⟨ ∞ ⟩ U l ^ [ ! , next l ] / [Γ])
-           ([AU] : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ U l ^ [ ! , next l ] / [Γ] / [U])
-           ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
-           ([P] : Γ ∙ A ^ [ ! , ι l ] ⊩ᵛ⟨ ∞ ⟩ P ^ [ % , ι l ] / (_∙_ {A = A} [Γ] [A]))
-           ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
-           ([s] : Γ ⊩ᵛ⟨ ∞ ⟩ s ∷ P [ t ]  ^ [ % , ι l ] / [Γ] / substS {A} {P} {t} [Γ] [A] [P] [t])
-           ([u] : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
-           ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ^ [ % , ι l ] / [Γ]) →
-           ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id A t u ^ [ % , ι l ] / [Γ] / [Id] ) →
-           Γ ⊩ᵛ⟨ ∞ ⟩ transp A P t s u e ∷ P [ u ]  ^ [ % , ι l ] / [Γ] / substS {A} {P} {u} [Γ] [A] [P] [u]
-  transpᵗᵛ {A} {P} {l} {t} {s} {u} {e} {Γ} [Γ] [U] [AU] [A] [P] [t] [s] [u] [Id] [e] =
+           ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , l ] / [Γ])
+           ([P] : Γ ∙ A ^ [ ! , l ] ⊩ᵛ⟨ ∞ ⟩ P ^ [ % , l ] / (_∙_ {A = A} [Γ] [A]))
+           ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , l ] / [Γ] / [A])
+           ([s] : Γ ⊩ᵛ⟨ ∞ ⟩ s ∷ P [ t ]  ^ [ % , l ] / [Γ] / substS {A} {P} {t} [Γ] [A] [P] [t])
+           ([u] : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ A ^ [ ! , l ] / [Γ] / [A])
+           ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ^ [ % , l ] / [Γ]) →
+           ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id A t u ^ [ % , l ] / [Γ] / [Id] ) →
+           Γ ⊩ᵛ⟨ ∞ ⟩ transp A P t s u e ∷ P [ u ]  ^ [ % , l ] / [Γ] / substS {A} {P} {u} [Γ] [A] [P] [u]
+  transpᵗᵛ {A} {P} {l} {t} {s} {u} {e} {Γ} [Γ] [A] [P] [t] [s] [u] [Id] [e] =
     validityIrr {A = P [ u ]} {t = transp A P t s u e } [Γ] (substS {A} {P} {u} [Γ] [A] [P] [u]) λ {Δ} {σ} ⊢Δ [σ] →
     let [liftσ] = liftSubstS {F = A} [Γ] ⊢Δ [A] [σ]
         [A]σ = proj₁ ([A] {Δ} {σ} ⊢Δ [σ])
         [P[t]]σ = I.irrelevance′ (singleSubstLift P t) (proj₁ (substS {A} {P} {t} [Γ] [A] [P] [t] {Δ} {σ} ⊢Δ [σ]))
-        X = transpⱼ (escape [A]σ) (escape (proj₁ ([P] {Δ ∙ subst σ A ^ [ ! , ι l ]} {liftSubst σ} (⊢Δ ∙ (escape [A]σ)) [liftσ])))
+        X = transpⱼ (escape [A]σ) (escape (proj₁ ([P] {Δ ∙ subst σ A ^ [ ! , l ]} {liftSubst σ} (⊢Δ ∙ (escape [A]σ)) [liftσ])))
                             (escapeTerm [A]σ (proj₁ ([t] ⊢Δ [σ]))) (escapeTerm [P[t]]σ (I.irrelevanceTerm′ (singleSubstLift P t) PE.refl PE.refl (proj₁ (substS {A} {P} {t} [Γ] [A] [P] [t] {Δ} {σ} ⊢Δ [σ])) [P[t]]σ (proj₁ ([s] ⊢Δ [σ])))) 
                             (escapeTerm [A]σ (proj₁ ([u] ⊢Δ [σ]))) (escapeTerm (proj₁ ([Id] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([e] ⊢Δ [σ])))
-    in PE.subst (λ X → Δ ⊢ transp (subst σ A) ( subst (liftSubst σ) P) (subst σ t) (subst σ s) (subst σ u) (subst σ e) ∷ X ^ [ % , ι l ] ) (PE.sym (singleSubstLift P u)) X
+    in PE.subst (λ X → Δ ⊢ transp (subst σ A) ( subst (liftSubst σ) P) (subst σ t) (subst σ s) (subst σ u) (subst σ e) ∷ X ^ [ % , l ] ) (PE.sym (singleSubstLift P u)) X
