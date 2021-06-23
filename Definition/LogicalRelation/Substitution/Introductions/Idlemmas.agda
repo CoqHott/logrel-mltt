@@ -26,6 +26,7 @@ open import Definition.LogicalRelation.Substitution.Weakening
 open import Definition.LogicalRelation.Substitution.Introductions.Empty
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
+open import Definition.LogicalRelation.Substitution.Introductions.Cast
 -- open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
 
@@ -35,15 +36,15 @@ import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
---TODO : grab these from Cast.agda
-[cast] : ∀ {A B Γ r}
+
+[proj₁cast] : ∀ {A B Γ r}
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ])
          ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ r , ι ⁰ ])
        → (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B])
-[cast] = {!!}
+[proj₁cast] ⊢Γ [A] [B] = proj₁ ([cast] ⊢Γ [A] [B])
 
-[castext] : ∀ {A A′ B B′ Γ r}
+[proj₁castext] : ∀ {A A′ B B′ Γ r}
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ])
          ([A′] : Γ ⊩⟨ ι ⁰ ⟩ A′ ^ [ r , ι ⁰ ])
@@ -57,7 +58,8 @@ import Data.Nat as Nat
                         → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ])
                         → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) A′ B′ ^ [ % , ι ¹ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
-[castext] = {!!}
+[proj₁castext] ⊢Γ [A] [A′] [A≡A′] [B] [B′] [B≡B′] = proj₁ ([castext] ⊢Γ [A] [A′] [A≡A′] [B] [B′] [B≡B′])
+
 
 [nondep] : ∀ {Γ A B l} → Γ ⊩⟨ l ⟩ B ^ [ % , l ]
   → ([A] : ∀ {ρ} {Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ wk ρ A ^ [ % , l ])
@@ -162,7 +164,7 @@ module IdTypeU-lemmas
           ⊢e″ = PE.subst (λ X → Δ₁ ⊢ wk ρ₁ e ∷ X ^ [ % , ι ¹ ]) (wk-comp ρ₁ ρ _) (Twk.wkTerm [ρ₁] ⊢Δ₁ (escapeTerm ([IdFF₁] [ρ] ⊢Δ) [e]))
           ⊢e′ = Idsymⱼ (univ 0<1 ⊢Δ₁) (un-univ (escape ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁))) (un-univ (escape ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁))) ⊢e″
           [b] : Δ₁ ⊩⟨ ι ⁰ ⟩ b (ρ₁ • ρ) (wk ρ₁ e) a ∷ wk (ρ₁ • ρ) F ^ [ rF , ι ⁰ ] / [F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁
-          [b] = [cast] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) [a] ⊢e′
+          [b] = [proj₁cast] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) [a] ⊢e′
           x = recursor₂ ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁ [b] [a]
         in PE.subst (λ X → Δ₁ ⊩⟨ ι ¹ ⟩ X ^ [ % , ι ¹ ]) (PE.sym (IdTel₂-prettify ρ₁ ρ e a)) x
 
@@ -188,9 +190,9 @@ module IdTypeU-lemmas
           ⊢e′₂ = PE.subst (λ X → Δ₁ ⊢ wk ρ₁ e′ ∷ X ^ [ % , ι ¹ ]) (wk-comp ρ₁ ρ _) (Twk.wkTerm [ρ₁] ⊢Δ₁ (escapeTerm ([IdFF₁] [ρ] ⊢Δ) [e′]))
           ⊢e′₁ = Idsymⱼ (univ 0<1 ⊢Δ₁) (un-univ (escape ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁))) (un-univ (escape ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁))) ⊢e′₂
           [b] : Δ₁ ⊩⟨ ι ⁰ ⟩ b (ρ₁ • ρ) (wk ρ₁ e) a ∷ wk (ρ₁ • ρ) F ^ [ rF , ι ⁰ ] / [F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁
-          [b] = [cast] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) [a]₁ ⊢e₁
-          [b′] = [cast] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) [a′] ⊢e′₁
-          [b≡b′] = [castext] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) (reflEq ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁))
+          [b] = [proj₁cast] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) [a]₁ ⊢e₁
+          [b′] = [proj₁cast] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) [a′] ⊢e′₁
+          [b≡b′] = [proj₁castext] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) (reflEq ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁))
             ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) (reflEq ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁))
             [a]₁ [a′] [a≡a′] ⊢e₁ ⊢e′₁
           x₁ = recursor₂ ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁ [b] [a]₁
@@ -443,9 +445,9 @@ module IdTypeU-lemmas-2
           ⊢e₁ = Idsymⱼ (univ 0<1 ⊢Δ₁) (un-univ (escape ([F₁] [ρ′] ⊢Δ₁))) (un-univ (escape ([F₃] [ρ′] ⊢Δ₁))) ⊢e′
           ⊢e″ = conv ⊢e′ (≅-eq (escapeEq (E₁.[IdFF₁] [ρ′] ⊢Δ₁) ([IdFF₁≡IdFF₂] [ρ′] ⊢Δ₁)))
           ⊢e₂ = Idsymⱼ (univ 0<1 ⊢Δ₁) (un-univ (escape ([F₂] [ρ′] ⊢Δ₁))) (un-univ (escape ([F₄] [ρ′] ⊢Δ₁))) ⊢e″
-          [b₁] = [cast] ⊢Δ₁ ([F₃] [ρ′] ⊢Δ₁) ([F₁] [ρ′] ⊢Δ₁) [a₃] ⊢e₁
-          [b₂] = [cast] ⊢Δ₁ ([F₄] [ρ′] ⊢Δ₁) ([F₂] [ρ′] ⊢Δ₁) [a₄] ⊢e₂
-          [b₁≡b₂] = [castext] ⊢Δ₁ ([F₃] [ρ′] ⊢Δ₁) ([F₄] [ρ′] ⊢Δ₁) ([F₃≡F₄] [ρ′] ⊢Δ₁)
+          [b₁] = [proj₁cast] ⊢Δ₁ ([F₃] [ρ′] ⊢Δ₁) ([F₁] [ρ′] ⊢Δ₁) [a₃] ⊢e₁
+          [b₂] = [proj₁cast] ⊢Δ₁ ([F₄] [ρ′] ⊢Δ₁) ([F₂] [ρ′] ⊢Δ₁) [a₄] ⊢e₂
+          [b₁≡b₂] = [proj₁castext] ⊢Δ₁ ([F₃] [ρ′] ⊢Δ₁) ([F₄] [ρ′] ⊢Δ₁) ([F₃≡F₄] [ρ′] ⊢Δ₁)
             ([F₁] [ρ′] ⊢Δ₁) ([F₂] [ρ′] ⊢Δ₁) ([F₁≡F₂] [ρ′] ⊢Δ₁)
             [a₃] [a₄] [a₃≡a₄] ⊢e₁ ⊢e₂
           [b₁:F₂] = convTerm₁ ([F₁] [ρ′] ⊢Δ₁) ([F₂] [ρ′] ⊢Δ₁) ([F₁≡F₂] [ρ′] ⊢Δ₁) [b₁]
