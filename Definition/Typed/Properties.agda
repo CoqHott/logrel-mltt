@@ -281,7 +281,7 @@ neRedTerm (cast-ℕ-S x x₁) (castℕₙ ())
 neRedTerm (cast-ℕ-S x x₁) (castℕℕₙ ())
 neRedTerm (cast-ℕ-cong x x₁) (castₙ ())
 neRedTerm (cast-ℕ-cong x x₁) (castℕₙ ())
-neRedTerm (cast-ℕ-cong x x₁) (castℕℕₙ t) = neRedTerm x₁ t 
+neRedTerm (cast-ℕ-cong x x₁) (castℕℕₙ t) = neRedTerm x₁ t
 neRedTerm (cast-subst d x x₁ x₂) castΠΠ%!ₙ = whnfRedTerm d Πₙ
 neRedTerm (cast-subst d x x₁ x₂) castΠΠ!%ₙ = whnfRedTerm d Πₙ
 neRedTerm (cast-Π-subst x x₁ d x₂ x₃) castΠΠ%!ₙ = whnfRedTerm d Πₙ
@@ -523,7 +523,7 @@ whrDetTerm (cast-ℕ-S x x₁) (cast-ℕ-subst d' x₂ x₃) = ⊥-elim (whnfRed
 whrDetTerm (cast-ℕ-S x x₁) (cast-ℕ-S x₂ x₃) = PE.refl
 whrDetTerm (cast-ℕ-cong x x₁) (cast-subst d' x₂ x₃ x₄) = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (cast-ℕ-cong x x₁) (cast-ℕ-subst d' x₂ x₃) = ⊥-elim (whnfRedTerm d' ℕₙ)
-whrDetTerm (cast-ℕ-cong x x₁) (cast-ℕ-cong x₂ x₃) rewrite whrDetTerm x₁ x₃ = PE.refl -- 
+whrDetTerm (cast-ℕ-cong x x₁) (cast-ℕ-cong x₂ x₃) rewrite whrDetTerm x₁ x₃ = PE.refl --
 whrDetTerm (cast-subst d x x₁ x₂) (cast-ℕ-cong x₃ d′) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (cast-ℕ-subst d x x₁) (cast-ℕ-cong x₂ d′) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (cast-ℕ-0 x) (cast-ℕ-cong x₁ d′) = ⊥-elim (whnfRedTerm d′ zeroₙ)
@@ -818,7 +818,26 @@ CastRed*TermΠ ⊢F ⊢G ⊢e ⊢t  [[ ⊢A , ⊢B , D ]] =
   in [[ castⱼ [Π] (un-univ ⊢A) ⊢e ⊢t ,
         conv (castⱼ [Π] (un-univ ⊢B) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e))) (refl [Π]) (subset*Term (un-univ⇒* D))))) ⊢t) (sym (subset* D)) ,
           CastRed*TermΠ′ ⊢F ⊢G ⊢e ⊢t D ]]
-          
+
+IdURed*Term′ : ∀ {Γ t t′ u}
+               (⊢t : Γ ⊢ t ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (⊢t′ : Γ ⊢ t′ ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (d : Γ ⊢ t ⇒* t′ ∷ U ⁰ ^ ι ¹)
+               (⊢u : Γ ⊢ u ∷ U ⁰ ^ [ ! , ι ¹ ])
+             → Γ ⊢ Id (U ⁰) t u ⇒* Id (U ⁰) t′ u ∷ SProp ¹ ^ ∞
+IdURed*Term′ ⊢t ⊢t′ (id x) ⊢u = id (Idⱼ (univ 0<1 (wfTerm ⊢t)) ⊢t ⊢u)
+IdURed*Term′ ⊢t ⊢t′ (x ⇨ d) ⊢u = _⇨_ (Id-U-subst x ⊢u) (IdURed*Term′ (redFirst*Term d) ⊢t′ d ⊢u)
+
+IdUΠRed*Term′ : ∀ {Γ F rF G t t′}
+               (⊢F : Γ ⊢ F ∷ Univ rF ⁰ ^ [ ! , ι ¹ ])
+               (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (⊢t : Γ ⊢ t ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (⊢t′ : Γ ⊢ t′ ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (d : Γ ⊢ t ⇒* t′ ∷ U ⁰ ^ ι ¹)
+             → Γ ⊢ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t ⇒* Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t′ ∷ SProp ¹ ^ ∞
+IdUΠRed*Term′ ⊢F ⊢G ⊢t ⊢t′ (id x) = id (Idⱼ (univ 0<1 (wfTerm ⊢t)) (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G) ⊢t)
+IdUΠRed*Term′ ⊢F ⊢G ⊢t ⊢t′ (x ⇨ d) = _⇨_ (Id-U-Π-subst ⊢F ⊢G x) (IdUΠRed*Term′ ⊢F ⊢G (redFirst*Term d) ⊢t′ d)
+
 IdℕRed*Term′ : ∀ {Γ t t′ u}
                (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
                (⊢t′ : Γ ⊢ t′ ∷ ℕ ^ [ ! , ι ⁰ ])

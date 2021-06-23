@@ -701,6 +701,41 @@ cast-subst-lemma6 ρ G x a = trans (subst-wk (wk1d G [ x ])) (trans (substCompEq
     aux 0 = sym (subst-wk x)
     aux (1+ n) = refl
 
+sgSubst-and-lift : ∀ ρ a x → ((sgSubst a) ₛ• (step ρ)) x ≡ toSubst ρ x
+sgSubst-and-lift ρ a Nat.zero = refl
+sgSubst-and-lift ρ a (Nat.suc x) = refl
+
+Id-subst-lemma : ∀ ρ u a → wk ρ u ≡ wk (lift ρ) (wk1 u) [ a ]
+Id-subst-lemma ρ u a = trans (sym (wk1-singleSubst (wk ρ u) a)) (cong (λ X → X [ a ]) (wk1-wk≡lift-wk1 ρ u))
+
+Id-subst-lemma1 : ∀ ρ t e → subst (liftSubst (sgSubst e)) (wk (lift (lift ρ)) (wk (step (step id)) t)) ≡ wk (step ρ) t
+Id-subst-lemma1 ρ t e = trans (trans (subst-wk (wk (step (step id)) t)) (trans (subst-wk t) (substVar-to-subst aux t))) (sym (wk≡subst (step ρ) t))
+  where
+    aux : ∀ x → (liftSubst (sgSubst e) ₛ• lift (lift ρ) ₛ• step (step id)) x ≡ toSubst (step ρ) x
+    aux Nat.zero = refl
+    aux (Nat.suc x) = refl
+
+Id-subst-lemma2 : ∀ ρ t e → subst (liftSubst (liftSubst (sgSubst e))) (wk (lift (lift (lift ρ))) (wk (lift (step (step id))) t)) ≡ (wk (lift (step ρ)) t)
+Id-subst-lemma2 ρ t e = trans (trans (subst-wk (wk (lift (step (step id))) t)) (trans (subst-wk t) (substVar-to-subst aux t))) (sym (wk≡subst (lift (step ρ)) t))
+  where
+    aux : ∀ x → (liftSubst (liftSubst (sgSubst e)) ₛ• lift (lift (lift ρ)) ₛ• lift (step (step id))) x ≡ toSubst (lift (step ρ)) x
+    aux Nat.zero = refl
+    aux (Nat.suc x) = refl
+
+Id-subst-lemma3 : ∀ ρ ρ₁ t a → subst (liftSubst (sgSubst a)) (wk (lift (lift ρ₁)) (wk (lift (step ρ)) t)) ≡ wk (lift (ρ₁ • ρ)) t
+Id-subst-lemma3 ρ ρ₁ t a = trans (trans (cong (subst _) aux₂) (trans (subst-wk t) (substVar-to-subst aux t))) (sym (wk≡subst (lift (ρ₁ • ρ)) t))
+  where
+    aux₂ : (wk (lift (lift ρ₁)) (wk (lift (step ρ)) t)) ≡ wk (lift (step (ρ₁ • ρ))) t
+    aux₂ = wk-comp (lift (lift ρ₁)) (lift (step ρ)) t
+    aux : ∀ x → (liftSubst (sgSubst a) ₛ• lift (step (ρ₁ • ρ))) x ≡ toSubst (lift (ρ₁ • ρ)) x
+    aux Nat.zero = refl
+    aux (Nat.suc x) = refl
+
+Id-subst-lemma4 : ∀ ρ ρ₁ t a → subst (sgSubst a) (wk (lift ρ₁) (wk (step ρ) t)) ≡ wk (ρ₁ • ρ) t
+Id-subst-lemma4 ρ ρ₁ t a = trans (cong (λ X → X [ a ]) aux) (wk1-singleSubst _ a)
+  where
+    aux : wk (lift ρ₁) (wk (step ρ) t) ≡ wk1 (wk (ρ₁ • ρ) t)
+    aux = trans (wk-comp (lift ρ₁) (step ρ) t) (sym (wk-comp (step id) (ρ₁ • ρ) t))
 
 -- helpers
 open import Tools.Product

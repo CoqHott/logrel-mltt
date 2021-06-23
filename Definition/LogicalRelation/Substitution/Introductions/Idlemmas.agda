@@ -35,6 +35,7 @@ import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
+--TODO : grab these from Cast.agda
 [cast] : ∀ {A B Γ r}
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ])
@@ -58,28 +59,6 @@ import Data.Nat as Nat
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
 [castext] = {!!}
 
-IdURed*Term′ : ∀ {Γ t t′ u}
-               (⊢t : Γ ⊢ t ∷ U ⁰ ^ [ ! , ι ¹ ])
-               (⊢t′ : Γ ⊢ t′ ∷ U ⁰ ^ [ ! , ι ¹ ])
-               (d : Γ ⊢ t ⇒* t′ ∷ U ⁰ ^ ι ¹)
-               (⊢u : Γ ⊢ u ∷ U ⁰ ^ [ ! , ι ¹ ])
-             → Γ ⊢ Id (U ⁰) t u ⇒* Id (U ⁰) t′ u ∷ SProp ¹ ^ ∞
-IdURed*Term′ ⊢t ⊢t′ (id x) ⊢u = id (Idⱼ (univ 0<1 (wfTerm ⊢t)) ⊢t ⊢u)
-IdURed*Term′ ⊢t ⊢t′ (x ⇨ d) ⊢u = _⇨_ (Id-U-subst x ⊢u) (IdURed*Term′ (redFirst*Term d) ⊢t′ d ⊢u)
-
-IdUΠRed*Term′ : ∀ {Γ F rF G t t′}
-               (⊢F : Γ ⊢ F ∷ Univ rF ⁰ ^ [ ! , ι ¹ ])
-               (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ∷ U ⁰ ^ [ ! , ι ¹ ])
-               (⊢t : Γ ⊢ t ∷ U ⁰ ^ [ ! , ι ¹ ])
-               (⊢t′ : Γ ⊢ t′ ∷ U ⁰ ^ [ ! , ι ¹ ])
-               (d : Γ ⊢ t ⇒* t′ ∷ U ⁰ ^ ι ¹)
-             → Γ ⊢ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t ⇒* Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t′ ∷ SProp ¹ ^ ∞
-IdUΠRed*Term′ ⊢F ⊢G ⊢t ⊢t′ (id x) = id (Idⱼ (univ 0<1 (wfTerm ⊢t)) (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G) ⊢t)
-IdUΠRed*Term′ ⊢F ⊢G ⊢t ⊢t′ (x ⇨ d) = _⇨_ (Id-U-Π-subst ⊢F ⊢G x) (IdUΠRed*Term′ ⊢F ⊢G (redFirst*Term d) ⊢t′ d)
-
-Id-subst-lemma : ∀ ρ u a → wk ρ u PE.≡ wk (lift ρ) (wk1 u) [ a ]
-Id-subst-lemma ρ u a = PE.trans (PE.sym (wk1-singleSubst (wk ρ u) a)) (PE.cong (λ X → X [ a ]) (wk1-wk≡lift-wk1 ρ u))
-
 [nondep] : ∀ {Γ A B l} → Γ ⊩⟨ l ⟩ B ^ [ % , l ]
   → ([A] : ∀ {ρ} {Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ wk ρ A ^ [ % , l ])
   → ∀ {ρ} {Δ} {a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
@@ -97,44 +76,6 @@ Id-subst-lemma ρ u a = PE.trans (PE.sym (wk1-singleSubst (wk ρ u) a)) (PE.cong
 [nondepext] {Γ} {A} {B} {l} [B] [A] {ρ} {Δ} {a} {b} [ρ] ⊢Δ [a] [b] [a≡b] =
   irrelevanceEq″ (Id-subst-lemma ρ B a) (Id-subst-lemma ρ B b) PE.refl PE.refl
     (Lwk.wk [ρ] ⊢Δ [B]) ([nondep] [B] [A] [ρ] ⊢Δ [a]) (reflEq (Lwk.wk [ρ] ⊢Δ [B]))
-
-sgSubst-and-lift : ∀ ρ a x → ((sgSubst a) ₛ• (step ρ)) x PE.≡ toSubst ρ x
-sgSubst-and-lift ρ a Nat.zero = PE.refl
-sgSubst-and-lift ρ a (Nat.suc x) = PE.refl
-
-Id-subst-lemma1 : ∀ ρ t e → subst (liftSubst (sgSubst e)) (wk (lift (lift ρ)) (wk (step (step id)) t)) PE.≡ wk (step ρ) t
-Id-subst-lemma1 ρ t e = PE.trans (PE.trans (subst-wk (wk (step (step id)) t)) (PE.trans (subst-wk t) (substVar-to-subst aux t))) (PE.sym (wk≡subst (step ρ) t))
-  where
-    aux : ∀ x → (liftSubst (sgSubst e) ₛ• lift (lift ρ) ₛ• step (step id)) x PE.≡ toSubst (step ρ) x
-    aux Nat.zero = PE.refl
-    aux (Nat.suc x) = PE.refl
-
-Id-subst-lemma2 : ∀ ρ t e → subst (liftSubst (liftSubst (sgSubst e))) (wk (lift (lift (lift ρ))) (wk (lift (step (step id))) t)) PE.≡ (wk (lift (step ρ)) t)
-Id-subst-lemma2 ρ t e = PE.trans (PE.trans (subst-wk (wk (lift (step (step id))) t)) (PE.trans (subst-wk t) (substVar-to-subst aux t))) (PE.sym (wk≡subst (lift (step ρ)) t))
-  where
-    aux : ∀ x → (liftSubst (liftSubst (sgSubst e)) ₛ• lift (lift (lift ρ)) ₛ• lift (step (step id))) x PE.≡ toSubst (lift (step ρ)) x
-    aux Nat.zero = PE.refl
-    aux (Nat.suc x) = PE.refl
-
-Id-subst-lemma3 : ∀ ρ ρ₁ t a → subst (liftSubst (sgSubst a)) (wk (lift (lift ρ₁)) (wk (lift (step ρ)) t)) PE.≡ wk (lift (ρ₁ • ρ)) t
-Id-subst-lemma3 ρ ρ₁ t a = PE.trans (PE.trans (PE.cong (subst _) aux₂) (PE.trans (subst-wk t) (substVar-to-subst aux t))) (PE.sym (wk≡subst (lift (ρ₁ • ρ)) t))
-  where
-    aux₂ : (wk (lift (lift ρ₁)) (wk (lift (step ρ)) t)) PE.≡ wk (lift (step (ρ₁ • ρ))) t
-    aux₂ = wk-comp (lift (lift ρ₁)) (lift (step ρ)) t
-    aux : ∀ x → (liftSubst (sgSubst a) ₛ• lift (step (ρ₁ • ρ))) x PE.≡ toSubst (lift (ρ₁ • ρ)) x
-    aux Nat.zero = PE.refl
-    aux (Nat.suc x) = PE.refl
-
-Id-subst-lemma4 : ∀ ρ ρ₁ t a → subst (sgSubst a) (wk (lift ρ₁) (wk (step ρ) t)) PE.≡ wk (ρ₁ • ρ) t
-Id-subst-lemma4 ρ ρ₁ t a = PE.trans (PE.cong (λ X → X [ a ]) aux) (wk1-singleSubst _ a)
-  where
-    aux : wk (lift ρ₁) (wk (step ρ) t) PE.≡ wk1 (wk (ρ₁ • ρ) t)
-    aux = PE.trans (wk-comp (lift ρ₁) (step ρ) t) (PE.sym (wk-comp (step id) (ρ₁ • ρ) t))
-
-escapeEqRefl : ∀ {l Γ A r}
-            → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
-            → Γ ⊢ A ≅ A ^ r
-escapeEqRefl [A] = escapeEq [A] (reflEq [A])
 
 module IdTypeU-lemmas
        {Γ rF A B F G F₁ G₁}

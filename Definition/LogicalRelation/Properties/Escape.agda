@@ -93,6 +93,11 @@ escapeTermEq (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (⊢t , ⊢u) = ~-t
 escapeTermEq {ι ¹} (emb X A) t≡u = escapeTermEq A t≡u
 escapeTermEq {∞} (emb X A) t≡u = escapeTermEq A t≡u
 
+escapeEqRefl : ∀ {l Γ A r}
+            → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
+            → Γ ⊢ A ≅ A ^ r
+escapeEqRefl [A] = escapeEq [A] (reflEq [A])
+
 escapeEqReflTerm : ∀ {l Γ A t r}
             → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
             → ([t] : Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A])

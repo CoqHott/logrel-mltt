@@ -23,7 +23,7 @@ maybeEmb {∞} [A] = [A]
 
 -- Any level can be embedded into the highest level.
 maybeEmbTerm : ∀ {l A t r Γ}
-         → ([A] : Γ ⊩⟨ l ⟩ A ^ r) 
+         → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
          → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
          → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ r / maybeEmb [A]
 maybeEmbTerm {ι ⁰} [A] [t] = [t]
@@ -37,3 +37,10 @@ maybeEmb′ : ∀ {l l' A r Γ}
           → Γ ⊩⟨ ι l' ⟩ A ^ r
 maybeEmb′ (<is≤ 0<1) [A] = emb emb< [A]
 maybeEmb′ (≡is≤ PE.refl) [A] = [A]
+
+maybeEmb″ : ∀ {l A r Γ}
+         → Γ ⊩⟨ ι ⁰ ⟩ A ^ r
+         → Γ ⊩⟨ l ⟩ A ^ r
+maybeEmb″ {ι ⁰} [A] = [A]
+maybeEmb″ {ι ¹} [A] = emb emb< [A]
+maybeEmb″ {∞} [A] = emb ∞< (emb emb< [A])
