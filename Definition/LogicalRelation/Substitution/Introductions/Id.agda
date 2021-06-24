@@ -101,8 +101,8 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
   ([u] : Γ ⊩ℕ u ∷ℕ)
   ([v] : Γ ⊩ℕ v ∷ℕ)
   ([w] : Γ ⊩ℕ w ∷ℕ)
-  ([t≡v] : Γ ⊩⟨ l ⟩ t ≡ v ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ] ⊢Γ)
-  ([u≡w] : Γ ⊩⟨ l ⟩ u ≡ w ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ] ⊢Γ)
+  ([t≡v] : Γ ⊩ℕ t ≡ v ∷ℕ)
+  ([u≡w] : Γ ⊩ℕ u ≡ w ∷ℕ)
   →  Γ ⊩⟨ l ⟩ Id ℕ t u ≡ Id ℕ v w ^ [ % , ι ⁰ ] / [Id]ℕ ⊢Γ [t] [u]
 
 
@@ -586,9 +586,7 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
       [w]′ = convTerm₁ {t = w} [B]' [ℕ]' [Beq] (irrelevanceTerm {l = l} (ℕᵣ [B]) [B]' [w])
       [t≡v]′ = convEqTerm₁ {t = t} {u = v} [A]' [ℕ]' [Aeq] (irrelevanceEqTerm {l = l} (ℕᵣ [A]) [A]' [t≡v])
       [u≡w]′ = convEqTerm₁ {t = u} {u = w} [B]' [ℕ]' [Beq] (irrelevanceEqTerm {l = l} (ℕᵣ [B]) [B]' [u≡w])
-      foo : Γ ⊩⟨ l ⟩ Id ℕ t u ≡ Id ℕ v w ^ [ % , ι ⁰ ] / [Id]ℕ ⊢Γ [t] [u]
-      foo = {!!}
-      X = irrelevanceEq {A = Id ℕ t u} {B = Id ℕ v w} ([Id]ℕ ⊢Γ [t] [u]) ([Id] ⊢Γ [ℕ]' [t]′ [u]′) foo
+      X = irrelevanceEq {A = Id ℕ t u} {B = Id ℕ v w} ([Id]ℕ ⊢Γ [t] [u]) ([Id] ⊢Γ [ℕ]' [t]′ [u]′) ([IdExt]ℕ ⊢Γ [t]′ [u]′ [v]′ [w]′ [t≡v]′ [u≡w]′)
       [IdA] , [IdA≡U] = redSubst* (IdRed* (escapeTerm {l = l} (ℕᵣ [A]) [t]) (escapeTerm {l = l} (ℕᵣ [A]) [u]) D) ([Id] ⊢Γ [ℕ]' [t]′ [u]′)
       [IdB] , [IdB≡U] = redSubst* (IdRed* (escapeTerm {l = l} (ℕᵣ [B]) [v]) (escapeTerm {l = l} (ℕᵣ [B]) [w]) D₁) ([Id] ⊢Γ [ℕ]' [v]′ [w]′)
       [IdA≡U]′ = irrelevanceEq {A = Id A t u} {B = Id ℕ t u} [IdA] ([Id] ⊢Γ (ℕᵣ [A]) [t] [u]) [IdA≡U]
@@ -597,6 +595,7 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
               [IdA≡U]′ 
               (transEq {A = Id ℕ t u} {B = Id ℕ v w} {C = Id B v w} {l = l} {l′ = l} {l″ = l} ([Id] ⊢Γ [ℕ]' [t]′ [u]′) ([Id] ⊢Γ [ℕ]' [v]′ [w]′) ([Id] ⊢Γ (ℕᵣ [B]) [v] [w])
                        X (symEq {A = Id B v w} {B = Id ℕ v w} ([Id] ⊢Γ (ℕᵣ [B]) [v] [w]) ([Id] ⊢Γ [ℕ]' [v]′ [w]′) [IdB≡U]′)) 
+
 [IdExtShape] {A} {B} {t} {t′} {u} {u′} {Γ} ⊢Γ .(Πᵣ ΠA) .(Πᵣ ΠB) (Πᵥ ΠA ΠB) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] = {!!}
 
 [IdExtShape] {A} {B} {t} {t′} {u} {u′} {Γ} ⊢Γ .(emb emb< _) [B] (emb⁰¹ {p = [A]} ShapeA) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
@@ -714,7 +713,7 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
 [IdExt] {A} {A′} {t} {t′} {u} {u′} {Γ} ⊢Γ [A] [A′] [A≡A′] [t] [t′] [t≡t′] [u] [u′] [u≡u′] =
   [IdExtShape] {A} {A′} {t} {t′} {u} {u′} {Γ} ⊢Γ [A] [A′] (goodCases [A] [A′] [A≡A′]) [A≡A′] [t] [t′] [t≡t′] [u] [u′] [u≡u′]
 
-
+{-
 
 Idᵛ : ∀ {A t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
@@ -735,3 +734,4 @@ Idᵗᵛ : ∀ {A t u Γ l}
 Idᵗᵛ [Γ] [A] [t] [u] ⊢Δ [σ] = {!!}
   -- (IdTerm ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ])))
   -- , {!!}
+-}
