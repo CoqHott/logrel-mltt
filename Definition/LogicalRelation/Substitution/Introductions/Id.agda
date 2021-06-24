@@ -103,7 +103,8 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
   ([t≡v] : Γ ⊩⟨ l ⟩ t ≡ v ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ] ⊢Γ)
   ([u≡w] : Γ ⊩⟨ l ⟩ u ≡ w ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ] ⊢Γ)
   →  Γ ⊩⟨ l ⟩ Id ℕ t u ≡ Id ℕ v w ^ [ % , ι ⁰ ] / [Id]ℕ ⊢Γ [t] [u]
-  
+
+
 [IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ
             (ℕₜ .(suc _) [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (sucᵣ {n} [t']))
             (ℕₜ .(suc _) [[ ⊢uℕ , ⊢nℕ , du ]] n≡n (sucᵣ {n₂} [u']))
@@ -138,7 +139,13 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
                   (transEq {A = Id ℕ n n₂} {B = Id ℕ n₁ n₃} {C = Id ℕ v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [t'] [u']) ([Id]ℕ ⊢Γ [v'] [w']) ([Id]ℕ ⊢Γ [v] [w])
                                    [Idmn] (symEq {A = Id ℕ v w} {B = Id ℕ n₁ n₃} ([Id]ℕ ⊢Γ [v] [w]) ([Id]ℕ ⊢Γ [v'] [w']) [IdB≡ℕ]′)) 
 
-[IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ (ℕₜ .(suc _) [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (sucᵣ {n} [t'])) (ℕₜ .zero [[ ⊢uℕ , ⊢nℕ , du ]] n≡n zeroᵣ) (ℕₜ .(suc _) [[ ⊢vℕ , ⊢oℕ , dv ]] n≡n₂ (sucᵣ {m} [v'])) (ℕₜ .zero [[ ⊢wℕ , ⊢pℕ , dw ]] n≡n₃ zeroᵣ) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = 
+[IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ 
+  (ℕₜ .(suc _) [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (sucᵣ {n} [t'])) 
+  (ℕₜ .zero [[ ⊢uℕ , ⊢nℕ , du ]] n≡n zeroᵣ) 
+  (ℕₜ .(suc _) [[ ⊢vℕ , ⊢oℕ , dv ]] n≡n₂ (sucᵣ {m} [v'])) 
+  (ℕₜ .zero [[ ⊢wℕ , ⊢pℕ , dw ]] n≡n₃ zeroᵣ) 
+  (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x))
+  (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = 
   let [t] = ℕₜ (suc _) [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (sucᵣ [t'])
       [u] = ℕₜ zero [[ ⊢uℕ , ⊢nℕ , du ]] n≡n zeroᵣ
       [v] = ℕₜ (suc _) [[ ⊢vℕ , ⊢oℕ , dv ]] n≡n₂ (sucᵣ [v'])
@@ -158,38 +165,56 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
                   [IdA≡ℕ]′  (symEq {A = Id ℕ v w} {B = Empty} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [v] [w]) [Empty] [IdB≡ℕ]′) 
 
 
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ n d n≡n prop) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ (ne x₃)) = {!!}
+[IdExt]ℕ ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) (ℕₜ .(suc _) d n≡n (sucᵣ x₁)) (ℕₜ .zero d₂ n≡n₂ zeroᵣ) (ℕₜ .(suc _) d₃ n≡n₃ (sucᵣ x₂))
+            (ℕₜ₌ .zero .zero d₄ d′ k≡k′ zeroᵣ) (ℕₜ₌ .(suc _) .(suc _) d₅ d′₁ k≡k′₁ (sucᵣ x)) = {!!}
 
-[IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ prop₁) (ℕₜ n d n≡n prop) (ℕₜ n₂ d₂ n≡n₂ prop₂) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .zero .zero d₄ d′ k≡k′ zeroᵣ) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ prop₅) = {!!}
-[IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ prop₁) (ℕₜ n d n≡n prop) (ℕₜ n₂ d₂ n≡n₂ prop₂) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne x)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ prop₅) = {!!}
+[IdExt]ℕ ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) (ℕₜ .zero d n≡n zeroᵣ) (ℕₜ .zero d₂ n≡n₂ zeroᵣ) (ℕₜ .zero d₃ n≡n₃ zeroᵣ)
+            (ℕₜ₌ .zero .zero d₄ d′ k≡k′ zeroᵣ) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = {!!}
+
+[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ n d n≡n (ne x)) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ (ne x₃))
+            (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ X)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ (ne Y)) = {!!}
+[IdExt]ℕ ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) (ℕₜ n d n≡n (ne x)) (ℕₜ .zero d₂ n≡n₂ zeroᵣ) (ℕₜ n₃ d₃ n≡n₃ (ne x₃))
+            (ℕₜ₌ .zero .zero d₄ d′ k≡k′ zeroᵣ) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ (ne X)) = {!!}
+
+[IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne x₁)) (ℕₜ .zero d n≡n zeroᵣ) (ℕₜ n₂ d₂ n≡n₂ (ne x₂)) (ℕₜ .zero d₃ n≡n₃ zeroᵣ)
+            (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne x)) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = {!!}
+[IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne x₁)) (ℕₜ .(suc _) d n≡n (sucᵣ X)) (ℕₜ n₂ d₂ n≡n₂ (ne x₂)) (ℕₜ .(suc _) d₃ n≡n₃ (sucᵣ Y))
+            (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne x)) (ℕₜ₌ .(suc _) .(suc _) d₅ d′₁ k≡k′₁ (sucᵣ XX)) = {!prop₂!}
+
+[IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne x₁)) (ℕₜ n d n≡n (ne x)) (ℕₜ n₂ d₂ n≡n₂ (ne x₂)) (ℕₜ n₃ d₃ n≡n₃ (ne x₃))
+            (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne X)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ (ne Y)) = {!!}
 
 -- refuting cases
 
-[IdExt]ℕ ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) (ℕₜ n d n≡n prop) (ℕₜ n₂ d₂ n≡n₂ prop₂) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ prop₅) =
-  ⊥-elim (zero≢suc (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , sucₙ)))
-[IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne (neNfₜ neK ⊢k k≡k))) (ℕₜ n d n≡n prop) (ℕₜ n₂ d₂ n≡n₂ prop₂) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ prop₅) =
-   ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d₄ , sucₙ) (redₜ d₁ , ne neK)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ n d n≡n prop) (ℕₜ .zero d₂ n≡n₂ zeroᵣ) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ prop₅) =
-  ⊥-elim (zero≢suc (whrDet*Term (redₜ d₂ , zeroₙ) (redₜ d′ , sucₙ)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ n d n≡n prop) (ℕₜ n₂ d₂ n≡n₂ (ne (neNfₜ neK ⊢k k≡k))) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ prop₅) = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d′ , sucₙ) (redₜ d₂ , ne neK)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ .zero d n≡n zeroᵣ) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .(suc _) .(suc _) d₅ d′₁ k≡k′₁ (sucᵣ x₃)) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d , zeroₙ) (redₜ d₅ , sucₙ)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ n d n≡n (ne (neNfₜ neK ⊢k k≡k))) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .(suc _) .(suc _) d₅ d′₁ k≡k′₁ (sucᵣ x₃)) = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d₅ , sucₙ) (redₜ d , ne neK)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ .(suc _) d n≡n (sucᵣ x₄)) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ .zero d₃ n≡n₃ zeroᵣ) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .(suc _) .(suc _) d₅ d′₁ k≡k′₁ (sucᵣ x₃)) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₃ , zeroₙ) (redₜ d′₁ , sucₙ)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ .(suc _) d n≡n (sucᵣ x₄)) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ (ne (neNfₜ neK ⊢k k≡k))) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .(suc _) .(suc _) d₅ d′₁ k≡k′₁ (sucᵣ x₃)) = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d′₁ , sucₙ) (redₜ d₃ , ne neK)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ .(suc _) d n≡n (sucᵣ x₃)) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₅ , zeroₙ) (redₜ d , sucₙ)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ n d n≡n (ne (neNfₜ neK ⊢k k≡k))) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ prop₃) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d₅ , zeroₙ) (redₜ d , ne neK)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ .zero d n≡n zeroᵣ) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ .(suc _) d₃ n≡n₃ (sucᵣ x₃)) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d′₁ , zeroₙ) (redₜ d₃ , sucₙ)))
-[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) (ℕₜ .zero d n≡n zeroᵣ) (ℕₜ .(suc _) d₂ n≡n₂ (sucᵣ x₂)) (ℕₜ n₃ d₃ n≡n₃ (ne (neNfₜ neK ⊢k k≡k))) (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d′₁ , zeroₙ) (redₜ d₃ , ne neK)))
+[IdExt]ℕ ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ _ _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) _ = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , sucₙ)))
+[IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne (neNfₜ neK ⊢k k≡k))) _ _ _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) _ = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d₄ , sucₙ) (redₜ d₁ , ne neK)))
+[IdExt]ℕ ⊢Γ _ _ (ℕₜ .zero d₂ n≡n₂ zeroᵣ) _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) _ = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₂ , zeroₙ) (redₜ d′ , sucₙ)))
+[IdExt]ℕ ⊢Γ _ _ (ℕₜ n₂ d₂ n≡n₂ (ne (neNfₜ neK ⊢k k≡k))) _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) _ = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d′ , sucₙ) (redₜ d₂ , ne neK)))
 
+[IdExt]ℕ ⊢Γ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ _ _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , sucₙ)))
+[IdExt]ℕ ⊢Γ _ (ℕₜ n₁ d₁ n≡n₁ (ne (neNfₜ neK ⊢k k≡k))) _ _ _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d₄ , sucₙ) (redₜ d₁ , ne neK)))
+[IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .zero d₂ n≡n₂ zeroᵣ) _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₂ , zeroₙ) (redₜ d′ , sucₙ)))
+[IdExt]ℕ ⊢Γ _ _ _ (ℕₜ n₂ d₂ n≡n₂ (ne (neNfₜ neK ⊢k k≡k))) _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d′ , sucₙ) (redₜ d₂ , ne neK)))
 
-   -- let ⊢m′ℕ = escapeEqℕ₁ [m=m′]
-   --     nfId = (IdℕRed*Term′ ⊢tℕ ⊢mℕ dt ⊢uℕ)
-   --            ⇨∷* (IdℕSRed*Term′ ⊢m′ℕ ⊢uℕ ⊢nℕ du ⇨∷* (Id-ℕ-S0 ⊢m′ℕ ⇨ id (Emptyⱼ ⊢Γ)))
-   --     ⊢m′ℕ' = escapeEqℕ₂ [m=m′]
-   --     nfId' = (IdℕRed*Term′ ⊢tℕ' ⊢mℕ' dt' ⊢uℕ')
-   --             ⇨∷* (IdℕSRed*Term′ ⊢m′ℕ' ⊢uℕ' ⊢nℕ' du' ⇨∷* (Id-ℕ-S0 ⊢m′ℕ' ⇨ id (Emptyⱼ ⊢Γ)))              
-   -- in {!!}
-  -- {!  ⊥-elim (zero≢suc (whrDet*Term (redₜ d , zeroₙ) (redₜ d′ , sucₙ)))!}
+[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d n≡n (sucᵣ x₃)) _ _ _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) _ = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₅ , zeroₙ) (redₜ d , sucₙ)))
+[IdExt]ℕ ⊢Γ (ℕₜ n d n≡n (ne (neNfₜ neK ⊢k k≡k))) _ _ _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) _ = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d₅ , zeroₙ) (redₜ d , ne neK)))
+[IdExt]ℕ ⊢Γ _ _ (ℕₜ .(suc _) d₃ n≡n₃ (sucᵣ x₃)) _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) _ = ⊥-elim (zero≢suc (whrDet*Term (redₜ d′₁ , zeroₙ) (redₜ d₃ , sucₙ)))
+[IdExt]ℕ ⊢Γ _ _ (ℕₜ n₃ d₃ n≡n₃ (ne (neNfₜ neK ⊢k k≡k))) _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) _ = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d′₁ , zeroₙ) (redₜ d₃ , ne neK)))
+
+[IdExt]ℕ ⊢Γ _ (ℕₜ .(suc _) d n≡n (sucᵣ x₃)) _ _ _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₅ , zeroₙ) (redₜ d , sucₙ)))
+[IdExt]ℕ ⊢Γ _ (ℕₜ n d n≡n (ne (neNfₜ neK ⊢k k≡k))) _ _ _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d₅ , zeroₙ) (redₜ d , ne neK)))
+[IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .(suc _) d₃ n≡n₃ (sucᵣ x₃)) _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢suc (whrDet*Term (redₜ d′₁ , zeroₙ) (redₜ d₃ , sucₙ)))
+[IdExt]ℕ ⊢Γ _ _ _ (ℕₜ n₃ d₃ n≡n₃ (ne (neNfₜ neK ⊢k k≡k))) _ (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d′₁ , zeroₙ) (redₜ d₃ , ne neK)))
+
+[IdExt]ℕ ⊢Γ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) _ _ _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) _ =  ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d₁ , sucₙ) (redₜ d₄ , ne neK)))
+[IdExt]ℕ ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ _ _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) _ = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , ne neK)))
+[IdExt]ℕ ⊢Γ _ _ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) _ =  ⊥-elim (suc≢ne neM (whrDet*Term (redₜ d₁ , sucₙ) (redₜ d′ , ne neM)))
+[IdExt]ℕ ⊢Γ _ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) _ = ⊥-elim (zero≢ne neM (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d′ , ne neM)))
+
+[IdExt]ℕ ⊢Γ _ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) _ _ _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) =  ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d₁ , sucₙ) (redₜ d₄ , ne neK)))
+[IdExt]ℕ ⊢Γ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ _ _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , ne neK)))
+[IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) =  ⊥-elim (suc≢ne neM (whrDet*Term (redₜ d₁ , sucₙ) (redₜ d′ , ne neM)))
+[IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) = ⊥-elim (zero≢ne neM (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d′ , ne neM)))
 
 {-
 
