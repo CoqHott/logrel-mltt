@@ -105,7 +105,6 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
   ([u≡w] : Γ ⊩⟨ l ⟩ u ≡ w ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ] ⊢Γ)
   →  Γ ⊩⟨ l ⟩ Id ℕ t u ≡ Id ℕ v w ^ [ % , ι ⁰ ] / [Id]ℕ ⊢Γ [t] [u]
 
-{-
 
 [IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ
             (ℕₜ .(suc _) [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (sucᵣ {n} [t']))
@@ -191,7 +190,6 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
       [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = Empty} {l = l} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ] 
    in transEq {A = Id ℕ u t} {B = Empty} {C = Id ℕ w v} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [u] [t]) [Empty] ([Id]ℕ ⊢Γ [w] [v])
                   [IdB≡ℕ]′  (symEq {A = Id ℕ w v} {B = Empty} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [w] [v]) [Empty] [IdA≡ℕ]′) 
--}
 
 [IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ (ℕₜ .zero [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ zeroᵣ) (ℕₜ .zero [[ ⊢uℕ , ⊢nℕ , du ]] n≡n zeroᵣ)
             (ℕₜ .zero [[ ⊢vℕ , ⊢oℕ , dv ]] n≡n₂ zeroᵣ) (ℕₜ .zero [[ ⊢wℕ , ⊢pℕ , dw ]] n≡n₃ zeroᵣ)
@@ -246,19 +244,36 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
                   (transEq {A = Id ℕ (suc t') n} {B = Id ℕ (suc v') n₃} {C = Id ℕ v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [suct'] [n]) ([Id]ℕ ⊢Γ [sucv'] [n₃]) ([Id]ℕ ⊢Γ [v] [w])
                                    [Idneutral] (symEq {A = Id ℕ v w} {B = Id ℕ (suc v') n₃} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [v] [w]) ([Id]ℕ ⊢Γ [sucv'] [n₃]) [IdB≡ℕ]′)) 
 
+[IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ (ℕₜ n₁ [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (ne (neNfₜ neKt ⊢kt k≡kt))) [u] (ℕₜ n₂ [[ ⊢vℕ , ⊢oℕ , dv ]] n≡n₂ (ne (neNfₜ neKv ⊢kv k≡kv))) [w]
+            (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM K~M))) [u=w] =
+  let [t] = ℕₜ n₁ [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (ne (neNfₜ neKt ⊢kt k≡kt))
+      [v] = ℕₜ n₂ [[ ⊢vℕ , ⊢oℕ , dv ]] n≡n₂ (ne (neNfₜ neKv ⊢kv k≡kv))
+      ⊢u = escapeTerm ([ℕ] {l = ι ⁰} ⊢Γ) [u]
+      ⊢w = escapeTerm ([ℕ] {l = ι ⁰} ⊢Γ) [w]
+      u≡w = escapeTermEq {l = ι ⁰} ([ℕ] ⊢Γ) [u=w]
+      t≡t' = whrDet*Term (dt , ne neKt) (redₜ d₄ , ne neK)
+      v≡v' = whrDet*Term (dv , ne neKv) (redₜ d′ , ne neM)
+      nfId = univ⇒* (IdℕRed*Term′ ⊢tℕ ⊢mℕ dt ⊢u) 
+      nfId' = univ⇒* (IdℕRed*Term′ ⊢vℕ ⊢oℕ dv ⊢w)
+      [n₁] = ℕₜ n₁ (idRedTerm:*: ⊢mℕ) n≡n₁ (ne (neNfₜ neKt ⊢kt k≡kt))
+      [n₂] = ℕₜ n₂ (idRedTerm:*: ⊢oℕ) n≡n₂ (ne (neNfₜ neKv ⊢kv k≡kv))
+      [IdA] , [IdA≡ℕ] = redSubst* nfId ([Id]ℕ ⊢Γ [n₁] [u])
+      [IdB] , [IdB≡ℕ] = redSubst* nfId' ([Id]ℕ ⊢Γ [n₂] [w])
+      [IdA≡ℕ]′ = irrelevanceEq {A = Id ℕ t u} {B = Id ℕ n₁ u} {l = ι ⁰} {l′ = l} [IdA] ([Id]ℕ ⊢Γ [t] [u]) [IdA≡ℕ] 
+      [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = Id ℕ n₂ w} {l = ι ⁰} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ]
+      [Idneutral] : Γ ⊩⟨ l ⟩ Id ℕ n₁ u ≡ Id ℕ n₂ w ^ [ % , ι ⁰ ] / ([Id]ℕ ⊢Γ [n₁] [u])
+      [Idneutral] = ne₌ (Id ℕ n₂ w) (idRed:*: (univ (Idⱼ (ℕⱼ ⊢Γ) ⊢oℕ ⊢w))) (Idℕₙ neKv)
+                        (~-Idℕ ⊢Γ (PE.subst (λ X → Γ ⊢ X ~ _ ∷ ℕ ^ [ ! , ι ⁰ ]) (PE.sym t≡t') (PE.subst (λ X → Γ ⊢ _ ~ X ∷ ℕ ^ [ ! , ι ⁰ ]) (PE.sym v≡v') K~M)) u≡w)
+  in transEq {A = Id ℕ t u} {B = Id ℕ n₁ u} {C = Id ℕ v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [t] [u]) ([Id]ℕ ⊢Γ [n₁] [u]) ([Id]ℕ ⊢Γ [v] [w])
+                  [IdA≡ℕ]′ 
+                  (transEq {A = Id ℕ n₁ u} {B = Id ℕ n₂ w} {C = Id ℕ v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [n₁] [u]) ([Id]ℕ ⊢Γ [n₂] [w]) ([Id]ℕ ⊢Γ [v] [w])
+                                   [Idneutral] (symEq {A = Id ℕ v w} {B = Id ℕ n₂ w} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [v] [w]) ([Id]ℕ ⊢Γ [n₂] [w]) [IdB≡ℕ]′)) 
+            
 [IdExt]ℕ {Γ} {l} {u} {t} {w} {v} ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) (ℕₜ n d n≡n (ne x)) (ℕₜ .zero d₂ n≡n₂ zeroᵣ) (ℕₜ n₃ d₃ n≡n₃ (ne x₃))
             (ℕₜ₌ .zero .zero d₄ d′ k≡k′ zeroᵣ) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ (ne X)) = {!!}
 
-[IdExt]ℕ {Γ} {l} {u} {t} {w} {v} ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne x₁)) (ℕₜ .zero d n≡n zeroᵣ) (ℕₜ n₂ d₂ n≡n₂ (ne x₂)) (ℕₜ .zero d₃ n≡n₃ zeroᵣ)
-            (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne x)) (ℕₜ₌ .zero .zero d₅ d′₁ k≡k′₁ zeroᵣ) = {!!}
-[IdExt]ℕ {Γ} {l} {u} {t} {w} {v} ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne x₁)) (ℕₜ .(suc _) d n≡n (sucᵣ X)) (ℕₜ n₂ d₂ n≡n₂ (ne x₂)) (ℕₜ .(suc _) d₃ n≡n₃ (sucᵣ Y))
-            (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne x)) (ℕₜ₌ .(suc _) .(suc _) d₅ d′₁ k≡k′₁ (sucᵣ XX)) = {!prop₂!}
-
-[IdExt]ℕ {Γ} {l} {u} {t} {w} {v} ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne x₁)) (ℕₜ n d n≡n (ne x)) (ℕₜ n₂ d₂ n≡n₂ (ne x₂)) (ℕₜ n₃ d₃ n≡n₃ (ne x₃))
-            (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne X)) (ℕₜ₌ k₁ k′₁ d₅ d′₁ k≡k′₁ (ne Y)) = {!!}
-
 -- refuting cases
-{-
+
 [IdExt]ℕ ⊢Γ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ _ _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) _ = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , sucₙ)))
 [IdExt]ℕ ⊢Γ (ℕₜ n₁ d₁ n≡n₁ (ne (neNfₜ neK ⊢k k≡k))) _ _ _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) _ = ⊥-elim (suc≢ne neK (whrDet*Term (redₜ d₄ , sucₙ) (redₜ d₁ , ne neK)))
 [IdExt]ℕ ⊢Γ _ _ (ℕₜ .zero d₂ n≡n₂ zeroᵣ) _ (ℕₜ₌ .(suc _) .(suc _) d₄ d′ k≡k′ (sucᵣ x)) _ = ⊥-elim (zero≢suc (whrDet*Term (redₜ d₂ , zeroₙ) (redₜ d′ , sucₙ)))
@@ -288,9 +303,7 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
 [IdExt]ℕ ⊢Γ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ _ _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , ne neK)))
 [IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) =  ⊥-elim (suc≢ne neM (whrDet*Term (redₜ d₁ , sucₙ) (redₜ d′ , ne neM)))
 [IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) = ⊥-elim (zero≢ne neM (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d′ , ne neM)))
--}
 
-[IdExt]ℕ = {!!}
 {-
 
 [Id] : ∀ {A t u Γ l lA}
