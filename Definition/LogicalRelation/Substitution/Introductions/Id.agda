@@ -586,15 +586,15 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
       [w]′ = convTerm₁ {t = w} [B]' [ℕ]' [Beq] (irrelevanceTerm {l = l} (ℕᵣ [B]) [B]' [w])
       [t≡v]′ = convEqTerm₁ {t = t} {u = v} [A]' [ℕ]' [Aeq] (irrelevanceEqTerm {l = l} (ℕᵣ [A]) [A]' [t≡v])
       [u≡w]′ = convEqTerm₁ {t = u} {u = w} [B]' [ℕ]' [Beq] (irrelevanceEqTerm {l = l} (ℕᵣ [B]) [B]' [u≡w])
-      X = irrelevanceEq {A = Id ℕ t u} {B = Id ℕ v w} ([Id]ℕ ⊢Γ [t] [u]) ([Id] ⊢Γ [ℕ]' [t]′ [u]′) ([IdExt]ℕ ⊢Γ [t]′ [u]′ [v]′ [w]′ [t≡v]′ [u≡w]′)
-      [IdA] , [IdA≡U] = redSubst* (IdRed* (escapeTerm {l = l} (ℕᵣ [A]) [t]) (escapeTerm {l = l} (ℕᵣ [A]) [u]) D) ([Id] ⊢Γ [ℕ]' [t]′ [u]′)
-      [IdB] , [IdB≡U] = redSubst* (IdRed* (escapeTerm {l = l} (ℕᵣ [B]) [v]) (escapeTerm {l = l} (ℕᵣ [B]) [w]) D₁) ([Id] ⊢Γ [ℕ]' [v]′ [w]′)
+      X = irrelevanceEq {A = Id ℕ t u} {B = Id ℕ v w} {l = l} ([Id]ℕ ⊢Γ [t] [u]) ([Id]ℕ ⊢Γ [t]′ [u]′) ([IdExt]ℕ ⊢Γ [t]′ [u]′ [v]′ [w]′ [t≡v]′ [u≡w]′)
+      [IdA] , [IdA≡U] = redSubst* {l = l} (IdRed* (escapeTerm {l = l} (ℕᵣ [A]) [t]) (escapeTerm {l = l} (ℕᵣ [A]) [u]) D) ([Id]ℕ ⊢Γ [t]′ [u]′)
+      [IdB] , [IdB≡U] = redSubst* (IdRed* (escapeTerm {l = l} (ℕᵣ [B]) [v]) (escapeTerm {l = l} (ℕᵣ [B]) [w]) D₁) ([Id]ℕ ⊢Γ [v]′ [w]′)
       [IdA≡U]′ = irrelevanceEq {A = Id A t u} {B = Id ℕ t u} [IdA] ([Id] ⊢Γ (ℕᵣ [A]) [t] [u]) [IdA≡U]
       [IdB≡U]′ = irrelevanceEq {A = Id B v w} {B = Id ℕ v w} {l = l} {l′ = l}  [IdB] ([Id] ⊢Γ (ℕᵣ [B]) [v] [w]) [IdB≡U]
-  in  transEq {A = Id A t u} {B = Id ℕ t u} {C = Id B v w} {l = l} {l′ = l} {l″ = l} ([Id] ⊢Γ (ℕᵣ [A]) [t] [u]) ([Id] ⊢Γ [ℕ]' [t]′ [u]′) ([Id] ⊢Γ (ℕᵣ [B]) [v] [w])
+  in  transEq {A = Id A t u} {B = Id ℕ t u} {C = Id B v w} {l = l} {l′ = l} {l″ = l} ([Id] ⊢Γ (ℕᵣ [A]) [t] [u]) ([Id]ℕ ⊢Γ [t]′ [u]′) ([Id] ⊢Γ (ℕᵣ [B]) [v] [w])
               [IdA≡U]′ 
-              (transEq {A = Id ℕ t u} {B = Id ℕ v w} {C = Id B v w} {l = l} {l′ = l} {l″ = l} ([Id] ⊢Γ [ℕ]' [t]′ [u]′) ([Id] ⊢Γ [ℕ]' [v]′ [w]′) ([Id] ⊢Γ (ℕᵣ [B]) [v] [w])
-                       X (symEq {A = Id B v w} {B = Id ℕ v w} ([Id] ⊢Γ (ℕᵣ [B]) [v] [w]) ([Id] ⊢Γ [ℕ]' [v]′ [w]′) [IdB≡U]′)) 
+              (transEq {A = Id ℕ t u} {B = Id ℕ v w} {C = Id B v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [t]′ [u]′) ([Id]ℕ ⊢Γ [v]′ [w]′) ([Id] ⊢Γ (ℕᵣ [B]) [v] [w])
+                       X (symEq {A = Id B v w} {B = Id ℕ v w} ([Id] ⊢Γ (ℕᵣ [B]) [v] [w]) ([Id]ℕ ⊢Γ [v]′ [w]′) [IdB≡U]′)) 
 
 [IdExtShape] {A} {B} {t} {t′} {u} {u′} {Γ} ⊢Γ .(Πᵣ ΠA) .(Πᵣ ΠB) (Πᵥ ΠA ΠB) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] = {!!}
 
