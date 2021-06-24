@@ -14,6 +14,8 @@ open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.Typed.Properties
 open import Definition.LogicalRelation.Properties.MaybeEmb
+open import Definition.LogicalRelation.Properties.Reduction
+open import Definition.LogicalRelation.Properties.Conversion
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 open import Tools.Empty using (⊥; ⊥-elim)
@@ -21,16 +23,14 @@ open import Tools.Empty using (⊥; ⊥-elim)
 import Data.Fin as Fin
 import Data.Nat as Nat
 
-
-U¹ : ∀ {Γ rU} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ ∞ ⟩ Univ rU ¹ ^ [ ! , ∞ ] 
-U¹ {Γ} {rU} ⊢Γ = Uᵣ′ (Univ rU ¹) ∞ rU ¹ ∞< PE.refl (idRed:*: (Uⱼ ⊢Γ))
-
-U⁰ⱼ : ∀ {r Γ} → ⊢ Γ → Γ ⊢ Univ r ⁰ ^ [ ! , ι ¹ ]
-U⁰ⱼ ⊢Γ = univ (univ 0<1 ⊢Γ)
+Ugenⱼ : ∀ {r Γ l} → ⊢ Γ → Γ ⊢ Univ r l ^ [ ! , next l ]
+Ugenⱼ {l = ⁰} ⊢Γ = univ (univ 0<1 ⊢Γ)
+Ugenⱼ {l = ¹} ⊢Γ = Uⱼ ⊢Γ
 
 
-U⁰ : ∀ {Γ rU} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ ι ¹ ⟩ Univ rU ⁰ ^ [ ! , ι ¹ ] 
-U⁰ {Γ} {rU} ⊢Γ = Uᵣ′ (Univ rU ⁰) (ι ¹) rU ⁰ emb< PE.refl ((idRed:*: (U⁰ⱼ ⊢Γ)))
+Ugen : ∀ {Γ rU l} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ next l ⟩ Univ rU l ^ [ ! , next l ] 
+Ugen {Γ} {rU} {⁰} ⊢Γ = Uᵣ′ (Univ rU ⁰) (ι ¹) rU ⁰ emb< PE.refl ((idRed:*: (Ugenⱼ ⊢Γ)))
+Ugen {Γ} {rU} {¹} ⊢Γ = Uᵣ′ (Univ rU ¹) ∞ rU ¹ ∞< PE.refl (idRed:*: (Uⱼ ⊢Γ))
 
 U-Relevance-Level : ∀ {l ll Γ A} ([U] : Γ ⊩⟨ l ⟩U A ^ ll) → Relevance × Level
 U-Relevance-Level (noemb (Uᵣ r l′ l< eq d)) =  r , l′
@@ -81,6 +81,19 @@ univEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A�
 univEq {ι ¹} (emb _ [U]′) [A] = univEq [U]′ [A]
 univEq {∞} (emb _ [U]′) [A] = univEq [U]′ [A]
 
+next-inj : ∀ {l l'} → next l PE.≡ next l' → l PE.≡ l'
+next-inj {⁰} {⁰} e = PE.refl
+next-inj {¹} {¹} e = PE.refl
+
+univEqGen : ∀ {Γ UA A l′}
+       → ([U] : ((next l′) LogRel.⊩¹U logRelRec (next l′) ^ Γ) UA (next l′))
+       → Γ ⊩⟨ next l′ ⟩ A ∷ UA ^ [ ! , next l′ ] / Uᵣ [U]
+       → Γ ⊩⟨ ι l′ ⟩ A ^ [ LogRel._⊩¹U_^_.r [U] , ι l′ ]
+univEqGen {Γ} {UA} {A} {l′} [UA] [A] =
+  let (Uᵣ r l′₁ l< e [[ ⊢A , ⊢B , D ]]) = [UA]
+      [U] = Ugen {l = l′} (wf ⊢A)
+      [UA]' , [UAeq] = redSubst* (PE.subst (λ X →  Γ ⊢ UA ⇒* Univ r X ^ [ ! , next X ]) (next-inj e) D) [U]
+  in univEq [U] (convTerm₁ {t = A} [UA]' [U] [UAeq] (irrelevanceTerm (Uᵣ [UA]) [UA]' [A]))
 
 univ⊩ : ∀ {A Γ rU lU lU' l} 
         ([U] : Γ ⊩⟨ l ⟩ Univ rU lU ^ [ ! , lU' ])
