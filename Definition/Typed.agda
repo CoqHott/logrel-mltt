@@ -560,8 +560,8 @@ data _⊢ˢ_≡_∷_ (Δ : Con Term) (σ σ′ : Subst) : (Γ : Con Term) → Se
 -- Note that we cannot use the well-formed substitutions.
 -- For that, we need to prove the fundamental theorem for substitutions.
 
-Unitⱼ : ∀ {Γ} (⊢Γ : ⊢ Γ)
-      → Γ ⊢ Unit ∷ SProp ⁰ ^ [ ! , ι ¹ ]
+Unitⱼ : ∀ {Γ l} (⊢Γ : ⊢ Γ)
+      → Γ ⊢ Unit ∷ SProp l ^ [ ! , next l ]
 Unitⱼ ⊢Γ = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ Emptyⱼ ⊢Γ ▹ Emptyⱼ (⊢Γ ∙ univ (Emptyⱼ ⊢Γ))
 
 typeUnit : ∀ {l} →  Type (Unit {l})
