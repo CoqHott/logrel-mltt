@@ -104,8 +104,8 @@ mutual
           → Γ ⊢ u ∷ A ^ [ ! , ι l ]
           → Γ ⊢ Id A t u ∷ SProp l ^ [ ! , next l ]
     Idreflⱼ : ∀ {A l t}
-              → Γ ⊢ t ∷ A ^ [ ! , l ]
-              → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ [ % , l ]
+              → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+              → Γ ⊢ Idrefl A t ∷ (Id A t t) ^ [ % , ι l ]
     transpⱼ : ∀ {A l P t s u e}
               → Γ ⊢ A ^ [ ! , l ]
               → Γ ∙ A ^ [ ! , l ] ⊢ P ^ [ % , l ]
