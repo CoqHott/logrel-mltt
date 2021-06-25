@@ -134,7 +134,15 @@ mutual
     in  [Γ]₁ , [UΠ] 
     , 
       ∃ᵗᵛ {F} {G} {l} [Γ]₁ [F]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′
-  fundamentalTerm (Idⱼ x x₁ x₂) = {!!}
+-}
+  fundamentalTerm (Idⱼ {A} {l} {t} {u} ⊢A ⊢t ⊢u)
+    with fundamentalTerm ⊢A | fundamentalTerm ⊢t | fundamentalTerm ⊢u
+  ... | [Γ] , [UA] , [A]ₜ | [Γt] , [At] , [t]ₜ | [Γu] , [Au] , [u]ₜ =
+    let [SProp] = maybeEmbᵛ {A = SProp _} [Γu] (Uᵛ (proj₂ (levelBounded l)) [Γu])
+        [t]ₜ′ = S.irrelevanceTerm {A = A} {t = t} [Γt] [Γu] [At] [Au] [t]ₜ
+    in [Γu] , [SProp] , Idᵗᵛ {A = A} {t = t} {u = u } [Γu] [Au] [t]ₜ′ [u]ₜ
+
+{-
   fundamentalTerm (var ⊢Γ x∷A) = valid ⊢Γ , fundamentalVar x∷A (valid ⊢Γ)
   fundamentalTerm (lamⱼ {F} {r} {l} {rF} {lF} {G} {lG} {t} lF< lG< ⊢F ⊢t)
     with fundamental ⊢F | fundamentalTerm ⊢t
@@ -214,6 +222,8 @@ mutual
        sndᵛ {F = F} {G = G} {tu = tu} [Γ] [F]′ [G]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′ [tu]ₜ′
 -}
   fundamentalTerm (Idreflⱼ x) = {!!}
+  fundamentalTerm = {!!}
+{-  
   fundamentalTerm (transpⱼ {A} {l} {P} {t} {s} {u} {e} ⊢A ⊢P ⊢t ⊢s ⊢u ⊢e)
     with fundamental ⊢A | fundamental ⊢P  | fundamentalTerm ⊢t | fundamentalTerm ⊢s | fundamentalTerm ⊢u | fundamentalTerm ⊢e
   ... | [ΓA] , [A] | [ΓP] ∙ [A]' , [P] | [Γt] , [At] , [t] | [Γs] , [Pt] , [s] | [Γu] , [Au] , [u] | [Γe] , [Id] , [e] =
@@ -224,8 +234,6 @@ mutual
         [Pt]′ = substS {A} {P} {t} [Γe] [A]′ [P]′ [t]′
         [s]′ = S.irrelevanceTerm {A = P [ t ] } {t = s} [Γs] [Γe] [Pt] [Pt]′ [s]
     in [Γe] ,  substS {A} {P} {u} [Γe] [A]′ [P]′ [u]′ , transpᵗᵛ {A} {P} {l} {t} {s} {u} {e} [Γe] [A]′ [P]′ [t]′ [s]′ [u]′ [Id] [e]
-  fundamentalTerm = {!!}
-{-
   fundamentalTerm (castⱼ {A} {B} {r} {e} {t} ⊢A ⊢B ⊢e ⊢t)
     with fundamentalTerm ⊢A | fundamentalTerm ⊢B  | fundamentalTerm ⊢e  | fundamentalTerm ⊢t
   ... | [ΓA] , [UA] , [A]ₜ | [ΓB] , [UB] , [B]ₜ | [Γe] , [Id] , [e]ₜ | [Γ]₁ , [At] , [t]ₜ =
@@ -259,7 +267,7 @@ mutual
   fundamentalTermEq : ∀{Γ A t t′ rA} → Γ ⊢ t ≡ t′ ∷ A ^ rA
                     → ∃ λ ([Γ] : ⊩ᵛ Γ)
                     → [ Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ t′ ∷ A ^ rA / [Γ] ]
-
+  fundamentalTermEq  = {!!}
 {-
   fundamentalTermEq (refl D) with fundamentalTerm D
   ... | [Γ] , [A] , [t] =
