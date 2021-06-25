@@ -39,6 +39,7 @@ import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
+
 [Id] : ∀ {A t u Γ l lA}
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩⟨ l ⟩ A ^ [ ! , ι lA ])
@@ -72,32 +73,12 @@ import Data.Nat as Nat
        → Γ ⊩⟨ l ⟩ Id A t u ≡ Id B v w ^ [ % , ι lA ] / [Id] ⊢Γ [A] [t] [u]
 
 
-[Id] ⊢Γ (ℕᵣ [[ ⊢A , ⊢B , D ]]) (ℕₜ n d n≡n prop) (ℕₜ n₁ d₁ n≡n₁ prop₁) =
-  let
-    [[ ⊢tℕ , _ , _ ]] = d
-    [[ ⊢uℕ , _ , _ ]] = d₁
-  in proj₁ (redSubst* (IdRed* (conv ⊢tℕ (sym (subset* D))) (conv ⊢uℕ (sym (subset* D))) D)
-    ([Id]ℕ ⊢Γ (ℕₜ n d n≡n prop) (ℕₜ n₁ d₁ n≡n₁ prop₁)))
+[Id] ⊢Γ (ℕᵣ [[ ⊢A , ⊢B , D ]]) [t] [u] = [Id]ℕGen ⊢Γ [[ ⊢A , ⊢B , D ]] [t] [u]
 
 [Id] ⊢Γ (Uᵣ (Uᵣ r ¹ l< () d)) [t] [u]
-[Id] {A} {t} {u} {Γ} {ι .¹} {.¹} ⊢Γ (Uᵣ (Uᵣ ! ⁰ emb< PE.refl [[ ⊢A , ⊢B , D ]])) (Uₜ K d typeK K≡K [t]) (Uₜ M d₁ typeM M≡M [u]) =
-  let
-    [t0] : Γ ⊩⟨ ι ⁰ ⟩ t ^ [ ! , ι ⁰ ]
-    [t0] = PE.subst (λ X → Γ ⊩⟨ ι ⁰ ⟩ X ^ [ ! , ι ⁰ ]) (wk-id t) ([t] Twk.id ⊢Γ)
-    [u0] = PE.subst (λ X → Γ ⊩⟨ ι ⁰ ⟩ X ^ [ ! , ι ⁰ ]) (wk-id u) ([u] Twk.id ⊢Γ)
-    ⊢tA = conv (un-univ (escape [t0])) (sym (subset* D))
-    ⊢uA = conv (un-univ (escape [u0])) (sym (subset* D))
-  in proj₁ (redSubst* (IdRed* ⊢tA ⊢uA D) ([Id]U ⊢Γ [t0] [u0]))
 
-[Id] {A} {t} {u} {Γ} {ι .¹} {.¹} ⊢Γ (Uᵣ (Uᵣ % ⁰ emb< PE.refl [[ ⊢A , ⊢B , D ]])) (Uₜ K d typeK K≡K [t]) (Uₜ M d₁ typeM M≡M [u]) =
-  let
-    [t0] : Γ ⊩⟨ ι ⁰ ⟩ t ^ [ % , ι ⁰ ]
-    [t0] = PE.subst (λ X → Γ ⊩⟨ ι ⁰ ⟩ X ^ [ % , ι ⁰ ]) (wk-id t) ([t] Twk.id ⊢Γ)
-    [u0] = PE.subst (λ X → Γ ⊩⟨ ι ⁰ ⟩ X ^ [ % , ι ⁰ ]) (wk-id u) ([u] Twk.id ⊢Γ)
-    ⊢tA = conv (un-univ (escape [t0])) (sym (subset* D))
-    ⊢uA = conv (un-univ (escape [u0])) (sym (subset* D))
-  in proj₁ (redSubst* (IdRed* ⊢tA ⊢uA D) ([Id]SProp ⊢Γ [t0] [u0]))
-
+[Id] {A} {t} {u} {Γ} {ι .¹} {.¹} ⊢Γ (Uᵣ (Uᵣ rU ⁰ emb< PE.refl [[ ⊢A , ⊢B , D ]])) [t] [u] = [Id]UGen {A} {t} {u} {Γ} ⊢Γ (Uᵣ rU ⁰ emb< PE.refl [[ ⊢A , ⊢B , D ]]) [t] [u]
+  
 [Id] {A} {t} {u} {Γ} {l} {lA} ⊢Γ (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) [t] [u] =
   let
     [A] = ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K
@@ -209,69 +190,9 @@ import Data.Nat as Nat
 [Id] ⊢Γ (emb {l′ = ι ⁰} emb< [A]) [t] [u] = emb emb< ([Id] ⊢Γ [A] [t] [u])
 [Id] ⊢Γ (emb {l′ = ι ¹} ∞< [A]) [t] [u] = emb ∞< ([Id] ⊢Γ [A] [t] [u])
 
-{-
-[IdExtShape] {A} {B} {t} {v} {u} {w} {Γ} {.(ι ¹)} {.(ι ¹)} {lA} ⊢Γ (Uᵣ (Uᵣ ! ⁰ emb< PE.refl d)) (Uᵣ (Uᵣ r₁ ⁰ emb< PE.refl d₁)) (Uᵥ ._ ._) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
-  let U≡U = whrDet* (red d₁ , Uₙ) ([A≡B] , Uₙ)
-      r≡r , _ = Univ-PE-injectivity U≡U
-      [UA] = Uᵣ ! ⁰ emb< PE.refl d
-      [UB] = Uᵣ r₁ ⁰ emb< PE.refl d₁
-      [U] = Ugen ⊢Γ
-      [U]' = Ugen ⊢Γ
-      [UA]' , [UAeq] = redSubst* (red d) [U]
-      [UB]' , [UBeq] = redSubst* (PE.subst (λ X → Γ ⊢ _ ⇒* Univ X _ ^ _) r≡r (red d₁)) [U]'
-      [t]′ = convTerm₁ {t = t} [UA]' [U] [UAeq] (irrelevanceTerm (Uᵣ [UA]) [UA]' [t])
-      [t^] = univEq [U] [t]′
-      [v]′ = convTerm₁ {t = v} [UB]' [U] [UBeq] (irrelevanceTerm (Uᵣ [UB]) [UB]' [v])
-      [v^] = univEq [U] [v]′
-      [t≡v]′ = convEqTerm₁ {t = t} {u = v} [UA]' [U] [UAeq] (irrelevanceEqTerm (Uᵣ [UA]) [UA]' [t≡v])
-      [t≡v^] = univEqEq [U] [t^] [t≡v]′
-      [u]′ = convTerm₁ {t = u} [UA]' [U] [UAeq] (irrelevanceTerm (Uᵣ [UA]) [UA]' [u])
-      [u^] = univEq [U] [u]′
-      [w]′ = convTerm₁ {t = w} [UB]' [U] [UBeq] (irrelevanceTerm (Uᵣ [UB]) [UB]'  [w])
-      [w^] = univEq [U] [w]′
-      [u≡w]′ = convEqTerm₁ {t = u} {u = w} [UA]' [U] [UAeq] (irrelevanceEqTerm (Uᵣ [UA]) [UA]' [u≡w])
-      [u≡w^] = univEqEq [U] [u^] [u≡w]′
-      X = irrelevanceEq {A = Id (U ⁰) t u} {B = Id (U ⁰) v w} ([Id]U ⊢Γ [t^] [u^]) ([Id] ⊢Γ [U] [t]′ [u]′) ([IdExt]U ⊢Γ [t^] [v^] [t≡v^] [u^] [w^] [u≡w^])
-      [IdA] , [IdA≡U] = redSubst* (IdRed* (escapeTerm (Uᵣ [UA]) [t]) (escapeTerm (Uᵣ [UA]) [u]) (red d)) ([Id] ⊢Γ [U] [t]′ [u]′)
-      [IdB] , [IdB≡U] = redSubst* (IdRed* (escapeTerm (Uᵣ [UB]) [v]) (escapeTerm (Uᵣ [UB]) [w]) (PE.subst (λ X → Γ ⊢ _ ⇒* Univ X _ ^ _) r≡r (red d₁))) ([Id] ⊢Γ [U] [v]′ [w]′)
-      [IdA≡U]′ = irrelevanceEq {A = Id A t u} {B = Id (U ⁰) t u} [IdA] ([Id] ⊢Γ (Uᵣ [UA]) [t] [u]) [IdA≡U]
-      [IdB≡U]′ = irrelevanceEq {A = Id B v w} {B = Id (U ⁰) v w} [IdB] ([Id] ⊢Γ (Uᵣ [UB]) [v] [w]) [IdB≡U]
-  in transEq {A = Id A t u} {B = Id (U _) t u} {C = Id B v w}  ([Id] ⊢Γ (Uᵣ [UA]) [t] [u]) ([Id] ⊢Γ [U] [t]′ [u]′) ([Id] ⊢Γ (Uᵣ [UB]) [v] [w])
-                  [IdA≡U]′ 
-                  (transEq {A = Id (U _) t u} {B = Id (U _) v w} {C = Id B v w} ([Id] ⊢Γ [U] [t]′ [u]′) ([Id] ⊢Γ [U] [v]′ [w]′) ([Id] ⊢Γ (Uᵣ [UB]) [v] [w])
-                                   X (symEq {A = Id B v w} {B = Id (U _) v w} ([Id] ⊢Γ (Uᵣ [UB]) [v] [w]) ([Id] ⊢Γ [U] [v]′ [w]′) [IdB≡U]′)) 
+[IdExtShape] {A} {B} {t} {v} {u} {w} {Γ} {.(ι ¹)} {.(ι ¹)} {lA} ⊢Γ (Uᵣ (Uᵣ rU ⁰ emb< PE.refl d)) (Uᵣ (Uᵣ r₁ ⁰ emb< PE.refl d₁)) (Uᵥ ._ ._) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
+  [IdExt]UGen {A} {B} {t} {v} {u} {w} {Γ} ⊢Γ (Uᵣ rU ⁰ emb< PE.refl d) (Uᵣ r₁ ⁰ emb< PE.refl d₁) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w]
 
-[IdExtShape] {A} {B} {t} {v} {u} {w} {Γ} {.(ι ¹)} {.(ι ¹)} {lA} ⊢Γ (Uᵣ (Uᵣ % ⁰ emb< PE.refl d)) (Uᵣ (Uᵣ r₁ ⁰ emb< PE.refl d₁)) (Uᵥ ._ ._) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
-  let U≡U = whrDet* (red d₁ , Uₙ) ([A≡B] , Uₙ)
-      r≡r , _ = Univ-PE-injectivity U≡U
-      [UA] = Uᵣ % ⁰ emb< PE.refl d
-      [UB] = Uᵣ r₁ ⁰ emb< PE.refl d₁
-      [U] = Ugen ⊢Γ
-      [U]' = Ugen ⊢Γ
-      [UA]' , [UAeq] = redSubst* (red d) [U]
-      [UB]' , [UBeq] = redSubst* (PE.subst (λ X → Γ ⊢ _ ⇒* Univ X _ ^ _) r≡r (red d₁)) [U]'
-      [t]′ = convTerm₁ {t = t} [UA]' [U] [UAeq] (irrelevanceTerm (Uᵣ [UA]) [UA]' [t])
-      [t^] = univEq [U] [t]′
-      [v]′ = convTerm₁ {t = v} [UB]' [U] [UBeq] (irrelevanceTerm (Uᵣ [UB]) [UB]' [v])
-      [v^] = univEq [U] [v]′
-      [t≡v]′ = convEqTerm₁ {t = t} {u = v} [UA]' [U] [UAeq] (irrelevanceEqTerm (Uᵣ [UA]) [UA]' [t≡v])
-      [t≡v^] = univEqEq [U] [t^] [t≡v]′
-      [u]′ = convTerm₁ {t = u} [UA]' [U] [UAeq] (irrelevanceTerm (Uᵣ [UA]) [UA]' [u])
-      [u^] = univEq [U] [u]′
-      [w]′ = convTerm₁ {t = w} [UB]' [U] [UBeq] (irrelevanceTerm (Uᵣ [UB]) [UB]'  [w])
-      [w^] = univEq [U] [w]′
-      [u≡w]′ = convEqTerm₁ {t = u} {u = w} [UA]' [U] [UAeq] (irrelevanceEqTerm (Uᵣ [UA]) [UA]' [u≡w])
-      [u≡w^] = univEqEq [U] [u^] [u≡w]′
-      X = irrelevanceEq {A = Id (SProp ⁰) t u} {B = Id (SProp ⁰) v w} ([Id]SProp ⊢Γ [t^] [u^]) ([Id] ⊢Γ [U] [t]′ [u]′) ([IdExt]SProp ⊢Γ [t^] [v^] [t≡v^] [u^] [w^] [u≡w^])
-      [IdA] , [IdA≡U] = redSubst* (IdRed* (escapeTerm (Uᵣ [UA]) [t]) (escapeTerm (Uᵣ [UA]) [u]) (red d)) ([Id] ⊢Γ [U] [t]′ [u]′)
-      [IdB] , [IdB≡U] = redSubst* (IdRed* (escapeTerm (Uᵣ [UB]) [v]) (escapeTerm (Uᵣ [UB]) [w]) (PE.subst (λ X → Γ ⊢ _ ⇒* Univ X _ ^ _) r≡r (red d₁))) ([Id] ⊢Γ [U] [v]′ [w]′)
-      [IdA≡U]′ = irrelevanceEq {A = Id A t u} {B = Id (SProp ⁰) t u} [IdA] ([Id] ⊢Γ (Uᵣ [UA]) [t] [u]) [IdA≡U]
-      [IdB≡U]′ = irrelevanceEq {A = Id B v w} {B = Id (SProp ⁰) v w} [IdB] ([Id] ⊢Γ (Uᵣ [UB]) [v] [w]) [IdB≡U]
-  in transEq {A = Id A t u} {B = Id (SProp _) t u} {C = Id B v w}  ([Id] ⊢Γ (Uᵣ [UA]) [t] [u]) ([Id] ⊢Γ [U] [t]′ [u]′) ([Id] ⊢Γ (Uᵣ [UB]) [v] [w])
-                  [IdA≡U]′ 
-                  (transEq {A = Id (SProp _) t u} {B = Id (SProp _) v w} {C = Id B v w} ([Id] ⊢Γ [U] [t]′ [u]′) ([Id] ⊢Γ [U] [v]′ [w]′) ([Id] ⊢Γ (Uᵣ [UB]) [v] [w])
-                                   X (symEq {A = Id B v w} {B = Id (SProp _) v w} ([Id] ⊢Γ (Uᵣ [UB]) [v] [w]) ([Id] ⊢Γ [U] [v]′ [w]′) [IdB≡U]′))
-                                   
 [IdExtShape] {A} {B} {t} {v} {u} {w} {Γ} {l} {l'} {lA}  ⊢Γ (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) (ne neB) (ne ._ .neB) (ne₌ M [[ ⊢A′ , ⊢B′ ,  D′ ]] neM K≡M) [t] [t′] [t≡t′] [u] [u′] [u≡u′] =
   let
     [A] = (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K)
@@ -285,30 +206,7 @@ import Data.Nat as Nat
          (Idₙ neM) (~-Id K≡M t≡t′ u≡u′)
 
 [IdExtShape] {A} {B} {t} {v} {u} {w} {Γ} {l} {l'} ⊢Γ (ℕᵣ [[ ⊢A , ⊢B , D ]]) (ℕᵣ [[ ⊢A₁ , ⊢B₁ , D₁ ]]) (ℕᵥ ._ ._) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
-  let [A] = [[ ⊢A , ⊢B , D ]]
-      [B] = [[ ⊢A₁ , ⊢B₁ , D₁ ]]
-      [ℕ]' = [ℕ] {l = l} ⊢Γ
-      [A]' , [Aeq] = redSubst* D [ℕ]'
-      [B]' , [Beq] = redSubst* D₁ [ℕ]'
-      [t]′ = convTerm₁ {t = t} [A]' [ℕ]' [Aeq] (irrelevanceTerm {l = l} (ℕᵣ [A]) [A]' [t])
-      [u]′ = convTerm₁ {t = u} [B]' [ℕ]' [Beq] (irrelevanceTerm {l = l} (ℕᵣ [B]) [B]' [u])
-      [v]′ = convTerm₁ {t = v} [A]' [ℕ]' [Aeq] (irrelevanceTerm {l = l} (ℕᵣ [A]) [A]' [v])
-      [w]′ = convTerm₁ {t = w} [B]' [ℕ]' [Beq] (irrelevanceTerm {l = l} (ℕᵣ [B]) [B]' [w])
-      [t≡v]′ = convEqTerm₁ {t = t} {u = v} [A]' [ℕ]' [Aeq] (irrelevanceEqTerm {l = l} (ℕᵣ [A]) [A]' [t≡v])
-      [u≡w]′ = convEqTerm₁ {t = u} {u = w} [B]' [ℕ]' [Beq] (irrelevanceEqTerm {l = l} (ℕᵣ [B]) [B]' [u≡w])
-      X = irrelevanceEq {A = Id ℕ t u} {B = Id ℕ v w} {l = l} ([Id]ℕ ⊢Γ [t] [u]) ([Id]ℕ ⊢Γ [t]′ [u]′) ([IdExt]ℕ ⊢Γ [t]′ [u]′ [v]′ [w]′ [t≡v]′ [u≡w]′)
-      [IdA] , [IdA≡U] = redSubst* {l = l} (IdRed* (escapeTerm {l = l} (ℕᵣ [A]) [t]) (escapeTerm {l = l} (ℕᵣ [A]) [u]) D) ([Id]ℕ ⊢Γ [t]′ [u]′)
-      [IdB] , [IdB≡U] = redSubst* (IdRed* (escapeTerm {l = l} (ℕᵣ [B]) [v]) (escapeTerm {l = l} (ℕᵣ [B]) [w]) D₁) ([Id]ℕ ⊢Γ [v]′ [w]′)
-      [IDAtu] = [Id] ⊢Γ (ℕᵣ [A]) [t] [u]
-      [IDBvw] = [Id] ⊢Γ (ℕᵣ [B]) [v] [w]
-      [IdA≡U]′ = irrelevanceEq {A = Id A t u} {B = Id ℕ t u} [IdA] [IDAtu] [IdA≡U]
-      [IdB≡U]′ = irrelevanceEq {A = Id B v w} {B = Id ℕ v w} {l = l} {l′ = l}  [IdB] [IDBvw] [IdB≡U]
-  in  transEq {A = Id A t u} {B = Id ℕ t u} {C = Id B v w} {l = l} {l′ = l} {l″ = l} [IDAtu] ([Id]ℕ ⊢Γ [t]′ [u]′) [IDBvw]
-              [IdA≡U]′ 
-              (transEq {A = Id ℕ t u} {B = Id ℕ v w} {C = Id B v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [t]′ [u]′) ([Id]ℕ ⊢Γ [v]′ [w]′) [IDBvw]
-                       X (symEq {A = Id B v w} {B = Id ℕ v w} [IDBvw] ([Id]ℕ ⊢Γ [v]′ [w]′) [IdB≡U]′)) 
-
--}
+  [IdExt]ℕGen {A} {B} {t} {v} {u} {w} {Γ} ⊢Γ [[ ⊢A , ⊢B , D ]] [[ ⊢A₁ , ⊢B₁ , D₁ ]] [A≡B] [t] [v] [t≡v] [u] [w] [u≡w]
 
 [IdExtShape] {A} {A′} {t} {t′} {u} {u′} {Γ} {l} {l'} {lA} ⊢Γ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πᵣ′ rF′ lF′ lG′ lF≤′ lG≤′ F′ G′ [[ ⊢A′ , ⊢B′ , D′ ]] ⊢F′ ⊢G′ A′≡A′ [F′] [G′] G′-ext)
   (Πᵥ .(Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) .(Πᵣ rF′ lF′ lG′ lF≤′ lG≤′ F′ G′ [[ ⊢A′ , ⊢B′ , D′ ]] ⊢F′ ⊢G′ A′≡A′ [F′] [G′] G′-ext))
@@ -422,8 +320,6 @@ import Data.Nat as Nat
   [IdExtShape] ⊢Γ [A] [B] ShapeA [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] 
 [IdExtShape] {A} {B} {t} {t′} {u} {u′} {Γ} ⊢Γ [A] (emb ∞< [B]) (emb∞¹ {q = .[B]} ShapeA) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
   [IdExtShape] ⊢Γ [A] [B] ShapeA [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] 
-
-[IdExtShape] = {!!}
 
 [IdExt] {A} {A′} {t} {t′} {u} {u′} {Γ} ⊢Γ [A] [A′] [A≡A′] [t] [t′] [t≡t′] [u] [u′] [u≡u′] =
   [IdExtShape] {A} {A′} {t} {t′} {u} {u′} {Γ} ⊢Γ [A] [A′] (goodCases [A] [A′] [A≡A′]) [A≡A′] [t] [t′] [t≡t′] [u] [u′] [u≡u′]

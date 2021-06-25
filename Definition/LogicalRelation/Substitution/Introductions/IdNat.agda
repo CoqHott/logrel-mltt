@@ -326,3 +326,55 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
 [IdExt]ℕ ⊢Γ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ _ _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) = ⊥-elim (zero≢ne neK (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d₄ , ne neK)))
 [IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .(suc _) d₁ n≡n₁ (sucᵣ x₁)) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) =  ⊥-elim (suc≢ne neM (whrDet*Term (redₜ d₁ , sucₙ) (redₜ d′ , ne neM)))
 [IdExt]ℕ ⊢Γ _ _ _ (ℕₜ .zero d₁ n≡n₁ zeroᵣ) _ (ℕₜ₌ k k′ d₄ d′ k≡k′ (ne (neNfₜ₌ neK neM k≡m))) = ⊥-elim (zero≢ne neM (whrDet*Term (redₜ d₁ , zeroₙ) (redₜ d′ , ne neM)))
+
+[Id]ℕGen : ∀ {Γ l A t u}
+  (⊢Γ : ⊢ Γ)
+  ([A] : Γ ⊩ℕ A)
+  ([t] : Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
+  ([u] : Γ ⊩⟨ l ⟩ u ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
+  → Γ ⊩⟨ l ⟩ Id A t u ^ [ % , ι ⁰ ]
+
+[Id]ℕGen ⊢Γ [[ ⊢A , ⊢B , D ]] (ℕₜ n d n≡n prop) (ℕₜ n₁ d₁ n≡n₁ prop₁) =
+  let
+    [[ ⊢tℕ , _ , _ ]] = d
+    [[ ⊢uℕ , _ , _ ]] = d₁
+  in proj₁ (redSubst* (IdRed* (conv ⊢tℕ (sym (subset* D))) (conv ⊢uℕ (sym (subset* D))) D)
+    ([Id]ℕ ⊢Γ (ℕₜ n d n≡n prop) (ℕₜ n₁ d₁ n≡n₁ prop₁)))
+
+
+[IdExt]ℕGen : ∀ {A B t v u w Γ l l'}
+         (⊢Γ : ⊢ Γ)
+         ([A] : Γ ⊩ℕ A)
+         ([B] : Γ ⊩ℕ B)
+         ([A≡B] : Γ ⊩⟨ l ⟩ A ≡ B ^ [ ! , ι ⁰ ] / ℕᵣ [A])
+         ([t] : Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
+         ([v] : Γ ⊩⟨ l' ⟩ v ∷ B ^ [ ! , ι ⁰ ] / ℕᵣ [B])
+         ([t≡v] : Γ ⊩⟨ l ⟩ t ≡ v ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
+         ([u] : Γ ⊩⟨ l ⟩ u ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
+         ([w] : Γ ⊩⟨ l' ⟩ w ∷ B ^ [ ! , ι ⁰ ] / ℕᵣ [B])
+         ([u≡w] : Γ ⊩⟨ l ⟩ u ≡ w ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
+       → Γ ⊩⟨ l ⟩ Id A t u ≡ Id B v w ^ [ % , ι ⁰ ] / [Id]ℕGen ⊢Γ [A] [t] [u]
+
+[IdExt]ℕGen {A} {B} {t} {v} {u} {w} {Γ} {l} {l'} ⊢Γ [[ ⊢A , ⊢B , D ]] [[ ⊢A₁ , ⊢B₁ , D₁ ]] [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
+  let [A] = [[ ⊢A , ⊢B , D ]]
+      [B] = [[ ⊢A₁ , ⊢B₁ , D₁ ]]
+      [ℕ]' = [ℕ] {l = l} ⊢Γ
+      [A]' , [Aeq] = redSubst* D [ℕ]'
+      [B]' , [Beq] = redSubst* D₁ [ℕ]'
+      [t]′ = convTerm₁ {t = t} [A]' [ℕ]' [Aeq] (irrelevanceTerm {l = l} (ℕᵣ [A]) [A]' [t])
+      [u]′ = convTerm₁ {t = u} [B]' [ℕ]' [Beq] (irrelevanceTerm {l = l} (ℕᵣ [B]) [B]' [u])
+      [v]′ = convTerm₁ {t = v} [A]' [ℕ]' [Aeq] (irrelevanceTerm {l = l} (ℕᵣ [A]) [A]' [v])
+      [w]′ = convTerm₁ {t = w} [B]' [ℕ]' [Beq] (irrelevanceTerm {l = l} (ℕᵣ [B]) [B]' [w])
+      [t≡v]′ = convEqTerm₁ {t = t} {u = v} [A]' [ℕ]' [Aeq] (irrelevanceEqTerm {l = l} (ℕᵣ [A]) [A]' [t≡v])
+      [u≡w]′ = convEqTerm₁ {t = u} {u = w} [B]' [ℕ]' [Beq] (irrelevanceEqTerm {l = l} (ℕᵣ [B]) [B]' [u≡w])
+      X = irrelevanceEq {A = Id ℕ t u} {B = Id ℕ v w} {l = l} ([Id]ℕ ⊢Γ [t] [u]) ([Id]ℕ ⊢Γ [t]′ [u]′) ([IdExt]ℕ ⊢Γ [t]′ [u]′ [v]′ [w]′ [t≡v]′ [u≡w]′)
+      [IdA] , [IdA≡U] = redSubst* {l = l} (IdRed* (escapeTerm {l = l} (ℕᵣ [A]) [t]) (escapeTerm {l = l} (ℕᵣ [A]) [u]) D) ([Id]ℕ ⊢Γ [t]′ [u]′)
+      [IdB] , [IdB≡U] = redSubst* (IdRed* (escapeTerm {l = l} (ℕᵣ [B]) [v]) (escapeTerm {l = l} (ℕᵣ [B]) [w]) D₁) ([Id]ℕ ⊢Γ [v]′ [w]′)
+      [IDAtu] = [Id]ℕGen ⊢Γ [A] [t] [u]
+      [IDBvw] = [Id]ℕGen ⊢Γ [B] [v] [w]
+      [IdA≡U]′ = irrelevanceEq {A = Id A t u} {B = Id ℕ t u} [IdA] [IDAtu] [IdA≡U]
+      [IdB≡U]′ = irrelevanceEq {A = Id B v w} {B = Id ℕ v w} {l = l} {l′ = l}  [IdB] [IDBvw] [IdB≡U]
+  in  transEq {A = Id A t u} {B = Id ℕ t u} {C = Id B v w} {l = l} {l′ = l} {l″ = l} [IDAtu] ([Id]ℕ ⊢Γ [t]′ [u]′) [IDBvw]
+              [IdA≡U]′ 
+              (transEq {A = Id ℕ t u} {B = Id ℕ v w} {C = Id B v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [t]′ [u]′) ([Id]ℕ ⊢Γ [v]′ [w]′) [IDBvw]
+                       X (symEq {A = Id B v w} {B = Id ℕ v w} [IDBvw] ([Id]ℕ ⊢Γ [v]′ [w]′) [IdB≡U]′)) 
