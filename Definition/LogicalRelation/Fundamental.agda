@@ -18,6 +18,7 @@ open import Definition.LogicalRelation.Substitution.Properties
 open import Definition.LogicalRelation.Substitution.Conversion
 open import Definition.LogicalRelation.Substitution.Reduction
 open import Definition.LogicalRelation.Substitution.Reflexivity
+open import Definition.LogicalRelation.Substitution.ProofIrrelevance
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
 open import Definition.LogicalRelation.Substitution.Introductions.Nat
 open import Definition.LogicalRelation.Substitution.Introductions.Natrec
@@ -134,7 +135,7 @@ mutual
     in  [Γ]₁ , [UΠ] 
     , 
       ∃ᵗᵛ {F} {G} {l} [Γ]₁ [F]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′
--}
+
   fundamentalTerm (Idⱼ {A} {l} {t} {u} ⊢A ⊢t ⊢u)
     with fundamentalTerm ⊢A | fundamentalTerm ⊢t | fundamentalTerm ⊢u
   ... | [Γ] , [UA] , [A]ₜ | [Γt] , [At] , [t]ₜ | [Γu] , [Au] , [u]ₜ =
@@ -142,7 +143,6 @@ mutual
         [t]ₜ′ = S.irrelevanceTerm {A = A} {t = t} [Γt] [Γu] [At] [Au] [t]ₜ
     in [Γu] , [SProp] , Idᵗᵛ {A = A} {t = t} {u = u } [Γu] [Au] [t]ₜ′ [u]ₜ
 
-{-
   fundamentalTerm (var ⊢Γ x∷A) = valid ⊢Γ , fundamentalVar x∷A (valid ⊢Γ)
   fundamentalTerm (lamⱼ {F} {r} {l} {rF} {lF} {G} {lG} {t} lF< lG< ⊢F ⊢t)
     with fundamental ⊢F | fundamentalTerm ⊢t
@@ -221,7 +221,11 @@ mutual
        substS {F} {G} {fst tu} [Γ] [F]′ [G]′ (fstᵛ {F = F} {G = G} {tu = tu} [Γ] [F]′ [G]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′ [tu]ₜ′) ,
        sndᵛ {F = F} {G = G} {tu = tu} [Γ] [F]′ [G]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′ [tu]ₜ′
 -}
-  fundamentalTerm (Idreflⱼ x) = {!!}
+  fundamentalTerm (Idreflⱼ {A} {l} {t} ⊢t)
+    with fundamentalTerm ⊢t 
+  ... | [Γ] , [A] , [t]  =
+    let [Id] = Idᵛ {A = A} {t = t} {u = t } [Γ] [A] [t] [t]
+    in [Γ] , [Id] , validityIrr {A = Id A t t} {t = Idrefl A t} [Γ] [Id] λ ⊢Δ [σ] → Idreflⱼ (escapeTerm (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])))
   fundamentalTerm = {!!}
 {-  
   fundamentalTerm (transpⱼ {A} {l} {P} {t} {s} {u} {e} ⊢A ⊢P ⊢t ⊢s ⊢u ⊢e)
