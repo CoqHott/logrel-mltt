@@ -38,6 +38,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Fst
 open import Definition.LogicalRelation.Substitution.Introductions.Snd
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 open import Definition.LogicalRelation.Substitution.Introductions.Transp
+open import Definition.LogicalRelation.Substitution.Introductions.IdRefl
 open import Definition.LogicalRelation.Fundamental.Variable
 import Definition.LogicalRelation.Substitution.ProofIrrelevance as PI
 import Definition.LogicalRelation.Substitution.Irrelevance as S
@@ -104,7 +105,7 @@ mutual
     → ∃ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
     → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ rA / [Γ] / [A]
 
-{-
+
   fundamentalTerm (ℕⱼ x) = valid x , maybeEmbᵛ {A = Univ _ _} (valid x) (Uᵛ emb< (valid x)) ,  maybeEmbTermᵛ {A = Univ _ _} {t = ℕ} (valid x) (Uᵛ emb< (valid x)) (ℕᵗᵛ (valid x))
   fundamentalTerm (Emptyⱼ {l} ⊢Γ) = let [Γ] = valid ⊢Γ
                                         [U] = Uᵛ (proj₂ (levelBounded _)) [Γ]
@@ -220,14 +221,13 @@ mutual
     in [Γ] ,
        substS {F} {G} {fst tu} [Γ] [F]′ [G]′ (fstᵛ {F = F} {G = G} {tu = tu} [Γ] [F]′ [G]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′ [tu]ₜ′) ,
        sndᵛ {F = F} {G = G} {tu = tu} [Γ] [F]′ [G]′ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [F]ₜ′ [G]ₜ′ [tu]ₜ′
--}
-  fundamentalTerm (Idreflⱼ {A} {l} {t} ⊢t)
+
+  fundamentalTerm {Γ} (Idreflⱼ {A} {l} {t} ⊢t)
     with fundamentalTerm ⊢t 
   ... | [Γ] , [A] , [t]  =
     let [Id] = Idᵛ {A = A} {t = t} {u = t } [Γ] [A] [t] [t]
-    in [Γ] , [Id] , validityIrr {A = Id A t t} {t = Idrefl A t} [Γ] [Id] λ ⊢Δ [σ] → Idreflⱼ (escapeTerm (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])))
-  fundamentalTerm = {!!}
-{-  
+    in [Γ] , [Id] , Idreflᵛ {Γ} {A} {l} {t} [Γ] [A] [t]
+
   fundamentalTerm (transpⱼ {A} {l} {P} {t} {s} {u} {e} ⊢A ⊢P ⊢t ⊢s ⊢u ⊢e)
     with fundamental ⊢A | fundamental ⊢P  | fundamentalTerm ⊢t | fundamentalTerm ⊢s | fundamentalTerm ⊢u | fundamentalTerm ⊢e
   ... | [ΓA] , [A] | [ΓP] ∙ [A]' , [P] | [Γt] , [At] , [t] | [Γs] , [Pt] , [s] | [Γu] , [Au] , [u] | [Γe] , [Id] , [e] =
@@ -248,7 +248,18 @@ mutual
         [Id]′ = S.irrelevance {A = Id (Univ r _) A B} [Γe] [Γ]₁ [Id] 
         [e]ₜ′  = S.irrelevanceTerm {A = Id (Univ r _) A B} {t = e} [Γe] [Γ]₁ [Id] [Id]′ [e]ₜ
      in [Γ]₁ , [B] , castᵗᵛ {A} {B} {r} {t} {e} [Γ]₁ [UA]′ [A]ₜ′ [B]ₜ′ [At] [B] [t]ₜ [Id]′ [e]ₜ′
-  fundamentalTerm (castreflⱼ x x₁) = {!!}
+
+  fundamentalTerm {Γ} (castreflⱼ {A} {t} ⊢A ⊢t)
+    with fundamentalTerm ⊢A | fundamentalTerm ⊢t
+  ... | [ΓA] , [UA] , [A]ₜ | [Γ] , [A] , [t]ₜ =
+    let [UA]′ = S.irrelevance {A = Univ _ _} [ΓA] [Γ] [UA] 
+        [A]ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = A} [ΓA] [Γ] [UA] [UA]′ [A]ₜ
+        [Id] = Idᵛ {A = A} {t = t} {u = cast ⁰ A A (Idrefl (U ⁰) A) t} [Γ] [A] [t]ₜ
+                   (castᵗᵛ {A = A} {B = A} {t = t} {e = Idrefl (U ⁰) A} [Γ] [UA]′ [A]ₜ′ [A]ₜ′ [A] [A] [t]ₜ
+                           (Idᵛ {A = U _} {t = A} {u = A} [Γ] [UA]′ [A]ₜ′ [A]ₜ′)
+                           (Idreflᵛ {A = U _} {t = A} [Γ] [UA]′ [A]ₜ′))
+    in  [Γ] , [Id] , castreflᵛ {Γ} {A} {t} [Γ] [UA]′ [A]ₜ′ [A] [t]ₜ
+
   fundamentalTerm (Emptyrecⱼ {A} {lEmpty} {[ rA , lA ]} {n} ⊢A ⊢n)
     with fundamental ⊢A | fundamentalTerm ⊢n
   ... | [Γ] , [A] | [Γ]′ , [Empty] , [n] =
@@ -264,8 +275,6 @@ mutual
       ,   convᵛ {t} {A} {B} [Γ]′ [A′]₁ [A] [A′≡A] [t]′
   fundamentalTerm (univ 0<1 ⊢Γ) = let [Γ] = valid ⊢Γ
                                   in [Γ] , (Uᵛ ∞< [Γ] , Uᵗᵛ [Γ])
-
--}
 
   -- Fundamental theorem for term equality.
   fundamentalTermEq : ∀{Γ A t t′ rA} → Γ ⊢ t ≡ t′ ∷ A ^ rA
