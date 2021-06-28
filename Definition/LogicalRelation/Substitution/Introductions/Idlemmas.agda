@@ -79,6 +79,19 @@ import Data.Nat as Nat
   irrelevanceEq″ (Id-subst-lemma ρ B a) (Id-subst-lemma ρ B b) PE.refl PE.refl
     (Lwk.wk [ρ] ⊢Δ [B]) ([nondep] [B] [A] [ρ] ⊢Δ [a]) (reflEq (Lwk.wk [ρ] ⊢Δ [B]))
 
+[nondepext'] : ∀ {Γ A A' B B' l}
+  → ([B] : Γ ⊩⟨ l ⟩ B ^ [ % , l ])
+  → ([B'] : Γ ⊩⟨ l ⟩ B' ^ [ % , l ])
+  → ([B≡B'] : Γ ⊩⟨ l ⟩ B ≡ B' ^ [ % , l ] / [B])
+  → ([A] : ∀ {ρ} {Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ wk ρ A ^ [ % , l ])
+  → ([A'] : ∀ {ρ} {Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ wk ρ A' ^ [ % , l ])
+  → ∀ {ρ} {Δ} {a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
+  → ([a] : Δ ⊩⟨ l ⟩ a ∷ wk ρ A ^ [ % , l ] / [A] [ρ] ⊢Δ)
+  → Δ ⊩⟨ l ⟩ wk (lift ρ) (wk1 B) [ a ] ≡ wk (lift ρ) (wk1 B') [ a ] ^ [ % , l ] / [nondep] [B] [A] [ρ] ⊢Δ [a]
+[nondepext'] {Γ} {A} {A'} {B} {B'} {l} [B] [B'] [B≡B'] [A] [A'] {ρ} {Δ} {a} [ρ] ⊢Δ [a] =
+  irrelevanceEq″ (Id-subst-lemma ρ B a) (Id-subst-lemma ρ B' a) PE.refl PE.refl
+    (Lwk.wk [ρ] ⊢Δ [B]) ([nondep] [B] [A] [ρ] ⊢Δ [a]) (Lwk.wkEq [ρ] ⊢Δ [B] [B≡B'])
+
 module IdTypeU-lemmas
        {Γ rF A B F G F₁ G₁}
        (⊢Γ : ⊢ Γ)

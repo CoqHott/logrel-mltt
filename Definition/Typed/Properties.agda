@@ -915,3 +915,17 @@ Idsymⱼ {Γ} {A} {l} {x} {y} {e} ⊢A ⊢x ⊢y ⊢e =
   in PE.subst₂ (λ X Y → Γ ⊢ Idsym A x y e ∷ Id X y Y ^ [ % , ι l ])
     (wk1-singleSubst A y) (wk1-singleSubst x y)
     (transpⱼ ⊢A ⊢P ⊢x ⊢refl ⊢y ⊢e)
+
+▹▹ⱼ_▹_▹_▹_ : ∀ {Γ F rF lF G lG r l}
+             → lF ≤ l
+             → lG ≤ l
+             → Γ ⊢ F ∷ (Univ rF lF) ^ [ ! , next lF ]
+             → Γ ⊢ G ∷ (Univ r lG) ^ [ ! , next lG ]
+             → Γ ⊢ F ^ rF ° lF ▹▹ G ° lG ∷ (Univ r l) ^ [ ! , next l ]
+▹▹ⱼ lF≤ ▹ lG≤ ▹ F ▹ G = Πⱼ lF≤ ▹ lG≤ ▹ F ▹ un-univ (Twk.wk (Twk.step Twk.id) ((wf (univ F)) ∙ (univ F)) (univ G))
+
+××ⱼ_▹_ : ∀ {Γ F G l}
+        → Γ ⊢ F ∷ SProp l ^ [ ! , next l ]
+        → Γ ⊢ G ∷ SProp l ^ [ ! , next l ]
+        → Γ ⊢ F ×× G ∷ SProp l ^ [ ! , next l ]
+××ⱼ F ▹ G = ∃ⱼ F ▹ un-univ (Twk.wk (Twk.step Twk.id) ((wf (univ F)) ∙ (univ F)) (univ G))
