@@ -206,9 +206,7 @@ record EqRelSet : Set₁ where
     ~-IdUΠ : ∀ {A rA B A' B' u u' Γ} →
           let l = ⁰ in
           let l' = ¹ in
-             Γ ⊢ A ∷ Univ rA l ^ [ ! , next l ]
-           → Γ ⊢ A ≅ A' ∷ Univ rA l ^ [ ! , next l ]
-           → Γ ∙ A ^ [ rA , ι l ] ⊢ B ≅ B' ∷ U l ^ [ ! , next l ]
+           Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
            → Γ ⊢ u ~ u' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ Id (U l)  (Π A ^ rA ° l ▹ B ° l ) u ~ Id (U l) (Π A' ^ rA ° l ▹ B' ° l ) u' ∷ SProp l' ^ [ ! , next l' ]
 
