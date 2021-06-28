@@ -62,3 +62,6 @@ Unitᵛ {Γ} {l} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (maybeEmbᵛ 
 
 UnitType : ∀ {Γ l} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι l ⟩ Unit ^ [ % , ι l ]
 UnitType {Γ} ⊢Γ = proj₁ (Unitᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)
+
+EmptyType : ∀ {Γ l} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι l ⟩ Empty ^ [ % , ι l ]
+EmptyType {Γ} ⊢Γ = proj₁ (Emptyᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)
