@@ -253,6 +253,12 @@ mutual
     let ρA = wkTerm ρ ⊢Δ A in
     let ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B in
     Id-U-Πℕ ρA ρB
+  wkEqTerm ρ ⊢Δ (Id-U-ΠΠ!% eq A B A' B') =
+    let ρA = wkTerm ρ ⊢Δ A 
+        ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B
+        ρA' = wkTerm ρ ⊢Δ A'
+        ρB' = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA')) B'
+    in Id-U-ΠΠ!% eq ρA ρB ρA' ρB'
   wkEqTerm ρ ⊢Δ (cast-cong A B t e e') = cast-cong (wkEqTerm ρ ⊢Δ A) (wkEqTerm ρ ⊢Δ B) (wkEqTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ e')
   wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) = let l = ⁰ in let lA = ⁰ in let lB = ⁰ in
     let ρA = wkTerm [ρ] ⊢Δ Aⱼ in
@@ -391,6 +397,12 @@ mutual
     let ρA = wkTerm ρ ⊢Δ A in
     let ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B in
     Id-U-Πℕ ρA ρB
+  wkRedTerm ρ ⊢Δ (Id-U-ΠΠ!% eq A B A' B') =
+    let ρA = wkTerm ρ ⊢Δ A 
+        ρB = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) B
+        ρA' = wkTerm ρ ⊢Δ A'
+        ρB' = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA')) B'
+    in Id-U-ΠΠ!% eq ρA ρB ρA' ρB'
   wkRedTerm ρ ⊢Δ  (cast-subst A B e t) = cast-subst (wkRedTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ  B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkRedTerm ρ ⊢Δ  (cast-ℕ-subst B e t) = cast-ℕ-subst (wkRedTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkRedTerm ρ ⊢Δ  (cast-Π-subst A P B e t) = let ρA = wkTerm ρ ⊢Δ A in cast-Π-subst ρA (wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) P) (wkRedTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)

@@ -74,6 +74,7 @@ mutual
   wfEqTerm (Id-ℕ-S0 n) = wfTerm n
   wfEqTerm (Id-U-ℕΠ A B) = wfTerm A
   wfEqTerm (Id-U-Πℕ A B) = wfTerm A
+  wfEqTerm (Id-U-ΠΠ!% eq A B A' B') = wfTerm A
   wfEqTerm (cast-cong A B t _ _) = wfEqTerm t
   wfEqTerm (cast-Π A B A' B' e f) = wfTerm f
   wfEqTerm (cast-ℕ-0 e) = wfTerm e
@@ -115,6 +116,7 @@ subsetTerm (Id-ℕ-0S n) = Id-ℕ-0S n
 subsetTerm (Id-ℕ-S0 n) = Id-ℕ-S0 n
 subsetTerm (Id-U-ℕΠ A B) = Id-U-ℕΠ A B
 subsetTerm (Id-U-Πℕ A B) = Id-U-Πℕ A B
+subsetTerm (Id-U-ΠΠ!% eq A B A' B') = Id-U-ΠΠ!% eq A B A' B'
 subsetTerm (cast-subst A B e t) = let ⊢Γ = wfEqTerm (subsetTerm A)
                                   in cast-cong (subsetTerm A) (refl B) (refl t) e (conv e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (subsetTerm A) (refl B))))
 subsetTerm (cast-ℕ-subst B e t) = let ⊢Γ = wfEqTerm (subsetTerm B)
@@ -188,6 +190,7 @@ redFirstTerm (Id-ℕ-0S n) = Idⱼ (ℕⱼ (wfTerm n)) (zeroⱼ (wfTerm n)) (suc
 redFirstTerm (Id-ℕ-S0 n) = Idⱼ (ℕⱼ (wfTerm n)) (sucⱼ n) (zeroⱼ (wfTerm n))
 redFirstTerm (Id-U-ℕΠ A B) = Idⱼ (univ 0<1 (wfTerm A)) (ℕⱼ (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B)
 redFirstTerm (Id-U-Πℕ A B) = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B) (ℕⱼ (wfTerm A))
+redFirstTerm (Id-U-ΠΠ!% eq A B A' B') = Idⱼ (univ 0<1 (wfTerm A)) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ B) (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A' ▹ B')
 redFirstTerm (cast-subst A B e t) = castⱼ (redFirstTerm A) B e t
 redFirstTerm (cast-ℕ-subst B e t) = castⱼ (ℕⱼ (wfTerm t)) (redFirstTerm B) e t
 redFirstTerm (cast-Π-subst A P B e t) = castⱼ (Πⱼ (≡is≤ PE.refl) ▹ (≡is≤ PE.refl) ▹ A ▹ P) (redFirstTerm B) e t
@@ -260,6 +263,7 @@ neRedTerm (Id-ℕ-0S x) (Idₙ ())
 neRedTerm (Id-ℕ-S0 x) (Idₙ ())
 neRedTerm (Id-U-ℕΠ A B) (Idₙ ())
 neRedTerm (Id-U-Πℕ A B) (Idₙ ())
+neRedTerm (Id-U-ΠΠ!% eq A B A' B') (Idₙ ())
 neRedTerm (cast-subst tr B e x) (castₙ tn) = neRedTerm tr tn
 neRedTerm (cast-ℕ-subst tr e x) (castℕₙ tn) = neRedTerm tr tn
 neRedTerm (cast-Π-subst A B tr e x) (castΠₙ tn) = neRedTerm tr tn
@@ -330,6 +334,7 @@ whnfRedTerm (Id-ℕ-0S x) (ne (Idₙ ()))
 whnfRedTerm (Id-ℕ-S0 x) (ne (Idₙ ()))
 whnfRedTerm (Id-U-ℕΠ A B) (ne (Idₙ ()))
 whnfRedTerm (Id-U-Πℕ A B) (ne (Idₙ ()))
+whnfRedTerm (Id-U-ΠΠ!% eq A B A' B') (ne (Idₙ ()))
 whnfRedTerm (cast-subst d x x₁ x₂) (ne (castₙ x₃)) = neRedTerm d x₃
 whnfRedTerm (cast-subst d x x₁ x₂) (ne (castℕₙ x₃)) = whnfRedTerm d ℕₙ
 whnfRedTerm (cast-subst d x x₁ x₂) (ne (castΠₙ x₃)) = whnfRedTerm d Πₙ
@@ -391,15 +396,16 @@ whrDetTerm-aux1 PE.refl (cast-Π-subst x x₁ d' x₂ x₃) = ⊥-elim (whnfRedT
 whrDetTerm-aux1 PE.refl (cast-Π x x₁ x₂ x₃ x₄ x₅) = PE.refl
 
 whrDetTerm-aux2 : ∀{Γ t u F lF A rA B A' rA' B'}
+  → (rA≡rA' : rA PE.≡ rA')
   → (d : t PE.≡ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) (Π A' ^ rA' ° ⁰ ▹ B' ° ⁰))
   → (d' : Γ ⊢ t ⇒ u ∷ F ^ lF)
   → (∃ (Id (Univ rA ⁰) A A') ▹ (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰) ((wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑) (wk (lift (step id)) B') ° ¹ ) ) PE.≡ u
-whrDetTerm-aux2 d (conv d' x) = whrDetTerm-aux2 d d'
-whrDetTerm-aux2 PE.refl (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
-whrDetTerm-aux2 PE.refl (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' Πₙ)
-whrDetTerm-aux2 PE.refl (Id-U-Π-subst x x₁ d') = ⊥-elim (whnfRedTerm d' Πₙ)
-whrDetTerm-aux2 PE.refl (Id-U-ΠΠ x x₁ x₂ x₃) = PE.refl
-
+whrDetTerm-aux2 eq d (conv d' x) = whrDetTerm-aux2 eq d d'
+whrDetTerm-aux2 _ PE.refl (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
+whrDetTerm-aux2 _ PE.refl (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm-aux2 _ PE.refl (Id-U-Π-subst x x₁ d') = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm-aux2 _ PE.refl (Id-U-ΠΠ x x₁ x₂ x₃) = PE.refl
+whrDetTerm-aux2 PE.refl PE.refl (Id-U-ΠΠ!% eq A B A' B') = ⊥-elim (eq PE.refl)
 whrDetTerm : ∀{Γ t u A l u′ A′ l′} (d : Γ ⊢ t ⇒ u ∷ A ^ l) (d′ : Γ ⊢ t ⇒ u′ ∷ A′ ^ l′) → u PE.≡ u′
 whrDet : ∀{Γ A B B′ r r'} (d : Γ ⊢ A ⇒ B ^ r) (d′ : Γ ⊢ A ⇒ B′ ^ r') → B PE.≡ B′
 
@@ -432,6 +438,7 @@ whrDetTerm (Id-subst d x x₁) (Id-ℕ-0S x₂) = ⊥-elim (whnfRedTerm d ℕₙ
 whrDetTerm (Id-subst d x x₁) (Id-ℕ-S0 x₂) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (Id-subst d x x₁) (Id-U-ℕΠ x₂ x₃) = ⊥-elim (whnfRedTerm d Uₙ)
 whrDetTerm (Id-subst d x x₁) (Id-U-Πℕ x₂ x₃) = ⊥-elim (whnfRedTerm d Uₙ)
+whrDetTerm (Id-subst d x x₁) (Id-U-ΠΠ!% x₂ x₃ x₄ x₅ x₆) = ⊥-elim (whnfRedTerm d Uₙ)
 whrDetTerm (Id-ℕ-subst d x) (Id-subst d' x₁ x₂) = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (Id-ℕ-subst d x) (Id-ℕ-subst d' x₁) rewrite whrDetTerm d d' = PE.refl
 whrDetTerm (Id-ℕ-subst d x) (Id-ℕ-0-subst d') = ⊥-elim (whnfRedTerm d zeroₙ)
@@ -458,6 +465,7 @@ whrDetTerm (Id-U-subst d x) (Id-U-ΠΠ x₁ x₂ x₃ x₄) = ⊥-elim (whnfRedT
 whrDetTerm (Id-U-subst d x) (Id-U-ℕℕ x₁) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (Id-U-subst d x) (Id-U-ℕΠ x₁ x₂) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (Id-U-subst d x) (Id-U-Πℕ x₁ x₂) = ⊥-elim (whnfRedTerm d Πₙ)
+whrDetTerm (Id-U-subst d x) (Id-U-ΠΠ!% x₁ x₂ x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d Πₙ)
 whrDetTerm (Id-U-ℕ-subst d) (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
 whrDetTerm (Id-U-ℕ-subst d) (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (Id-U-ℕ-subst d) (Id-U-ℕ-subst d') rewrite whrDetTerm d d' = PE.refl
@@ -468,6 +476,7 @@ whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-subst d' x₂) = ⊥-elim (whnfRedTerm
 whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-Π-subst x₂ x₃ d') rewrite whrDetTerm d d' = PE.refl
 whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-ΠΠ x₂ x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d Πₙ)
 whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-Πℕ x₂ x₃) = ⊥-elim (whnfRedTerm d ℕₙ)
+whrDetTerm (Id-U-Π-subst x x₁ d) (Id-U-ΠΠ!% x₂ x₃ x₄ x₅ x₆) = ⊥-elim (whnfRedTerm d Πₙ)
 whrDetTerm (Id-Π _ _ x x₁ x₂ x₃) (Id-subst d' x₄ x₅) = ⊥-elim (whnfRedTerm d' Πₙ)
 whrDetTerm (Id-Π _ _ x x₁ x₂ x₃) (Id-Π _ _ x₄ x₅ x₆ x₇) = PE.refl
 whrDetTerm (Id-ℕ-00 x) (Id-subst d' x₁ x₂) = ⊥-elim (whnfRedTerm d' ℕₙ)
@@ -478,7 +487,7 @@ whrDetTerm (Id-ℕ-SS x x₁) (Id-subst d' x₂ x₃) = ⊥-elim (whnfRedTerm d'
 whrDetTerm (Id-ℕ-SS x x₁) (Id-ℕ-subst d' x₂) = ⊥-elim (whnfRedTerm d' sucₙ)
 whrDetTerm (Id-ℕ-SS x x₁) (Id-ℕ-S-subst x₂ d') = ⊥-elim (whnfRedTerm d' sucₙ)
 whrDetTerm (Id-ℕ-SS x x₁) (Id-ℕ-SS x₂ x₃) = PE.refl
-whrDetTerm (Id-U-ΠΠ x x₁ x₂ x₃) d' = whrDetTerm-aux2 PE.refl d'
+whrDetTerm (Id-U-ΠΠ x x₁ x₂ x₃) d' = whrDetTerm-aux2 PE.refl PE.refl d'
 whrDetTerm (Id-U-ℕℕ x) (Id-subst d' x₁ x₂) = ⊥-elim (whnfRedTerm d' Uₙ)
 whrDetTerm (Id-U-ℕℕ x) (Id-U-subst d' x₁) = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (Id-U-ℕℕ x) (Id-U-ℕ-subst d') = ⊥-elim (whnfRedTerm d' ℕₙ)
@@ -501,6 +510,11 @@ whrDetTerm (Id-U-Πℕ x x₁) (Id-subst d' x₂ x₃) = ⊥-elim (whnfRedTerm d
 whrDetTerm (Id-U-Πℕ x x₁) (Id-U-subst d' x₂) = ⊥-elim (whnfRedTerm d' Πₙ)
 whrDetTerm (Id-U-Πℕ x x₁) (Id-U-Π-subst x₂ x₃ d') = ⊥-elim (whnfRedTerm d' ℕₙ)
 whrDetTerm (Id-U-Πℕ x x₁) (Id-U-Πℕ x₂ x₃) = PE.refl
+whrDetTerm (Id-U-ΠΠ!% eq A B A' B') (Id-subst d' x x₁) = ⊥-elim (whnfRedTerm d' Uₙ)
+whrDetTerm (Id-U-ΠΠ!% eq A B A' B') (Id-U-subst d' x) = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm (Id-U-ΠΠ!% eq A B A' B') (Id-U-Π-subst x x₁ d') = ⊥-elim (whnfRedTerm d' Πₙ)
+whrDetTerm (Id-U-ΠΠ!% eq A B A' B') (Id-U-ΠΠ x x₁ x₂ x₃) = ⊥-elim (eq PE.refl)
+whrDetTerm (Id-U-ΠΠ!% eq A B A' B') (Id-U-ΠΠ!% x x₁ x₂ x₃ x₄) = PE.refl
 whrDetTerm (cast-subst d x x₁ x₂) (cast-subst d' x₃ x₄ x₅) rewrite whrDetTerm d d' = PE.refl
 whrDetTerm (cast-subst d x x₁ x₂) (cast-ℕ-subst d' x₃ x₄) = ⊥-elim (whnfRedTerm d ℕₙ)
 whrDetTerm (cast-subst d x x₁ x₂) (cast-Π-subst x₃ x₄ d' x₅ x₆) = ⊥-elim (whnfRedTerm d Πₙ)
