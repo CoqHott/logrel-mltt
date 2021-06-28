@@ -53,7 +53,7 @@ Unitᵗᵛ {Γ} {l} [Γ] = let [SProp] = maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ {r
 
 
 Unit≡Unit : ∀ {Γ l} (⊢Γ : ⊢ Γ)
-          → Γ ⊢ Unit {l} ≅ Unit {l} ∷ SProp ⁰ ^ [ ! , ι ¹ ]
+          → Γ ⊢ Unit {l} ≅ Unit {l} ∷ SProp l ^ [ ! , next l ]
 Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
 
 Unitᵛ : ∀ {Γ l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι l ⟩ Unit ^ [ % , ι l ] / [Γ]
