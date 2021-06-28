@@ -842,6 +842,12 @@ IdURed*Term′ : ∀ {Γ t t′ u}
 IdURed*Term′ ⊢t ⊢t′ (id x) ⊢u = id (Idⱼ (univ 0<1 (wfTerm ⊢t)) ⊢t ⊢u)
 IdURed*Term′ ⊢t ⊢t′ (x ⇨ d) ⊢u = _⇨_ (Id-U-subst x ⊢u) (IdURed*Term′ (redFirst*Term d) ⊢t′ d ⊢u)
 
+IdURed*Term : ∀ {Γ t t′ u}
+               (d : Γ ⊢ t :⇒*: t′ ∷ U ⁰ ^ ι ¹)
+               (⊢u : Γ ⊢ u ∷ U ⁰ ^ [ ! , ι ¹ ])
+             → Γ ⊢ Id (U ⁰) t u :⇒*: Id (U ⁰) t′ u ∷ SProp ¹ ^ ∞
+IdURed*Term [[ ⊢t , ⊢t′ , d ]] ⊢u = [[ Idⱼ (univ 0<1 (wfTerm ⊢u)) ⊢t ⊢u , Idⱼ (univ 0<1 (wfTerm ⊢u)) ⊢t′ ⊢u  , IdURed*Term′ ⊢t ⊢t′ d ⊢u  ]]
+
 IdUΠRed*Term′ : ∀ {Γ F rF G t t′}
                (⊢F : Γ ⊢ F ∷ Univ rF ⁰ ^ [ ! , ι ¹ ])
                (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ∷ U ⁰ ^ [ ! , ι ¹ ])
@@ -851,6 +857,16 @@ IdUΠRed*Term′ : ∀ {Γ F rF G t t′}
              → Γ ⊢ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t ⇒* Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t′ ∷ SProp ¹ ^ ∞
 IdUΠRed*Term′ ⊢F ⊢G ⊢t ⊢t′ (id x) = id (Idⱼ (univ 0<1 (wfTerm ⊢t)) (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G) ⊢t)
 IdUΠRed*Term′ ⊢F ⊢G ⊢t ⊢t′ (x ⇨ d) = _⇨_ (Id-U-Π-subst ⊢F ⊢G x) (IdUΠRed*Term′ ⊢F ⊢G (redFirst*Term d) ⊢t′ d)
+
+IdUΠRed*Term : ∀ {Γ F rF G t t′}
+               (⊢F : Γ ⊢ F ∷ Univ rF ⁰ ^ [ ! , ι ¹ ])
+               (⊢G : Γ ∙ F ^ [ rF , ι ⁰ ] ⊢ G ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (d : Γ ⊢ t :⇒*: t′ ∷ U ⁰ ^ ι ¹)
+             → Γ ⊢ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t :⇒*: Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) t′ ∷ SProp ¹ ^ ∞
+IdUΠRed*Term ⊢F ⊢G [[ ⊢t , ⊢t′ , d ]] = [[ Idⱼ (univ 0<1 (wfTerm ⊢t)) (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G) ⊢t ,
+                                           Idⱼ (univ 0<1 (wfTerm ⊢t)) (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢F ▹ ⊢G) ⊢t′ ,
+                                           IdUΠRed*Term′ ⊢F ⊢G ⊢t ⊢t′ d ]]
+
 
 IdℕRed*Term′ : ∀ {Γ t t′ u}
                (⊢t : Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ])
@@ -877,6 +893,22 @@ IdℕSRed*Term′ : ∀ {Γ t u u′}
               → Γ ⊢ Id ℕ (suc t) u ⇒* Id ℕ (suc t) u′ ∷ SProp ⁰ ^ next ⁰
 IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (id x) = id (Idⱼ (ℕⱼ (wfTerm ⊢t)) (sucⱼ ⊢t) ⊢u)
 IdℕSRed*Term′ ⊢t ⊢u ⊢u′ (x ⇨ d) = Id-ℕ-S-subst ⊢t x ⇨ IdℕSRed*Term′ ⊢t (redFirst*Term d) ⊢u′ d
+
+
+IdUℕRed*Term′ : ∀ {Γ t t′}
+               (⊢t : Γ ⊢ t ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (⊢t′ : Γ ⊢ t′ ∷ U ⁰ ^ [ ! , ι ¹ ])
+               (d : Γ ⊢ t ⇒* t′ ∷ U ⁰ ^ ι ¹)
+             → Γ ⊢ Id (U ⁰) ℕ t ⇒* Id (U ⁰) ℕ t′ ∷ SProp ¹ ^ ∞
+IdUℕRed*Term′ ⊢t ⊢t′ (id x) = id (Idⱼ (univ 0<1 (wfTerm ⊢t)) (ℕⱼ (wfTerm ⊢t) ) ⊢t)
+IdUℕRed*Term′ ⊢t ⊢t′ (x ⇨ d) =  _⇨_ (Id-U-ℕ-subst x) (IdUℕRed*Term′ (redFirst*Term d) ⊢t′ d)
+
+IdUℕRed*Term : ∀ {Γ t t′}
+               (d : Γ ⊢ t :⇒*: t′ ∷ U ⁰ ^ ι ¹)
+             → Γ ⊢ Id (U ⁰) ℕ t :⇒*: Id (U ⁰) ℕ t′ ∷ SProp ¹ ^ ∞
+IdUℕRed*Term [[ ⊢t , ⊢t′ , d ]] = [[ Idⱼ (univ 0<1 (wfTerm ⊢t)) (ℕⱼ (wfTerm ⊢t) ) ⊢t ,
+                                     Idⱼ (univ 0<1 (wfTerm ⊢t)) (ℕⱼ (wfTerm ⊢t) ) ⊢t′ ,
+                                     IdUℕRed*Term′ ⊢t ⊢t′ d ]]
 
 appRed* : ∀ {Γ a t u A B rA lA lB l}
           (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
