@@ -130,8 +130,8 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
       [liftσ'] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A'} {σ = σ} {Δ = Δ} [Γ] ⊢Δ [A'] [σ]
       [ΠAB] = Πᵗᵛ {A} {B} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A] (λ {Δ} {σ} → [UB] {Δ} {σ}) [A]ₜ [B]ₜ
       [ΠA'B'] = Πᵗᵛ {A'} {B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A']ₜ [B']ₜ
-      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
-      [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
+      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ [Γ])
+      [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ 
       Id-U-ΠΠ-res A A' B B' = ∃ (Id (Univ rA ⁰) A A') ▹
                       (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
                         ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
@@ -170,7 +170,7 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
                                                  (Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A')} {u = wk1 (wk1 A)} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA'] [wwA])
                                                  (IdSymᵗᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A)} {u = wk1 (wk1 A')} {e = var 1} [ΓIdA'] ((λ {Δ} {σ} → [wwU¹] {Δ} {σ} !))
                                                           (λ {Δ} {σ} → [wwUA']ᵗ {Δ} {σ}) (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA)
-                                                          [wwA] [wwA'] [wwIdAA'] [wwIdA'A] [var1]ₜ))) [wB'])
+                                                          [wwA] [wwA'] [wwIdAA'] [wwIdA'A] [var1]ₜ))) [wB'] (Uᵗᵛ [ΓIdA']))
 
 abstract
   Id-U-ΠΠᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →
@@ -218,7 +218,7 @@ abstract
         [liftσ'] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A'} {σ = σ} {Δ = Δ} [Γ] ⊢Δ [A'] [σ]
         [ΠAB] = Πᵗᵛ {A} {B} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A] (λ {Δ} {σ} → [UB] {Δ} {σ}) [A]ₜ [B]ₜ
         [ΠA'B'] = Πᵗᵛ {A'} {B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A']ₜ [B']ₜ
-        [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
+        [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ [Γ])
         [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
         Id-U-ΠΠ-res A A' B B' = ∃ (Id (Univ rA ⁰) A A') ▹
                          (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)

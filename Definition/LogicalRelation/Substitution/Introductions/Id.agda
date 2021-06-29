@@ -13,6 +13,7 @@ import Definition.Typed.Weakening as Twk
 open import Definition.Typed.EqualityRelation
 open import Definition.Typed.RedSteps
 open import Definition.LogicalRelation
+open import Definition.LogicalRelation.Properties.Escape
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Properties
@@ -325,6 +326,19 @@ import Data.Nat as Nat
   [IdExtShape] {A} {A′} {t} {t′} {u} {u′} {Γ} ⊢Γ [A] [A′] (goodCases [A] [A′] [A≡A′]) [A≡A′] [t] [t′] [t≡t′] [u] [u′] [u≡u′]
 
 
+
+Idᵛ-min : ∀ {A t u Γ l}
+       ([Γ] : ⊩ᵛ Γ)
+       ([A] : Γ ⊩ᵛ⟨ ι l ⟩ A ^ [ ! , ι l ] / [Γ])
+       ([t] : Γ ⊩ᵛ⟨ ι l ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([u] : Γ ⊩ᵛ⟨ ι l ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+     → Γ ⊩ᵛ⟨ ι l ⟩ Id A t u ^ [ % , ι l ] / [Γ]
+Idᵛ-min [Γ] [A] [t] [u] ⊢Δ [σ] =
+  ([Id] ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ]))) ,
+  (λ [σ′] [σ≡σ′] → [IdExt] ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ′])) (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′])
+                             (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ′])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
+                             (proj₁ ([u] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ′])) (proj₂ ([u] ⊢Δ [σ]) [σ′] [σ≡σ′]))
+
 Idᵛ : ∀ {A t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
        ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
@@ -336,11 +350,30 @@ Idᵛ [Γ] [A] [t] [u] ⊢Δ [σ] =
   (λ [σ′] [σ≡σ′] → [IdExt] ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ′])) (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′])
                              (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ′])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
                              (proj₁ ([u] ⊢Δ [σ])) (proj₁ ([u] ⊢Δ [σ′])) (proj₂ ([u] ⊢Δ [σ]) [σ′] [σ≡σ′]))
-                             
-Idᵗᵛ : ∀ {A t u Γ l}
+
+Idᵗᵛ-min : ∀ {A t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
-       ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
-       ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
-       ([u] : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
-     → Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ∷ SProp l ^ [ ! , next l ] / [Γ] / maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ (proj₂ (levelBounded l)) [Γ])
-Idᵗᵛ [Γ] [A] [t] [u] ⊢Δ [σ] = {!!}
+       ([A] : Γ ⊩ᵛ⟨ ι l ⟩ A ^ [ ! , ι l ] / [Γ])
+       ([t] : Γ ⊩ᵛ⟨ ι l ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([u] : Γ ⊩ᵛ⟨ ι l ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+     → Γ ⊩ᵛ⟨ next l ⟩ Id A t u ∷ SProp l ^ [ ! , next l ] / [Γ] / Uᵛgen (≡is≤ PE.refl) <next [Γ]
+Idᵗᵛ-min {A} {t} {u} {_} {l} [Γ] [A] [t] [u] =
+  let [U] = Uᵛgen (≡is≤ PE.refl) <next [Γ]
+  in un-univᵛ {A = Id A t u} [Γ] [U] (Idᵛ-min {A} {t} {u} [Γ] [A] [t] [u])
+
+Idᵗᵛ : ∀ {A t u Γ l}
+       ([Γ] : ⊩ᵛ Γ) →
+       let [UA] = maybeEmbᵛ {A = U _} [Γ] (Uᵛ <next [Γ])
+           [U] = maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ <next [Γ])
+       in ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
+          ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+          ([u] : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+          ([A]t : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ Univ ! l ^ [ ! , next l ] / [Γ] / [UA])
+          → Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ∷ SProp l ^ [ ! , next l ] / [Γ] / [U]
+Idᵗᵛ {A} {t} {u} {_} {l} [Γ] [A] [t] [u] [A]t =
+  let [UA] = maybeEmbᵛ {A = U _} [Γ] (Uᵛ <next [Γ])
+      [A]' = univᵛ {A = A} [Γ] (≡is≤ PE.refl) [UA] [A]t
+      [t]' = S.irrelevanceTerm {A = A} {t = t} [Γ] [Γ] [A] [A]' [t]
+      [u]' = S.irrelevanceTerm {A = A} {t = u} [Γ] [Γ] [A] [A]' [u]
+      [Id] = Idᵗᵛ-min {A} {t} {u} [Γ] [A]' [t]' [u]'
+  in maybeEmbTermᵛ {l = next l} {A = SProp _} {t = Id A t u} [Γ] (Uᵛgen (≡is≤ PE.refl) <next [Γ]) [Id]

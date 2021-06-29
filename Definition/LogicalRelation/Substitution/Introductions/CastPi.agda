@@ -242,8 +242,8 @@ cast-Πᵗᵛ-aux {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
       [ΓA'] = _∙_ {A = A'} [Γ]  [A']
       [wUA] = maybeEmbᵛ {A = Univ rA _} [ΓA'] (λ {Δ} {σ} → Uᵛ emb< [ΓA'] {Δ} {σ})
       [wUA]ᵗ = Uᵗᵛ [ΓA']
-      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
-      [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
+      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ [Γ])
+      [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ 
       [ΓId] = _∙_ {A = Id (Univ rA ⁰) A A'} [Γ] [IdAA']
       [wA'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A'} {lG = ⁰} [Γ] [IdAA'] [A']ₜ
       [wA']' = wk1ᵛ {A = A'} {F = Id (Univ rA ⁰) A A'} [Γ] [IdAA'] [A']
@@ -282,8 +282,8 @@ cast-Πᵗᵛ-aux {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
       [w'A']⁰ = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']'
       [wIdA'A] = Idᵛ {A = Univ rA ⁰} {t = wk1 A'} {u = wk1 A} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A'] [w'A]
       [wIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A']
-      [wIdAA']ᵗ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A']
-      [wIdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A']
+      [wIdAA']ᵗ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] (Uᵗᵛ [ΓA'])
+      [wIdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] (Uᵗᵛ [ΓA'])
       [ww'A']' = wk1ᵛ {A = wk1 A'} {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA'] [w'A']'
       [ww'A'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1 A'} {lG = ⁰} [ΓA'] [wIdAA'] [w'A']
       [ww'A]' = wk1ᵛ {A = wk1 A} {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA'] [w'A]'

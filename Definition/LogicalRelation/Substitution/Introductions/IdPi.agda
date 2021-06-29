@@ -84,7 +84,9 @@ abstract
                                   (⊢AₜΔ {Δ} {σ} ⊢Δ [σ]) (⊢BΔ (⊢Δ ∙ ⊢AΔ {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])) (⊢tΔ {Δ} {σ} ⊢Δ [σ]) (⊢uΔ {Δ} {σ} ⊢Δ [σ]))
         [Id-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ Id-Π-res A B ∷ SProp l ^ [ ! , next l ] / [Γ] / [SProp]
         [Id-Π-res] = Πᵗᵛ {F = A} {G = Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0))} lA≤ lB≤ [Γ] [A] (λ {Δ} {σ} → [SPropB] {Δ} {σ}) [A]ₜ
-                         (Idᵗᵛ {A = B} {t = (wk1 t) ∘ (var 0)} {u = (wk1 u) ∘ (var 0)} [ΓA] [B] (appᵛ [ΓA] [wA] [wΠ] [wt] (proj₂ (fundamentalVar here [ΓA])) ) (appᵛ [ΓA] [wA] [wΠ] [wu] (proj₂ (fundamentalVar here [ΓA]))) ) 
+                         (Idᵗᵛ {A = B} {t = (wk1 t) ∘ (var 0)} {u = (wk1 u) ∘ (var 0)} [ΓA] [B]
+                           (appᵛ [ΓA] [wA] [wΠ] [wt] (proj₂ (fundamentalVar here [ΓA])) ) (appᵛ [ΓA] [wA] [wΠ] [wu] (proj₂ (fundamentalVar here [ΓA])))
+                            (S.irrelevanceTerm {A = Univ _ _} {t = B} ([Γ] ∙ [A]) ([Γ] ∙ [A]) [UB] (maybeEmbᵛ ([Γ] ∙ [A]) (Uᵛ <next ([Γ] ∙ [A]))) [B]ₜ)) 
         [id] , [eq] = redSubstTermᵛ {SProp l} {Id (Π A ^ rA ° lA ▹ B ° lB) t u} {Id-Π-res A B}
                                     [Γ] (λ {Δ} {σ} ⊢Δ [σ] → [Id-Π] {Δ} {σ} ⊢Δ [σ]) 
                                     [SProp] [Id-Π-res] 
