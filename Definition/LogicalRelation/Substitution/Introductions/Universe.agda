@@ -87,3 +87,11 @@ univᵗᵛ {Γ} {A} {t} {r} {¹} [Γ] [U] [A] [t] ⊢Δ [σ] =
   univEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) ,
   λ [σ′] [σ≡σ′] → univEqEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′]) 
 
+{-
+un-univᵛ : ∀ {A Γ rU lU lU' l} ([Γ] : ⊩ᵛ Γ)
+        (lU< : lU ≤ lU')
+        ([U] : Γ ⊩ᵛ⟨ l ⟩ Univ rU lU ^ [ ! , next lU ] / [Γ])
+      → Γ ⊩ᵛ⟨ ι lU' ⟩ A ^ [ rU , ι lU ] / [Γ]
+      → Γ ⊩ᵛ⟨ l ⟩ A ∷ Univ rU lU ^ [ ! , next lU ] / [Γ] / [U]
+un-univᵛ {lU = lU} {l = l} [Γ] lU< [U] [A] = {!!}
+-}
