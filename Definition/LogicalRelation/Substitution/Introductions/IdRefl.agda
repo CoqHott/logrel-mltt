@@ -1,5 +1,4 @@
-{-# OPTIONS --allow-unsolved-metas #-}
--- {-# OPTIONS --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 

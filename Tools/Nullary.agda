@@ -1,6 +1,6 @@
 -- Some proposition constructors.
 
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 module Tools.Nullary where
 

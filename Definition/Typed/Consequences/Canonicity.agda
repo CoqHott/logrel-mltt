@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+-- {-# OPTIONS - #-}
 
 module Definition.Typed.Consequences.Canonicity where
 

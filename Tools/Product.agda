@@ -1,7 +1,7 @@
 -- Σ type (also used as existential) and
 -- cartesian product (also used as conjunction).
 
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 import Tools.PropositionalEquality as PE
 

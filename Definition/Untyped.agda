@@ -1,6 +1,6 @@
 -- Raw terms, weakening (renaming) and substitution.
 
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Untyped where
 
