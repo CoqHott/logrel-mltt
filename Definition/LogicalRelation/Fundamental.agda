@@ -277,12 +277,12 @@ mutual
       ,   convᵛ {t} {A} {B} [Γ]′ [A′]₁ [A] [A′≡A] [t]′
   fundamentalTerm (univ 0<1 ⊢Γ) = let [Γ] = valid ⊢Γ
                                   in [Γ] , (Uᵛ ∞< [Γ] , Uᵗᵛ [Γ])
-                                  
+        
+                         
   -- Fundamental theorem for term equality.
   fundamentalTermEq : ∀{Γ A t t′ rA} → Γ ⊢ t ≡ t′ ∷ A ^ rA
                     → ∃ λ ([Γ] : ⊩ᵛ Γ)
                     → [ Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ t′ ∷ A ^ rA / [Γ] ]
-
 
   fundamentalTermEq (refl D) with fundamentalTerm D
   ... | [Γ] , [A] , [t] =
@@ -658,11 +658,29 @@ mutual
           (∃-congᵗᵛ {F} {G} {H} {E} [Γ] [F] [H]
                    (λ {Δ} {σ} → [U]₁′ {Δ} {σ}) (λ {Δ} {σ} → [U]₂′ {Δ} {σ})
                    [F]ₜ′ [G]ₜ′ [H]ₜ′ [E]ₜ′ [F≡H]ₜ′ [G≡E]ₜ′) 
-  fundamentalTermEq (Id-cong A≡A' t≡t' u≡u') 
+
+  fundamentalTermEq (Id-cong {A} {A'} {l} {t} {t'} {u} {u'} A≡A' t≡t' u≡u') 
     with fundamentalTermEq A≡A' | fundamentalTermEq t≡t' | fundamentalTermEq u≡u'
   ... | [ΓA] , modelsTermEq [UA] [A]ₜ [A']ₜ [A≡A']ₜ | [Γt] , modelsTermEq [A] [t]ₜ [t']ₜ [t≡t']ₜ  | [Γu] , modelsTermEq [A'] [u]ₜ [u']ₜ [u≡u']ₜ =
-    {!!}
-    
+    let [SProp] = maybeEmbᵛ {A = Univ _ _} [Γu] (Uᵛ {rU = %} <next [Γu]) 
+        [UA]′ = maybeEmbᵛ {A = U l} [Γu] (Uᵛ <next [Γu])
+        [A]ₜ′ = S.irrelevanceTerm {A = U l} {t = A} [ΓA] [Γu] [UA] (λ {Δ} {σ} → [UA]′ {Δ} {σ}) [A]ₜ
+        [A']ₜ′ = S.irrelevanceTerm {A = U l} {t = A'} [ΓA] [Γu] [UA] [UA]′ [A']ₜ
+        [A]′ = S.irrelevance {A = A} [Γt] [Γu] [A]
+        [A']ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = A'} [ΓA] [Γu] [UA] [UA]′ [A']ₜ
+        [A']′ = maybeEmbᵛ {A = A'} [Γu] (univᵛ {A = A'} [Γu] (≡is≤ PE.refl) [UA]′ [A']ₜ′)
+        [A≡A']ₜ′ = S.irrelevanceEqTerm {A = Univ _ _} {t = A} {u = A'} [ΓA] [Γu] [UA] [UA]′ [A≡A']ₜ
+        [A≡A']′ = univEqᵛ {A = A} {B = A'} [Γu] [UA]′ [A]′ [A≡A']ₜ′
+        [t]ₜ′ = S.irrelevanceTerm {A = A} {t = t} [Γt] [Γu] [A] [A]′ [t]ₜ
+        [t']ₜ′ = convᵛ {t = t'} {A = A} {B = A'} [Γu] [A]′ [A']′ [A≡A']′ (S.irrelevanceTerm {A = A} {t = t'} [Γt] [Γu] [A] [A]′ [t']ₜ)
+        [u]ₜ′ = S.irrelevanceTerm {A = A} {t = u} [Γu] [Γu] [A'] [A]′ [u]ₜ
+        [u']ₜ′ = convᵛ {t = u'} {A = A} {B = A'} [Γu] [A]′ [A']′ [A≡A']′ (S.irrelevanceTerm {A = A} {t = u'} [Γu] [Γu] [A'] [A]′ [u']ₜ)
+        [t≡t']ₜ′ = S.irrelevanceEqTerm {A = A} {t = t} {u = t'} [Γt] [Γu] [A] [A]′ [t≡t']ₜ
+        [u≡u']ₜ′ = S.irrelevanceEqTerm {A = A} {t = u} {u = u'} [Γu] [Γu] [A'] [A]′ [u≡u']ₜ
+    in [Γu] , modelsTermEq [SProp] (Idᵗᵛ {A} {t} {u} [Γu] [A]′ [t]ₜ′ [u]ₜ′ [A]ₜ′)
+                                   (Idᵗᵛ {A'} {t'} {u'} [Γu] [A']′ [t']ₜ′ [u']ₜ′ [A']ₜ′)
+                                   (Id-congᵗᵛ {A} {A'} {t} {t'} {u} {u'} [Γu] [A]′ [t]ₜ′ [u]ₜ′ [A]ₜ′ [A']′ [t']ₜ′ [u']ₜ′ [A']ₜ′ [A≡A']ₜ′ [t≡t']ₜ′ [u≡u']ₜ′)
+
   fundamentalTermEq {Γ} (Id-Π {A} {rA} {lA} {lB} {l} {B} {t} {u} lA≤ lB≤ ⊢A ⊢B ⊢t ⊢u) 
     with fundamentalTerm ⊢A | fundamentalTerm ⊢B | fundamentalTerm ⊢t | fundamentalTerm ⊢u
   ... | [ΓA] , [UA] , [A]ₜ  | [ΓB] ∙ [AB] , [UB] , [B]ₜ | [Γt] , [Πt] , [t]ₜ | [Γu] , [Πu] , [u]ₜ =
