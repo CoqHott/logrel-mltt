@@ -57,3 +57,13 @@ maybeEmbₛ′ {∞} [Γ] [A] ⊢Δ [σ] =
       [σA]′ = maybeEmb (proj₁ ([A] ⊢Δ [σ]))
   in  [σA]′
   ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
+
+maybeEmbEqTermᵛ : ∀ {l A t u r Γ}
+         → ([Γ] : ⊩ᵛ Γ)
+         → ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ r / [Γ] )
+         → Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ A ^ r / [Γ] / [A]
+         → Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ u ∷ A ^ r / [Γ] / maybeEmbᵛ {A = A} [Γ] [A]
+maybeEmbEqTermᵛ {ι ⁰} [Γ] [A] [t≡u] = [t≡u]
+maybeEmbEqTermᵛ {ι ¹} [Γ] [A] [t≡u] = [t≡u]
+maybeEmbEqTermᵛ {∞} [Γ] [A] [t≡u] = [t≡u]
+

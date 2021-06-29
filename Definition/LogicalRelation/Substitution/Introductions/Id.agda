@@ -377,3 +377,69 @@ Idᵗᵛ {A} {t} {u} {_} {l} [Γ] [A] [t] [u] [A]t =
       [u]' = S.irrelevanceTerm {A = A} {t = u} [Γ] [Γ] [A] [A]' [u]
       [Id] = Idᵗᵛ-min {A} {t} {u} [Γ] [A]' [t]' [u]'
   in maybeEmbTermᵛ {l = next l} {A = SProp _} {t = Id A t u} [Γ] (Uᵛgen (≡is≤ PE.refl) <next [Γ]) [Id]
+
+Id-congᵛ-min : ∀ {A A' t t' u u' Γ l}
+       ([Γ] : ⊩ᵛ Γ)
+       ([A] : Γ ⊩ᵛ⟨ ι l ⟩ A ^ [ ! , ι l ] / [Γ])
+       ([t] : Γ ⊩ᵛ⟨ ι l ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([u] : Γ ⊩ᵛ⟨ ι l ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([A'] : Γ ⊩ᵛ⟨ ι l ⟩ A' ^ [ ! , ι l ] / [Γ])
+       ([t'] : Γ ⊩ᵛ⟨ ι l ⟩ t' ∷ A' ^ [ ! , ι l ] / [Γ] / [A'])
+       ([u'] : Γ ⊩ᵛ⟨ ι l ⟩ u' ∷ A' ^ [ ! , ι l ] / [Γ] / [A'])
+       ([A≡A'] : Γ ⊩ᵛ⟨ ι l ⟩ A ≡ A' ^ [ ! , ι l ] / [Γ] / [A])
+       ([t≡t'] : Γ ⊩ᵛ⟨ ι l ⟩ t ≡ t' ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([u≡u'] : Γ ⊩ᵛ⟨ ι l ⟩ u ≡ u' ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+     → Γ ⊩ᵛ⟨ ι l ⟩ Id A t u ≡ Id A' t' u' ^ [ % , ι l ] / [Γ] / Idᵛ-min {A} {t} {u} [Γ] [A] [t] [u] 
+Id-congᵛ-min [Γ] [A] [t] [u] [A'] [t'] [u'] [A≡A'] [t≡t'] [u≡u'] ⊢Δ [σ] =
+  [IdExt] ⊢Δ (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([A'] ⊢Δ [σ])) ([A≡A'] ⊢Δ [σ])
+             (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([t'] ⊢Δ [σ])) ([t≡t'] ⊢Δ [σ])
+             (proj₁ ([u] ⊢Δ [σ])) (proj₁ ([u'] ⊢Δ [σ])) ([u≡u'] ⊢Δ [σ])
+
+Id-cong-minᵗᵛ : ∀ {A A' t t' u u' Γ l}
+       ([Γ] : ⊩ᵛ Γ)
+       ([A] : Γ ⊩ᵛ⟨ ι l ⟩ A ^ [ ! , ι l ] / [Γ])
+       ([t] : Γ ⊩ᵛ⟨ ι l ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([u] : Γ ⊩ᵛ⟨ ι l ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([A'] : Γ ⊩ᵛ⟨ ι l ⟩ A' ^ [ ! , ι l ] / [Γ])
+       ([t'] : Γ ⊩ᵛ⟨ ι l ⟩ t' ∷ A' ^ [ ! , ι l ] / [Γ] / [A'])
+       ([u'] : Γ ⊩ᵛ⟨ ι l ⟩ u' ∷ A' ^ [ ! , ι l ] / [Γ] / [A'])
+       ([A≡A'] : Γ ⊩ᵛ⟨ ι l ⟩ A ≡ A' ^ [ ! , ι l ] / [Γ] / [A])
+       ([t≡t'] : Γ ⊩ᵛ⟨ ι l ⟩ t ≡ t' ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+       ([u≡u'] : Γ ⊩ᵛ⟨ ι l ⟩ u ≡ u' ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+     → Γ ⊩ᵛ⟨ next l ⟩ Id A t u ≡ Id A' t' u' ∷ SProp l ^ [ ! , next l ] / [Γ] / Uᵛgen (≡is≤ PE.refl) <next [Γ]
+Id-cong-minᵗᵛ {A} {A'} {t} {t'} {u} {u'} [Γ] [A] [t] [u] [A'] [t'] [u'] [A≡A'] [t≡t'] [u≡u'] =
+  let [U] = Uᵛgen (≡is≤ PE.refl) <next [Γ]
+  in un-univEqᵛ {A = Id A t u} {B = Id A' t' u'} [Γ] [U]
+                (Idᵛ-min {A} {t} {u} [Γ] [A] [t] [u])
+                (Idᵛ-min {A'} {t'} {u'} [Γ] [A'] [t'] [u'])
+                (Id-congᵛ-min {A} {A'} {t} {t'} {u} {u'} [Γ] [A] [t] [u] [A'] [t'] [u'] [A≡A'] [t≡t'] [u≡u'])
+
+Id-congᵗᵛ : ∀ {A A' t t' u u' Γ l}
+       ([Γ] : ⊩ᵛ Γ) →
+       let [UA] = maybeEmbᵛ {A = U _} [Γ] (Uᵛ <next [Γ])
+           [U] = maybeEmbᵛ {A = SProp _} [Γ] (Uᵛ <next [Γ])
+       in ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
+          ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+          ([u] : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+          ([A]t : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ Univ ! l ^ [ ! , next l ] / [Γ] / [UA])
+          ([A'] : Γ ⊩ᵛ⟨ ∞ ⟩ A' ^ [ ! , ι l ] / [Γ])
+          ([t'] : Γ ⊩ᵛ⟨ ∞ ⟩ t' ∷ A' ^ [ ! , ι l ] / [Γ] / [A'])
+          ([u'] : Γ ⊩ᵛ⟨ ∞ ⟩ u' ∷ A' ^ [ ! , ι l ] / [Γ] / [A'])
+          ([A']t : Γ ⊩ᵛ⟨ ∞ ⟩ A' ∷ Univ ! l ^ [ ! , next l ] / [Γ] / [UA])
+          ([A≡A']t : Γ ⊩ᵛ⟨ ∞ ⟩ A ≡ A' ∷ Univ ! l ^ [ ! , next l ] / [Γ] / [UA])
+          ([t≡t'] : Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ t' ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+          ([u≡u'] : Γ ⊩ᵛ⟨ ∞ ⟩ u ≡ u' ∷ A ^ [ ! , ι l ] / [Γ] / [A])
+          → Γ ⊩ᵛ⟨ ∞ ⟩ Id A t u ≡ Id A' t' u' ∷ SProp l ^ [ ! , next l ] / [Γ] / [U]
+Id-congᵗᵛ {A} {A'} {t} {t'} {u} {u'} {_} {l} [Γ] [A] [t] [u] [A]t [A'] [t'] [u'] [A']t [A≡A']t [t≡t'] [u≡u'] =
+   let [UA] = maybeEmbᵛ {A = U _} [Γ] (Uᵛ <next [Γ])
+       [A]' = univᵛ {A = A} [Γ] (≡is≤ PE.refl) [UA] [A]t
+       [t]' = S.irrelevanceTerm {A = A} {t = t} [Γ] [Γ] [A] [A]' [t]
+       [u]' = S.irrelevanceTerm {A = A} {t = u} [Γ] [Γ] [A] [A]' [u]
+       [A']' = univᵛ {A = A'} [Γ] (≡is≤ PE.refl) [UA] [A']t
+       [t']' = S.irrelevanceTerm {A = A'} {t = t'} [Γ] [Γ] [A'] [A']' [t']
+       [u']' = S.irrelevanceTerm {A = A'} {t = u'} [Γ] [Γ] [A'] [A']' [u']
+       [A≡A']' = univEqᵛ {A = A} {B = A'} [Γ] [UA] [A]' [A≡A']t       
+       [t≡t']' = S.irrelevanceEqTerm {A = A} {t = t} {u = t'} [Γ] [Γ] [A] [A]' [t≡t']
+       [u≡u']' = S.irrelevanceEqTerm {A = A} {t = u} {u = u'} [Γ] [Γ] [A] [A]' [u≡u']
+       [Id] = Id-cong-minᵗᵛ {A} {A'} {t} {t'} {u} {u'} [Γ] [A]' [t]' [u]' [A']' [t']' [u']' [A≡A']' [t≡t']' [u≡u']'
+   in maybeEmbEqTermᵛ {l = next l} {A = SProp _} {t = Id A t u} {u = Id A' t' u'} [Γ] (Uᵛgen (≡is≤ PE.refl) <next [Γ]) [Id]

@@ -96,3 +96,12 @@ un-univᵛ {l = l} [Γ] [U] [A] = λ ⊢Δ [σ] →
   irrelevanceTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ])))))  (proj₁ ([U] ⊢Δ [σ])) (un-univEq (proj₁ ([A] ⊢Δ [σ]))) ,
   λ [σ′] [σ≡σ′] → irrelevanceEqTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ]))))) (proj₁ ([U] ⊢Δ [σ])) (un-univEqEq (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ′])) (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′])) 
 
+
+un-univEqᵛ : ∀ {A B Γ r l} ([Γ] : ⊩ᵛ Γ)
+        ([U] : Γ ⊩ᵛ⟨ next l ⟩ Univ r l ^ [ ! , next l ] / [Γ])
+      → ([A] : Γ ⊩ᵛ⟨ ι l ⟩ A ^ [ r , ι l ] / [Γ])
+      → ([B] : Γ ⊩ᵛ⟨ ι l ⟩ B ^ [ r , ι l ] / [Γ])
+      → Γ ⊩ᵛ⟨ ι l ⟩ A ≡ B ^ [ r , ι l ] / [Γ] / [A]
+      → Γ ⊩ᵛ⟨ next l ⟩ A ≡ B ∷ Univ r l ^ [ ! , next l ] / [Γ] / [U] 
+un-univEqᵛ {l = l} [Γ] [U] [A] [B] [A≡B] = λ ⊢Δ [σ] → 
+  irrelevanceEqTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ])))))  (proj₁ ([U] ⊢Δ [σ])) (un-univEqEq (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([B] ⊢Δ [σ])) ([A≡B] ⊢Δ [σ]))
