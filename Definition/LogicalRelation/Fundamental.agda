@@ -141,8 +141,8 @@ mutual
   ... | [Γ] , [UA] , [A]ₜ | [Γt] , [At] , [t]ₜ | [Γu] , [Au] , [u]ₜ =
     let [SProp] = maybeEmbᵛ {A = SProp _} [Γu] (Uᵛ (proj₂ (levelBounded l)) [Γu])
         [t]ₜ′ = S.irrelevanceTerm {A = A} {t = t} [Γt] [Γu] [At] [Au] [t]ₜ
-        [UA]′ = maybeEmbᵛ [Γu] (Uᵛ <next [Γu])
-        [A]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = A} [Γ] [Γu] [UA] [UA]′ [A]ₜ
+        [UA]′ = maybeEmbᵛ {A = Univ _ _} [Γu] (λ {Δ} {σ} → Uᵛ <next [Γu] {Δ} {σ})
+        [A]ₜ′ = S.irrelevanceTerm {A = Univ _ _} {t = A} [Γ] [Γu] (λ {Δ} {σ} → [UA] {Δ} {σ}) (λ {Δ} {σ} → [UA]′ {Δ} {σ}) [A]ₜ
     in [Γu] , [SProp] , Idᵗᵛ {A = A} {t = t} {u = u } [Γu] [Au] [t]ₜ′ [u]ₜ [A]ₜ′
 
   fundamentalTerm (var ⊢Γ x∷A) = valid ⊢Γ , fundamentalVar x∷A (valid ⊢Γ)
