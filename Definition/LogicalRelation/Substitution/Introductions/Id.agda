@@ -184,7 +184,7 @@ import Data.Nat as Nat
   in Πᵣ (Πᵣ rF lF lG lF≤ lG≤ F (Id G ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0)))
       [[ univ (Idⱼ (un-univ ⊢A) ⊢tA ⊢uA) , ⊢funext , Did ]]
       ⊢F ⊢idG
-      (≅-univ (≅ₜ-Π-cong ⊢F (≅-un-univ (escapeEqRefl [F0]))
+      (≅-univ (≅ₜ-Π-cong lF≤ lG≤ ⊢F (≅-un-univ (escapeEqRefl [F0]))
         (≅-un-univ (escapeEqRefl [idG0]))))
       [F] [idG] [idGext])
 
@@ -311,7 +311,7 @@ import Data.Nat as Nat
          (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° lF ▹ _ ° X ^ [ % , ι lA ]) lG′≡lG
            (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° X ▹ _ ° lG′ ^ [ % , ι lA ]) lF′≡lF
              (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ X ° lF′ ▹ _ ° lG′ ^ [ % , ι lA ]) rF′≡rF Did))) 
-        (≅-univ (≅ₜ-Π-cong ⊢F (≅-un-univ ⊢F≡F′) (≅-un-univ ⊢idG≡idG′₀))) [F≡F′] [idG≡idG′]
+        (≅-univ (≅ₜ-Π-cong lF≤ lG≤ ⊢F (≅-un-univ ⊢F≡F′) (≅-un-univ ⊢idG≡idG′₀))) [F≡F′] [idG≡idG′]
 
 [IdExtShape] {A} {B} {t} {t′} {u} {u′} {Γ} ⊢Γ (emb emb< [A]) [B] (emb⁰¹ {p = .[A]} ShapeA) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =
   [IdExtShape] ⊢Γ [A] [B] ShapeA [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] 

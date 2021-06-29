@@ -170,7 +170,8 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
                                                  (Idᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A')} {u = wk1 (wk1 A)} [ΓIdA'] (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA) [wwA'] [wwA])
                                                  (IdSymᵗᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A)} {u = wk1 (wk1 A')} {e = var 1} [ΓIdA'] ((λ {Δ} {σ} → [wwU¹] {Δ} {σ} !))
                                                           (λ {Δ} {σ} → [wwUA']ᵗ {Δ} {σ}) (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA)
-                                                          [wwA] [wwA'] [wwIdAA'] [wwIdA'A] [var1]ₜ))) [wB'] (Uᵗᵛ [ΓIdA']))
+                                                          [wwA] [wwA'] [wwIdAA'] [wwIdA'A] [var1]ₜ))) [wB']
+                                                          (λ {Δ} {σ} → Uᵗᵛ [ΓIdA'] {Δ} {σ}))
 
 abstract
   Id-U-ΠΠᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →

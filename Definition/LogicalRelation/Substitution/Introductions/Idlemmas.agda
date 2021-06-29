@@ -226,7 +226,7 @@ module IdTypeU-lemmas
       in
       Πᵣ′ rF ⁰ ¹ (<is≤ 0<1) (≡is≤ PE.refl) (wk ρ F₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁))
         (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ ≡is≤ PE.refl ▹ un-univ ⊢wkF₁ ▹ un-univ ⊢Id)))
-        ⊢wkF₁ ⊢Id (≅-univ (≅ₜ-Π-cong ⊢wkF₁ (≅-un-univ (escapeEqRefl ([F₁] [ρ] ⊢Δ))) (≅-un-univ (escapeEqRefl x))))
+        ⊢wkF₁ ⊢Id (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (≡is≤ PE.refl) ⊢wkF₁ (≅-un-univ (escapeEqRefl ([F₁] [ρ] ⊢Δ))) (≅-un-univ (escapeEqRefl x))))
         (λ [ρ₁] ⊢Δ₁ → emb emb< (Lwk.wk [ρ₁] ⊢Δ₁ ([F₁] [ρ] ⊢Δ))) ([Id] [ρ] ⊢Δ [e]) ([Idext] [ρ] ⊢Δ [e] [e])
 
     abstract
@@ -247,7 +247,7 @@ module IdTypeU-lemmas
         in
         Π₌ (wk ρ F₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e′) (var 0) ]) (wk (lift ρ) G₁))
            (id (univ (Πⱼ <is≤ 0<1 ▹ ≡is≤ PE.refl ▹ un-univ ⊢wkF₁ ▹ un-univ ⊢x)))
-           (≅-univ (≅ₜ-Π-cong ⊢wkF₁ (≅-un-univ (escapeEqRefl ([F₁] [ρ] ⊢Δ))) (≅-un-univ (≅-sym ⊢x₁))))
+           (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (≡is≤ PE.refl) ⊢wkF₁ (≅-un-univ (escapeEqRefl ([F₁] [ρ] ⊢Δ))) (≅-un-univ (≅-sym ⊢x₁))))
            (λ [ρ]₁ ⊢Δ₁ → reflEq (Lwk.wk [ρ]₁ ⊢Δ₁ ([F₁] [ρ] ⊢Δ)))
            (λ [ρ₁] ⊢Δ₁ [a] → [Idext] [ρ] ⊢Δ [e] [e′] [ρ₁] ⊢Δ₁ [a] [a] (reflEqTerm (Lwk.wk [ρ₁] ⊢Δ₁ ([F₁] [ρ] ⊢Δ)) [a]))
 
@@ -494,7 +494,7 @@ module IdTypeU-lemmas-2
           ⊢x₂ = PE.subst (λ X → Δ ∙ wk ρ F₄ ^ [ rF , ι ⁰ ] ⊢ X ^ [ % , ι ¹ ]) (wkSingleSubstId _) (escape x₂)
         in Π₌ (wk ρ F₄) (Id (U ⁰) (wk (lift (step ρ)) G₂ [ E₂.b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₄))
           (id (univ (Πⱼ <is≤ 0<1 ▹ ≡is≤ PE.refl ▹ un-univ ⊢wkF₄ ▹ un-univ ⊢x₂)))
-          (≅-univ (≅ₜ-Π-cong ⊢wkF₃ (≅-un-univ (escapeEq ([F₃] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ))) (≅-un-univ ⊢x₁)))
+          (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (≡is≤ PE.refl) ⊢wkF₃ (≅-un-univ (escapeEq ([F₃] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ))) (≅-un-univ ⊢x₁)))
           (λ [ρ₁] ⊢Δ₁ → Lwk.wkEq [ρ₁] ⊢Δ₁ ([F₃] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ))
           (λ [ρ₁] ⊢Δ₁ [a] → [Ideq] [ρ] ⊢Δ [e] [ρ₁] ⊢Δ₁ [a])
 

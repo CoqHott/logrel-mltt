@@ -55,12 +55,12 @@ import Data.Nat as Nat
     [t▹u] : Γ ⊩⟨ ι ⁰ ⟩ t ^ % ° ⁰ ▹▹ u ° ⁰ ^ [ % , ι ¹ ]
     [t▹u] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) t (wk1 u)
       (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢t ▹ un-univ ⊢wku))) ⊢t ⊢wku
-      (≅-univ (≅ₜ-Π-cong ⊢t (≅-un-univ (escapeEqRefl [t])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) (escapeEqRefl [u])))))
+      (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢t (≅-un-univ (escapeEqRefl [t])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) (escapeEqRefl [u])))))
       [wkt] ([nondep] [u] [wkt]) ([nondepext] [u] [wkt])
     [u▹t] : Γ ⊩⟨ ι ⁰ ⟩ u ^ % ° ⁰ ▹▹ t ° ⁰ ^ [ % , ι ¹ ]
     [u▹t] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) u (wk1 t)
       (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢u ▹ un-univ ⊢wkt))) ⊢u ⊢wkt
-      (≅-univ (≅ₜ-Π-cong ⊢u (≅-un-univ (escapeEqRefl [u])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) (escapeEqRefl [t])))))
+      (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢u (≅-un-univ (escapeEqRefl [u])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) (escapeEqRefl [t])))))
       [wku] ([nondep] [t] [wku]) ([nondepext] [t] [wku])
     [wkt▹u] = λ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Lwk.wk [ρ] ⊢Δ (emb emb< [t▹u])
     ⊢t▹u = escape [t▹u]
@@ -104,36 +104,36 @@ import Data.Nat as Nat
       [t▹u] : Γ ⊩⟨ ι ⁰ ⟩ t ^ % ° ⁰ ▹▹ u ° ⁰ ^ [ % , ι ¹ ]
       [t▹u] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) t (wk1 u)
         (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢t ▹ un-univ ⊢wku))) ⊢t ⊢wku
-        (≅-univ (≅ₜ-Π-cong ⊢t (≅-un-univ (escapeEqRefl [t])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) (escapeEqRefl [u])))))
+        (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢t (≅-un-univ (escapeEqRefl [t])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) (escapeEqRefl [u])))))
         [wkt] ([nondep] [u] [wkt]) ([nondepext] [u] [wkt])
       [u▹t] : Γ ⊩⟨ ι ⁰ ⟩ u ^ % ° ⁰ ▹▹ t ° ⁰ ^ [ % , ι ¹ ]
       [u▹t] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) u (wk1 t)
         (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢u ▹ un-univ ⊢wkt))) ⊢u ⊢wkt
-        (≅-univ (≅ₜ-Π-cong ⊢u (≅-un-univ (escapeEqRefl [u])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) (escapeEqRefl [t])))))
+        (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢u (≅-un-univ (escapeEqRefl [u])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) (escapeEqRefl [t])))))
         [wku] ([nondep] [t] [wku]) ([nondepext] [t] [wku])
 
 
       [t▹u′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ^ % ° ⁰ ▹▹ u′ ° ⁰ ^ [ % , ι ¹ ]
       [t▹u′] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) t′ (wk1 u′)
         (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢t′ ▹ un-univ ⊢wku′))) ⊢t′ ⊢wku′
-        (≅-univ (≅ₜ-Π-cong ⊢t′ (≅-un-univ (escapeEqRefl [t′])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t′) (escapeEqRefl [u′])))))
+        (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢t′ (≅-un-univ (escapeEqRefl [t′])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t′) (escapeEqRefl [u′])))))
         [wkt′] ([nondep] [u′] [wkt′]) ([nondepext] [u′] [wkt′])
       [u▹t′] : Γ ⊩⟨ ι ⁰ ⟩ u′ ^ % ° ⁰ ▹▹ t′ ° ⁰ ^ [ % , ι ¹ ]
       [u▹t′] = Πᵣ′ % ⁰ ⁰ (<is≤ 0<1) (<is≤ 0<1) u′ (wk1 t′)
         (idRed:*: (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢u′ ▹ un-univ ⊢wkt′)))
         ⊢u′ ⊢wkt′
-        (≅-univ (≅ₜ-Π-cong ⊢u′ (≅-un-univ (escapeEqRefl [u′])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u′) (escapeEqRefl [t′])))))
+        (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢u′ (≅-un-univ (escapeEqRefl [u′])) (≅-un-univ (≅-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u′) (escapeEqRefl [t′])))))
         [wku′] ([nondep] [t′] [wku′]) ([nondepext] [t′] [wku′])
 
       [t▹u≡t▹u′] : Γ ⊩⟨ ι ⁰ ⟩ t ^ % ° ⁰ ▹▹ u ° ⁰ ≡ t′ ^ % ° ⁰ ▹▹ u′ ° ⁰ ^ [ % , ι ¹ ] / [t▹u]
       [t▹u≡t▹u′] = Π₌ t′ (wk1 u′) (id (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢t′ ▹ un-univ ⊢wku′)))
-                      (≅-univ (≅ₜ-Π-cong ⊢t ⊢t≡t′ (≅ₜ-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) ⊢u≡u′)))
+                      (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢t ⊢t≡t′ (≅ₜ-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) ⊢u≡u′)))
                       (λ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Lwk.wkEq [ρ] ⊢Δ (emb emb< [t]) [t≡t′])
                       ([nondepext'] [u] [u′] [u≡u′] [wkt] [wkt′])
 
       [u▹t≡u▹t′] : Γ ⊩⟨ ι ⁰ ⟩ u ^ % ° ⁰ ▹▹ t ° ⁰ ≡ u′ ^ % ° ⁰ ▹▹ t′ ° ⁰ ^ [ % , ι ¹ ] / [u▹t]
       [u▹t≡u▹t′] = Π₌ u′ (wk1 t′) (id (univ (Πⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢u′ ▹ un-univ ⊢wkt′)))
-                      (≅-univ (≅ₜ-Π-cong ⊢u ⊢u≡u′ (≅ₜ-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) ⊢t≡t′)))
+                      (≅-univ (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢u ⊢u≡u′ (≅ₜ-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢u) ⊢t≡t′)))
                       (λ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Lwk.wkEq [ρ] ⊢Δ (emb emb< [u]) [u≡u′])
                       ([nondepext'] [t] [t′] [t≡t′] [wku] [wku′])
 
@@ -143,8 +143,8 @@ import Data.Nat as Nat
         (univ (Id-SProp (un-univ ⊢t′) (un-univ ⊢u′)) ⇨ id (univ (××ⱼ (▹▹ⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢t′ ▹ un-univ ⊢u′) ▹
                                                                      (▹▹ⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢u′ ▹ un-univ ⊢t′))))
         (≅-univ (≅ₜ-∃-cong ⊢t▹u
-                           (≅ₜ-Π-cong ⊢t ⊢t≡t′ (≅ₜ-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) ⊢u≡u′))
-                           (≅ₜ-Π-cong (Twk.wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t▹u) ⊢u)
+                           (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) ⊢t ⊢t≡t′ (≅ₜ-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t) ⊢u≡u′))
+                           (≅ₜ-Π-cong (<is≤ 0<1) (<is≤ 0<1) (Twk.wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t▹u) ⊢u)
                                       (≅ₜ-wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t▹u) ⊢u≡u′)
                                       (≅ₜ-wk (Twk.lift (Twk.step Twk.id)) ((⊢Γ ∙ ⊢t▹u) ∙
                                                        (Twk.wk (Twk.step Twk.id) (⊢Γ ∙ ⊢t▹u) ⊢u))

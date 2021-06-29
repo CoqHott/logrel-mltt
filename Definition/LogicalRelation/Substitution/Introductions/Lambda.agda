@@ -1,4 +1,4 @@
--- {-# OPTIONS --safe #-}
+{-# OPTIONS --safe #-}
 
 open import Definition.Typed.EqualityRelation
 
@@ -65,7 +65,7 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] 
         in  Πₜ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
                (idRedTerm:*: (lamⱼ lF≤ lG≤ ⊢F ⊢t))
                lamₙ
-               (≅-η-eq ⊢F (lamⱼ lF≤ lG≤ ⊢F ⊢t) (lamⱼ lF≤ lG≤ ⊢F ⊢t) lamₙ lamₙ
+               (≅-η-eq lF≤ lG≤ ⊢F (lamⱼ lF≤ lG≤ ⊢F ⊢t) (lamⱼ lF≤ lG≤ ⊢F ⊢t) lamₙ lamₙ
                        (escapeTermEq [σG]
                          (reflEqTerm [σG]
                            (proj₁ (redSubstTerm β-red′ [σG] wk1t[0])))))
@@ -267,7 +267,7 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] 
                                      (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                                               [σΠFG≡σ′ΠFG])))))
                  lamₙ lamₙ
-                 (≅-η-eq ⊢F (lamⱼ lF≤ lG≤ ⊢F ⊢t)
+                 (≅-η-eq lF≤ lG≤ ⊢F (lamⱼ lF≤ lG≤ ⊢F ⊢t)
                       (conv (lamⱼ lF≤ lG≤ ⊢F′ ⊢t′)
                             (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                               [σΠFG≡σ′ΠFG]))))
@@ -365,7 +365,7 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = %} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] 
       eq   = escapeTermEq [σG] eq′
       eq₁  = escapeTermEq [σG] eq₁′
   in  Πₜ₌ f₁ g₁ [d] [d′] funcF funcG
-          (≅-η-eq ⊢F ⊢u ⊢u₁ funcF funcG
+          (≅-η-eq lF≤ lG≤ ⊢F ⊢u ⊢u₁ funcF funcG
                   (≅ₜ-trans (≅ₜ-sym eq) (≅ₜ-trans σf0≡σg0′ eq₁)))
           (Πₜ f₁ [d] funcF f≡f [f] [f]₁)
           (Πₜ g₁ [d′] funcG g≡g [g] [g]₁)

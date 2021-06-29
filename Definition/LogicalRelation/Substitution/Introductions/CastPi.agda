@@ -282,8 +282,8 @@ cast-Πᵗᵛ-aux {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
       [w'A']⁰ = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']'
       [wIdA'A] = Idᵛ {A = Univ rA ⁰} {t = wk1 A'} {u = wk1 A} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A'] [w'A]
       [wIdAA'] = Idᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A']
-      [wIdAA']ᵗ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] (Uᵗᵛ [ΓA'])
-      [wIdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] (Uᵗᵛ [ΓA'])
+      [wIdAA']ᵗ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] (λ {Δ} {σ} → Uᵗᵛ [ΓA'] {Δ} {σ})
+      [wIdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = wk1 A} {u = wk1 A'} [ΓA'] (λ {Δ} {σ} → [wUA] {Δ} {σ}) [w'A] [w'A'] (λ {Δ} {σ} → Uᵗᵛ [ΓA'] {Δ} {σ})
       [ww'A']' = wk1ᵛ {A = wk1 A'} {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA'] [w'A']'
       [ww'A'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} {G = wk1 A'} {lG = ⁰} [ΓA'] [wIdAA'] [w'A']
       [ww'A]' = wk1ᵛ {A = wk1 A} {F = Id (Univ rA ⁰) (wk1 A) (wk1 A')} [ΓA'] [wIdAA'] [w'A]'
