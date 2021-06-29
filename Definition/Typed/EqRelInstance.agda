@@ -24,7 +24,7 @@ eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       reduction reductionₜ
                       Urefl (refl ∘ᶠ univ 0<1) (refl ∘ᶠ ℕⱼ) (refl ∘ᶠ Emptyⱼ)
                       Π-cong ∃-cong (refl ∘ᶠ zeroⱼ) suc-cong
-                      (λ x x₁ x₂ x₃ x₄ x₅ → η-eq x x₁ x₂ x₅)
+                      (λ lF lG x x₁ x₂ x₃ x₄ x₅ → η-eq lF lG x x₁ x₂ x₅)
                       genVar app-cong natrec-cong Emptyrec-cong
                       Id-cong
                       (λ ⊢Γ → Id-cong (refl (ℕⱼ ⊢Γ)))
@@ -32,11 +32,13 @@ eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       (λ ⊢Γ t → Id-cong (refl (ℕⱼ ⊢Γ)) (suc-cong t))
                       (λ ⊢Γ → Id-cong (refl (univ 0<1 ⊢Γ)))
                       (λ ⊢Γ → Id-cong (refl (univ 0<1 ⊢Γ)) (refl (ℕⱼ ⊢Γ)))
-                      (λ ⊢A A B → Id-cong (refl (univ 0<1 (wf (univ ⊢A)))) (Π-cong (univ ⊢A) A B))
+                      (λ ⊢A B → Id-cong (refl (univ 0<1 (wfEq (univ ⊢A)))) ⊢A B) 
                       cast-cong
                       (λ ⊢Γ → cast-cong (refl (ℕⱼ ⊢Γ)))
                       (λ ⊢Γ → cast-cong (refl (ℕⱼ ⊢Γ)) (refl (ℕⱼ ⊢Γ)))
-                      (λ ⊢A A P → cast-cong (Π-cong ⊢A A P))
-                      (λ ⊢A A ⊢P P → cast-cong (refl (ℕⱼ (wf (univ ⊢A)))) (Π-cong (univ ⊢A) A P))
-                      (λ ⊢A A ⊢P P → cast-cong (Π-cong (univ ⊢A) A P) (refl (ℕⱼ (wf (univ ⊢A)))))
+                      cast-cong
+                      (λ ⊢A ⊢P P → cast-cong (refl (ℕⱼ (wf (univ ⊢A)))) P)
+                      (λ ⊢A ⊢P P → cast-cong P (refl (ℕⱼ (wf (univ ⊢A)))))
+                      (λ ⊢A ⊢P P ⊢A' ⊢P' P' → cast-cong P P')
+                      (λ ⊢A ⊢P P ⊢A' ⊢P' P' → cast-cong P P')
                       proof-irrelevance

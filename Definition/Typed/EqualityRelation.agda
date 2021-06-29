@@ -115,6 +115,8 @@ record EqRelSet : Set₁ where
 
     -- Π-congruence
     ≅ₜ-Π-cong : ∀ {F G H E rF lF r lG l Γ}
+              → lF ≤ l
+              → lG ≤ l
               → Γ ⊢ F ^ [ rF , ι lF ]
               → Γ ⊢ F ≅ H ∷ (Univ rF lF) ^ [ ! , next lF ]
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≅ E ∷ (Univ r lG) ^ [ ! , next lG ]
@@ -136,20 +138,22 @@ record EqRelSet : Set₁ where
 
     -- η-equality
     ≅-η-eq : ∀ {f g F G rF lF lG l Γ}
+              → lF ≤ l
+              → lG ≤ l
               → Γ ⊢ F ^ [ rF , ι lF ]
-              → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , l ]
-              → Γ ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , l ]
+              → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l ]
+              → Γ ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l ]
               → Function f
               → Function g
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ wk1 f ∘ var 0 ≅ wk1 g ∘ var 0 ∷ G ^ [ ! , ι lG ]
-              → Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , l ]
+              → Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l ]
 
     -- Variable reflexivity
     ~-var : ∀ {x A Γ r} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ~ var x ∷ A ^ r
 
     -- Application congurence
     ~-app : ∀ {a b f g F G rF lF lG l Γ}
-          → Γ ⊢ f ~ g ∷ Π F ^ rF ° lF ▹ G ° lG  ^ [ ! , l ]
+          → Γ ⊢ f ~ g ∷ Π F ^ rF ° lF ▹ G ° lG  ^ [ ! , ι l ]
           → Γ ⊢ a ≅ b ∷ F ^ [ rF , ι lF ]
           → Γ ⊢ f ∘ a ~ g ∘ b ∷ G [ a ] ^ [ ! , ι lG ]
 
@@ -162,9 +166,11 @@ record EqRelSet : Set₁ where
              → Γ     ⊢ natrec F z s n ~ natrec F′ z′ s′ n′ ∷ F [ n ] ^ [ ! , ι l ]
 
     -- Empty recursion congurence
-    ~-Emptyrec : ∀ {n n′ F F′ l Γ}
+    ~-Emptyrec : ∀ {e e′ F F′ l lEmpty Γ}
              → Γ ⊢ F ≅ F′ ^ [ ! , l ]
-             → Γ     ⊢ Emptyrec F n ~ Emptyrec F′ n′ ∷ F ^ [ ! , l ]
+             → Γ ⊢ e ∷ Empty ^ [ % , ι lEmpty ]
+             → Γ ⊢ e′ ∷ Empty ^ [ % , ι lEmpty ]
+             → Γ     ⊢ Emptyrec F e ~ Emptyrec F′ e′ ∷ F ^ [ ! , l ]
 
     -- Id congruences
     ~-Id  : ∀ {A A' l t t' u u' Γ}
@@ -217,17 +223,23 @@ record EqRelSet : Set₁ where
              Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ B ≅ B' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
+           → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , next ⁰ ]
+           → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , next ⁰ ]
            → Γ ⊢ cast l A B e t ~ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]
 
     ~-castℕ : ∀ {B B' e e' t t' Γ}
             → ⊢ Γ
             → Γ ⊢ B ~ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
             → Γ ⊢ t ≅ t' ∷ ℕ ^ [ ! , ι ⁰ ]
+            → Γ ⊢ e ∷ (Id (U ⁰) ℕ B) ^ [ % , next ⁰ ]
+            → Γ ⊢ e' ∷ (Id (U ⁰) ℕ B') ^ [ % , next ⁰ ]
             → Γ ⊢ cast ⁰ ℕ B e t ~ cast ⁰ ℕ B' e' t' ∷ B ^ [ ! , ι ⁰ ]
 
     ~-castℕℕ : ∀ {e e' t t' Γ}
              → ⊢ Γ
              → Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ]
+            → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , next ⁰ ]
+            → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , next ⁰ ]
              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 
     ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ} →
@@ -235,6 +247,8 @@ record EqRelSet : Set₁ where
            Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
            → Γ ⊢ B ~ B' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ t ≅ t' ∷ Π A ^ rA ° l ▹ P ° l  ^ [ ! , ι l ]
+           → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l) B) ^ [ % , next ⁰ ]
+           → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° l ▹ P' ° l ) B') ^ [ % , next ⁰ ]
            → Γ ⊢ cast l (Π A ^ rA ° l ▹ P ° l) B e t ~ cast l (Π A' ^ rA ° l ▹ P' ° l ) B' e' t' ∷ B ^ [ ! , ι l ]
 
     ~-castℕΠ : ∀ {A A' rA P P' e e' t t' Γ}
@@ -242,6 +256,8 @@ record EqRelSet : Set₁ where
              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ t ≅ t' ∷ ℕ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ e ∷ (Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰)) ^ [ % , next ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰)) ^ [ % , next ⁰ ]
              → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰) e' t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰) ^ [ ! , ι ⁰ ]
 
     ~-castΠℕ : ∀ {A A' rA P P' e e' t t' Γ} →
@@ -250,6 +266,8 @@ record EqRelSet : Set₁ where
              → Γ ∙ A ^ [ rA , ι l ] ⊢ P ∷ U l ^ [ ! , next l ]
              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰) ^ [ ! , ι l ]
+             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l) ℕ) ^ [ % , next ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° l ▹ P' ° l ) ℕ) ^ [ % , next ⁰ ]
              → Γ ⊢ cast l (Π A ^ rA ° ⁰ ▹ P ° ⁰) ℕ e t ~ cast l (Π A' ^ rA ° ⁰ ▹ P' ° ⁰) ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 
     ~-castΠΠ%! : ∀ {A A' P P' B B' Q Q' e e' t t' Γ}
@@ -260,6 +278,8 @@ record EqRelSet : Set₁ where
              → Γ ∙ B ^ [ ! , ι ⁰ ] ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ≅ Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ t ≅ t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰) (Π B ^ ! ° ⁰ ▹ Q ° ⁰)) ^ [ % , next ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰)) ^ [ % , next ⁰ ]
              → Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰) (Π B ^ ! ° ⁰ ▹ Q ° ⁰) e t ~ cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰) e' t' ∷ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ^ [ ! , ι ⁰ ]
 
     ~-castΠΠ!% : ∀ {A A' P P' B B' Q Q' e e' t t' Γ}
@@ -270,6 +290,8 @@ record EqRelSet : Set₁ where
              → Γ ∙ B ^ [ % , ι ⁰ ] ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ≅ Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ t ≅ t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰) (Π B ^ % ° ⁰ ▹ Q ° ⁰)) ^ [ % , next ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰)) ^ [ % , next ⁰ ]
              → Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰) (Π B ^ % ° ⁰ ▹ Q ° ⁰) e t ~ cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰) e' t' ∷ Π B ^ % ° ⁰ ▹ Q ° ⁰ ^ [ ! , ι ⁰ ]
 
     ~-irrelevance : ∀ {n n′ A l Γ} → Γ ⊢ n ∷ A ^ [ % , l ] → Γ ⊢ n′ ∷ A ^ [ % , l ]
