@@ -326,7 +326,7 @@ module cast-ΠΠ-lemmas-2
         [g0] = proj₁ (redSubst*Term D ([G₁] [ρ₁] ⊢Δ₁ [0]) ([g] [ρ₁] ⊢Δ₁ [0]))
         x₀ = escapeEqReflTerm ([G₁] [ρ₁] ⊢Δ₁ [0]) [g0]
         x₁ = PE.subst (λ X → Δ₁ ⊢ (lam (wk1 F₁) ▹ wk1d (g (step id) (var 0))) ∘ (var 0) ≅ (lam (wk1 F₁) ▹ wk1d (g (step id) (var 0))) ∘ (var 0) ∷ X ^ [ ! , ι ⁰ ]) (wkSingleSubstId G₁) x₀
-      in ≅-η-eq ⊢F₁ ⊢λg ⊢λg lamₙ lamₙ x₁
+      in ≅-η-eq (≡is≤ PE.refl) (≡is≤ PE.refl) ⊢F₁ ⊢λg ⊢λg lamₙ lamₙ x₁
 
     g∘a≡ga : ∀ {ρ Δ a}
       → ([ρ] : ρ Twk.∷ Δ ⊆ Γ)
@@ -636,7 +636,7 @@ module cast-ΠΠ-lemmas-3
           (convEqTerm₂ ([G₃] [ρ₁] ⊢Δ₁ g₁.[0]) ([G₄] [ρ₁] ⊢Δ₁ [0:F₄]) ([G₃≡G₄] [ρ₁] ⊢Δ₁ g₁.[0]) (symEqTerm ([G₄] [ρ₁] ⊢Δ₁ [0:F₄]) [g₂0≡g₂]))
         x₀ = escapeTermEq ([G₃] [ρ₁] ⊢Δ₁ g₁.[0]) [g₁0≡g₂0]
         x₁ = PE.subst (λ X → Δ₁ ⊢ (lam (wk1 F₃) ▹ wk1d (g₁.g (step id) (var 0))) ∘ (var 0) ≅ (lam (wk1 F₄) ▹ wk1d (g₂.g (step id) (var 0))) ∘ (var 0) ∷ X ^ [ ! , ι ⁰ ]) (wkSingleSubstId G₃) x₀
-      in ≅-η-eq ⊢F₃ g₁.⊢λg (conv g₂.⊢λg (sym (≅-eq A₃≡A₄))) lamₙ lamₙ x₁
+      in ≅-η-eq (≡is≤ PE.refl) (≡is≤ PE.refl) ⊢F₃ g₁.⊢λg (conv g₂.⊢λg (sym (≅-eq A₃≡A₄))) lamₙ lamₙ x₁
 
     [g₁a≡g₂a] : ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
         → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ F₃ ^ [ rF , ι ⁰ ] / [F₃] [ρ] ⊢Δ)

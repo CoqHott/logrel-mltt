@@ -14,6 +14,7 @@ open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.Properties
 
 open import Tools.Product
+import Tools.PropositionalEquality as PE
 
 
 -- Valid types are reducible.
@@ -36,8 +37,8 @@ reducibleEqᵛ {A = A} [Γ] [A] [A≡B] =
   let [σA] = reducibleᵛ {A = A} [Γ] [A]
       ⊢Γ = soundContext [Γ]
       [id] = idSubstS [Γ]
-  in  irrelevanceEq″ (subst-id _) (subst-id _)
-                      (proj₁ ([A] ⊢Γ [id])) [σA] ([A≡B] ⊢Γ [id])
+  in  irrelevanceEq″ (subst-id _) (subst-id _) PE.refl PE.refl
+                     (proj₁ ([A] ⊢Γ [id])) [σA] ([A≡B] ⊢Γ [id])
 
 -- Valid terms are reducible.
 reducibleTermᵛ : ∀ {t A rA Γ l}
@@ -49,7 +50,7 @@ reducibleTermᵛ {A = A} [Γ] [A] [t] =
   let [σA] = reducibleᵛ {A = A} [Γ] [A]
       ⊢Γ = soundContext [Γ]
       [id] = idSubstS [Γ]
-  in  irrelevanceTerm″ (subst-id _) (subst-id _)
+  in  irrelevanceTerm″ (subst-id _) PE.refl PE.refl (subst-id _)
                         (proj₁ ([A] ⊢Γ [id])) [σA] (proj₁ ([t] ⊢Γ [id]))
 
 -- Valid term equality is reducible.
@@ -62,5 +63,5 @@ reducibleEqTermᵛ {A = A} [Γ] [A] [t≡u] =
   let [σA] = reducibleᵛ {A = A} [Γ] [A]
       ⊢Γ = soundContext [Γ]
       [id] = idSubstS [Γ]
-  in  irrelevanceEqTerm″ (subst-id _) (subst-id _) (subst-id _)
+  in  irrelevanceEqTerm″ PE.refl PE.refl (subst-id _) (subst-id _) (subst-id _)
                           (proj₁ ([A] ⊢Γ [id])) [σA] ([t≡u] ⊢Γ [id])

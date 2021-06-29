@@ -54,7 +54,7 @@ Unitᵗᵛ {Γ} {l} [Γ] = let [SProp] = maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ {r
 
 Unit≡Unit : ∀ {Γ l} (⊢Γ : ⊢ Γ)
           → Γ ⊢ Unit {l} ≅ Unit {l} ∷ SProp l ^ [ ! , next l ]
-Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
+Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (≡is≤ PE.refl) (≡is≤ PE.refl) (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
 
 Unitᵛ : ∀ {Γ l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι l ⟩ Unit ^ [ % , ι l ] / [Γ]
 Unitᵛ {Γ} {l} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])) (Unitᵗᵛ {l = l} [Γ])
