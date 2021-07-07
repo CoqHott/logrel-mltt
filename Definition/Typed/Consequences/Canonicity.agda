@@ -1,4 +1,4 @@
--- {-# OPTIONS - #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Typed.Consequences.Canonicity where
 
@@ -27,85 +27,78 @@ sucᵏ (1+ n) = suc (sucᵏ n)
 
 -- we need to postulate consistency
 
-postulate noNeSProp : ∀ {t A l} → ε ⊢ t ∷ A ^ [ % , ι l ] → ⊥
+noNeSPropAx : Set
+noNeSPropAx = ∀ {t A l} → ε ⊢ t ∷ A ^ [ % , ι l ] → ⊥
 
-noNe : ∀ {t A r} → ε ⊢ t ∷ A ^ r → Neutral t → ⊥
+noNe : ∀ {t A r} → noNeSPropAx → ε ⊢ t ∷ A ^ r → Neutral t → ⊥
 
-noNe (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe ⊢t neT
-noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
-noNe (Emptyrecⱼ A ⊢e) Emptyrecₙ = noNeSProp ⊢e
-noNe (var x₁ ()) (var x)
-noNe (Idⱼ [A] [A]₁ [A]₂) (Idₙ neT) = noNe [A] neT
-noNe (Idⱼ [A] [A]₁ [A]₂) (Idℕₙ neT) = noNe [A]₁ neT
-noNe (Idⱼ [A] [A]₁ [A]₂) (Idℕ0ₙ neT) = noNe [A]₂ neT
-noNe (Idⱼ [A] [A]₁ [A]₂) (IdℕSₙ neT) = noNe [A]₂ neT
-noNe (Idⱼ [A] [A]₁ [A]₂) (IdUₙ neT) = noNe [A]₁ neT
-noNe (Idⱼ [A] [A]₁ [A]₂) (IdUℕₙ neT) = noNe [A]₂ neT
-noNe (Idⱼ [A] [A]₁ [A]₂) (IdUΠₙ neT) = noNe [A]₂ neT
-noNe (castⱼ [A] [A]₁ [A]₂ [A]₃) (castₙ neT) = noNe [A] neT
-noNe (castⱼ [A] [A]₁ [A]₂ [A]₃) (castℕₙ neT) = noNe [A]₁ neT
-noNe (castⱼ [A] [A]₁ [A]₂ [A]₃) (castΠₙ neT) = noNe [A]₁ neT
-noNe (castⱼ [A] [A]₁ [A]₂ [A]₃) (castℕℕₙ neT) = noNe [A]₃ neT
-noNe (castⱼ {r = !} [A] [A]₁ [A]₂ [A]₃) castℕΠₙ = noNeSProp [A]₂
-noNe (castⱼ {r = %} [A] [A]₁ [A]₂ [A]₃) castℕΠₙ = noNeSProp [A]₂
-noNe (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠℕₙ = noNeSProp [A]₂
-noNe (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠΠ%!ₙ = noNeSProp [A]₂
-noNe (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠΠ!%ₙ = noNeSProp [A]₂
-noNe (conv ⊢t x) (var n) = noNe ⊢t (var n)
-noNe (conv ⊢t x) (∘ₙ neT) = noNe ⊢t (∘ₙ neT)
-noNe (conv ⊢t x) (natrecₙ neT) = noNe ⊢t (natrecₙ neT)
-noNe (conv ⊢t x) (Idₙ neT) = noNe ⊢t (Idₙ neT)
-noNe (conv ⊢t x) (Idℕₙ neT) = noNe ⊢t (Idℕₙ neT)
-noNe (conv ⊢t x) (Idℕ0ₙ neT) = noNe ⊢t (Idℕ0ₙ neT)
-noNe (conv ⊢t x) (IdℕSₙ neT) = noNe ⊢t (IdℕSₙ neT)
-noNe (conv ⊢t x) (IdUₙ neT) = noNe ⊢t (IdUₙ neT)
-noNe (conv ⊢t x) (IdUℕₙ neT) = noNe ⊢t (IdUℕₙ neT)
-noNe (conv ⊢t x) (IdUΠₙ neT) = noNe ⊢t (IdUΠₙ neT)
-noNe (conv ⊢t x) (castₙ neT) = noNe ⊢t (castₙ neT)
-noNe (conv ⊢t x) (castℕₙ neT) = noNe ⊢t (castℕₙ neT)
-noNe (conv ⊢t x) (castΠₙ neT) = noNe ⊢t (castΠₙ neT)
-noNe (conv ⊢t x) (castℕℕₙ neT) = noNe ⊢t (castℕℕₙ neT)
-noNe (conv ⊢t x) castℕΠₙ = noNe ⊢t castℕΠₙ
-noNe (conv ⊢t x) castΠℕₙ = noNe ⊢t castΠℕₙ
-noNe (conv ⊢t x) castΠΠ%!ₙ = noNe ⊢t castΠΠ%!ₙ
-noNe (conv ⊢t x) castΠΠ!%ₙ = noNe ⊢t castΠΠ!%ₙ
-noNe (conv ⊢t x) Emptyrecₙ = noNe ⊢t Emptyrecₙ
+noNe noNeSProp (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe noNeSProp  ⊢t neT
+noNe noNeSProp (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe noNeSProp ⊢t₂ neT
+noNe noNeSProp (Emptyrecⱼ A ⊢e) Emptyrecₙ = noNeSProp ⊢e
+noNe noNeSProp (var x₁ ()) (var x)
+noNe noNeSProp (Idⱼ [A] [A]₁ [A]₂) (Idₙ neT) = noNe noNeSProp [A] neT
+noNe noNeSProp (Idⱼ [A] [A]₁ [A]₂) (Idℕₙ neT) = noNe noNeSProp [A]₁ neT
+noNe noNeSProp (Idⱼ [A] [A]₁ [A]₂) (Idℕ0ₙ neT) = noNe noNeSProp [A]₂ neT
+noNe noNeSProp (Idⱼ [A] [A]₁ [A]₂) (IdℕSₙ neT) = noNe noNeSProp [A]₂ neT
+noNe noNeSProp (Idⱼ [A] [A]₁ [A]₂) (IdUₙ neT) = noNe noNeSProp [A]₁ neT
+noNe noNeSProp (Idⱼ [A] [A]₁ [A]₂) (IdUℕₙ neT) = noNe noNeSProp [A]₂ neT
+noNe noNeSProp (Idⱼ [A] [A]₁ [A]₂) (IdUΠₙ neT) = noNe noNeSProp [A]₂ neT
+noNe noNeSProp (castⱼ [A] [A]₁ [A]₂ [A]₃) (castₙ neT) = noNe noNeSProp [A] neT
+noNe noNeSProp (castⱼ [A] [A]₁ [A]₂ [A]₃) (castℕₙ neT) = noNe noNeSProp [A]₁ neT
+noNe noNeSProp (castⱼ [A] [A]₁ [A]₂ [A]₃) (castΠₙ neT) = noNe noNeSProp [A]₁ neT
+noNe noNeSProp (castⱼ [A] [A]₁ [A]₂ [A]₃) (castℕℕₙ neT) = noNe noNeSProp [A]₃ neT
+noNe noNeSProp (castⱼ {r = !} [A] [A]₁ [A]₂ [A]₃) castℕΠₙ = noNeSProp [A]₂
+noNe noNeSProp (castⱼ {r = %} [A] [A]₁ [A]₂ [A]₃) castℕΠₙ = noNeSProp [A]₂
+noNe noNeSProp (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠℕₙ = noNeSProp [A]₂
+noNe noNeSProp (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠΠ%!ₙ = noNeSProp [A]₂
+noNe noNeSProp (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠΠ!%ₙ = noNeSProp [A]₂
+noNe noNeSProp (conv ⊢t x) (var n) = noNe noNeSProp ⊢t (var n)
+noNe noNeSProp (conv ⊢t x) (∘ₙ neT) = noNe noNeSProp ⊢t (∘ₙ neT)
+noNe noNeSProp (conv ⊢t x) (natrecₙ neT) = noNe noNeSProp ⊢t (natrecₙ neT)
+noNe noNeSProp (conv ⊢t x) (Idₙ neT) = noNe noNeSProp ⊢t (Idₙ neT)
+noNe noNeSProp (conv ⊢t x) (Idℕₙ neT) = noNe noNeSProp ⊢t (Idℕₙ neT)
+noNe noNeSProp (conv ⊢t x) (Idℕ0ₙ neT) = noNe noNeSProp ⊢t (Idℕ0ₙ neT)
+noNe noNeSProp (conv ⊢t x) (IdℕSₙ neT) = noNe noNeSProp ⊢t (IdℕSₙ neT)
+noNe noNeSProp (conv ⊢t x) (IdUₙ neT) = noNe noNeSProp ⊢t (IdUₙ neT)
+noNe noNeSProp (conv ⊢t x) (IdUℕₙ neT) = noNe noNeSProp ⊢t (IdUℕₙ neT)
+noNe noNeSProp (conv ⊢t x) (IdUΠₙ neT) = noNe noNeSProp ⊢t (IdUΠₙ neT)
+noNe noNeSProp (conv ⊢t x) (castₙ neT) = noNe noNeSProp ⊢t (castₙ neT)
+noNe noNeSProp (conv ⊢t x) (castℕₙ neT) = noNe noNeSProp ⊢t (castℕₙ neT)
+noNe noNeSProp (conv ⊢t x) (castΠₙ neT) = noNe noNeSProp ⊢t (castΠₙ neT)
+noNe noNeSProp (conv ⊢t x) (castℕℕₙ neT) = noNe noNeSProp ⊢t (castℕℕₙ neT)
+noNe noNeSProp (conv ⊢t x) castℕΠₙ = noNe noNeSProp ⊢t castℕΠₙ
+noNe noNeSProp (conv ⊢t x) castΠℕₙ = noNe noNeSProp ⊢t castΠℕₙ
+noNe noNeSProp (conv ⊢t x) castΠΠ%!ₙ = noNe noNeSProp ⊢t castΠΠ%!ₙ
+noNe noNeSProp (conv ⊢t x) castΠΠ!%ₙ = noNe noNeSProp ⊢t castΠΠ!%ₙ
+noNe noNeSProp (conv ⊢t x) Emptyrecₙ = noNe noNeSProp ⊢t Emptyrecₙ
 
 -- Helper function for canonicity for reducible natural properties
 canonicity″ : ∀ {t}
+              → noNeSPropAx
               → Natural-prop ε t
               → ∃ λ k → ε ⊢ t ≡ sucᵏ k ∷ ℕ ^ [ ! , ι ⁰ ]
-canonicity″ (sucᵣ (ℕₜ n₁ d n≡n prop)) =
-  let a , b = canonicity″ prop
+canonicity″ noNeSProp (sucᵣ (ℕₜ n₁ d n≡n prop)) =
+  let a , b = canonicity″ noNeSProp prop
   in  1+ a , suc-cong (trans (subset*Term (redₜ d)) b)
-canonicity″ zeroᵣ = 0 , refl (zeroⱼ ε)
-canonicity″ (ne (neNfₜ neK ⊢k k≡k)) = ⊥-elim (noNe ⊢k neK)
+canonicity″ noNeSProp zeroᵣ = 0 , refl (zeroⱼ ε)
+canonicity″ noNeSProp (ne (neNfₜ neK ⊢k k≡k)) = ⊥-elim (noNe noNeSProp ⊢k neK)
 
 -- Helper function for canonicity for specific reducible natural numbers
 canonicity′ : ∀ {t l}
+             → noNeSPropAx
              → ([ℕ] : ε ⊩⟨ l ⟩ℕ ℕ)
              → ε ⊩⟨ l ⟩ t ∷ ℕ ^ [ ! , ι ⁰ ] / ℕ-intr [ℕ]
              → ∃ λ k → ε ⊢ t ≡ sucᵏ k ∷ ℕ ^ [ ! , ι ⁰ ]
-canonicity′ (noemb [ℕ]) (ℕₜ n d n≡n prop) = let a , b = canonicity″ prop
+canonicity′ noNeSProp (noemb [ℕ]) (ℕₜ n d n≡n prop) = let a , b = canonicity″ noNeSProp prop
                                           in  a , trans (subset*Term (redₜ d)) b
-canonicity′ (emb emb< [ℕ]) [t] = canonicity′ [ℕ] [t]
-canonicity′ (emb ∞< [ℕ]) [t] = canonicity′ [ℕ] [t]
+canonicity′ noNeSProp (emb emb< [ℕ]) [t] = canonicity′ noNeSProp [ℕ] [t]
+canonicity′ noNeSProp (emb ∞< [ℕ]) [t] = canonicity′ noNeSProp [ℕ] [t]
 
 -- Canonicity of natural numbers
-canonicity : ∀ {t} → ε ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ] → ∃ λ k → ε ⊢ t ≡ sucᵏ k ∷ ℕ ^ [ ! , ι ⁰ ]
-canonicity ⊢t with reducibleTerm ⊢t
-canonicity ⊢t | [ℕ] , [t] =
-  canonicity′ (ℕ-elim [ℕ]) (irrelevanceTerm [ℕ] (ℕ-intr (ℕ-elim [ℕ])) [t])
-
--- Canonicity for Empty
-
-¬Empty′ : ∀ {n l} → ε ⊩Empty n ∷Empty^ l → ⊥
-¬Empty′ (Emptyₜ (ne ⊢n)) = noNeSProp ⊢n
-
-¬Empty : ∀ {n l} → ε ⊢ n ∷ Empty ^ [ % , ι l ] → ⊥
-¬Empty {n} {l} ⊢n =
-  let [Empty] , [n] = reducibleTerm ⊢n
-      [Empty]′ = Emptyᵣ {l = next l} ([[ univ (Emptyⱼ ε) , univ (Emptyⱼ ε) , id (univ (Emptyⱼ ε)) ]])
-      [n]′ = irrelevanceTerm [Empty] [Empty]′ [n]
-
-  in ¬Empty′ [n]′
+canonicity : ∀ {t} →
+             noNeSPropAx →
+             ε ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ] →
+             ∃ λ k → ε ⊢ t ≡ sucᵏ k ∷ ℕ ^ [ ! , ι ⁰ ]
+canonicity noNeSProp ⊢t with reducibleTerm ⊢t
+canonicity noNeSProp ⊢t | [ℕ] , [t] =
+  canonicity′ noNeSProp (ℕ-elim [ℕ]) (irrelevanceTerm [ℕ] (ℕ-intr (ℕ-elim [ℕ])) [t])
