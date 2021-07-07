@@ -1,7 +1,6 @@
 ## HTML Output ############################################################
 
-htmldir=$(HOME)/popl17/html
-# htmldir=/tmp/logrel-mltt/html
+htmldir=$(HOME)/tobedefined
 
 # Agda-2.5.3 needed to generate the links we use in the paper
 agda=agda-2.5.3
