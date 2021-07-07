@@ -5,8 +5,9 @@ open import Definition.Typed.EqualityRelation
 module Definition.LogicalRelation.ShapeView {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
-open import Definition.Untyped
+open import Definition.Untyped as U
 open import Definition.Typed
+open import Definition.Typed.Weakening
 open import Definition.Typed.Properties
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Properties.Escape
@@ -424,3 +425,5 @@ combine (emb¹∞ [AB]) [BC] = emb¹∞∞ (combine [AB] [BC])
 combine (emb∞¹ [AB]) [BC] = emb∞¹∞ (combine [AB] [BC])
 combine [AB] (emb¹∞ [BC]) = combine [AB] [BC]
 combine [AB] (emb∞¹ [BC]) = emb∞∞¹ (combine [AB] [BC])
+
+
