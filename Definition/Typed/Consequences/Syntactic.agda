@@ -1,4 +1,4 @@
--- {-# OPTIONS --safe #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Typed.Consequences.Syntactic where
 
