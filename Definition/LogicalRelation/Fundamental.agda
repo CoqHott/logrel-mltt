@@ -49,26 +49,34 @@ open import Tools.Unit
 open import Tools.Nat
 import Tools.PropositionalEquality as PE
 
-mutual
+
   -- Fundamental theorem for contexts.
-  valid : ∀ {Γ} → ⊢ Γ → ⊩ᵛ Γ
+valid : ∀ {Γ} → ⊢ Γ → ⊩ᵛ Γ
+fundamental : ∀ {Γ A rA} (⊢A : Γ ⊢ A ^ rA) → Σ (⊩ᵛ Γ) (λ [Γ] → Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
+fundamentalEq : ∀{Γ A B rA} → Γ ⊢ A ≡ B ^ rA
+              → ∃  λ ([Γ] : ⊩ᵛ Γ)
+              → ∃₂ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ]) ([B] : Γ ⊩ᵛ⟨ ∞ ⟩ B ^ rA / [Γ])
+              → Γ ⊩ᵛ⟨ ∞ ⟩ A ≡ B ^ rA / [Γ] / [A]
+fundamentalTerm : ∀{Γ A rA t} → Γ ⊢ t ∷ A ^ rA
+    → ∃ λ ([Γ] : ⊩ᵛ Γ)
+    → ∃ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
+    → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ rA / [Γ] / [A]
+fundamentalTermEq : ∀{Γ A t t′ rA} → Γ ⊢ t ≡ t′ ∷ A ^ rA
+                    → ∃ λ ([Γ] : ⊩ᵛ Γ)
+                    → [ Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ t′ ∷ A ^ rA / [Γ] ]
+
+abstract
   valid ε = ε
   valid (⊢Γ ∙ A) = let [Γ] , [A] = fundamental A in [Γ] ∙ [A]
 
-
   -- Fundamental theorem for types.
-  fundamental : ∀ {Γ A rA} (⊢A : Γ ⊢ A ^ rA) → Σ (⊩ᵛ Γ) (λ [Γ] → Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
+
   fundamental (Uⱼ x) = valid x , maybeEmbᵛ {A = Univ _ _} (valid x) (Uᵛ ∞< (valid x))
   fundamental (univ {A} ⊢A) with fundamentalTerm ⊢A
   fundamental (univ {A} ⊢A) | [Γ] , [U] , [A] =
-    [Γ] , maybeEmbᵛ {A = A} [Γ] (univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [A])
+              [Γ] , maybeEmbᵛ {A = A} [Γ] (univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [A])
 
   -- Fundamental theorem for type equality.
-  fundamentalEq : ∀{Γ A B rA} → Γ ⊢ A ≡ B ^ rA
-    → ∃  λ ([Γ] : ⊩ᵛ Γ)
-    → ∃₂ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ]) ([B] : Γ ⊩ᵛ⟨ ∞ ⟩ B ^ rA / [Γ])
-    → Γ ⊩ᵛ⟨ ∞ ⟩ A ≡ B ^ rA / [Γ] / [A]
-
   fundamentalEq (univ {A} {B} x) with fundamentalTermEq x
   fundamentalEq (univ {A} {B} x) | [Γ] , modelsTermEq [U] [t] [u] [t≡u] =
     let [A] = maybeEmbᵛ {A = A} [Γ] (univᵛ {A} [Γ] (≡is≤ PE.refl) [U] [t])
@@ -100,11 +108,6 @@ mutual
                                           ([B₁≡B] ⊢Δ [σ]′)))
 
   -- Fundamental theorem for terms.
-  fundamentalTerm : ∀{Γ A rA t} → Γ ⊢ t ∷ A ^ rA
-    → ∃ λ ([Γ] : ⊩ᵛ Γ)
-    → ∃ λ ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ rA / [Γ])
-    → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ rA / [Γ] / [A]
-
   fundamentalTerm (ℕⱼ x) = valid x , maybeEmbᵛ {A = Univ _ _} (valid x) (Uᵛ emb< (valid x)) ,  maybeEmbTermᵛ {A = Univ _ _} {t = ℕ} (valid x) (Uᵛ emb< (valid x)) (ℕᵗᵛ (valid x))
   fundamentalTerm (Emptyⱼ {l} ⊢Γ) = let [Γ] = valid ⊢Γ
                                         [U] = Uᵛ (proj₂ (levelBounded _)) [Γ]
@@ -279,10 +282,6 @@ mutual
         
                          
   -- Fundamental theorem for term equality.
-  fundamentalTermEq : ∀{Γ A t t′ rA} → Γ ⊢ t ≡ t′ ∷ A ^ rA
-                    → ∃ λ ([Γ] : ⊩ᵛ Γ)
-                    → [ Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ t′ ∷ A ^ rA / [Γ] ]
-
   fundamentalTermEq (refl D) with fundamentalTerm D
   ... | [Γ] , [A] , [t] =
     [Γ] , modelsTermEq [A] [t] [t]
