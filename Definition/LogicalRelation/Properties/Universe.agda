@@ -25,12 +25,6 @@ open import Tools.Empty using (⊥; ⊥-elim)
 import Data.Fin as Fin
 import Data.Nat as Nat
 
-Ugenⱼ : ∀ {r Γ l} → ⊢ Γ → Γ ⊢ Univ r l ^ [ ! , next l ]
-Ugenⱼ {l = ⁰} ⊢Γ = univ (univ 0<1 ⊢Γ)
-Ugenⱼ {l = ¹} ⊢Γ = Uⱼ ⊢Γ
-
-
-
 Ugen : ∀ {Γ rU l} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ next l ⟩ Univ rU l ^ [ ! , next l ] 
 Ugen {Γ} {rU} {⁰} ⊢Γ = Uᵣ′ (Univ rU ⁰) (ι ¹) rU ⁰ emb< PE.refl ((idRed:*: (Ugenⱼ ⊢Γ)))
 Ugen {Γ} {rU} {¹} ⊢Γ = Uᵣ′ (Univ rU ¹) ∞ rU ¹ ∞< PE.refl (idRed:*: (Uⱼ ⊢Γ))

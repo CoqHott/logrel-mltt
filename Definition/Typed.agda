@@ -580,3 +580,7 @@ Unitⱼ ⊢Γ = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ Emptyⱼ ⊢Γ �
 
 typeUnit : ∀ {l} →  Type (Unit {l})
 typeUnit = Πₙ
+
+Ugenⱼ : ∀ {r Γ l} → ⊢ Γ → Γ ⊢ Univ r l ^ [ ! , next l ]
+Ugenⱼ {l = ⁰} ⊢Γ = univ (univ 0<1 ⊢Γ)
+Ugenⱼ {l = ¹} ⊢Γ = Uⱼ ⊢Γ
