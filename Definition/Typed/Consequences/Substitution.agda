@@ -21,16 +21,30 @@ import Tools.PropositionalEquality as PE
 
 -- Well-formed substitution of types.
 substitution : ∀ {A rA Γ Δ σ} → Γ ⊢ A ^ rA → Δ ⊢ˢ σ ∷ Γ → ⊢ Δ → Δ ⊢ subst σ A ^ rA
-substitution A σ ⊢Δ with fundamental A | fundamentalSubst (wf A) ⊢Δ σ
-substitution A σ ⊢Δ | [Γ] , [A] | [Γ]′ , [σ] =
-  escape (proj₁ ([A] ⊢Δ (irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ])))
+substitution A σ ⊢Δ =
+    let X = fundamental A
+        [Γ] = proj₁ X
+        [A] = proj₂ X
+        Y = fundamentalSubst (wf A) ⊢Δ σ
+        [Γ]′ = proj₁ Y
+        [σ] = proj₂ Y
+    in escape (proj₁ ([A] ⊢Δ (irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ])))
 
 -- Well-formed substitution of type equality.
 substitutionEq : ∀ {A B rA Γ Δ σ σ′}
                → Γ ⊢ A ≡ B ^ rA → Δ ⊢ˢ σ ≡ σ′ ∷ Γ → ⊢ Δ → Δ ⊢ subst σ A ≡ subst σ′ B ^ rA
-substitutionEq A≡B σ ⊢Δ with fundamentalEq A≡B | fundamentalSubstEq (wfEq A≡B) ⊢Δ σ
-substitutionEq A≡B σ ⊢Δ | [Γ] , [A] , [B] , [A≡B] | [Γ]′ , [σ] , [σ′] , [σ≡σ′]  =
-  let [σ]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ]
+substitutionEq A≡B σ ⊢Δ =
+  let X = fundamentalEq A≡B
+      [Γ] = proj₁ X
+      [A] = proj₁ (proj₂ X)
+      [B] = proj₁ (proj₂ (proj₂ X))
+      [A≡B] = proj₂ (proj₂ (proj₂ X))
+      Y = fundamentalSubstEq (wfEq A≡B) ⊢Δ σ
+      [Γ]′ = proj₁ Y
+      [σ] = proj₁ (proj₂ Y)
+      [σ′] = proj₁ (proj₂ (proj₂ Y))
+      [σ≡σ′] = proj₂ (proj₂ (proj₂ Y))
+      [σ]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ]
       [σ′]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ′]
       [σ≡σ′]′ = irrelevanceSubstEq [Γ]′ [Γ] ⊢Δ ⊢Δ [σ] [σ]′ [σ≡σ′]
   in  escapeEq (proj₁ ([A] ⊢Δ [σ]′))
@@ -41,19 +55,29 @@ substitutionEq A≡B σ ⊢Δ | [Γ] , [A] , [B] , [A≡B] | [Γ]′ , [σ] , [�
 -- Well-formed substitution of terms.
 substitutionTerm : ∀ {t A rA Γ Δ σ}
                → Γ ⊢ t ∷ A ^ rA → Δ ⊢ˢ σ ∷ Γ → ⊢ Δ → Δ ⊢ subst σ t ∷ subst σ A ^ rA
-substitutionTerm t σ ⊢Δ with fundamentalTerm t | fundamentalSubst (wfTerm t) ⊢Δ σ
-substitutionTerm t σ ⊢Δ | [Γ] , [A] , [t] | [Γ]′ , [σ] =
-  let [σ]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ]
-  in  escapeTerm (proj₁ ([A] ⊢Δ [σ]′)) (proj₁ ([t] ⊢Δ [σ]′))
+substitutionTerm t σ ⊢Δ =
+  let X = fundamentalTerm t
+      [Γ] = proj₁ X
+      [A] = proj₁ (proj₂ X)
+      [t] = proj₂ (proj₂ X)
+      Y = fundamentalSubst (wfTerm t) ⊢Δ σ
+      [Γ]′ = proj₁ Y
+      [σ] = proj₂ Y
+      [σ]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ]
+  in escapeTerm (proj₁ ([A] ⊢Δ [σ]′)) (proj₁ ([t] ⊢Δ [σ]′))
 
 -- Well-formed substitution of term equality.
 substitutionEqTerm : ∀ {t u A rA Γ Δ σ σ′}
                    → Γ ⊢ t ≡ u ∷ A ^ rA → Δ ⊢ˢ σ ≡ σ′ ∷ Γ → ⊢ Δ
                    → Δ ⊢ subst σ t ≡ subst σ′ u ∷ subst σ A ^ rA
 substitutionEqTerm t≡u σ≡σ′ ⊢Δ with fundamentalTermEq t≡u
-                                  | fundamentalSubstEq (wfEqTerm t≡u) ⊢Δ σ≡σ′
-... | [Γ] , modelsTermEq [A] [t] [u] [t≡u] | [Γ]′ , [σ] , [σ′] , [σ≡σ′] =
-  let [σ]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ]
+substitutionEqTerm t≡u σ≡σ′ ⊢Δ | [Γ] , modelsTermEq [A] [t] [u] [t≡u] =
+  let Y = fundamentalSubstEq (wfEqTerm t≡u) ⊢Δ σ≡σ′
+      [Γ]′ = proj₁ Y
+      [σ] = proj₁ (proj₂ Y)
+      [σ′] = proj₁ (proj₂ (proj₂ Y))
+      [σ≡σ′] = proj₂ (proj₂ (proj₂ Y))      
+      [σ]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ]
       [σ′]′ = irrelevanceSubst [Γ]′ [Γ] ⊢Δ ⊢Δ [σ′]
       [σ≡σ′]′ = irrelevanceSubstEq [Γ]′ [Γ] ⊢Δ ⊢Δ [σ] [σ]′ [σ≡σ′]
   in  escapeTermEq (proj₁ ([A] ⊢Δ [σ]′))
@@ -163,7 +187,8 @@ substTerm {F} {G} {t} {f} ⊢f ⊢t =
   let ⊢Γ = wfTerm ⊢t
   in  substitutionTerm ⊢f (singleSubst ⊢t) ⊢Γ
 
-substTypeΠ : ∀ {t F rF G rG Γ} → Γ ⊢ Π F ^ rF ▹ G ^ rG → Γ ⊢ t ∷ F ^ rF → Γ ⊢ G [ t ] ^ rG
+substTypeΠ : ∀ {t F rF lF lG G rΠ lΠ Γ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] → Γ ⊢ t ∷ F ^ [ rF , ι lF ]
+                                     → Γ ⊢ G [ t ] ^ [ rΠ , ι lG ] 
 substTypeΠ ΠFG t with syntacticΠ ΠFG
 substTypeΠ ΠFG t | F , G = substType G t
 
