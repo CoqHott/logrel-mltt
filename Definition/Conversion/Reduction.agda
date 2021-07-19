@@ -21,16 +21,17 @@ reductionConv↑ x x₁ x₂ x₃ ([↑] A″ B″ D D′ whnfA′ whnfB′ A′
   [↑] A″ B″ x x₁ whnfA′ whnfB′ A′<>B′
 
 -- Weak head expansion of algorithmic equality of terms.
-reductionConv↑Term : ∀ {t t′ u u′ A B Γ}
-                   → Γ ⊢ A ⇒* B ^ !
-                   → Γ ⊢ t ⇒* t′ ∷ B 
-                   → Γ ⊢ u ⇒* u′ ∷ B 
+reductionConv↑Term : ∀ {t t′ u u′ A B Γ l}
+                   → Γ ⊢ A ⇒* B ^ [ ! , l ]
+                   → Γ ⊢ t ⇒* t′ ∷ B ^ l 
+                   → Γ ⊢ u ⇒* u′ ∷ B ^ l
                    → Whnf B
                    → Whnf t′
                    → Whnf u′
-                   → Γ ⊢ t′ [conv↑] u′ ∷ B
-                   → Γ ⊢ t  [conv↑] u  ∷ A
+                   → Γ ⊢ t′ [conv↑] u′ ∷ B ^ l
+                   → Γ ⊢ t  [conv↑] u  ∷ A ^ l
 reductionConv↑Term x x₁ x₂ x₃ x₄ x₅
                    ([↑]ₜ B₁ t″ u″ D d d′ whnfB whnft′ whnfu′ t<>u)
                    rewrite whnfRed* D x₃ | whnfRed*Term d x₄ | whnfRed*Term d′ x₅ =
   [↑]ₜ B₁ t″ u″ x x₁ x₂ whnfB whnft′ whnfu′ t<>u
+ 
