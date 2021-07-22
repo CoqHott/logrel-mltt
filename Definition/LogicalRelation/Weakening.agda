@@ -283,8 +283,8 @@ wkTerm {ρ} {r = [ ! , l′ ]} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D �
             [G]₁ = [G] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′
             [G]₂ = irrelevance′ G-compEq [G]₁
             [a≡b]′ = irrelevanceEqTerm′ F-compEq PE.refl PE.refl [F]₂ [F]₁ [a≡b]
-        in  irrelevanceEqTerm″ PE.refl PE.refl (PE.cong (λ x → x ∘ _) (PE.sym (wk-comp ρ₁ ρ _)))
-                                (PE.cong (λ x → x ∘ _) (PE.sym (wk-comp ρ₁ ρ _)))
+        in  irrelevanceEqTerm″ PE.refl PE.refl (PE.cong (λ x → x ∘ _ ^ _ ) (PE.sym (wk-comp ρ₁ ρ _)))
+                                (PE.cong (λ x → x ∘ _ ^ _) (PE.sym (wk-comp ρ₁ ρ _)))
                                 G-compEq
                                 [G]₁ [G]₂
                                 ([f] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′ [b]′ [a≡b]′))
@@ -295,7 +295,7 @@ wkTerm {ρ} {r = [ ! , l′ ]} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D �
             [G]₁ = [G] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′
             [G]₂ = irrelevance′ (wk-comp-subst ρ₁ ρ G) [G]₁
         in  irrelevanceTerm″ (wk-comp-subst ρ₁ ρ G) PE.refl PE.refl
-                              (PE.cong (λ x → x ∘ _) (PE.sym (wk-comp ρ₁ ρ _)))
+                              (PE.cong (λ x → x ∘ _ ^ _ ) (PE.sym (wk-comp ρ₁ ρ _)))
                               [G]₁ [G]₂ ([f]₁ ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′))
 wkTerm {ρ} {r = [ % , l′ ]} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) d = T.wkTerm [ρ] ⊢Δ d
 wkTerm {ρ} [ρ] ⊢Δ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) d = T.wkTerm [ρ] ⊢Δ d
@@ -359,8 +359,8 @@ wkEqTerm {ρ} {r = [ ! , l′ ]} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D
                  [a]′ = irrelevanceTerm′ (wk-comp ρ₁ ρ F) PE.refl PE.refl [F]₂ [F]₁ [a]
                  [G]₁ = [G] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′
                  [G]₂ = irrelevance′ (wk-comp-subst ρ₁ ρ G) [G]₁
-             in  irrelevanceEqTerm″ PE.refl PE.refl (PE.cong (λ y → y ∘ _) (PE.sym (wk-comp ρ₁ ρ _)))
-                                     (PE.cong (λ y → y ∘ _) (PE.sym (wk-comp ρ₁ ρ _)))
+             in  irrelevanceEqTerm″ PE.refl PE.refl (PE.cong (λ y → y ∘ _ ^ _) (PE.sym (wk-comp ρ₁ ρ _)))
+                                     (PE.cong (λ y → y ∘ _ ^ _) (PE.sym (wk-comp ρ₁ ρ _)))
                                      (wk-comp-subst ρ₁ ρ G)
                                      [G]₁ [G]₂
                                      ([f≡g] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′))

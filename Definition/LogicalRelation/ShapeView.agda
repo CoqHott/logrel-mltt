@@ -150,7 +150,7 @@ ne-elim′ {∞} D _ (emb ∞< x) e | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb
 ne-elim : ∀ {Γ l K r ll} → Neutral K  → Γ ⊩⟨ l ⟩ K ^ [ r , ι ll ] → Γ ⊩⟨ l ⟩ne K ^[ r , ll ]
 ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
 
-Π-elim′ : ∀ {l A Γ F G rF lF lG r lΠ} → Γ ⊢ A ⇒* Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ] → Γ ⊩⟨ l ⟩ A ^ [ r , ι lΠ ]  → Γ ⊩⟨ l ⟩Π A ^[ r , lΠ ]
+Π-elim′ : ∀ {l A Γ F G rF lF lG r lΠ} → Γ ⊢ A ⇒* Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ] → Γ ⊩⟨ l ⟩ A ^ [ r , ι lΠ ]  → Γ ⊩⟨ l ⟩Π A ^[ r , lΠ ]
 Π-elim′ D (Uᵣ′ _ _ _ _ l< X [[ _ , _ , d ]]) = ⊥-elim (U≢Π (whrDet* (d , Uₙ) (D , Πₙ)))
 Π-elim′ D (ℕᵣ D′) = ⊥-elim (ℕ≢Π (whrDet* (red D′ , ℕₙ) (D , Πₙ)))
 Π-elim′ D (Emptyᵣ D′) = ⊥-elim (Empty≢Π (whrDet* (red D′ , Emptyₙ) (D , Πₙ)))
@@ -167,7 +167,7 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
 Π-elim′ {∞} D (emb ∞< x) | noemb x₁ = emb ∞< (noemb x₁)
 Π-elim′ {∞} D (emb ∞< x) | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
-Π-elim : ∀ {Γ F G rF lF lG r lΠ l} → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ] → Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ^[ r , lΠ ]
+Π-elim : ∀ {Γ F G rF lF lG r lΠ l} → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ] → Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ r , lΠ ]
 Π-elim [Π] = Π-elim′ (id (escape [Π])) [Π]
 
 ∃-elim′ : ∀ {l A Γ F G ll} → Γ ⊢ A ⇒* ∃ F ▹ G ^ [ % , ll ] → Γ ⊩⟨ l ⟩ A ^ [ % , ll ] → Γ ⊩⟨ l ⟩∃ A  ^ ll

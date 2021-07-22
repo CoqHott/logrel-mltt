@@ -46,15 +46,15 @@ mutual
                  | whrDet* (red D₂ , ne neK₂) (red D″ , ne neM₁) =
     ne₌ M₁ D″ neM₁
         (~-trans K≡M K≡M₁)
-  transEqT {Γ}  {r = r} {l = l} {l′ = l′} {l″ = l″}
+  transEqT {Γ}  {r = [ r , ι lΠ ]} {l = l} {l′ = l′} {l″ = l″}
            (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
                (Πᵣ rF₂ lF₂ lG₂ _ _ F₂ G₂ D₂ ⊢F₂ ⊢G₂ A≡A₂ [F]₂ [G]₂ G-ext₂))
            (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
            (Π₌ F″ G″ D″ A≡B₁ [F≡F′]₁ [G≡G′]₁) =
     let ΠF₁G₁≡ΠF′G′    = whrDet* (red D₁ , Πₙ) (D′  , Πₙ)
-        F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′  = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
-        F₂≡F″ , rF₂≡rF′ , lF₂≡lF′ , G₂≡G″ , lG₂≡lG″   = Π-PE-injectivity (whrDet* (red D₂ , Πₙ) (D″ , Πₙ))
+        F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , _ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
+        F₂≡F″ , rF₂≡rF′ , lF₂≡lF′ , G₂≡G″ , lG₂≡lG″  , _ = Π-PE-injectivity (whrDet* (red D₂ , Πₙ) (D″ , Πₙ))
         substLift {Δ} {l} {a} {r} ρ x = Δ ⊩⟨ l ⟩ wk (lift ρ) x [ a ] ^ r
         [F′] : ∀ {ρ Δ} [ρ] ⊢Δ → Δ ⊩⟨ l′ ⟩ wk ρ F′ ^ [ rF₁ , ι lF₁ ]
         [F′] {ρ} [ρ] ⊢Δ = PE.subst (λ x → _ ⊩⟨ _ ⟩ wk ρ x ^ _) F₁≡F′ ([F]₁ [ρ] ⊢Δ)
@@ -65,14 +65,14 @@ mutual
                                       ([F]₁ [ρ] ⊢Δ) ([F′] [ρ] ⊢Δ) ([F≡F′]₁ [ρ] ⊢Δ)
         [G′] : ∀ {ρ Δ a} [ρ] ⊢Δ
              → Δ ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ
-             → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′ [ a ] ^ [ TypeInfo.r r , ι lG₁ ] 
+             → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′ [ a ] ^ [ r , ι lG₁ ] 
         [G′] {ρ} [ρ] ⊢Δ [a] =
              let [a′] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₁≡F′)) PE.refl PE.refl
                                       ([F′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ) [a]
              in  PE.subst (substLift ρ) G₁≡G′ ([G]₁ [ρ] ⊢Δ [a′])
         [G″] : ∀ {ρ Δ a} [ρ] ⊢Δ
              → Δ ⊩⟨ l″ ⟩ a ∷ wk ρ F″ ^ [ rF₂ , ι lF₂ ] / [F″] [ρ] ⊢Δ
-             → Δ ⊩⟨ l″ ⟩ wk (lift ρ) G″ [ a ] ^ [ TypeInfo.r r , ι lG₂ ]
+             → Δ ⊩⟨ l″ ⟩ wk (lift ρ) G″ [ a ] ^ [ r , ι lG₂ ]
         [G″] {ρ} [ρ] ⊢Δ [a] =
           let [a″] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₂≡F″)) PE.refl PE.refl
                                       ([F″] [ρ] ⊢Δ) ([F]₂ [ρ] ⊢Δ) [a]
@@ -80,7 +80,7 @@ mutual
         [G′≡G″] : ∀ {ρ Δ a} [ρ] ⊢Δ
                   ([a] : Δ ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ)
                 → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′  [ a ]
-                          ≡ wk (lift ρ) G″ [ a ] ^ [ TypeInfo.r r , ι lG₁ ] / [G′] [ρ] ⊢Δ [a]
+                          ≡ wk (lift ρ) G″ [ a ] ^ [ r , ι lG₁ ] / [G′] [ρ] ⊢Δ [a]
         [G′≡G″] {ρ} [ρ] ⊢Δ [a′] =
           let [a]₁ = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₁≡F′)) PE.refl PE.refl
                                       ([F′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ) [a′]
@@ -88,7 +88,7 @@ mutual
                              ([G]₁ [ρ] ⊢Δ [a]₁) ([G′] [ρ] ⊢Δ [a′])
                              ([G≡G′]₁ [ρ] ⊢Δ [a]₁)
                              -- Γ ⊢ .C ⇒* Π F″ ^ rF ▹ G″ ^ r
-    in  Π₌ F″ G″ (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ D″) (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° lG₁ ^ r) ΠF₁G₁≡ΠF′G′ A≡B₁)))
+    in  Π₌ F″ G″ (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ D″) (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° lG₁ ° lΠ ^ [ r , ι lΠ ]) ΠF₁G₁≡ΠF′G′ A≡B₁)))
            (λ ρ ⊢Δ → transEq′ PE.refl PE.refl (PE.sym rF₁≡rF′) (PE.sym rF₂≡rF′) (PE.cong ι (PE.sym lF₁≡lF′)) (PE.cong ι (PE.sym lF₂≡lF′))
            ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ) 
            ([F≡F′] ρ ⊢Δ) ([F′≡F″] ρ ⊢Δ))

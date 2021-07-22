@@ -53,10 +53,10 @@ abstract
              ([UB] : Γ ∙ A ^ [ rA , ι lA ] ⊩ᵛ⟨ ∞ ⟩ Univ ! lB ^ [ ! , next lB ] / [Γ] ∙ [A])
              ([A]ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ Univ rA lA ^ [ ! , next lA ] / [Γ] / [UA])
              ([B]ₜ : Γ ∙ A ^ [ rA , ι lA ] ⊩ᵛ⟨ ∞ ⟩ B ∷ Univ ! lB ^ [ ! , next lB ] / [Γ] ∙ [A] / (λ {Δ} {σ} → [UB] {Δ} {σ}))
-             ([ΠAB] : Γ ⊩ᵛ⟨ ∞ ⟩ Π A ^ rA ° lA ▹ B ° lB ^ [ ! , ι l ] / [Γ])
-             ([t]ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ Π A ^ rA ° lA ▹ B ° lB ^ [ ! , ι l ] / [Γ] / [ΠAB]) →
-             ([u]ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ Π A ^ rA ° lA ▹ B ° lB ^ [ ! , ι l ] / [Γ] / [ΠAB]) →
-             [ Γ ⊩ᵛ⟨ ∞ ⟩ Id (Π A ^ rA ° lA ▹ B ° lB) t u ≡ Π A ^ rA ° lA ▹ (Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0))) ° lB ∷ SProp l ^ [ ! , next l ]  / [Γ] ]
+             ([ΠAB] : Γ ⊩ᵛ⟨ ∞ ⟩ Π A ^ rA ° lA ▹ B ° lB ° l ^ [ ! , ι l ] / [Γ])
+             ([t]ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ Π A ^ rA ° lA ▹ B ° lB ° l ^ [ ! , ι l ] / [Γ] / [ΠAB]) →
+             ([u]ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ u ∷ Π A ^ rA ° lA ▹ B ° lB ° l ^ [ ! , ι l ] / [Γ] / [ΠAB]) →
+             [ Γ ⊩ᵛ⟨ ∞ ⟩ Id (Π A ^ rA ° lA ▹ B ° lB ° l) t u ≡ Π A ^ rA ° lA ▹ (Id B ((wk1 t) ∘ (var 0) ^ l) ((wk1 u) ∘ (var 0) ^ l)) ° lB ° l ∷ SProp l ^ [ ! , next l ]  / [Γ] ]
 
   Id-Πᵗᵛ {A} {B} {rA} {lA} {lB} {l} {Γ} {t} {u} [Γ] lA≤ lB≤
             [A] [UB] [A]ₜ [B]ₜ [ΠAB] [t]ₜ [u]ₜ = 
@@ -68,34 +68,34 @@ abstract
         ⊢BΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([UB] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([B]ₜ ⊢Δ [σ]))
         ⊢tΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ΠAB] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([t]ₜ ⊢Δ [σ]))
         ⊢uΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ΠAB] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([u]ₜ ⊢Δ [σ]))
-        Id-Π-res = λ A B → Π A ^ rA ° lA ▹ (Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0))) ° lB
+        Id-Π-res = λ A B → Π A ^ rA ° lA ▹ (Id B ((wk1 t) ∘ (var 0) ^ l ) ((wk1 u) ∘ (var 0) ^ l)) ° lB ° l
         [liftσ] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A} [Γ] ⊢Δ [A] [σ] 
         ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([A] ⊢Δ [σ]))
         [SPropB] = maybeEmbᵛ {A = SProp lB} [ΓA] (λ {Δ} {σ} → Uᵛ <next [ΓA] {Δ} {σ})
         [wA] = wk1ᵛ {A = A} {F = A} [Γ] [A] [A]
-        [wΠ] = wk1ᵛ {A =  Π A ^ rA ° lA ▹ B ° lB} {F = A} [Γ] [A] [ΠAB]
-        [wt] = wk1Termᵛ {F = A} {G = Π A ^ rA ° lA ▹ B ° lB} {t = t} [Γ] [A] [ΠAB] [t]ₜ
-        [wu] = wk1Termᵛ {F = A} {G = Π A ^ rA ° lA ▹ B ° lB} {t = u} [Γ] [A] [ΠAB] [u]ₜ
-        [Id-Π] : Γ ⊩ᵛ Id (Π A ^ rA ° lA ▹ B ° lB) t u ⇒ Id-Π-res A B ∷ SProp l ^ next l / [Γ]        
+        [wΠ] = wk1ᵛ {A =  Π A ^ rA ° lA ▹ B ° lB ° l} {F = A} [Γ] [A] [ΠAB]
+        [wt] = wk1Termᵛ {F = A} {G = Π A ^ rA ° lA ▹ B ° lB ° l} {t = t} [Γ] [A] [ΠAB] [t]ₜ
+        [wu] = wk1Termᵛ {F = A} {G = Π A ^ rA ° lA ▹ B ° lB ° l} {t = u} [Γ] [A] [ΠAB] [u]ₜ
+        [Id-Π] : Γ ⊩ᵛ Id (Π A ^ rA ° lA ▹ B ° lB ° l) t u ⇒ Id-Π-res A B ∷ SProp l ^ next l / [Γ]        
         [Id-Π] = λ {Δ} {σ} ⊢Δ [σ] →
-                   PE.subst (λ ret → Δ ⊢ Id (Π (subst σ A) ^ rA ° lA ▹ (subst (liftSubst σ) B) ° lB) (subst σ t) (subst σ u) ⇒ Π subst σ A ^ rA ° lA ▹ ret ° lB ∷ SProp l ^ next l)
-                            (PE.cong₂ (λ a b → Id (subst (liftSubst σ) B) (a ∘ (var 0)) (b ∘ (var 0))) (PE.sym (Idsym-subst-lemma σ t)) (PE.sym (Idsym-subst-lemma σ u)))
+                   PE.subst (λ ret → Δ ⊢ Id (Π (subst σ A) ^ rA ° lA ▹ (subst (liftSubst σ) B) ° lB ° l) (subst σ t) (subst σ u) ⇒ Π subst σ A ^ rA ° lA ▹ ret ° lB ° l ∷ SProp l ^ next l)
+                            (PE.cong₂ (λ a b → Id (subst (liftSubst σ) B) (a ∘ (var 0) ^ l) (b ∘ (var 0) ^ l)) (PE.sym (Idsym-subst-lemma σ t)) (PE.sym (Idsym-subst-lemma σ u)))
                             (Id-Π {A = subst σ A} {rA} {lA} {lB} {l} {subst (liftSubst σ) B} {subst σ t} {subst σ u} lA≤ lB≤
                                   (⊢AₜΔ {Δ} {σ} ⊢Δ [σ]) (⊢BΔ (⊢Δ ∙ ⊢AΔ {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])) (⊢tΔ {Δ} {σ} ⊢Δ [σ]) (⊢uΔ {Δ} {σ} ⊢Δ [σ]))
         [UB'] = maybeEmbᵛ {l = next lB} {A = U _} [ΓA] (λ {Δ} {σ} → Uᵛ <next [ΓA] {Δ} {σ})
         [Id-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ Id-Π-res A B ∷ SProp l ^ [ ! , next l ] / [Γ] / [SProp]
-        [Id-Π-res] = Πᵗᵛ {F = A} {G = Id B ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0))} lA≤ lB≤ [Γ] [A] (λ {Δ} {σ} → [SPropB] {Δ} {σ}) [A]ₜ
-                         (Idᵗᵛ {A = B} {t = (wk1 t) ∘ (var 0)} {u = (wk1 u) ∘ (var 0)} [ΓA] [B]
-                            (S.irrelevanceTerm′ {A = (wk1d B) [ var 0 ]} {A′ = B} {t = (wk1 t) ∘ (var 0)}
+        [Id-Π-res] = Πᵗᵛ {F = A} {G = Id B ((wk1 t) ∘ (var 0) ^ l) ((wk1 u) ∘ (var 0) ^ l)} lA≤ lB≤ [Γ] [A] (λ {Δ} {σ} → [SPropB] {Δ} {σ}) [A]ₜ
+                         (Idᵗᵛ {A = B} {t = (wk1 t) ∘ (var 0) ^ l} {u = (wk1 u) ∘ (var 0) ^ l} [ΓA] [B]
+                            (S.irrelevanceTerm′ {A = (wk1d B) [ var 0 ]} {A′ = B} {t = (wk1 t) ∘ (var 0) ^ l}
                                                 (wkSingleSubstId B) PE.refl [ΓA] [ΓA]
                                                 (substSΠ {wk1 A} {wk1d B} {var 0} [ΓA] [wA] [wΠ] (proj₂ (fundamentalVar here [ΓA]))) [B]
                                                 (appᵛ {F = wk1 A} {G = wk1d B} {t = wk1 t} {u = var 0} [ΓA] [wA] [wΠ] [wt] (proj₂ (fundamentalVar here [ΓA]))))
-                            (S.irrelevanceTerm′ {A = (wk1d B) [ var 0 ]} {A′ = B} {t = (wk1 u) ∘ (var 0)}
+                            (S.irrelevanceTerm′ {A = (wk1d B) [ var 0 ]} {A′ = B} {t = (wk1 u) ∘ (var 0) ^ l}
                                                 (wkSingleSubstId B) PE.refl [ΓA] [ΓA]
                                                 (substSΠ {wk1 A} {wk1d B} {var 0} [ΓA] [wA] [wΠ] (proj₂ (fundamentalVar here [ΓA]))) [B]
                                                 (appᵛ {F = wk1 A} {G = wk1d B} {t = wk1 u} {u = var 0} [ΓA] [wA] [wΠ] [wu] (proj₂ (fundamentalVar here [ΓA]))))
                             (S.irrelevanceTerm {A = Univ _ _} {t = B} [ΓA] [ΓA] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB'] {Δ} {σ}) [B]ₜ))
-        [id] , [eq] = redSubstTermᵛ {SProp l} {Id (Π A ^ rA ° lA ▹ B ° lB) t u} {Id-Π-res A B}
+        [id] , [eq] = redSubstTermᵛ {SProp l} {Id (Π A ^ rA ° lA ▹ B ° lB ° l) t u} {Id-Π-res A B}
                                     [Γ] (λ {Δ} {σ} ⊢Δ [σ] → [Id-Π] {Δ} {σ} ⊢Δ [σ]) 
                                     [SProp] [Id-Π-res] 
     in modelsTermEq [SProp] [id] [Id-Π-res] [eq]

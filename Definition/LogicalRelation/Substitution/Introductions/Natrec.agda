@@ -30,7 +30,7 @@ import Tools.PropositionalEquality as PE
 
 -- Natural recursion closure reduction (requires reducible terms and equality).
 natrec-subst* : ∀ {Γ C c g n n′ l lC} → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ C ^ [ ! , ι lC ] → Γ ⊢ c ∷ C [ zero ] ^ [ ! , ι lC ]
-              → Γ ⊢ g ∷ Π ℕ ^ ! ° ⁰ ▹ (C ^ ! ° lC ▹▹ C [ suc (var 0) ]↑ ° lC) ° lC ^ [ ! , ι lC ] 
+              → Γ ⊢ g ∷ Π ℕ ^ ! ° ⁰ ▹ (C ^ ! ° lC ▹▹ C [ suc (var 0) ]↑ ° lC ° lC) ° lC ° lC ^ [ ! , ι lC ] 
               → Γ ⊢ n ⇒* n′ ∷ ℕ ^ ι ⁰ 
               → ([ℕ] : Γ ⊩⟨ l ⟩ ℕ ^ [ ! , ι ⁰ ])
               → Γ ⊩⟨ l ⟩ n′ ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ]
@@ -38,7 +38,7 @@ natrec-subst* : ∀ {Γ C c g n n′ l lC} → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ C
                           → Γ ⊩⟨ l ⟩ t′ ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ]
                           → Γ ⊩⟨ l ⟩ t ≡ t′ ∷ ℕ ^ [ ! , ι ⁰ ] / [ℕ]
                           → Γ ⊢ C [ t ] ≡ C [ t′ ] ^ [ ! , ι lC ])
-              → Γ ⊢ natrec C c g n ⇒* natrec C c g n′ ∷ C [ n ] ^ ι lC
+              → Γ ⊢ natrec lC C c g n ⇒* natrec lC C c g n′ ∷ C [ n ] ^ ι lC
 natrec-subst* C c g (id x) [ℕ] [n′] prop = id (natrecⱼ C c g x)
 natrec-subst* C c g (x ⇨ n⇒n′) [ℕ] [n′] prop =
   let q , w = redSubst*Term n⇒n′ [ℕ] [n′]
@@ -69,7 +69,7 @@ sucCase₂ {F} {rF} {Γ} {l} [Γ] [ℕ] [F] =
 sucCase₁ : ∀ {F rF Γ l lF} ([Γ] : ⊩ᵛ Γ)
            ([ℕ] : Γ ⊩ᵛ⟨ l ⟩ ℕ ^ [ ! , ι ⁰ ] / [Γ])
            ([F] : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ] ∙ [ℕ])
-         → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ^ [ rF , ι lF ] / [Γ] ∙ [ℕ]
+         → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ [ rF , ι lF ] / [Γ] ∙ [ℕ]
 sucCase₁ {F} {rF} {Γ} {l} [Γ] [ℕ] [F] =
   ▹▹ᵛ {F} {F [ suc (var 0) ]↑} (≡is≤ PE.refl) (≡is≤ PE.refl) (_∙_ {A = ℕ} [Γ] [ℕ]) [F]
       (sucCase₂ {F} [Γ] [ℕ] [F])
@@ -78,9 +78,9 @@ sucCase₁ {F} {rF} {Γ} {l} [Γ] [ℕ] [F] =
 sucCase : ∀ {F rF Γ l lF} ([Γ] : ⊩ᵛ Γ)
           ([ℕ] : Γ ⊩ᵛ⟨ l ⟩ ℕ ^ [ ! , ι ⁰ ] / [Γ])
           ([F] : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ] ∙ [ℕ])
-        → Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF) ° lF ^ [ rF , ι lF ] / [Γ]
+        → Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ [ rF , ι lF ] / [Γ]
 sucCase {F} {rF} {Γ} {l} {lF} [Γ] [ℕ] [F] =
-  Πᵛ {ℕ} {F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF} (⁰min lF) (≡is≤ PE.refl) [Γ] [ℕ]
+  Πᵛ {ℕ} {F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF} (⁰min lF) (≡is≤ PE.refl) [Γ] [ℕ]
      (sucCase₁ {F} [Γ] [ℕ] [F])
 
 
@@ -90,11 +90,11 @@ sucCaseCong : ∀ {F F′ rF Γ l lF} ([Γ] : ⊩ᵛ Γ)
               ([F] : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ] ∙ [ℕ])
               ([F′] : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ] ∙ [ℕ])
               ([F≡F′] : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , ι lF ] / [Γ] ∙ [ℕ] / [F])
-        → Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F  [ suc (var 0) ]↑ ° lF) ° lF 
-                  ≡ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF) ° lF ^ [ rF , ι lF ]
+        → Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F  [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF 
+                  ≡ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ [ rF , ι lF ]
                   / [Γ] / sucCase {F} [Γ] [ℕ] [F]
 sucCaseCong {F} {F′} {rF} {Γ} {l} {lF} [Γ] [ℕ] [F] [F′] [F≡F′] =
-  Π-congᵛ {ℕ} {F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF} {ℕ} {F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF}
+  Π-congᵛ {ℕ} {F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF} {ℕ} {F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ° lF}
           (⁰min lF) (≡is≤ PE.refl) [Γ] [ℕ] (sucCase₁ {F} [Γ] [ℕ] [F]) [ℕ] (sucCase₁ {F′} [Γ] [ℕ] [F′])
           (reflᵛ {ℕ} [Γ] [ℕ])
           (▹▹-congᵛ {F} {F′} {F [ suc (var 0) ]↑} {F′ [ suc (var 0) ]↑} (≡is≤ PE.refl) (≡is≤ PE.refl)
@@ -115,14 +115,14 @@ natrecTerm : ∀ {F rF lF z s n Γ Δ σ l}
              ([Γ]  : ⊩ᵛ Γ)
              ([F]  : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / _∙_ {l = l} [Γ] (ℕᵛ [Γ]))
              ([F₀] : Γ ⊩ᵛ⟨ l ⟩ F [ zero ] ^ [ rF , ι lF ] / [Γ])
-             ([F₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF) ° lF ^ [ rF , ι lF ] / [Γ])
+             ([F₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ [ rF , ι lF ] / [Γ])
              ([z]  : Γ ⊩ᵛ⟨ l ⟩ z ∷ F [ zero ] ^ [ rF , ι lF ] / [Γ] / [F₀])
-             ([s]  : Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+             ([s]  : Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ [ rF , ι lF ]
                        / [Γ] / [F₊])
              (⊢Δ   : ⊢ Δ)
              ([σ]  : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
              ([σn] : Δ ⊩⟨ l ⟩ n ∷ ℕ ^ [ ! , ι ⁰ ] / ℕᵣ (idRed:*: (univ (ℕⱼ ⊢Δ))))
-           → Δ ⊩⟨ l ⟩ natrec (subst (liftSubst σ) F) (subst σ z) (subst σ s) n
+           → Δ ⊩⟨ l ⟩ natrec lF (subst (liftSubst σ) F) (subst σ z) (subst σ s) n
                ∷ subst (liftSubst σ) F [ n ] ^ [ rF , ι lF ]
                / irrelevance′ (PE.sym (singleSubstComp n σ F))
                               (proj₁ ([F] ⊢Δ ([σ] , [σn])))
@@ -347,23 +347,23 @@ natrec-congTerm : ∀ {F F′ rF lF z z′ s s′ n m Γ Δ σ σ′ l}
                   ([F₀]     : Γ ⊩ᵛ⟨ l ⟩ F [ zero ] ^ [ rF , ι lF ] / [Γ])
                   ([F′₀]    : Γ ⊩ᵛ⟨ l ⟩ F′ [ zero ] ^ [ rF , ι lF ] / [Γ])
                   ([F₀≡F′₀] : Γ ⊩ᵛ⟨ l ⟩ F [ zero ] ≡ F′ [ zero ] ^ [ rF , ι lF ] / [Γ] / [F₀])
-                  ([F₊]     : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+                  ([F₊]     : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ]
                                 / [Γ])
-                  ([F′₊]    : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+                  ([F′₊]    : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ]
                                 / [Γ])
-                  ([F₊≡F₊′] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF 
-                                ≡ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+                  ([F₊≡F₊′] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF  ° lF
+                                ≡ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ]
                                 / [Γ] / [F₊])
                   ([z]      : Γ ⊩ᵛ⟨ l ⟩ z ∷ F [ zero ] ^ [ rF , ι lF ] / [Γ] / [F₀])
                   ([z′]     : Γ ⊩ᵛ⟨ l ⟩ z′ ∷ F′ [ zero ] ^ [ rF , ι lF ] / [Γ] / [F′₀])
                   ([z≡z′]   : Γ ⊩ᵛ⟨ l ⟩ z ≡ z′ ∷ F [ zero ] ^ [ rF , ι lF ] / [Γ] / [F₀])
-                  ([s]      : Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+                  ([s]      : Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF  ° lF ^ [ rF , ι lF ]
                                 / [Γ] / [F₊])
                   ([s′]     : Γ ⊩ᵛ⟨ l ⟩ s′
-                                ∷ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+                                ∷ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF  ° lF) ° lF ° lF ^ [ rF , ι lF ]
                                 / [Γ] / [F′₊])
                   ([s≡s′]   : Γ ⊩ᵛ⟨ l ⟩ s ≡ s′
-                                ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+                                ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ]
                                 / [Γ] / [F₊])
                   (⊢Δ       : ⊢ Δ)
                   ([σ]      : Δ ⊩ˢ σ  ∷ Γ / [Γ] / ⊢Δ)
@@ -372,9 +372,9 @@ natrec-congTerm : ∀ {F F′ rF lF z z′ s s′ n m Γ Δ σ σ′ l}
                   ([σn]     : Δ ⊩⟨ l ⟩ n ∷ ℕ ^ [ ! , ι ⁰ ] / ℕᵣ (idRed:*: (univ (ℕⱼ ⊢Δ))))
                   ([σm]     : Δ ⊩⟨ l ⟩ m ∷ ℕ ^ [ ! , ι ⁰ ] / ℕᵣ (idRed:*: (univ (ℕⱼ ⊢Δ))))
                   ([σn≡σm]  : Δ ⊩⟨ l ⟩ n ≡ m ∷ ℕ ^ [ ! , ι ⁰ ] / ℕᵣ (idRed:*: (univ (ℕⱼ ⊢Δ))))
-                → Δ ⊩⟨ l ⟩ natrec (subst (liftSubst σ) F)
+                → Δ ⊩⟨ l ⟩ natrec lF (subst (liftSubst σ) F)
                                   (subst σ z) (subst σ s) n
-                    ≡ natrec (subst (liftSubst σ′) F′)
+                    ≡ natrec lF (subst (liftSubst σ′) F′)
                              (subst σ′ z′) (subst σ′ s′) m
                     ∷ subst (liftSubst σ) F [ n ] ^ [ rF , ι lF ]
                     / irrelevance′ (PE.sym (singleSubstComp n σ F))
@@ -593,14 +593,14 @@ natrec-congTerm {F} {F′} {rF = %} {lF} {z} {z′} {s} {s′} {n} {m} {Γ} {Δ}
                                   (proj₂ ([F] ⊢Δ ([σ] , [σn])) ([σ] , [σsn′])
                                          (reflSubst [Γ] ⊢Δ [σ] , [σn≡σsn′]))
       [Fₙ≡Fₛₙ′]′ = irrelevanceEq″ (PE.sym (singleSubstComp n σ F))
-                                   (natrecIrrelevantSubst F z s n′ σ) PE.refl PE.refl 
+                                   (natrecIrrelevantSubst {lF} F z s n′ σ) PE.refl PE.refl 
                                    [σFₙ]′ [σFₙ]
                                    (proj₂ ([F] ⊢Δ ([σ] , [σn])) ([σ] , [σsn′])
                                           (reflSubst [Γ] ⊢Δ [σ] , [σn≡σsn′]))
       [σFₙ′] = irrelevance′ (PE.sym (PE.trans (substCompEq F)
                                               (substSingletonComp F)))
                             (proj₁ ([F] ⊢Δ ([σ] , [n′])))
-      [σFₛₙ′]′ = irrelevance′ (natrecIrrelevantSubst F z s n′ σ)
+      [σFₛₙ′]′ = irrelevance′ (natrecIrrelevantSubst {lF} F z s n′ σ)
                               (proj₁ ([F] ⊢Δ ([σ] , [σsn′])))
       [σF₊ₙ′] = substSΠ₁ (proj₁ ([F₊] ⊢Δ [σ])) [σℕ] [n′]
       [σ′sm′] = irrelevanceTerm {l = l} (ℕᵣ (idRed:*: (univ (ℕⱼ ⊢Δ)))) [σ′ℕ]
@@ -624,7 +624,7 @@ natrec-congTerm {F} {F′} {rF = %} {lF} {z} {z′} {s} {s′} {n} {m} {Γ} {Δ}
       [σ′F′ₘ′] = irrelevance′ (PE.sym (PE.trans (substCompEq F′)
                                                 (substSingletonComp F′)))
                               (proj₁ ([F′] ⊢Δ ([σ′] , [m′])))
-      [σ′F′ₛₘ′]′ = irrelevance′ (natrecIrrelevantSubst F′ z′ s′ m′ σ′)
+      [σ′F′ₛₘ′]′ = irrelevance′ (natrecIrrelevantSubst {lF} F′ z′ s′ m′ σ′)
                                 (proj₁ ([F′] ⊢Δ ([σ′] , [σ′sm′])))
       [σ′F′₊ₘ′] = substSΠ₁ (proj₁ ([F′₊] ⊢Δ [σ′])) [σ′ℕ] [m′]
       [σFₙ′≡σ′Fₘ′] = irrelevanceEq″ (PE.sym (singleSubstComp n′ σ F))
@@ -1124,12 +1124,12 @@ natrecᵛ : ∀ {F rF lF z s n Γ l} ([Γ] : ⊩ᵛ Γ)
           ([ℕ]  : Γ ⊩ᵛ⟨ l ⟩ ℕ ^ [ ! , ι ⁰ ] / [Γ])
           ([F]  : Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ] ∙ [ℕ])
           ([F₀] : Γ ⊩ᵛ⟨ l ⟩ F [ zero ] ^ [ rF , ι lF ] / [Γ])
-          ([F₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ])
+          ([F₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF  ° lF) ° lF  ° lF ^ [ rF , ι lF ] / [Γ])
           ([Fₙ] : Γ ⊩ᵛ⟨ l ⟩ F [ n ] ^ [ rF , ι lF ] / [Γ])
         → Γ ⊩ᵛ⟨ l ⟩ z ∷ F [ zero ]  ^ [ rF , ι lF ] / [Γ] / [F₀]
-        → Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ] / [F₊]
+        → Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ] / [Γ] / [F₊]
         → ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ ℕ ^ [ ! , ι ⁰ ] / [Γ] / [ℕ])
-        → Γ ⊩ᵛ⟨ l ⟩ natrec F z s n ∷ F [ n ] ^ [ rF , ι lF ] / [Γ] / [Fₙ]
+        → Γ ⊩ᵛ⟨ l ⟩ natrec lF F z s n ∷ F [ n ] ^ [ rF , ι lF ] / [Γ] / [Fₙ]
 natrecᵛ {F} {rF} {lF} {z} {s} {n} {l = l} [Γ] [ℕ] [F] [F₀] [F₊] [Fₙ] [z] [s] [n]
         {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [F]′ = S.irrelevance {A = F} (_∙_ {A = ℕ} [Γ] [ℕ])
@@ -1162,11 +1162,11 @@ natrecᵛ {F} {rF} {lF} {z} {s} {n} {l = l} [Γ] [ℕ] [F] [F₀] [F₊] [Fₙ] 
                                [Γ] [F]′ [F]′ (reflᵛ {F} (_∙_ {A = ℕ} {l = l}
                                [Γ] (ℕᵛ [Γ])) [F]′) [F₀] [F₀]
                                (reflᵛ {F [ zero ]} [Γ] [F₀]) [F₊] [F₊]
-                               (reflᵛ {Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF}
+                               (reflᵛ {Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF}
                                       [Γ] [F₊])
                                [z] [z] (reflᵗᵛ {F [ zero ]} {z} [Γ] [F₀] [z])
                                [s] [s]
-                               (reflᵗᵛ {Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF} {s}
+                               (reflᵗᵛ {Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF} {s}
                                        [Γ] [F₊] [s])
                                ⊢Δ [σ] [σ′] [σ≡σ′] [σn]′ [σ′n]′ [σn≡σ′n]))
 
@@ -1179,23 +1179,23 @@ natrec-congᵛ : ∀ {F F′ rF lF z z′ s s′ n n′ Γ l} ([Γ] : ⊩ᵛ Γ)
           ([F₀] : Γ ⊩ᵛ⟨ l ⟩ F [ zero ] ^ [ rF , ι lF ] / [Γ])
           ([F′₀] : Γ ⊩ᵛ⟨ l ⟩ F′ [ zero ] ^ [ rF , ι lF ] / [Γ])
           ([F₀≡F′₀] : Γ ⊩ᵛ⟨ l ⟩ F [ zero ] ≡ F′ [ zero ] ^ [ rF , ι lF ] / [Γ] / [F₀])
-          ([F₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ])
-          ([F′₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ])
-          ([F₊≡F′₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF
-                              ≡ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ]
+          ([F₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ] / [Γ])
+          ([F′₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF  ° lF) ° lF ° lF ^ [ rF , ι lF ] / [Γ])
+          ([F₊≡F′₊] : Γ ⊩ᵛ⟨ l ⟩ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF
+                              ≡ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF  ° lF) ° lF ° lF ^ [ rF , ι lF ] / [Γ]
                               / [F₊])
           ([Fₙ] : Γ ⊩ᵛ⟨ l ⟩ F [ n ] ^ [ rF , ι lF ] / [Γ])
           ([z] : Γ ⊩ᵛ⟨ l ⟩ z ∷ F [ zero ] ^ [ rF , ι lF ] / [Γ] / [F₀])
           ([z′] : Γ ⊩ᵛ⟨ l ⟩ z′ ∷ F′ [ zero ] ^ [ rF , ι lF ] / [Γ] / [F′₀])
           ([z≡z′] : Γ ⊩ᵛ⟨ l ⟩ z ≡ z′ ∷ F [ zero ] ^ [ rF , ι lF ] / [Γ] / [F₀])
-          ([s] : Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ] / [F₊])
-          ([s′] : Γ ⊩ᵛ⟨ l ⟩ s′ ∷ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ]
+          ([s] : Γ ⊩ᵛ⟨ l ⟩ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ] / [Γ] / [F₊])
+          ([s′] : Γ ⊩ᵛ⟨ l ⟩ s′ ∷ Π ℕ ^ ! ° ⁰ ▹ (F′ ^ rF ° lF ▹▹ F′ [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ] / [Γ]
                            / [F′₊])
-          ([s≡s′] : Γ ⊩ᵛ⟨ l ⟩ s ≡ s′ ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ] / [Γ] / [F₊])
+          ([s≡s′] : Γ ⊩ᵛ⟨ l ⟩ s ≡ s′ ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ) ° lF ° lF ^ [ rF , ι lF ] / [Γ] / [F₊])
           ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ ℕ ^ [ ! , ι ⁰ ] / [Γ] / [ℕ])
           ([n′] : Γ ⊩ᵛ⟨ l ⟩ n′ ∷ ℕ ^ [ ! , ι ⁰ ] / [Γ] / [ℕ])
           ([n≡n′] : Γ ⊩ᵛ⟨ l ⟩ n ≡ n′ ∷ ℕ ^ [ ! , ι ⁰ ] / [Γ] / [ℕ])
-        → Γ ⊩ᵛ⟨ l ⟩ natrec F z s n ≡ natrec F′ z′ s′ n′ ∷ F [ n ] ^ [ rF , ι lF ] / [Γ] / [Fₙ]
+        → Γ ⊩ᵛ⟨ l ⟩ natrec lF F z s n ≡ natrec lF F′ z′ s′ n′ ∷ F [ n ] ^ [ rF , ι lF ] / [Γ] / [Fₙ]
 natrec-congᵛ {F} {F′} {rF} {lF} {z} {z′} {s} {s′} {n} {n′} {l = l}
              [Γ] [ℕ] [F] [F′] [F≡F′] [F₀] [F′₀] [F₀≡F′₀] [F₊] [F′₊] [F₊≡F′₊]
              [Fₙ] [z] [z′] [z≡z′] [s] [s′] [s≡s′] [n] [n′]

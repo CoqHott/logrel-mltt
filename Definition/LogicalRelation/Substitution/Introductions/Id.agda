@@ -102,40 +102,40 @@ import Data.Nat as Nat
     [F0] : Γ ⊩⟨ l ⟩ F ^ [ rF , ι lF ]
     [F0] = PE.subst (λ X → Γ ⊩⟨ l ⟩ X ^ [ rF , ι lF ]) (wk-id F) ([F] Twk.id ⊢Γ)
 
-    ⊢idG : Γ ∙ F ^ [ rF , ι lF ] ⊢ Id G (wk1 t ∘ var 0) (wk1 u ∘ var 0) ^ [ % , ι lG ]
+    ⊢idG : Γ ∙ F ^ [ rF , ι lF ] ⊢ Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA) ^ [ % , ι lG ]
     ⊢idG = let
-        ⊢t∘0 = PE.subst (λ X → _ ⊢ wk1 t ∘ var 0 ∷ X ^ [ ! , ι lG ]) (wkSingleSubstId G)
+        ⊢t∘0 = PE.subst (λ X → _ ⊢ wk1 t ∘ var 0 ^ _ ∷ X ^ [ ! , ι lG ]) (wkSingleSubstId G)
           (Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F) ⊢t ∘ⱼ var (⊢Γ ∙ ⊢F) here)
-        ⊢u∘0 = PE.subst (λ X → _ ⊢ wk1 u ∘ var 0 ∷ X ^ [ ! , ι lG ]) (wkSingleSubstId G)
+        ⊢u∘0 = PE.subst (λ X → _ ⊢ wk1 u ∘ var 0 ^ _ ∷ X ^ [ ! , ι lG ]) (wkSingleSubstId G)
           (Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F) ⊢u ∘ⱼ var (⊢Γ ∙ ⊢F) here)
       in univ (Idⱼ (un-univ ⊢G) ⊢t∘0 ⊢u∘0)
 
-    ⊢funext : Γ ⊢ Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0))) ° lG ^ [ % , ι lA ]
+    ⊢funext : Γ ⊢ Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA)) ° lG ° lA ^ [ % , ι lA ]
     ⊢funext = univ (Πⱼ lF≤ ▹ lG≤ ▹ un-univ ⊢F ▹ un-univ ⊢idG)
 
-    Did : Γ ⊢ Id A t u ⇒* Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0))) ° lG ^ [ % , ι lA ]
+    Did : Γ ⊢ Id A t u ⇒* Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA)) ° lG ° lA ^ [ % , ι lA ]
     Did =  IdRed* ⊢tA ⊢uA D ⇨* (univ (Id-Π lF≤ lG≤ (un-univ ⊢F) (un-univ ⊢G) ⊢t ⊢u) ⇨ id ⊢funext)
 
     [idG] : ∀ {ρ Δ a}
           → ([ρ] : Twk._∷_⊆_ ρ Δ Γ) → (⊢Δ : ⊢ Δ)
           → (Δ ⊩⟨ l ⟩ a ∷ wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-          → Δ ⊩⟨ l ⟩ wk (lift ρ) (Id G (wk1 t ∘ var 0) (wk1 u ∘ var 0)) [ a ] ^ [ % , ι lG ]
+          → Δ ⊩⟨ l ⟩ wk (lift ρ) (Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA)) [ a ] ^ [ % , ι lG ]
     [idG] {ρ} {Δ} {a} [ρ] ⊢Δ [a] =
       let
-        [t∘a] : Δ ⊩⟨ l ⟩ wk ρ t ∘ a ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a]
+        [t∘a] : Δ ⊩⟨ l ⟩ wk ρ t ∘ a ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a]
         [t∘a] = proj₁ (redSubst*Term
           (appRed* (escapeTerm ([F] [ρ] ⊢Δ) [a]) (Twk.wkRed*Term [ρ] ⊢Δ Df))
           ([G] [ρ] ⊢Δ [a]) ([f] [ρ] ⊢Δ [a]))
-        [u∘a] : Δ ⊩⟨ l ⟩ wk ρ u ∘ a ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a]
+        [u∘a] : Δ ⊩⟨ l ⟩ wk ρ u ∘ a ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a]
         [u∘a] = proj₁ (redSubst*Term
           (appRed* (escapeTerm ([F] [ρ] ⊢Δ) [a]) (Twk.wkRed*Term [ρ] ⊢Δ Dg))
           ([G] [ρ] ⊢Δ [a]) ([g] [ρ] ⊢Δ [a]))
-        [Id] : Δ ⊩⟨ l ⟩ (Id (wk (lift ρ) G [ a ]) (wk ρ t ∘ a) (wk ρ u ∘ a)) ^ [ % , ι lG ]
+        [Id] : Δ ⊩⟨ l ⟩ (Id (wk (lift ρ) G [ a ]) (wk ρ t ∘ a ^ lA) (wk ρ u ∘ a ^ lA)) ^ [ % , ι lG ]
         [Id] = [Id] ⊢Δ ([G] [ρ] ⊢Δ [a]) [t∘a] [u∘a]
-      in PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ (Id _ (X ∘ a) (Y ∘ a)) ^ [ % , ι lG ]) (PE.sym (irrelevant-subst′ ρ t a)) (PE.sym (irrelevant-subst′ ρ u a)) [Id]
+      in PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ (Id _ (X ∘ a ^ lA) (Y ∘ a ^ lA)) ^ [ % , ι lG ]) (PE.sym (irrelevant-subst′ ρ t a)) (PE.sym (irrelevant-subst′ ρ u a)) [Id]
 
-    [idG0] : Γ ∙ F ^ [ rF , ι lF ] ⊩⟨ l ⟩ (Id G (wk1 t ∘ var 0) (wk1 u ∘ var 0)) ^ [ % , ι lG ]
-    [idG0] = PE.subst₃ (λ X Y Z → _ ⊩⟨ l ⟩ (Id X (Y ∘ var 0) (Z ∘ var 0)) ^ _)
+    [idG0] : Γ ∙ F ^ [ rF , ι lF ] ⊩⟨ l ⟩ (Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA)) ^ [ % , ι lG ]
+    [idG0] = PE.subst₃ (λ X Y Z → _ ⊩⟨ l ⟩ (Id X (Y ∘ var 0 ^ lA) (Z ∘ var 0 ^ lA)) ^ _)
       (wkSingleSubstId G) (wkSingleSubstId (wk1 t)) (wkSingleSubstId (wk1 u))
       ([idG] {step id} {Γ ∙ F ^ [ rF , ι lF ]} {var 0} (Twk.step Twk.id)
        (⊢Γ ∙ ⊢F) (neuTerm ([F] (Twk.step Twk.id) (⊢Γ ∙ ⊢F)) (var 0)
@@ -147,7 +147,7 @@ import Data.Nat as Nat
           → ([a] : Δ ⊩⟨ l ⟩ a ∷ wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
           → ([b] : Δ ⊩⟨ l ⟩ b ∷ wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
           → ([a≡b] : Δ ⊩⟨ l ⟩ a ≡ b ∷ wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-          → Δ ⊩⟨ l ⟩ wk (lift ρ) (Id G (wk1 t ∘ var 0) (wk1 u ∘ var 0)) [ a ] ≡ wk (lift ρ) (Id G (wk1 t ∘ var 0) (wk1 u ∘ var 0)) [ b ] ^ [ % , ι lG ] / [idG] [ρ] ⊢Δ [a]
+          → Δ ⊩⟨ l ⟩ wk (lift ρ) (Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA)) [ a ] ≡ wk (lift ρ) (Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA)) [ b ] ^ [ % , ι lG ] / [idG] [ρ] ⊢Δ [a]
     [idGext] {ρ} {Δ} {a} {b} [ρ] ⊢Δ [a] [b] [a≡b] =
       let
         [Ga] = [G] [ρ] ⊢Δ [a]
@@ -163,25 +163,25 @@ import Data.Nat as Nat
         [t∘b:Gb] , [tb≡fb:Gb] = redSubst*Term
           (appRed* (escapeTerm ([F] [ρ] ⊢Δ) [b]) (Twk.wkRed*Term [ρ] ⊢Δ Df))
           [Gb] ([f] [ρ] ⊢Δ [b])
-        [t∘b] : Δ ⊩⟨ l ⟩ wk ρ t ∘ b ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
+        [t∘b] : Δ ⊩⟨ l ⟩ wk ρ t ∘ b ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
         [t∘b] = convTerm₂ [Ga] [Gb] [Ga≡Gb] [t∘b:Gb]
         [u∘b:Gb] , [ub≡gb:Gb] = redSubst*Term
           (appRed* (escapeTerm ([F] [ρ] ⊢Δ) [b]) (Twk.wkRed*Term [ρ] ⊢Δ Dg))
           [Gb] ([g] [ρ] ⊢Δ [b])
-        [u∘b] : Δ ⊩⟨ l ⟩ wk ρ u ∘ b ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
+        [u∘b] : Δ ⊩⟨ l ⟩ wk ρ u ∘ b ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
         [u∘b] = convTerm₂ [Ga] [Gb] [Ga≡Gb] [u∘b:Gb]
-        [ta≡tb] : Δ ⊩⟨ l ⟩ wk ρ t ∘ a ≡ wk ρ t ∘ b ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
+        [ta≡tb] : Δ ⊩⟨ l ⟩ wk ρ t ∘ a ^ lA ≡ wk ρ t ∘ b ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
         [ta≡tb] = transEqTerm [Ga] (transEqTerm [Ga] [ta≡fa] ([fext] [ρ] ⊢Δ [a] [b] [a≡b])) (symEqTerm [Ga] (convEqTerm₂ [Ga] [Gb] [Ga≡Gb] [tb≡fb:Gb]))
-        [ua≡ub] : Δ ⊩⟨ l ⟩ wk ρ u ∘ a ≡ wk ρ u ∘ b ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
+        [ua≡ub] : Δ ⊩⟨ l ⟩ wk ρ u ∘ a ^ lA ≡ wk ρ u ∘ b ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
         [ua≡ub] = transEqTerm [Ga] (transEqTerm [Ga] [ua≡ga] ([gext] [ρ] ⊢Δ [a] [b] [a≡b])) (symEqTerm [Ga] (convEqTerm₂ [Ga] [Gb] [Ga≡Gb] [ub≡gb:Gb]))
-        [IdExtG] : Δ ⊩⟨ l ⟩ (Id (wk (lift ρ) G [ a ]) (wk ρ t ∘ a) (wk ρ u ∘ a)) ≡ (Id (wk (lift ρ) G [ b ]) (wk ρ t ∘ b) (wk ρ u ∘ b)) ^ [ % , ι lG ] / [Id] ⊢Δ [Ga] [t∘a] [u∘a]
+        [IdExtG] : Δ ⊩⟨ l ⟩ (Id (wk (lift ρ) G [ a ]) (wk ρ t ∘ a ^ lA) (wk ρ u ∘ a ^ lA)) ≡ (Id (wk (lift ρ) G [ b ]) (wk ρ t ∘ b ^ lA) (wk ρ u ∘ b ^ lA)) ^ [ % , ι lG ] / [Id] ⊢Δ [Ga] [t∘a] [u∘a]
         [IdExtG] = [IdExt] ⊢Δ [Ga] [Gb] [Ga≡Gb] [t∘a] [t∘b:Gb] [ta≡tb] [u∘a] [u∘b:Gb] [ua≡ub]
       in irrelevanceEq″
-        (PE.cong₂ (λ X Y → Id _ (X ∘ a) (Y ∘ a)) (PE.sym (irrelevant-subst′ ρ t a)) (PE.sym (irrelevant-subst′ ρ u a)))
-        (PE.cong₂ (λ X Y → Id _ (X ∘ b) (Y ∘ b)) (PE.sym (irrelevant-subst′ ρ t b)) (PE.sym (irrelevant-subst′ ρ u b)))
+        (PE.cong₂ (λ X Y → Id _ (X ∘ a ^ lA) (Y ∘ a ^ lA)) (PE.sym (irrelevant-subst′ ρ t a)) (PE.sym (irrelevant-subst′ ρ u a)))
+        (PE.cong₂ (λ X Y → Id _ (X ∘ b ^ lA) (Y ∘ b ^ lA)) (PE.sym (irrelevant-subst′ ρ t b)) (PE.sym (irrelevant-subst′ ρ u b)))
         PE.refl PE.refl
         ([Id] ⊢Δ [Ga] [t∘a] [u∘a]) ([idG] [ρ] ⊢Δ [a]) [IdExtG]
-  in Πᵣ (Πᵣ rF lF lG lF≤ lG≤ F (Id G ((wk1 t) ∘ (var 0)) ((wk1 u) ∘ (var 0)))
+  in Πᵣ (Πᵣ rF lF lG lF≤ lG≤ F (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA))
       [[ univ (Idⱼ (un-univ ⊢A) ⊢tA ⊢uA) , ⊢funext , Did ]]
       ⊢F ⊢idG
       (≅-univ (≅ₜ-Π-cong lF≤ lG≤ ⊢F (≅-un-univ (escapeEqRefl [F0]))
@@ -215,7 +215,7 @@ import Data.Nat as Nat
    [t] [t′] (f₀ , f′₀ , [[ ⊢t , ⊢f₀ , Df₀ ]] , [[ ⊢t′ , ⊢f′₀ , Df′₀ ]] , funf₀ , funf′₀ , f₀≡f′₀ , [t]′ , [t′]′ , [f₀≡f′₀])
    [u] [u′] (g₀ , g′₀ , [[ ⊢u , ⊢g₀ , Dg₀ ]] , [[ ⊢u′ , ⊢g′₀ , Dg′₀ ]] , fung₀ , fung′₀ , g₀≡g′₀ , [u]′ , [u′]′ , [g₀≡g′₀]) =
   let
-    F′≡F′₀ , rF′≡rF , lF′≡lF , G′≡G′₀ , lG′≡lG = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (D′₀ , Whnf.Πₙ))
+    F′≡F′₀ , rF′≡rF , lF′≡lF , G′≡G′₀ , lG′≡lG , _ = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (D′₀ , Whnf.Πₙ))
     [F≡F′] = PE.subst (λ X → ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ wk ρ F ≡ wk ρ X ^ [ rF , _ ] / [F] [ρ] ⊢Δ) (PE.sym F′≡F′₀) [F≡F′₀]
     [G≡G′] = PE.subst (λ X → ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → ([a] : _) → Δ ⊩⟨ l ⟩ wk (lift ρ) G [ a ] ≡ wk (lift ρ) X [ a ] ^ [ _ , _ ] / [G] [ρ] ⊢Δ [a]) (PE.sym G′≡G′₀) [G≡G′₀]
 
@@ -246,14 +246,14 @@ import Data.Nat as Nat
           ([G′] [ρ] ⊢Δ [a]) ([g′] [ρ] ⊢Δ [a])
 
     [idG] = λ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) ([a] : Δ ⊩⟨ l ⟩ a ∷ wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ) →
-      PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ Id (subst (sgSubst a) (wk (lift ρ) G)) (X ∘ a) (Y ∘ a) ^ [ % , ι lG ])
+      PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ Id (subst (sgSubst a) (wk (lift ρ) G)) (X ∘ a ^ lA) (Y ∘ a ^ lA) ^ [ % , ι lG ])
         (PE.sym (irrelevant-subst′ ρ t a)) (PE.sym (irrelevant-subst′ ρ u a))
         ([Id] ⊢Δ ([G] [ρ] ⊢Δ [a]) (proj₁ ([text] [ρ] ⊢Δ [a])) (proj₁ ([uext] [ρ] ⊢Δ [a])))
     [idG≡idG′] : ∀ {ρ Δ a}
           → ([ρ] : Twk._∷_⊆_ ρ Δ Γ)
           → (⊢Δ : ⊢ Δ)
           → ([a] : Δ ⊩⟨ l ⟩ a ∷ wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-          → Δ ⊩⟨ l ⟩ wk (lift ρ) (Id G (wk1 t ∘ var 0) (wk1 u ∘ var 0)) [ a ] ≡ wk (lift ρ) (Id G′ (wk1 t′ ∘ var 0) (wk1 u′ ∘ var 0)) [ a ] ^ [ % , ι lG ] / [idG] [ρ] ⊢Δ [a]
+          → Δ ⊩⟨ l ⟩ wk (lift ρ) (Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA)) [ a ] ≡ wk (lift ρ) (Id G′ (wk1 t′ ∘ var 0 ^ lA) (wk1 u′ ∘ var 0 ^ lA)) [ a ] ^ [ % , ι lG ] / [idG] [ρ] ⊢Δ [a]
     [idG≡idG′] {ρ} {Δ} {a} [ρ] ⊢Δ [a] = 
       let
         [aF′] = convTerm₁′ (PE.sym rF′≡rF) (PE.cong ι (PE.sym lF′≡lF)) ([F] [ρ] ⊢Δ) ([F′] [ρ] ⊢Δ) ([F≡F′] [ρ] ⊢Δ) [a]
@@ -263,30 +263,30 @@ import Data.Nat as Nat
         [Ga≡G′a] = [G≡G′] [ρ] ⊢Δ [a]
         [t∘a] , [ta≡fa] = [text] [ρ] ⊢Δ [a]
         [t′∘a] , [t′a≡f′a] = [t′ext] [ρ] ⊢Δ [aF′]
-        [fa≡f′a] = PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ wk ρ X ∘ a ≡ wk ρ Y ∘ a ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]) f₀≡f f′₀≡f′ ([f₀≡f′₀] [ρ] ⊢Δ [a])
-        [ta≡t′a] : Δ ⊩⟨ l ⟩ wk ρ t ∘ a ≡ wk ρ t′ ∘ a ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
+        [fa≡f′a] = PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ wk ρ X ∘ a ^ lA ≡ wk ρ Y ∘ a ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]) f₀≡f f′₀≡f′ ([f₀≡f′₀] [ρ] ⊢Δ [a])
+        [ta≡t′a] : Δ ⊩⟨ l ⟩ wk ρ t ∘ a ^ lA ≡ wk ρ t′ ∘ a ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
         [ta≡t′a] = transEqTerm [Ga] (transEqTerm [Ga] [ta≡fa] [fa≡f′a]) (symEqTerm [Ga] (convEqTerm₂′ PE.refl (PE.cong ι (PE.sym lG′≡lG)) [Ga] [G′a] [Ga≡G′a] [t′a≡f′a]))
         [u∘a] , [ua≡ga] = [uext] [ρ] ⊢Δ [a]
         [u′∘a] , [u′a≡g′a] = [u′ext] [ρ] ⊢Δ [aF′]
-        [ga≡g′a] = PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ wk ρ X ∘ a ≡ wk ρ Y ∘ a ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]) g₀≡g g′₀≡g′ ([g₀≡g′₀] [ρ] ⊢Δ [a])
-        [ua≡u′a] : Δ ⊩⟨ l ⟩ wk ρ u ∘ a ≡ wk ρ u′ ∘ a ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
+        [ga≡g′a] = PE.subst₂ (λ X Y → Δ ⊩⟨ l ⟩ wk ρ X ∘ a ^ lA ≡ wk ρ Y ∘ a ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]) g₀≡g g′₀≡g′ ([g₀≡g′₀] [ρ] ⊢Δ [a])
+        [ua≡u′a] : Δ ⊩⟨ l ⟩ wk ρ u ∘ a ^ lA ≡ wk ρ u′ ∘ a ^ lA ∷ wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [Ga]
         [ua≡u′a] = transEqTerm [Ga] (transEqTerm [Ga] [ua≡ga] [ga≡g′a]) (symEqTerm [Ga] (convEqTerm₂′ PE.refl (PE.cong ι (PE.sym lG′≡lG)) [Ga] [G′a] [Ga≡G′a] [u′a≡g′a]))
         [G′a]′ = irrelevance′′ PE.refl PE.refl (PE.cong ι lG′≡lG) [G′a]
         [t′∘a]′ = irrelevanceTerm′ PE.refl PE.refl (PE.cong ι lG′≡lG) [G′a] [G′a]′ [t′∘a]
         [u′∘a]′ = irrelevanceTerm′ PE.refl PE.refl (PE.cong ι lG′≡lG) [G′a] [G′a]′ [u′∘a]
-        [idG≡idG′]′ : Δ ⊩⟨ l ⟩ Id (wk (lift ρ) G [ a ]) (wk ρ t ∘ a) (wk ρ u ∘ a) ≡ Id (wk (lift ρ) G′ [ a ]) (wk ρ t′ ∘ a) (wk ρ u′ ∘ a) ^ [ % , ι lG ] / [Id] ⊢Δ [Ga] [t∘a] [u∘a]
+        [idG≡idG′]′ : Δ ⊩⟨ l ⟩ Id (wk (lift ρ) G [ a ]) (wk ρ t ∘ a ^ lA) (wk ρ u ∘ a ^ lA) ≡ Id (wk (lift ρ) G′ [ a ]) (wk ρ t′ ∘ a ^ lA) (wk ρ u′ ∘ a ^ lA) ^ [ % , ι lG ] / [Id] ⊢Δ [Ga] [t∘a] [u∘a]
         [idG≡idG′]′ = [IdExt] ⊢Δ [Ga] [G′a]′ [Ga≡G′a] [t∘a] [t′∘a]′ [ta≡t′a] [u∘a] [u′∘a]′ [ua≡u′a]
-      in irrelevanceEq″ (PE.cong₂ (λ X Y → Id (wk (lift ρ) G [ a ]) (X ∘ a) (Y ∘ a)) (PE.sym (irrelevant-subst′ ρ t a)) (PE.sym (irrelevant-subst′ ρ u a)))
-        (PE.cong₂ (λ X Y → Id (wk (lift ρ) G′ [ a ]) (X ∘ a) (Y ∘ a)) (PE.sym (irrelevant-subst′ ρ t′ a)) (PE.sym (irrelevant-subst′ ρ u′ a)))
+      in irrelevanceEq″ (PE.cong₂ (λ X Y → Id (wk (lift ρ) G [ a ]) (X ∘ a ^ lA) (Y ∘ a ^ lA)) (PE.sym (irrelevant-subst′ ρ t a)) (PE.sym (irrelevant-subst′ ρ u a)))
+        (PE.cong₂ (λ X Y → Id (wk (lift ρ) G′ [ a ]) (X ∘ a ^ lA) (Y ∘ a ^ lA)) (PE.sym (irrelevant-subst′ ρ t′ a)) (PE.sym (irrelevant-subst′ ρ u′ a)))
         PE.refl PE.refl
         ([Id] ⊢Δ [Ga] [t∘a] [u∘a]) ([idG] [ρ] ⊢Δ [a]) [idG≡idG′]′
 
     [var0] = neuTerm ([F] (Twk.step Twk.id) (⊢Γ ∙ ⊢F)) (var 0) (var (⊢Γ ∙ ⊢F) here) (~-var (var (⊢Γ ∙ ⊢F) here))
 
-    ⊢idG≡idG′₀ : Γ ∙ F ^ [ rF , ι lF ] ⊢ (Id G (wk1 t ∘ var 0) (wk1 u ∘ var 0)) ≅ (Id G′ (wk1 t′ ∘ var 0) (wk1 u′ ∘ var 0)) ^ [ % , ι lG ]
-    ⊢idG≡idG′₀ = PE.subst₃ (λ X Y Z → _ ⊢ (Id X (Y ∘ var 0) (Z ∘ var 0)) ≅ _ ^ _)
+    ⊢idG≡idG′₀ : Γ ∙ F ^ [ rF , ι lF ] ⊢ (Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA)) ≅ (Id G′ (wk1 t′ ∘ var 0 ^ lA) (wk1 u′ ∘ var 0 ^ lA)) ^ [ % , ι lG ]
+    ⊢idG≡idG′₀ = PE.subst₃ (λ X Y Z → _ ⊢ (Id X (Y ∘ var 0 ^ lA) (Z ∘ var 0 ^ lA)) ≅ _ ^ _)
       (wkSingleSubstId G) (wkSingleSubstId (wk1 t)) (wkSingleSubstId (wk1 u))
-      (PE.subst₃ (λ X Y Z → _ ⊢ _ ≅ (Id X (Y ∘ var 0) (Z ∘ var 0)) ^ _)
+      (PE.subst₃ (λ X Y Z → _ ⊢ _ ≅ (Id X (Y ∘ var 0 ^ lA) (Z ∘ var 0 ^ lA)) ^ _)
         (wkSingleSubstId G′) (wkSingleSubstId (wk1 t′)) (wkSingleSubstId (wk1 u′))
         (escapeEq ([idG] (Twk.step Twk.id) (⊢Γ ∙ ⊢F) [var0]) ([idG≡idG′] {step id} {Γ ∙ F ^ [ rF , ι lF ]} {var 0} (Twk.step Twk.id) (⊢Γ ∙ ⊢F) [var0])))
 
@@ -297,20 +297,20 @@ import Data.Nat as Nat
     ⊢t′A′ = escapeTerm {l = l'} [A′] [t′]
     ⊢u′A′ = escapeTerm {l = l'} [A′] [u′]
 
-    ⊢t′∘a = PE.subst (λ X → _ ⊢ wk1 t′ ∘ var 0 ∷ X ^ [ ! , ι lG′ ]) (wkSingleSubstId G′)
+    ⊢t′∘a = PE.subst (λ X → _ ⊢ wk1 t′ ∘ var 0 ^ lA ∷ X ^ [ ! , ι lG′ ]) (wkSingleSubstId G′)
       (Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢t′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
-    ⊢u′∘a = PE.subst (λ X → _ ⊢ wk1 u′ ∘ var 0 ∷ X ^ [ ! , ι lG′ ]) (wkSingleSubstId G′)
+    ⊢u′∘a = PE.subst (λ X → _ ⊢ wk1 u′ ∘ var 0 ^ lA ∷ X ^ [ ! , ι lG′ ]) (wkSingleSubstId G′)
       (Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢u′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
-    ⊢funext′ : Γ ⊢ Π F′ ^ rF′ ° lF′ ▹ Id G′ (wk1 t′ ∘ var 0) (wk1 u′ ∘ var 0) ° lG′ ^ [ % , ι lA ]
+    ⊢funext′ : Γ ⊢ Π F′ ^ rF′ ° lF′ ▹ Id G′ (wk1 t′ ∘ var 0 ^ lA) (wk1 u′ ∘ var 0 ^ lA) ° lG′ ° lA ^ [ % , ι lA ]
     ⊢funext′ = univ (Πⱼ lF≤′ ▹ lG≤′ ▹ un-univ ⊢F′ ▹ Idⱼ (un-univ ⊢G′) ⊢t′∘a ⊢u′∘a)
 
-    Did : Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF′ ° lF′ ▹ (Id G′ ((wk1 t′) ∘ (var 0)) ((wk1 u′) ∘ (var 0))) ° lG′ ^ [ % , ι lA ]
+    Did : Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF′ ° lF′ ▹ (Id G′ ((wk1 t′) ∘ (var 0) ^ lA) ((wk1 u′) ∘ (var 0) ^ lA)) ° lG′ ° lA ^ [ % , ι lA ]
     Did = IdRed* ⊢t′A′ ⊢u′A′ D′ ⇨* ((univ (Id-Π lF≤′ lG≤′ (un-univ ⊢F′) (un-univ ⊢G′) ⊢t′ ⊢u′)) ⇨ id ⊢funext′)
 
-  in Π₌ F′ (Id G′ ((wk1 t′) ∘ (var 0)) ((wk1 u′) ∘ (var 0)))
-         (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° lF ▹ _ ° X ^ [ % , ι lA ]) lG′≡lG
-           (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° X ▹ _ ° lG′ ^ [ % , ι lA ]) lF′≡lF
-             (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ X ° lF′ ▹ _ ° lG′ ^ [ % , ι lA ]) rF′≡rF Did))) 
+  in Π₌ F′ (Id G′ ((wk1 t′) ∘ (var 0) ^ lA) ((wk1 u′) ∘ (var 0) ^ lA))
+         (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° lF ▹ _ ° X ° lA ^ [ % , ι lA ]) lG′≡lG
+           (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° X ▹ _ ° lG′ ° lA ^ [ % , ι lA ]) lF′≡lF
+             (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ X ° lF′ ▹ _ ° lG′ ° lA ^ [ % , ι lA ]) rF′≡rF Did))) 
         (≅-univ (≅ₜ-Π-cong lF≤ lG≤ ⊢F (≅-un-univ ⊢F≡F′) (≅-un-univ ⊢idG≡idG′₀))) [F≡F′] [idG≡idG′]
 
 [IdExtShape] {A} {B} {t} {t′} {u} {u′} {Γ} ⊢Γ (emb emb< [A]) [B] (emb⁰¹ {p = .[A]} ShapeA) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =

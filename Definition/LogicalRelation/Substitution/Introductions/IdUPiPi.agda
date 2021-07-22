@@ -77,7 +77,7 @@ Id-U-ΠΠ-resᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →
             Id-U-ΠΠ-res A A' B B' =
                         (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
                             (wk1d B [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
-                            (wk1d B') ° ¹)
+                            (wk1d B') ° ¹ ° ¹)
 
         in
            ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ [ rA , ι lΠ ] / [Γ])
@@ -135,7 +135,7 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
       Id-U-ΠΠ-res A A' B B' = ∃ (Id (Univ rA ⁰) A A') ▹
                       (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
                         ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
-                        (U.wk (lift (step id)) B') ° ¹)
+                        (U.wk (lift (step id)) B') ° ¹ ° ¹)
       [ΓId] = _∙_ {A = Id (Univ rA ⁰) A A'} [Γ] [IdAA']
       [wSProp] = Uᵛ {rU = %} ∞< [ΓId]
       [wA'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A'} {lG = ⁰} [Γ] [IdAA'] [A']ₜ
@@ -188,11 +188,11 @@ abstract
            ([B]ₜ : Γ ∙ A ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ B ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A] / (λ {Δ} {σ} → [UB] {Δ} {σ}))
            ([A']ₜ : Γ ⊩ᵛ⟨ l ⟩ A' ∷ Univ rA lΠ ^ [ ! , next lΠ ] / [Γ] / [UA])
            ([B']ₜ :  Γ ∙ A' ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ B' ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A'] / (λ {Δ} {σ} → [UB'] {Δ} {σ})) 
-         → [ Γ ⊩ᵛ⟨ l ⟩ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰))
+         → [ Γ ⊩ᵛ⟨ l ⟩ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰))
                     ≡ ∃ (Id (Univ rA ⁰) A A') ▹
                       (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
                         ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
-                        (U.wk (lift (step id)) B') ° ¹)
+                        (U.wk (lift (step id)) B') ° ¹ ° ¹)
                   ∷ SProp ¹ ^ [ ! , next ¹ ] / [Γ] ]
 
   Id-U-ΠΠᵗᵛ {A} {B} {A'} {B'} {rA} {Γ} [Γ] [A] [A'] [UB] [UB'] [A]ₜ [B]ₜ [A']ₜ [B']ₜ =
@@ -224,7 +224,7 @@ abstract
         Id-U-ΠΠ-res A A' B B' = ∃ (Id (Univ rA ⁰) A A') ▹
                          (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
                          ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
-                         (U.wk (lift (step id)) B') ° ¹)
+                         (U.wk (lift (step id)) B') ° ¹ ° ¹)
         [ΓId] = _∙_ {A = Id (Univ rA ⁰) A A'} [Γ] [IdAA']
         [wSProp] = Uᵛ {rU = %} ∞< [ΓId]
         [wA'] = wk1ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = A'} {lG = ⁰} [Γ] [IdAA'] [A']ₜ
@@ -252,22 +252,22 @@ abstract
         [Id-U-ΠΠ-res] : Γ ⊩ᵛ⟨ ∞ ⟩ Id-U-ΠΠ-res  A A' B B' ∷ SProp ¹ ^ [ ! , ∞ ] / [Γ] / [SProp]
         [Id-U-ΠΠ-res] = ∃ᵗᵛ {F = Id (Univ rA ⁰) A A'} {G = (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
                             ((U.wk (lift (step id)) B) [ cast ⁰ (wk1 (wk1 A')) (wk1 (wk1 A)) (Idsym (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1)) (var 0) ]↑)
-                            (U.wk (lift (step id)) B') ° ¹)} [Γ] [IdAA'] (λ {Δ} {σ} → [wSProp] {Δ} {σ}) [IdAA']ₜ
+                            (U.wk (lift (step id)) B') ° ¹ ° ¹)} [Γ] [IdAA'] (λ {Δ} {σ} → [wSProp] {Δ} {σ}) [IdAA']ₜ
                             (Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} [Γ] [A] [A'] (λ {Δ} {σ} → [UB] {Δ} {σ}) (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A]ₜ [B]ₜ [A']ₜ [B']ₜ [var0]ₜ [var1]ₜ)
-        [Id-U-ΠΠ] : Γ ⊩ᵛ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰) ⇒ Id-U-ΠΠ-res A A' B B' ∷ SProp ¹ ^ ∞  / [Γ]
+        [Id-U-ΠΠ] : Γ ⊩ᵛ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) ⇒ Id-U-ΠΠ-res A A' B B' ∷ SProp ¹ ^ ∞  / [Γ]
         [Id-U-ΠΠ] = λ {Δ} {σ} ⊢Δ [σ] → let Aσ  = ⊢AΔ {Δ} {σ} ⊢Δ [σ]
                                            Bσ = ⊢BΔ {Δ ∙ subst σ A ^ _} {liftSubst σ} (⊢Δ ∙ ⊢A {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])
                                            A'σ = ⊢A'Δ {Δ} {σ} ⊢Δ [σ]
                                            B'σ = ⊢B'Δ {Δ ∙ subst σ A' ^ _} {liftSubst σ} (⊢Δ ∙ ⊢A' {Δ} {σ} ⊢Δ [σ]) ([liftσ'] {Δ} {σ} ⊢Δ [σ])
-                                           X : Δ ⊢ Id (U ⁰) (Π (subst σ A) ^ rA ° ⁰ ▹ (subst (liftSubst σ) B) ° ⁰) (Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰)
+                                           X : Δ ⊢ Id (U ⁰) (Π (subst σ A) ^ rA ° ⁰ ▹ (subst (liftSubst σ) B) ° ⁰ ° ⁰) (Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰ ° ⁰)
                                                    ⇒ Id-U-ΠΠ-res (subst σ A) (subst σ A') (subst (liftSubst σ) B) (subst (liftSubst σ) B')
                                                    ∷ SProp ¹ ^ ∞
                                            X = Id-U-ΠΠ {Δ} {subst σ A} {subst σ A'} {rA} {subst (liftSubst σ) B} {subst (liftSubst σ) B'} Aσ Bσ A'σ B'σ
-                                       in  PE.subst (λ BB → Δ ⊢ Id (U ⁰) (Π (subst σ A) ^ rA ° ⁰ ▹ (subst (liftSubst σ) B) ° ⁰) (Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰)
+                                       in  PE.subst (λ BB → Δ ⊢ Id (U ⁰) (Π (subst σ A) ^ rA ° ⁰ ▹ (subst (liftSubst σ) B) ° ⁰ ° ⁰) (Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰ ° ⁰)
                                                                    ⇒ BB  ∷ SProp ¹ ^ ∞ )
-                                                    (PE.cong₃ (λ X Y Z → ∃ Id (Univ rA ⁰) (subst σ A) (subst σ A') ▹ Π X ^ rA ° ⁰ ▹ Id (U ⁰) Y Z ° ¹)
+                                                    (PE.cong₃ (λ X Y Z → ∃ Id (Univ rA ⁰) (subst σ A) (subst σ A') ▹ Π X ^ rA ° ⁰ ▹ Id (U ⁰) Y Z ° ¹ ° ¹)
                                                               ((PE.sym (Idsym-subst-lemma σ A'))) (lemma1 A A' B) (lemma2 B'))  X
-        [id] , [eq] = redSubstTermᵛ {SProp ¹} {Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰)} {Id-U-ΠΠ-res A A' B B'}
+        [id] , [eq] = redSubstTermᵛ {SProp ¹} {Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰)} {Id-U-ΠΠ-res A A' B B'}
                                     [Γ] [Id-U-ΠΠ]
                                     (λ {Δ} {σ} → [SProp] {Δ} {σ}) [Id-U-ΠΠ-res]
     in modelsTermEq [SProp] [id] [Id-U-ΠΠ-res] [eq]

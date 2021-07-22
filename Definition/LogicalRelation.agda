@@ -251,10 +251,10 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
         lG≤ : lG ≤ lΠ
         F : Term
         G : Term
-        D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ]
+        D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
         ⊢F : Γ ⊢ F ^ [ rF , ι lF ]
         ⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ r , ι lG ]
-        A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG  ≅ Π F ^ rF ° lF ▹ G ° lG ^ [ r , ι lΠ ]
+        A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≅ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
         [F] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ F ^ [ rF , ι lF ]
         [G] : ∀ {ρ Δ a}
             → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
@@ -276,8 +276,8 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       field
         F′     : Term
         G′     : Term
-        D′     : Γ ⊢ B ⇒* Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ r , ι lΠ ]
-        A≡B    : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ≅ Π F′ ^ rF ° lF ▹ G′ ° lG ^ [ r , ι lΠ ]
+        D′     : Γ ⊢ B ⇒* Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ r , ι lΠ ]
+        A≡B    : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≅ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ r , ι lΠ ]
         [F≡F′] : ∀ {ρ Δ}
                → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
                → Δ ⊩¹ U.wk ρ F ≡ U.wk ρ F′ ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
@@ -287,51 +287,51 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
                → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G′ [ a ] ^ [ r , ι lG ] / [G] [ρ] ⊢Δ [a]
 
     -- relevant Term of Π-type
-    _⊩¹Π_∷_^_/_ : (Γ : Con Term) (t A : Term) (l : Level) ([A] : Γ ⊩¹Π A ^[ ! , l ]) → Set
-    Γ ⊩¹Π t ∷ A ^ l / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
-      ∃ λ f → Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ^ ι l
+    _⊩¹Π_∷_^_/_ : (Γ : Con Term) (t A : Term) (lΠ : Level) ([A] : Γ ⊩¹Π A ^[ ! , lΠ ]) → Set
+    Γ ⊩¹Π t ∷ A ^ lΠ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
+      ∃ λ f → Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ι lΠ
             × Function f
-            × Γ ⊢ f ≅ f ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l ]
+            × Γ ⊢ f ≅ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ]
             × (∀ {ρ Δ a b}
               → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
                 ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
                 ([b] : Δ ⊩¹ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
                 ([a≡b] : Δ ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-              → Δ ⊩¹ U.wk ρ f ∘ a ≡ U.wk ρ f ∘ b ∷ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a])
+              → Δ ⊩¹ U.wk ρ f ∘ a ^ lΠ ≡ U.wk ρ f ∘ b ^ lΠ ∷ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a])
             × (∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
               → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-              → Δ ⊩¹ U.wk ρ f ∘ a ∷ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a])
+              → Δ ⊩¹ U.wk ρ f ∘ a ^ lΠ ∷ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a])
     -- Issue: Agda complains about record use not being strictly positive.
     --        Therefore we have to use ×
 
     -- relevant Term of Π-type
     _⊩¹Πirr_∷_^_/_ : (Γ : Con Term) (t A : Term) (l′ : Level) ([A] : Γ ⊩¹Π A ^[ % , l′ ]) → Set
     Γ ⊩¹Πirr t ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
-      Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° lG  ^ [ % , ι l′ ]
+      Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ % , ι l′ ]
 
     -- Term equality of Π-type
     _⊩¹Π_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (l′ : Level) ([A] : Γ ⊩¹Π A ^[ ! , l′ ]) → Set
     Γ ⊩¹Π t ≡ u ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
       let [A] = Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext
       in  ∃₂ λ f g →
-          ( Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ^ ι l′ )
-      ×   ( Γ ⊢ u :⇒*: g ∷ Π F ^ rF ° lF ▹ G ° lG ^ ι l′ )
+          ( Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ι l′ )
+      ×   ( Γ ⊢ u :⇒*: g ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ι l′ )
       ×   Function f
       ×   Function g
-      ×   Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ ! , ι l′ ]
+      ×   Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ ! , ι l′ ]
       ×   Γ ⊩¹Π t ∷ A ^ l′ / [A]
       ×   Γ ⊩¹Π u ∷ A ^ l′ / [A]
       ×   (∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-          → Δ ⊩¹ U.wk ρ f ∘ a ≡ U.wk ρ g ∘ a ∷ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a])
+          → Δ ⊩¹ U.wk ρ f ∘ a ^ l′ ≡ U.wk ρ g ∘ a ^ l′ ∷ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a])
     -- Issue: Same as above.
 
     -- Term equality of Π-type
     _⊩¹Πirr_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (l′ : Level) ([A] : Γ ⊩¹Π A ^[ % , l′ ] ) → Set
     Γ ⊩¹Πirr t ≡ u ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
-          (Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ % , ι l′ ])
+          (Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ % , ι l′ ])
           ×
-          (Γ ⊢ u ∷ Π F ^ rF ° lF ▹ G ° lG ^ [ % , ι l′ ])
+          (Γ ⊢ u ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ % , ι l′ ])
 
     record _⊩¹∃_^_ (Γ : Con Term) (A : Term) (l′ : TypeLevel) : Set where
       inductive

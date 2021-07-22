@@ -323,7 +323,7 @@ import Data.Nat as Nat
         [[ ⊢A , ⊢N , Dx ]] = x
         ⊢A≡ℕ = subset* Dx
         ⊢t' = escapeTerm {l = ι ⁰} {A = B} (Πᵣ′ rF lF lG (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢B , ⊢Π , D ]] ⊢F ⊢G B≡B [F] [G] G-ext) [t]
-        ⊢t = conv {B = (Π F ^ rF ° ⁰ ▹ G ° ⁰)} ⊢t' ⊢B≡Π'
+        ⊢t = conv {B = (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰)} ⊢t' ⊢B≡Π'
         t≅t = ≅-conv (escapeTermEq {l = ι ⁰} {A = B} (Πᵣ′ rF lF lG (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢B , ⊢Π , D ]] ⊢F ⊢G B≡B [F] [G] G-ext)
               (reflEqTerm {l = ι ⁰} (Πᵣ′ rF lF lG (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢B , ⊢Π , D ]] ⊢F ⊢G B≡B [F] [G] G-ext) [t])) ⊢B≡Π'             
         ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) ⊢B≡Π (un-univ≡ ⊢A≡ℕ))) 
@@ -356,7 +356,7 @@ import Data.Nat as Nat
                            ⊢t' = escapeTerm {l = ι ⁰} [Π] [t]
                            ⊢t = conv ⊢t' ⊢B≡Π'
                            ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) ⊢B≡Π ⊢A≡K))
-                       in neₜ (cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) K e t)
+                       in neₜ (cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) K e t)
                               (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A ⊢e ⊢t' (un-univ:⇒*: [[ ⊢B , ⊢Π , DΠ ]]))
                                                    (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) )) ⊢B≡Π
                                                                   (refl (un-univ ⊢A))))) ⊢t [[ ⊢A , ⊢K , D ]])) (subset* D) )
@@ -371,7 +371,7 @@ import Data.Nat as Nat
         [[ ⊢A , ⊢N , Dx ]] = x
         ⊢A≡ℕ = subset* Dx
         ⊢t' = escapeTerm {l = ι ⁰} {A = A} (Πᵣ′ rF lF lG (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢B , ⊢Π , D ]] ⊢F ⊢G B≡B [F] [G] G-ext) [t]
-        ⊢t = conv {B = (Π F ^ rF ° ⁰ ▹ G ° ⁰)} ⊢t' ⊢B≡Π'
+        ⊢t = conv {B = (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰)} ⊢t' ⊢B≡Π'
         t≅t = ≅-conv (escapeTermEq {l = ι ⁰} {A = A} (Πᵣ′ rF lF lG (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢B , ⊢Π , D ]] ⊢F ⊢G B≡B [F] [G] G-ext)
               (reflEqTerm {l = ι ⁰} (Πᵣ′ rF lF lG (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢B , ⊢Π , D ]] ⊢F ⊢G B≡B [F] [G] G-ext) [t])) ⊢B≡Π'
         ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) ⊢B≡Π (un-univ≡ ⊢A≡ℕ)))
@@ -399,7 +399,7 @@ import Data.Nat as Nat
                            ⊢t' = escapeTerm {l = ι ⁰} [Π] [t]
                            ⊢t = conv ⊢t' ⊢B≡Π'
                            ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) ⊢B≡Π ⊢A≡K))
-                       in neₜ (cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) K e t)
+                       in neₜ (cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) K e t)
                               (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A ⊢e ⊢t' (un-univ:⇒*: [[ ⊢B , ⊢Π , DΠ ]]))
                                                    (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) )) ⊢B≡Π
                                                                   (refl (un-univ ⊢A))))) ⊢t [[ ⊢A , ⊢K , D ]])) (subset* D) )
@@ -631,8 +631,8 @@ import Data.Nat as Nat
       F₄≡F₄′ = let x , _ , _ , _ , _ = Π-PE-injectivity Π≡Π′ in x
       G₄≡G₄′ = let _ , _ , _ , x , _ = Π-PE-injectivity Π≡Π′ in x
 
-      A₁≡A₂ = PE.subst₂ (λ X Y → Γ ⊢ Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ≅ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₂≡F₂′) (PE.sym G₂≡G₂′) A₁≡A₂′
-      A₃≡A₄ = PE.subst₂ (λ X Y → Γ ⊢ Π F₃ ^ ! ° ⁰ ▹ G₃ ° ⁰ ≅ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₄≡F₄′) (PE.sym G₄≡G₄′) A₃≡A₄′
+      A₁≡A₂ = PE.subst₂ (λ X Y → Γ ⊢ Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ≅ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₂≡F₂′) (PE.sym G₂≡G₂′) A₁≡A₂′
+      A₃≡A₄ = PE.subst₂ (λ X Y → Γ ⊢ Π F₃ ^ ! ° ⁰ ▹ G₃ ° ⁰ ° ⁰ ≅ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₄≡F₄′) (PE.sym G₄≡G₄′) A₃≡A₄′
       [F₁≡F₂] = PE.subst (λ X → ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ≡ wk ρ X ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
                          (PE.sym F₂≡F₂′) [F₁≡F₂′]
       [F₃≡F₄] = PE.subst (λ X → ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₃ ≡ wk ρ X ^ [ ! , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
@@ -701,7 +701,7 @@ import Data.Nat as Nat
             f₁≡f₁′ = whrDet*Term (Df₁ , functionWhnf funf₁) (Df₁′ , functionWhnf funf₁′)
             f₂≡f₂′ = whrDet*Term (Df₂ , functionWhnf funf₂) (Df₂′ , functionWhnf funf₂′)
             [f₁≡f₂] = PE.subst₂ (λ X Y → ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ F₁ ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
-              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ≡ wk ρ Y ∘ a ∷ wk (lift ρ) G₁ [ a ] ^ [ ! , ι ⁰ ] / [G₁] [ρ] ⊢Δ [a]) (PE.sym f₁≡f₁′) (PE.sym f₂≡f₂′) [f₁′≡f₂′]
+              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ^  ⁰ ≡ wk ρ Y ∘ a ^ ⁰ ∷ wk (lift ρ) G₁ [ a ] ^ [ ! , ι ⁰ ] / [G₁] [ρ] ⊢Δ [a]) (PE.sym f₁≡f₁′) (PE.sym f₂≡f₂′) [f₁′≡f₂′]
 
             open cast-ΠΠ-lemmas-3 ⊢Γ ⊢A₁ ⊢ΠF₁G₁ D₁ ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext
               ⊢A₂ ⊢ΠF₂G₂ D₂ ⊢F₂ ⊢G₂ A₂≡A₂ [F₂] [G₂] G₂-ext
@@ -750,7 +750,7 @@ import Data.Nat as Nat
             f₃≡f₃′ = whrDet*Term (Df₃ , functionWhnf funf₃) (Df₃′ , functionWhnf funf₃′)
             f₄≡f₄′ = whrDet*Term (Df₄ , functionWhnf funf₄) (Df₄′ , functionWhnf funf₄′)
             [f₃≡f₄] = PE.subst₂ (λ X Y → ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ F₃ ^ [ ! , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
-              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ≡ wk ρ Y ∘ a ∷ wk (lift ρ) G₃ [ a ] ^ [ ! , ι ⁰ ] / [G₃] [ρ] ⊢Δ [a]) (PE.sym f₃≡f₃′) (PE.sym f₄≡f₄′) [f₃′≡f₄′]
+              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ^ ⁰ ≡ wk ρ Y ∘ a ^ ⁰ ∷ wk (lift ρ) G₃ [ a ] ^ [ ! , ι ⁰ ] / [G₃] [ρ] ⊢Δ [a]) (PE.sym f₃≡f₃′) (PE.sym f₄≡f₄′) [f₃′≡f₄′]
 
             open cast-ΠΠ-lemmas-3 ⊢Γ ⊢A₃ ⊢ΠF₃G₃ D₃ ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext
               ⊢A₄ ⊢ΠF₄G₄ D₄ ⊢F₄ ⊢G₄ A₄≡A₄ [F₄] [G₄] G₄-ext
@@ -812,8 +812,8 @@ import Data.Nat as Nat
       F₄≡F₄′ = let x , _ , _ , _ , _ = Π-PE-injectivity Π≡Π′ in x
       G₄≡G₄′ = let _ , _ , _ , x , _ = Π-PE-injectivity Π≡Π′ in x
 
-      A₁≡A₂ = PE.subst₂ (λ X Y → Γ ⊢ Π F₁ ^ % ° ⁰ ▹ G₁ ° ⁰ ≅ Π X ^ % ° ⁰ ▹ Y ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₂≡F₂′) (PE.sym G₂≡G₂′) A₁≡A₂′
-      A₃≡A₄ = PE.subst₂ (λ X Y → Γ ⊢ Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰ ≅ Π X ^ % ° ⁰ ▹ Y ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₄≡F₄′) (PE.sym G₄≡G₄′) A₃≡A₄′
+      A₁≡A₂ = PE.subst₂ (λ X Y → Γ ⊢ Π F₁ ^ % ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ≅ Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₂≡F₂′) (PE.sym G₂≡G₂′) A₁≡A₂′
+      A₃≡A₄ = PE.subst₂ (λ X Y → Γ ⊢ Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰ ° ⁰ ≅ Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]) (PE.sym F₄≡F₄′) (PE.sym G₄≡G₄′) A₃≡A₄′
       [F₁≡F₂] = PE.subst (λ X → ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ≡ wk ρ X ^ [ % , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
                          (PE.sym F₂≡F₂′) [F₁≡F₂′]
       [F₃≡F₄] = PE.subst (λ X → ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₃ ≡ wk ρ X ^ [ % , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
@@ -882,7 +882,7 @@ import Data.Nat as Nat
             f₁≡f₁′ = whrDet*Term (Df₁ , functionWhnf funf₁) (Df₁′ , functionWhnf funf₁′)
             f₂≡f₂′ = whrDet*Term (Df₂ , functionWhnf funf₂) (Df₂′ , functionWhnf funf₂′)
             [f₁≡f₂] = PE.subst₂ (λ X Y → ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ F₁ ^ [ % , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
-              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ≡ wk ρ Y ∘ a ∷ wk (lift ρ) G₁ [ a ] ^ [ ! , ι ⁰ ] / [G₁] [ρ] ⊢Δ [a]) (PE.sym f₁≡f₁′) (PE.sym f₂≡f₂′) [f₁′≡f₂′]
+              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ^ ⁰ ≡ wk ρ Y ∘ a ^ ⁰ ∷ wk (lift ρ) G₁ [ a ] ^ [ ! , ι ⁰ ] / [G₁] [ρ] ⊢Δ [a]) (PE.sym f₁≡f₁′) (PE.sym f₂≡f₂′) [f₁′≡f₂′]
 
             open cast-ΠΠ-lemmas-3 ⊢Γ ⊢A₁ ⊢ΠF₁G₁ D₁ ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext
               ⊢A₂ ⊢ΠF₂G₂ D₂ ⊢F₂ ⊢G₂ A₂≡A₂ [F₂] [G₂] G₂-ext
@@ -931,7 +931,7 @@ import Data.Nat as Nat
             f₃≡f₃′ = whrDet*Term (Df₃ , functionWhnf funf₃) (Df₃′ , functionWhnf funf₃′)
             f₄≡f₄′ = whrDet*Term (Df₄ , functionWhnf funf₄) (Df₄′ , functionWhnf funf₄′)
             [f₃≡f₄] = PE.subst₂ (λ X Y → ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ F₃ ^ [ % , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
-              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ≡ wk ρ Y ∘ a ∷ wk (lift ρ) G₃ [ a ] ^ [ ! , ι ⁰ ] / [G₃] [ρ] ⊢Δ [a]) (PE.sym f₃≡f₃′) (PE.sym f₄≡f₄′) [f₃′≡f₄′]
+              → Δ ⊩⟨ ι ⁰ ⟩ wk ρ X ∘ a ^ ⁰ ≡ wk ρ Y ∘ a ^ ⁰ ∷ wk (lift ρ) G₃ [ a ] ^ [ ! , ι ⁰ ] / [G₃] [ρ] ⊢Δ [a]) (PE.sym f₃≡f₃′) (PE.sym f₄≡f₄′) [f₃′≡f₄′]
 
             open cast-ΠΠ-lemmas-3 ⊢Γ ⊢A₃ ⊢ΠF₃G₃ D₃ ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext
               ⊢A₄ ⊢ΠF₄G₄ D₄ ⊢F₄ ⊢G₄ A₄≡A₄ [F₄] [G₄] G₄-ext
@@ -986,7 +986,7 @@ import Data.Nat as Nat
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₂ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₂ ⊢A₂≡Π))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₄ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₄ ⊢A₄≡Π))))
         cast~cast = ~-conv (~-castΠΠ!% (un-univ ⊢F₁) (un-univ ⊢G₁) (≅-un-univ A₁≡A₂′) (un-univ ⊢F₃) (un-univ ⊢G₃) (≅-un-univ A₃≡A₄′) ⊢t≡t ⊢e' ⊢e′') (sym ⊢A₃≡Π)       
-    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰) (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰) e t} {n′ = cast ⁰ (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰)  (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰) e′ t′}
+    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ° ⁰) (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰ ° ⁰) e t} {n′ = cast ⁰ (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰ ° ⁰)  (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰ ° ⁰) e′ t′}
                      [A₃]
                      castΠΠ!%ₙ castΠΠ!%ₙ
                      (transTerm:⇒:* (CastRed*Term ⊢A₃ ⊢e ⊢t (un-univ:⇒*: [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]]))
@@ -995,7 +995,7 @@ import Data.Nat as Nat
                      (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A₄ ⊢e′ ⊢t′ (un-univ:⇒*: [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]]))
                                     (CastRed*TermΠ (un-univ ⊢F₂ ) (un-univ ⊢G₂) (conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A₄) )) (un-univ≡ ⊢A₂≡Π)
                                                                   (refl (un-univ ⊢A₄))))) (conv ⊢t′ ⊢A₂≡Π) [[ ⊢A₄ , ⊢ΠF₄G₄ , D₄ ]])) (sym (≅-eq ⊢A₃≡A₄)))
-                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ ! ° ⁰ ▹ Y ° ⁰) (Π X' ^ % ° ⁰ ▹ Y' ° ⁰) _ _ ) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄)) cast~cast)),                                         
+                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰) (Π X' ^ % ° ⁰ ▹ Y' ° ⁰ ° ⁰) _ _ ) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄)) cast~cast)),                                         
   (λ {t} {t′} {e} {e′} [t] [t′] [t≡t′] ⊢e ⊢e′ →
     let [A₁] = Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext
         [A₃] = Πᵣ′ % ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₃ G₃ [[ ⊢A₃ , ⊢ΠF₃G₃ , D₃ ]] ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext
@@ -1017,7 +1017,7 @@ import Data.Nat as Nat
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₄ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₄ ⊢A₄≡Π))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₂ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₂ ⊢A₂≡Π))))
         cast~cast = ~-conv (~-castΠΠ%! (un-univ ⊢F₃) (un-univ ⊢G₃) (≅-un-univ A₃≡A₄′) (un-univ ⊢F₁) (un-univ ⊢G₁) (≅-un-univ A₁≡A₂′) ⊢t≡t ⊢e' ⊢e′') (sym ⊢A₁≡Π)       
-    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰) (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰) e t} {n′ = cast ⁰ (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰)  (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰) e′ t′}
+    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰ ° ⁰) (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ° ⁰) e t} {n′ = cast ⁰ (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰ ° ⁰)  (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰ ° ⁰) e′ t′}
                      [A₁]
                      castΠΠ%!ₙ castΠΠ%!ₙ
                      (transTerm:⇒:* (CastRed*Term ⊢A₁ ⊢e ⊢t (un-univ:⇒*: [[ ⊢A₃ , ⊢ΠF₃G₃ , D₃ ]]))
@@ -1026,7 +1026,7 @@ import Data.Nat as Nat
                      (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A₂ ⊢e′ ⊢t′ (un-univ:⇒*: [[ ⊢A₄ , ⊢ΠF₄G₄ , D₄ ]]))
                                     (CastRed*TermΠ (un-univ ⊢F₄ ) (un-univ ⊢G₄) (conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A₂) )) (un-univ≡ ⊢A₄≡Π)
                                                                   (refl (un-univ ⊢A₂))))) (conv ⊢t′ ⊢A₄≡Π) [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]])) (sym (≅-eq ⊢A₁≡A₂)))
-                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ % ° ⁰ ▹ Y ° ⁰) (Π X' ^ ! ° ⁰ ▹ Y' ° ⁰) _ _ ) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂)) cast~cast))
+                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰) (Π X' ^ ! ° ⁰ ▹ Y' ° ⁰ ° ⁰) _ _ ) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂)) cast~cast))
    
 [castextShape] {A₃} {A₄} {A₁} {A₂} {Γ} {r = !} ⊢Γ
   _ _
@@ -1058,7 +1058,7 @@ import Data.Nat as Nat
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₄ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₄ ⊢A₄≡Π))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₂ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₂ ⊢A₂≡Π))))
         cast~cast = ~-conv (~-castΠΠ%! (un-univ ⊢F₃) (un-univ ⊢G₃) (≅-un-univ A₃≡A₄′) (un-univ ⊢F₁) (un-univ ⊢G₁) (≅-un-univ A₁≡A₂′) ⊢t≡t ⊢e' ⊢e′') (sym ⊢A₁≡Π)       
-    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰) (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰) e t} {n′ = cast ⁰ (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰)  (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰) e′ t′}
+    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰ ° ⁰) (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ° ⁰) e t} {n′ = cast ⁰ (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰ ° ⁰)  (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰ ° ⁰) e′ t′}
                      [A₁]
                      castΠΠ%!ₙ castΠΠ%!ₙ
                      (transTerm:⇒:* (CastRed*Term ⊢A₁ ⊢e ⊢t (un-univ:⇒*: [[ ⊢A₃ , ⊢ΠF₃G₃ , D₃ ]]))
@@ -1067,7 +1067,7 @@ import Data.Nat as Nat
                      (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A₂ ⊢e′ ⊢t′ (un-univ:⇒*: [[ ⊢A₄ , ⊢ΠF₄G₄ , D₄ ]]))
                                     (CastRed*TermΠ (un-univ ⊢F₄ ) (un-univ ⊢G₄) (conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A₂) )) (un-univ≡ ⊢A₄≡Π)
                                                                   (refl (un-univ ⊢A₂))))) (conv ⊢t′ ⊢A₄≡Π) [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]])) (sym (≅-eq ⊢A₁≡A₂)))
-                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ % ° ⁰ ▹ Y ° ⁰) (Π X' ^ ! ° ⁰ ▹ Y' ° ⁰) _ _ ) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂)) cast~cast)) ,
+                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰) (Π X' ^ ! ° ⁰ ▹ Y' ° ⁰ ° ⁰) _ _ ) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂)) cast~cast)) ,
   (λ {t} {t′} {e} {e′} [t] [t′] [t≡t′] ⊢e ⊢e′ →
     let [A₁] = Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext
         [A₃] = Πᵣ′ % ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₃ G₃ [[ ⊢A₃ , ⊢ΠF₃G₃ , D₃ ]] ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext
@@ -1089,7 +1089,7 @@ import Data.Nat as Nat
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₂ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₂ ⊢A₂≡Π))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ A₄ ≡ X ^ [ ! , ι ⁰ ]) ΠFG′≡ΠFG′₄ ⊢A₄≡Π))))
         cast~cast = ~-conv (~-castΠΠ!% (un-univ ⊢F₁) (un-univ ⊢G₁) (≅-un-univ A₁≡A₂′) (un-univ ⊢F₃) (un-univ ⊢G₃) (≅-un-univ A₃≡A₄′) ⊢t≡t ⊢e' ⊢e′') (sym ⊢A₃≡Π)       
-    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰) (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰) e t} {n′ = cast ⁰ (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰)  (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰) e′ t′}
+    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F₁ ^ ! ° ⁰ ▹ G₁ ° ⁰ ° ⁰) (Π F₃ ^ % ° ⁰ ▹ G₃ ° ⁰ ° ⁰) e t} {n′ = cast ⁰ (Π F₂ ^ ! ° ⁰ ▹ G₂ ° ⁰ ° ⁰)  (Π F₄ ^ % ° ⁰ ▹ G₄ ° ⁰ ° ⁰) e′ t′}
                      [A₃]
                      castΠΠ!%ₙ castΠΠ!%ₙ
                      (transTerm:⇒:* (CastRed*Term ⊢A₃ ⊢e ⊢t (un-univ:⇒*: [[ ⊢A₁ , ⊢ΠF₁G₁ , D₁ ]]))
@@ -1098,7 +1098,7 @@ import Data.Nat as Nat
                      (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A₄ ⊢e′ ⊢t′ (un-univ:⇒*: [[ ⊢A₂ , ⊢ΠF₂G₂ , D₂ ]]))
                                     (CastRed*TermΠ (un-univ ⊢F₂ ) (un-univ ⊢G₂) (conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A₄) )) (un-univ≡ ⊢A₂≡Π)
                                                                   (refl (un-univ ⊢A₄))))) (conv ⊢t′ ⊢A₂≡Π) [[ ⊢A₄ , ⊢ΠF₄G₄ , D₄ ]])) (sym (≅-eq ⊢A₃≡A₄)))
-                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ ! ° ⁰ ▹ Y ° ⁰) (Π X' ^ % ° ⁰ ▹ Y' ° ⁰) _ _ ) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄)) cast~cast))
+                      (~-irrelevanceTerm PE.refl PE.refl (PE.cong₄ (λ X Y X' Y' → cast ⁰ (Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰) (Π X' ^ % ° ⁰ ▹ Y' ° ⁰ ° ⁰) _ _ ) (PE.sym F′≡F′₂) (PE.sym G′≡G′₂) (PE.sym F′≡F′₄) (PE.sym G′≡G′₄)) cast~cast))
 
 [castextShape] {A} {C} {B} {D} {Γ} ⊢Γ .(ℕᵣ ℕA₁) .(ℕᵣ ℕB₁) (ℕᵥ ℕA₁ ℕB₁) [A≡C] .(ℕᵣ ℕA) .(ℕᵣ ℕB) (ℕᵥ ℕA ℕB) [B≡D] =
   (λ {t} {t′} {e} {e′} [t] [t′] [t≡t′] ⊢e ⊢e′ → [castext]ℕ ⊢Γ ℕA₁ ℕB₁ [A≡C] ℕA ℕB [B≡D] (escapeTerm {l = ι ⁰} (ℕᵣ ℕA₁) [t]) (escapeTerm {l = ι ⁰} (ℕᵣ ℕB₁) [t′]) [t≡t′] ⊢e ⊢e′ ) ,
@@ -1150,11 +1150,11 @@ import Data.Nat as Nat
         ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A))) (un-univ≡ ⊢A≡Π) (un-univ≡ ⊢B≡ℕ)))
         ⊢e′' = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A)))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ C ≡ X ^ [ ! , ι ⁰ ])
-                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
+                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
                         (un-univ≡ ⊢D≡ℕ)))
-        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
+        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
                                        (~-castΠℕ (un-univ ⊢F) (un-univ ⊢G) (≅-un-univ A≡B) (≅-conv t≅t′ ⊢A≡Π) ⊢e' ⊢e′')
-    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) ℕ e t} {n′ = cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰) ℕ e′ t′} (ℕᵣ ℕA)
+    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) ℕ e t} {n′ = cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰ ° ⁰) ℕ e′ t′} (ℕᵣ ℕA)
                      castΠℕₙ castΠℕₙ
                      (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (Πᵣ ΠA) [t]) (un-univ:⇒*: [[ ⊢A , ⊢Π , DΠA ]]))
                                       (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A) )) (un-univ≡ ⊢A≡Π)
@@ -1181,10 +1181,10 @@ import Data.Nat as Nat
         ⊢e′' = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A)))
                         (un-univ≡ ⊢D≡ℕ)
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ C ≡ X ^ [ ! , ι ⁰ ])
-                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))))
-        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ _ (Π X ^ Y ° ⁰ ▹ Z ° ⁰) _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
+                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))))
+        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ _ (Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
                                        (~-castℕΠ (un-univ ⊢F) (un-univ ⊢G) (≅-un-univ A≡B) (≅-conv t≅t′ ⊢B≡ℕ) ⊢e' ⊢e′')
-    in neuEqTerm:⇒*: { n = cast ⁰ ℕ (Π F ^ rF ° ⁰ ▹ G ° ⁰) e t} {n′ = cast ⁰ ℕ  (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰) e′ t′} (Πᵣ ΠA)
+    in neuEqTerm:⇒*: { n = cast ⁰ ℕ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) e t} {n′ = cast ⁰ ℕ  (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰ ° ⁰) e′ t′} (Πᵣ ΠA)
                      castℕΠₙ castℕΠₙ
                      (transTerm:⇒:* (CastRed*Term ⊢A ⊢e (escapeTerm {l = ι ⁰} (ℕᵣ ℕA) [t]) (un-univ:⇒*: ℕA))
                                       (CastRed*Termℕ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A) )) (un-univ≡ ⊢B≡ℕ)
@@ -1240,9 +1240,9 @@ import Data.Nat as Nat
         ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A))) (un-univ≡ ⊢A≡Π) (un-univ≡ ⊢B≡K)))
         ⊢e′' = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A)))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ C ≡ X ^ [ ! , ι ⁰ ])
-                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
+                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
                         (un-univ≡ ⊢D≡K)))
-    in neuEqTerm:⇒*: {l = ι ⁰} {n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) K e t} {n′ =  cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰) K′ e′ t′}
+    in neuEqTerm:⇒*: {l = ι ⁰} {n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) K e t} {n′ =  cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰ ° ⁰) K′ e′ t′}
                      (ne neA) (castΠₙ neK) (castΠₙ neK')
                      (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (Πᵣ ΠA) [t]) (un-univ:⇒*: [[ ⊢A , ⊢Π , DΠA ]]))
                                       (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A) )) (un-univ≡ ⊢A≡Π)
@@ -1251,7 +1251,7 @@ import Data.Nat as Nat
                                      (CastRed*TermΠ (un-univ ⊢F′) (un-univ ⊢G′) (conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢C) )) (un-univ≡ ⊢C≡Π)
                                                                   (refl (un-univ ⊢D))))) ⊢t′ [[ ⊢D , ⊢K′ , D′ ]]))
                       (sym (≅-eq ⊢B≡D)))
-                      (~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
+                      (~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
                                         (~-conv (~-castΠ (≅-un-univ A≡B) K≡K' (≅-conv t≅t′ ⊢A≡Π) ⊢e' ⊢e′') (sym (subset* D))))) ,
   ([castext]Ne ⊢Γ neA neB [B≡D] (Πᵣ′ rF ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢Π , DΠA ]] ⊢F ⊢G A≡A [F] [G] G-ext)
                                 (Πᵣ′ rF′ ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F′ G′ [[ ⊢C , ⊢Π′ , DΠB ]] ⊢F′ ⊢G′ C≡C [F]′ [G]′ G-ext′) (Π₌ F′₁ G′₁ D₌ A≡B [F≡F′] [G≡G′]))
@@ -1278,11 +1278,11 @@ import Data.Nat as Nat
         ⊢e′' = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A)))
                         (un-univ≡ ⊢D≡ℕ)
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ D ≡ X ^ [ ! , ι ⁰ ])
-                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))))
+                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))))
 
-        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ _ (Π X ^ Y ° ⁰ ▹ Z ° ⁰) _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
+        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ _ (Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
                                        (~-castℕΠ (un-univ ⊢F) (un-univ ⊢G) (≅-un-univ A≡B) (≅-conv t≅t′ ⊢B≡ℕ) ⊢e' ⊢e′')
-    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ ℕ (Π F ^ rF ° ⁰ ▹ G ° ⁰) e t} {n′ = cast ⁰ ℕ  (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰) e′ t′} (Πᵣ ΠA)
+    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ ℕ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) e t} {n′ = cast ⁰ ℕ  (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰ ° ⁰) e′ t′} (Πᵣ ΠA)
                      castℕΠₙ castℕΠₙ
                      (transTerm:⇒:* (CastRed*Term ⊢A ⊢e (escapeTerm {l = ι ⁰} (ℕᵣ ℕA) [t]) (un-univ:⇒*: ℕA))
                                       (CastRed*Termℕ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A) )) (un-univ≡ ⊢B≡ℕ)
@@ -1310,11 +1310,11 @@ import Data.Nat as Nat
         ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A))) (un-univ≡ ⊢A≡Π) (un-univ≡ ⊢B≡ℕ)))
         ⊢e′' = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A)))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ D ≡ X ^ [ ! , ι ⁰ ])
-                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
+                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
                         (un-univ≡ ⊢D≡ℕ)))
-        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
+        cast~cast = ~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
                                        (~-castΠℕ (un-univ ⊢F) (un-univ ⊢G) (≅-un-univ A≡B) (≅-conv t≅t′ ⊢A≡Π) ⊢e' ⊢e′')
-    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) ℕ e t} {n′ = cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰) ℕ e′ t′} (ℕᵣ ℕA)
+    in neuEqTerm:⇒*: {l = ι ⁰} { n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) ℕ e t} {n′ = cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰ ° ⁰) ℕ e′ t′} (ℕᵣ ℕA)
                      castΠℕₙ castΠℕₙ
                      (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (Πᵣ ΠA) [t]) (un-univ:⇒*: [[ ⊢A , ⊢Π , DΠA ]]))
                                       (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A) )) (un-univ≡ ⊢A≡Π)
@@ -1348,10 +1348,10 @@ import Data.Nat as Nat
         ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A))) (un-univ≡ ⊢A≡Π) (un-univ≡ ⊢B≡K)))
         ⊢e′' = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢A)))
                         (un-univ≡ (PE.subst (λ X → Γ ⊢ D ≡ X ^ [ ! , ι ⁰ ])
-                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
+                                            (PE.cong₃ (λ X Y Z → Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) F′≡F′₁ rF≡rF′ G′≡G′₁) ⊢C≡Π))
                         (un-univ≡ ⊢D≡K)))
 
-    in neuEqTerm:⇒*: {l = ι ⁰} {n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰) K e t} {n′ =  cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰) K′ e′ t′}
+    in neuEqTerm:⇒*: {l = ι ⁰} {n = cast ⁰ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) K e t} {n′ =  cast ⁰ (Π F′ ^ rF′ ° ⁰ ▹ G′ ° ⁰ ° ⁰) K′ e′ t′}
                      (ne neA) (castΠₙ neK) (castΠₙ neK')
                      (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (Πᵣ ΠA) [t]) (un-univ:⇒*: [[ ⊢A , ⊢Π , DΠA ]]))
                                       (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A) )) (un-univ≡ ⊢A≡Π)
@@ -1360,7 +1360,7 @@ import Data.Nat as Nat
                                      (CastRed*TermΠ (un-univ ⊢F′) (un-univ ⊢G′) (conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢C) )) (un-univ≡ ⊢C≡Π)
                                                                   (refl (un-univ ⊢D))))) ⊢t′ [[ ⊢D , ⊢K′ , D′ ]]))
                       (sym (≅-eq ⊢B≡D)))
-                      (~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
+                      (~-irrelevanceTerm  PE.refl PE.refl (PE.cong₃ (λ X Y Z → cast ⁰ (Π X ^ Y ° ⁰ ▹ Z ° ⁰ ° ⁰) _ _ _ ) (PE.sym F′≡F′₁) (PE.sym rF≡rF′) (PE.sym G′≡G′₁) )
                                         (~-conv (~-castΠ (≅-un-univ A≡B) K≡K' (≅-conv t≅t′ ⊢A≡Π) ⊢e' ⊢e′') (sym (subset* DB)))))
 
 [castextShape] {A} {C} {B} {D} {Γ} {r = %} ⊢Γ [A] [C] _ [A≡C] [B] [D] _ [B≡D] =

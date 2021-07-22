@@ -7,6 +7,7 @@ open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.Typed.EqRelInstance
 open import Definition.LogicalRelation
+open import Definition.LogicalRelation.Properties.Escape
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Fundamental.Reducibility
@@ -14,6 +15,48 @@ open import Definition.Typed.Consequences.Injectivity
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+
+
+{-
+
+
+-- conversion is cumulative 
+
+typeCumul′ : ∀ {A rA lA lA' Γ} → lA ≤∞ lA' →  Γ ⊩⟨ ∞ ⟩ A ^ [ rA , lA ] → Γ ⊩⟨ ∞ ⟩ A ^ [ rA , lA' ] 
+typeCumul′ (≡is≤∞ PE.refl) [A] = [A]
+typeCumul′ (<∞is≤∞ emb<) (Uᵣ (Uᵣ r l′ l<₁ eq d)) = emb ∞< (Uᵣ (Uᵣ r ⁰ emb< PE.refl {!!}))
+typeCumul′ (<∞is≤∞ ∞<) (Uᵣ (Uᵣ r l′ l<₁ eq d)) = Uᵣ (Uᵣ r ¹ ∞< PE.refl {!!})
+typeCumul′ (<∞is≤∞ emb<) (ℕᵣ [[ ⊢A , ⊢B , D ]]) = emb ∞< (emb emb< {!ℕᵣ ?!})
+typeCumul′ (<∞is≤∞ l<) (Emptyᵣ x) = {!!}
+typeCumul′ (<∞is≤∞ l<) (ne x) = {!!}
+typeCumul′ (<∞is≤∞ l<) (Πᵣ x) = {!!}
+typeCumul′ (<∞is≤∞ l<) (∃ᵣ x) = {!!}
+typeCumul′ (<∞is≤∞ l<) (emb l<₁ [A]) = {!!}
+
+convCumul′ : ∀ {A B rA lA lA' Γ} → (l< : lA ≤∞ lA') → ([A] : Γ ⊩⟨ ∞ ⟩ A ^ [ rA , lA ])
+             → Γ ⊩⟨ ∞ ⟩ A ≡ B ^ [ rA , lA ] / [A] → Γ ⊩⟨ ∞ ⟩ A ≡ B ^ [ rA , lA' ] / typeCumul′ l< [A]
+convCumul′ (<∞is≤∞ l<) [A] [A≡B] = {!!}
+convCumul′ (≡is≤∞ PE.refl) [A] [A≡B] = [A≡B]
+
+
+convCumul : ∀ {A B rA lA lA' Γ} → lA ≤∞ lA' → Γ ⊢ A ≡ B ^ [ rA , lA ] → Γ ⊢ A ≡ B ^ [ rA , lA' ]
+convCumul {A} {B} {rA} {lA} {lA'} {Γ} (<∞is≤∞ l<) A≡B =
+  let X = reducibleEq A≡B
+      [A] = proj₁ X
+      [B] = proj₁ (proj₂ X)
+      [A≡B] = proj₂ (proj₂ X)
+      [A]' : Γ ⊩⟨ ∞ ⟩ A ^ [ rA , lA' ]
+      [A]' = emb l< {!!} -- [A]
+  in {!escapeEq [A]' [A≡B]!}                        
+-- convCumul (<∞is≤∞ ∞<) A≡B =
+--   let X = reducibleEq A≡B
+--       [A] = proj₁ X
+--       [B] = proj₁ (proj₂ X)
+--       [A≡B] = proj₂ (proj₂ X)
+--   in {!!}                        
+convCumul (≡is≤∞ PE.refl) A≡B = A≡B
+-}
+
 
 
 U≡A′ : ∀ {A rU Γ l lU nlU } ([U] : Γ ⊩⟨ l ⟩U Univ rU lU ^ nlU) 
@@ -37,6 +80,12 @@ U≡A {A} U≡A =
       [U≡A] = proj₂ (proj₂ X)
   in U≡A′ (U-elim [U]) (irrelevanceEq [U] (U-intr (U-elim [U])) [U≡A])
 
+-- If A is judgmentally equal to U, then A reduces to U.
+U≡A-whnf : ∀ {A rU Γ lU nlU }
+    → Γ ⊢ Univ rU lU ≡ A ^ [ ! , nlU ]
+    → Whnf A
+    → A PE.≡ Univ rU lU
+U≡A-whnf {A} X whnfA = whnfRed* (U≡A X) whnfA
 
 ℕ≡A′ : ∀ {A Γ l} ([ℕ] : Γ ⊩⟨ l ⟩ℕ ℕ)
     → Γ ⊩⟨ l ⟩ ℕ ≡ A ^ [ ! , ι ⁰ ] / (ℕ-intr [ℕ])

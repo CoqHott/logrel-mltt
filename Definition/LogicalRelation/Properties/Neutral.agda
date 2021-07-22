@@ -353,8 +353,8 @@ neuEq:⇒*: [A] neK neL [[ ⊢A , ⊢K , D ]] B A~B =
 
 app:⇒*: : ∀ {Γ a t u A B rA lA lB l}
           (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
-          (D : Γ ⊢ t :⇒*: u ∷ (Π A ^ rA ° lA ▹ B ° lB) ^ ι l)
-        → Γ ⊢ t ∘ a :⇒*: u ∘ a ∷ B [ a ] ^ ι lB
+          (D : Γ ⊢ t :⇒*: u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l) ^ ι l)
+        → Γ ⊢ t ∘ a ^ l :⇒*: u ∘ a ^ l ∷ B [ a ] ^ ι lB
 app:⇒*: ⊢a [[ ⊢t , ⊢u , D ]] = [[ ⊢t ∘ⱼ ⊢a , ⊢u ∘ⱼ ⊢a , appRed* ⊢a D ]]  
 
 

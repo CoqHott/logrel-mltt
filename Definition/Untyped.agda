@@ -13,8 +13,8 @@ import Data.Fin as Fin
 import Data.Nat as Nat
 
 infixl 30 _∙_^_
-infix 30 Π_^_°_▹_°_
-infixr 22 _^_°_▹▹_°_
+infix 30 Π_^_°_▹_°_°_
+infixr 22 _^_°_▹▹_°_°_
 infixl 30 _ₛ•ₛ_ _•ₛ_ _ₛ•_
 infix 25 _[_]
 infix 25 _[_]↑
@@ -114,13 +114,13 @@ record GenT (A : Set) : Set where
 
 data Kind : Set where
   Ukind : Relevance → Level → Kind
-  Pikind : Relevance → Level → Level → Kind
+  Pikind : Relevance → Level → Level → Level → Kind
   Natkind : Kind
   Lamkind : Kind
-  Appkind : Kind
+  Appkind : Level → Kind
   Zerokind : Kind
   Suckind : Kind
-  Natreckind : Kind
+  Natreckind : Level → Kind
   Emptykind : Kind
   Emptyreckind : Kind
   Idkind : Kind
@@ -152,8 +152,8 @@ SProp l = gen (Ukind % l) []
 
 pattern Univ r l = gen (Ukind r l) []
 
-Π_^_°_▹_°_   : Term → Relevance → Level → Term → Level → Term  -- Dependent function type (B is a binder).
-Π A ^ r ° lA ▹ B ° lB = gen (Pikind r lA lB) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
+Π_^_°_▹_°_°_   : Term → Relevance → Level → Term → Level → Level → Term  -- Dependent function type (B is a binder).
+Π A ^ r ° lA ▹ B ° lB ° lΠ = gen (Pikind r lA lB lΠ) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
 ∃_▹_ : Term → Term → Term -- Dependent pairs
 ∃ A ▹ B = gen Sigmakind (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
@@ -168,8 +168,8 @@ pattern Univ r l = gen (Ukind r l) []
 lam_▹_    : Term → Term → Term  -- Function abstraction (binder).
 lam A ▹ t = gen Lamkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , t ⟧ ∷ [])
 
-_∘_    : (t u : Term)     → Term  -- Application.
-t ∘ u = gen Appkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
+_∘_^_    : (t u : Term) (l : Level)    → Term  -- Application.
+t ∘ u ^ l = gen (Appkind l) (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
 ⦅_,_⦆ : Term → Term → Term -- Dependent pair formation
 ⦅ t , u ⦆ = gen Pairkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
@@ -187,8 +187,8 @@ zero = gen Zerokind []
 suc    : (t : Term)       → Term  -- Successor.
 suc t = gen Suckind (⟦ 0 , t ⟧ ∷ [])
 
-natrec : (A t u v : Term) → Term  -- Recursor (A is a binder).
-natrec A t u v = gen Natreckind (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , v ⟧ ∷ [])
+natrec : (l : Level) (A t u v : Term) → Term  -- Recursor (A is a binder).
+natrec l A t u v = gen (Natreckind l) (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , v ⟧ ∷ [])
 
 Empty : Term
 Empty = gen Emptykind []
@@ -215,9 +215,9 @@ castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
 -- If  Π F G = Π H E  then  F = H  and  G = E.
 
-Π-PE-injectivity : ∀ {F rF lF G lG H rH lH E lE} → Π F ^ rF ° lF ▹ G ° lG PE.≡ Π H ^ rH ° lH ▹ E ° lE
-  → F PE.≡ H × rF PE.≡ rH × lF PE.≡ lH × G PE.≡ E × lG PE.≡ lE
-Π-PE-injectivity PE.refl = PE.refl , PE.refl , PE.refl , PE.refl , PE.refl
+Π-PE-injectivity : ∀ {F rF lF G lG lΠ H rH lH E lE lΠ'} → Π F ^ rF ° lF ▹ G ° lG ° lΠ PE.≡ Π H ^ rH ° lH ▹ E ° lE ° lΠ'
+  → F PE.≡ H × rF PE.≡ rH × lF PE.≡ lH × G PE.≡ E × lG PE.≡ lE × lΠ PE.≡ lΠ'
+Π-PE-injectivity PE.refl = PE.refl , PE.refl , PE.refl , PE.refl , PE.refl , PE.refl
 
 ∃-PE-injectivity : ∀ {F G H E} → ∃ F ▹ G PE.≡ ∃ H ▹ E
   → F PE.≡ H × G PE.≡ E
@@ -239,23 +239,23 @@ Univ-PE-injectivity PE.refl = PE.refl , PE.refl
 
 data Neutral : Term → Set where
   var     : ∀ n                     → Neutral (var n)
-  ∘ₙ      : ∀ {k u}     → Neutral k → Neutral (k ∘ u)
-  natrecₙ : ∀ {C c g k} → Neutral k → Neutral (natrec C c g k)
+  ∘ₙ      : ∀ {k u l}     → Neutral k → Neutral (k ∘ u ^ l)
+  natrecₙ : ∀ {l C c g k} → Neutral k → Neutral (natrec l C c g k)
   Idₙ : ∀ {A t u} → Neutral A → Neutral (Id A t u)
   Idℕₙ : ∀ {t u} → Neutral t → Neutral (Id ℕ t u)
   Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ zero u)
   IdℕSₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ (suc t) u)
   IdUₙ : ∀ {t u l} → Neutral t → Neutral (Id (U l) t u)
   IdUℕₙ : ∀ {u l} → Neutral u → Neutral (Id (U l) ℕ u)
-  IdUΠₙ : ∀ {A rA lA B lB l u} → Neutral u → Neutral (Id (U l) (Π A ^ rA ° lA ▹ B ° lB ) u)
+  IdUΠₙ : ∀ {A rA lA B lB l u} → Neutral u → Neutral (Id (U l) (Π A ^ rA ° lA ▹ B ° lB ° l) u)
   castₙ : ∀ {l A B e t} → Neutral A → Neutral (cast l A B e t)
   castℕₙ : ∀ {l B e t} → Neutral B → Neutral (cast l ℕ B e t)
-  castΠₙ : ∀ {l A rA lA P lP B e t} → Neutral B → Neutral (cast l (Π A ^ rA ° lA ▹ P ° lP) B e t)
+  castΠₙ : ∀ {l A rA lA P lP B e t} → Neutral B → Neutral (cast l (Π A ^ rA ° lA ▹ P ° lP ° l) B e t)
   castℕℕₙ : ∀ {l e t} → Neutral t → Neutral (cast l ℕ ℕ e t)
-  castℕΠₙ : ∀ {l A rA B e t} → Neutral (cast l ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰) e t)
-  castΠℕₙ : ∀ {l A rA B e t} → Neutral (cast l (Π A ^ rA ° ⁰ ▹ B ° ⁰ ) ℕ e t)
-  castΠΠ%!ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ % ° ⁰ ▹ B ° ⁰ ) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ) e t)
-  castΠΠ!%ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ ! ° ⁰ ▹ B ° ⁰ ) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ) e t)
+  castℕΠₙ : ∀ {l A rA B e t} → Neutral (cast l ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l) e t)
+  castΠℕₙ : ∀ {l A rA B e t} → Neutral (cast l (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l) ℕ e t)
+  castΠΠ%!ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ % ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° l) e t)
+  castΠΠ!%ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° l) e t)
   Emptyrecₙ : ∀ {A e} -> Neutral (Emptyrec A e)
 
 -- Weak head normal forms (whnfs).
@@ -265,7 +265,7 @@ data Whnf : Term → Set where
 
   -- Type constructors are whnfs.
   Uₙ    : ∀ {r l} → Whnf (Univ r l)
-  Πₙ    : ∀ {A r lA B lB } → Whnf (Π A ^ r ° lA ▹ B ° lB )
+  Πₙ    : ∀ {A r lA B lB l} → Whnf (Π A ^ r ° lA ▹ B ° lB ° l)
   ∃ₙ    : ∀ {A B} → Whnf (∃ A ▹ B)
   ℕₙ    : Whnf ℕ
   Emptyₙ : Whnf Empty
@@ -290,7 +290,7 @@ U≢ℕ ()
 U≢Empty : ∀ {r l} → Univ r l PE.≢ Empty
 U≢Empty ()
 
-U≢Π : ∀ {r r' l F lF G lG} → Univ r l PE.≢ Π F ^ r' ° lF ▹ G ° lG
+U≢Π : ∀ {r r' l F lF G lG l'} → Univ r l PE.≢ Π F ^ r' ° lF ▹ G ° lG ° l'
 U≢Π ()
 
 U≢∃ : ∀ {r l F G} → Univ r l PE.≢ ∃ F ▹ G
@@ -299,7 +299,7 @@ U≢∃ ()
 U≢ne : ∀ {r l K} → Neutral K → Univ r l PE.≢ K
 U≢ne () PE.refl
 
-ℕ≢Π : ∀ {F r lF G lG } → ℕ PE.≢ Π F ^ r ° lF ▹ G ° lG
+ℕ≢Π : ∀ {F r lF G lG l} → ℕ PE.≢ Π F ^ r ° lF ▹ G ° lG ° l
 ℕ≢Π ()
 
 ℕ≢∃ : ∀ {F G} → ℕ PE.≢ ∃ F ▹ G
@@ -317,16 +317,16 @@ Empty≢ℕ ()
 Empty≢ne : ∀ {K} → Neutral K → Empty PE.≢ K
 Empty≢ne () PE.refl
 
-Empty≢Π : ∀ {F r lF G lG} → Empty PE.≢ Π F ^ r ° lF ▹ G ° lG
+Empty≢Π : ∀ {F r lF G lG l} → Empty PE.≢ Π F ^ r ° lF ▹ G ° lG ° l
 Empty≢Π ()
 
 Empty≢∃ : ∀ {F G} → Empty PE.≢ ∃ F ▹ G
 Empty≢∃ ()
 
-Π≢ne : ∀ {F r lF G lG K} → Neutral K → Π F ^ r ° lF ▹ G ° lG PE.≢ K
+Π≢ne : ∀ {F r lF G lG K l} → Neutral K → Π F ^ r ° lF ▹ G ° lG ° l PE.≢ K
 Π≢ne () PE.refl
 
-Π≢∃ : ∀ {F r lF G lG F' G'} → Π F ^ r ° lF ▹ G ° lG PE.≢ ∃ F' ▹ G'
+Π≢∃ : ∀ {F r lF G lG F' G' l} → Π F ^ r ° lF ▹ G ° lG ° l PE.≢ ∃ F' ▹ G'
 Π≢∃ ()
 
 ∃≢ne : ∀ {F G K} → Neutral K → ∃ F ▹ G PE.≢ K
@@ -355,7 +355,7 @@ data Natural : Term → Set where
 -- Large types could also be U.
 
 data Type : Term → Set where
-  Πₙ : ∀ {A r lA B lB} → Type (Π A ^ r ° lA ▹ B ° lB)
+  Πₙ : ∀ {A r lA B lB l} → Type (Π A ^ r ° lA ▹ B ° lB ° l)
   ℕₙ : Type ℕ
   Uₙ : ∀ {r l} → Type (Univ r l)
   Emptyₙ : Type Empty
@@ -518,8 +518,8 @@ wkWhnf ρ (ne x) = ne (wkNeutral ρ x)
 
 -- Non-dependent version of Π.
 
-_^_°_▹▹_°_ : Term → Relevance → Level → Term → Level → Term
-A ^ r ° lA ▹▹ B ° lB = Π A ^ r ° lA ▹ wk1 B ° lB
+_^_°_▹▹_°_°_ : Term → Relevance → Level → Term → Level → Level → Term
+A ^ r ° lA ▹▹ B ° lB ° l = Π A ^ r ° lA ▹ wk1 B ° lB ° l
 
 -- Non-dependent version of ∃.
 
@@ -670,13 +670,13 @@ t [ s ]↑↑ = subst (consSubst (wk1Subst (wk1Subst idSubst)) s) t
 -- Definition of syntaxic sugar
 
 Unit : ∀ {l} → Term
-Unit {l} =  Π Empty ^ % ° l ▹ Empty ° l
+Unit {l} =  Π Empty ^ % ° l ▹ Empty ° l ° l
 
 tt : Term -- currently not used
 tt = lam Empty ▹ (Emptyrec Empty (var 0))
 
-ap : (A B f x y e : Term) → Term -- currently not used
-ap A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x)) ((wk1 f) ∘ (var 0))) x (Idrefl B (f ∘ x)) y e
+ap : (l : Level) (A B f x y e : Term) → Term -- currently not used
+ap l A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x ^ l)) ((wk1 f) ∘ (var 0) ^ l)) x (Idrefl B (f ∘ x ^ l)) y e
 
 Idsym : (A x y e : Term) → Term
 Idsym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e

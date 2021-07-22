@@ -96,11 +96,11 @@ module IdTypeU-lemmas
        {Γ rF A B F G F₁ G₁}
        (⊢Γ : ⊢ Γ)
        (⊢A : Γ ⊢ A ^ [ ! , ι ⁰ ])
-       (⊢ΠFG : Γ ⊢ Π F ^ rF ° ⁰ ▹ G ° ⁰ ^ [ ! , ι ⁰ ])
-       (D : Γ ⊢ A ⇒* Π F ^ rF ° ⁰ ▹ G ° ⁰ ^ [ ! , ι ⁰ ])
+       (⊢ΠFG : Γ ⊢ Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
+       (D : Γ ⊢ A ⇒* Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
        (⊢F : Γ ⊢ F ^ [ rF , ι ⁰ ])
        (⊢G : (Γ ∙ F ^ [ rF , ι ⁰ ]) ⊢ G ^ [ ! , ι ⁰ ])
-       (A≡A : Γ ⊢ (Π F ^ rF ° ⁰ ▹ G ° ⁰) ≅ (Π F ^ rF ° ⁰ ▹ G ° ⁰) ^ [ ! , ι ⁰ ])
+       (A≡A : Γ ⊢ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) ≅ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) ^ [ ! , ι ⁰ ])
        ([F] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F ^ [ rF , ι ⁰ ])
        ([G] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F ^ [ rF , ι ⁰ ] / ([F] [ρ] ⊢Δ))
@@ -111,11 +111,11 @@ module IdTypeU-lemmas
           ([a≡b] : Δ ⊩⟨ ι ⁰ ⟩ a ≡ b ∷ wk ρ F ^ [ rF , ι ⁰ ] / ([F] [ρ] ⊢Δ))
           → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G [ a ] ≡ wk (lift ρ) G [ b ] ^ [ ! , ι ⁰ ] / ([G] [ρ] ⊢Δ [a])))
        (⊢B     : Γ ⊢ B ^ [ ! , ι ⁰ ])
-       (⊢ΠF₁G₁ : Γ ⊢ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ^ [ ! , ι ⁰ ])
-       (D₁     : Γ ⊢ B ⇒* Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ^ [ ! , ι ⁰ ])
+       (⊢ΠF₁G₁ : Γ ⊢ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
+       (D₁     : Γ ⊢ B ⇒* Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
        (⊢F₁    : Γ ⊢ F₁ ^ [ rF , ι ⁰ ])
        (⊢G₁    : (Γ ∙ F₁ ^ [ rF , ι ⁰ ]) ⊢ G₁ ^ [ ! , ι ⁰ ])
-       (B≡B  : Γ ⊢ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰) ≅ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰) ^ [ ! , ι ⁰ ])
+       (B≡B  : Γ ⊢ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰) ≅ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰) ^ [ ! , ι ⁰ ])
        ([F₁] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ^ [ rF , ι ⁰ ])
        ([G₁] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F₁ ^ [ rF , ι ⁰ ] / ([F₁] [ρ] ⊢Δ))
@@ -150,7 +150,7 @@ module IdTypeU-lemmas
     [IdFF₁] [ρ] ⊢Δ = recursor₁ [ρ] ⊢Δ
 
     b = λ ρ e x → cast ⁰ (wk ρ F₁) (wk ρ F) (Idsym (Univ rF ⁰) (wk ρ F) (wk ρ F₁) e) x
-    IdGG₁ = λ ρ e → Π (wk ρ F₁) ^ rF ° ⁰ ▹ Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁) ° ¹
+    IdGG₁ = λ ρ e → Π (wk ρ F₁) ^ rF ° ⁰ ▹ Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁) ° ¹ ° ¹
 
     abstract
       IdTel₂-prettify : ∀ ρ₁ ρ e a → wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁)) [ a ]
@@ -254,8 +254,8 @@ module IdTypeU-lemmas
     abstract
       IdTel≡IdUΠΠ : ∃ Id (Univ rF ⁰) F F₁ ▹ (IdGG₁ (step id) (var 0)) PE.≡
         ∃ (Id (Univ rF ⁰) F F₁) ▹ (Π (wk1 F₁) ^ rF ° ⁰ ▹
-          Id (U ⁰) ((wk1d G) [ cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (Univ rF ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0) ]↑) (wk1d G₁) ° ¹)
-      IdTel≡IdUΠΠ = PE.cong (λ X → ∃ Id (Univ rF ⁰) F F₁ ▹ Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) X (wk1d G₁) ° ¹)
+          Id (U ⁰) ((wk1d G) [ cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (Univ rF ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0) ]↑) (wk1d G₁) ° ¹ ° ¹)
+      IdTel≡IdUΠΠ = PE.cong (λ X → ∃ Id (Univ rF ⁰) F F₁ ▹ Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) X (wk1d G₁) ° ¹ ° ¹)
         (PE.trans
           (PE.cong₃ (λ X Y Z → X [ cast ⁰ Z Y (Idsym (Univ rF ⁰) Y Z (var 1)) (var 0) ])
             (PE.sym (wk-comp (lift (step id)) (lift (step id)) G))
@@ -274,7 +274,7 @@ module IdTypeU-lemmas
           x₁ = PE.cong₂ (λ X Y → X [ Y ]) (Id-subst-lemma2 ρ G e) x₂
           x₀ = (PE.trans (PE.cong (subst (liftSubst (sgSubst e))) (wk-β (wk (lift (step (step id))) G)))
             (PE.trans (singleSubstLift (wk (lift (lift (lift ρ))) (wk (lift (step (step id))) G)) (wk (lift (lift ρ)) (b (step (step id)) (var 1) (var 0)))) x₁))
-        in PE.cong₃ (λ X Y Z → Π X ^ rF ° ⁰ ▹ Id (U ⁰) Y Z ° ¹) (irrelevant-subst′ ρ F₁ e) x₀ (cast-subst-lemma4 ρ e G₁)
+        in PE.cong₃ (λ X Y Z → Π X ^ rF ° ⁰ ▹ Id (U ⁰) Y Z ° ¹ ° ¹) (irrelevant-subst′ ρ F₁ e) x₀ (cast-subst-lemma4 ρ e G₁)
 
     [IdGG₁0] : Γ ∙ Id (Univ rF ⁰) F F₁ ^ [ % , ι ¹ ] ⊩⟨ ι ¹ ⟩ IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
     [IdGG₁0] = let
@@ -297,7 +297,7 @@ module IdTypeU-lemmas
     D∃ : Γ ⊢ Id (U ⁰) A B ⇒* ∃ Id (Univ rF ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ^ [ % , ι ¹ ]
     D∃ = univ⇒* (IdURed*Term′ (un-univ ⊢A) (un-univ ⊢ΠFG) (un-univ⇒* D) (un-univ ⊢B)
       ⇨∷* IdUΠRed*Term′ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢B) (un-univ ⊢ΠF₁G₁) (un-univ⇒* D₁))
-      ⇨* PE.subst (λ X → Γ ⊢ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰) (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰) ⇒* X ^ [ % , ι ¹ ]) (PE.sym IdTel≡IdUΠΠ)
+      ⇨* PE.subst (λ X → Γ ⊢ Id (U ⁰) (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰) (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰) ⇒* X ^ [ % , ι ¹ ]) (PE.sym IdTel≡IdUΠΠ)
         (univ (Id-U-ΠΠ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁))
       ⇨ id (PE.subst (λ X → Γ ⊢ X ^ [ % , ι ¹ ]) IdTel≡IdUΠΠ ⊢∃))
 
@@ -307,11 +307,11 @@ module IdTypeU-lemmas-2
        (⊢Γ : ⊢ Γ)
 
        (⊢A₁ : Γ ⊢ A₁ ^ [ ! , ι ⁰ ])
-       (⊢ΠF₁G₁ : Γ ⊢ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ^ [ ! , ι ⁰ ])
-       (D₁     : Γ ⊢ A₁ ⇒* Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ^ [ ! , ι ⁰ ])
+       (⊢ΠF₁G₁ : Γ ⊢ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
+       (D₁     : Γ ⊢ A₁ ⇒* Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
        (⊢F₁    : Γ ⊢ F₁ ^ [ rF , ι ⁰ ])
        (⊢G₁    : (Γ ∙ F₁ ^ [ rF , ι ⁰ ]) ⊢ G₁ ^ [ ! , ι ⁰ ])
-       (A₁≡A₁  : Γ ⊢ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰) ≅ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰) ^ [ ! , ι ⁰ ])
+       (A₁≡A₁  : Γ ⊢ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰) ≅ (Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰) ^ [ ! , ι ⁰ ])
        ([F₁] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ^ [ rF , ι ⁰ ])
        ([G₁] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F₁ ^ [ rF , ι ⁰ ] / ([F₁] [ρ] ⊢Δ))
@@ -323,11 +323,11 @@ module IdTypeU-lemmas-2
           → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₁ [ a ] ≡ wk (lift ρ) G₁ [ b ] ^ [ ! , ι ⁰ ] / ([G₁] [ρ] ⊢Δ [a])))
 
        (⊢A₂ : Γ ⊢ A₂ ^ [ ! , ι ⁰ ])
-       (⊢ΠF₂G₂ : Γ ⊢ Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ^ [ ! , ι ⁰ ])
-       (D₂     : Γ ⊢ A₂ ⇒* Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ^ [ ! , ι ⁰ ])
+       (⊢ΠF₂G₂ : Γ ⊢ Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
+       (D₂     : Γ ⊢ A₂ ⇒* Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
        (⊢F₂    : Γ ⊢ F₂ ^ [ rF , ι ⁰ ])
        (⊢G₂    : (Γ ∙ F₂ ^ [ rF , ι ⁰ ]) ⊢ G₂ ^ [ ! , ι ⁰ ])
-       (A₂≡A₂  : Γ ⊢ (Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰) ≅ (Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰) ^ [ ! , ι ⁰ ])
+       (A₂≡A₂  : Γ ⊢ (Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ° ⁰) ≅ (Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ° ⁰) ^ [ ! , ι ⁰ ])
        ([F₂] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₂ ^ [ rF , ι ⁰ ])
        ([G₂] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F₂ ^ [ rF , ι ⁰ ] / ([F₂] [ρ] ⊢Δ))
@@ -339,11 +339,11 @@ module IdTypeU-lemmas-2
           → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₂ [ a ] ≡ wk (lift ρ) G₂ [ b ] ^ [ ! , ι ⁰ ] / ([G₂] [ρ] ⊢Δ [a])))
 
        (⊢A₃ : Γ ⊢ A₃ ^ [ ! , ι ⁰ ])
-       (⊢ΠF₃G₃ : Γ ⊢ Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ^ [ ! , ι ⁰ ])
-       (D₃     : Γ ⊢ A₃ ⇒* Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ^ [ ! , ι ⁰ ])
+       (⊢ΠF₃G₃ : Γ ⊢ Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
+       (D₃     : Γ ⊢ A₃ ⇒* Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
        (⊢F₃    : Γ ⊢ F₃ ^ [ rF , ι ⁰ ])
        (⊢G₃    : (Γ ∙ F₃ ^ [ rF , ι ⁰ ]) ⊢ G₃ ^ [ ! , ι ⁰ ])
-       (A₃≡A₃  : Γ ⊢ (Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰) ≅ (Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰) ^ [ ! , ι ⁰ ])
+       (A₃≡A₃  : Γ ⊢ (Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ° ⁰) ≅ (Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ° ⁰) ^ [ ! , ι ⁰ ])
        ([F₃] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₃ ^ [ rF , ι ⁰ ])
        ([G₃] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F₃ ^ [ rF , ι ⁰ ] / ([F₃] [ρ] ⊢Δ))
@@ -355,11 +355,11 @@ module IdTypeU-lemmas-2
           → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₃ [ a ] ≡ wk (lift ρ) G₃ [ b ] ^ [ ! , ι ⁰ ] / ([G₃] [ρ] ⊢Δ [a])))
 
        (⊢A₄ : Γ ⊢ A₄ ^ [ ! , ι ⁰ ])
-       (⊢ΠF₄G₄ : Γ ⊢ Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ^ [ ! , ι ⁰ ])
-       (D₄     : Γ ⊢ A₄ ⇒* Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ^ [ ! , ι ⁰ ])
+       (⊢ΠF₄G₄ : Γ ⊢ Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
+       (D₄     : Γ ⊢ A₄ ⇒* Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
        (⊢F₄    : Γ ⊢ F₄ ^ [ rF , ι ⁰ ])
        (⊢G₄    : (Γ ∙ F₄ ^ [ rF , ι ⁰ ]) ⊢ G₄ ^ [ ! , ι ⁰ ])
-       (A₄≡A₄  : Γ ⊢ (Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰) ≅ (Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰) ^ [ ! , ι ⁰ ])
+       (A₄≡A₄  : Γ ⊢ (Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ° ⁰) ≅ (Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ° ⁰) ^ [ ! , ι ⁰ ])
        ([F₄] : ∀ {ρ} {Δ} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₄ ^ [ rF , ι ⁰ ])
        ([G₄] : ∀ {ρ} {Δ} {a} ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷  wk ρ F₄ ^ [ rF , ι ⁰ ] / ([F₄] [ρ] ⊢Δ))
@@ -370,8 +370,8 @@ module IdTypeU-lemmas-2
           ([a≡b] : Δ ⊩⟨ ι ⁰ ⟩ a ≡ b ∷ wk ρ F₄ ^ [ rF , ι ⁰ ] / ([F₄] [ρ] ⊢Δ))
           → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₄ [ a ] ≡ wk (lift ρ) G₄ [ b ] ^ [ ! , ι ⁰ ] / ([G₄] [ρ] ⊢Δ [a])))
 
-       (A₁≡A₂ : Γ ⊢ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ≅ Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ^ [ ! , ι ⁰ ])
-       (A₃≡A₄ : Γ ⊢ Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ≅ Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ^ [ ! , ι ⁰ ])
+       (A₁≡A₂ : Γ ⊢ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ≅ Π F₂ ^ rF ° ⁰ ▹ G₂ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
+       (A₃≡A₄ : Γ ⊢ Π F₃ ^ rF ° ⁰ ▹ G₃ ° ⁰ ° ⁰ ≅ Π F₄ ^ rF ° ⁰ ▹ G₄ ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ])
        ([F₁≡F₂] : ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₁ ≡ wk ρ F₂ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
        ([F₃≡F₄] : ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ F₃ ≡ wk ρ F₄ ^ [ rF , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
        ([G₁≡G₂] : ∀ {ρ Δ a} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)

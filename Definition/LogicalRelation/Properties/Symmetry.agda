@@ -36,11 +36,11 @@ mutual
          rewrite whrDet* (red D′ , ne neM) (red D₁ , ne neK₁) =
     ne₌ _ D neK
         (~-sym K≡M)
-  symEqT {Γ = Γ} {r = r} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+  symEqT {Γ = Γ} {r = [ r , ι lΠ ] } (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                      (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
          (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
     let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
-        F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
+        F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , lΠ≡lΠ₁ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
         [F₁≡F] : ∀ {Δ} {ρ} [ρ] ⊢Δ → _
         [F₁≡F] {Δ} {ρ} [ρ] ⊢Δ =
           let ρF′≡ρF₁ ρ = PE.cong (wk ρ) (PE.sym F₁≡F′)
@@ -50,7 +50,7 @@ mutual
                              (symEq′ (PE.sym rF₁≡rF′) (PE.cong ι (PE.sym lF₁≡lF′)) ([F] [ρ] ⊢Δ) ([ρF′] [ρ] ⊢Δ)
                                     ([F≡F′] [ρ] ⊢Δ))
     in  Π₌ _ _ (red (PE.subst₃ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (PE.sym lG₁≡lG′) D))
-           (PE.subst₃ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (PE.sym lG₁≡lG′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ≅ x ^ r) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
+           (PE.subst₃ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (PE.sym lG₁≡lG′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≅ x ^ [ r , ι lΠ ]) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
            [F₁≡F]
            (λ {ρ} [ρ] ⊢Δ [a] →
                let ρG′a≡ρG₁′a = PE.cong (λ x → wk (lift ρ) x [ _ ]) (PE.sym G₁≡G′)

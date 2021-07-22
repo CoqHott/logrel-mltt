@@ -30,6 +30,9 @@ whNorm′ (emb ∞< [A]) = whNorm′ [A]
 whNorm : ∀ {A rA Γ} → Γ ⊢ A ^ rA → ∃ λ B → Whnf B × Γ ⊢ A :⇒*: B ^ rA
 whNorm A = whNorm′ (reducible A)
 
+-- whNorm-conv : ∀ {A rA Γ} → Γ ⊢ A ≡ B ^ rA → ∃ λ B → Whnf B × Γ ⊢ A :⇒*: B ^ rA
+-- whNorm-conv A = whNorm′ (reducible A)
+
 
 -- Helper function where reducible all terms can be reduced to WHNF.
 whNormTerm′ : ∀ {a A Γ l lA} ([A] : Γ ⊩⟨ l ⟩ A ^ [ ! , lA ]) → Γ ⊩⟨ l ⟩ a ∷ A ^ [ ! , lA ] / [A]
