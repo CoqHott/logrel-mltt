@@ -88,6 +88,13 @@ maxLevel ¹ ¹ = ¹ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
 levelBounded : (i : Level) → Σ TypeLevel λ k → ι i <∞ k
 levelBounded i = next i , <next
 
+toTypeInfo : Relevance × Level → TypeInfo
+toTypeInfo ( r , l ) = [ r , ι l ]
+
+next-inj : ∀ {l l'} → next l PE.≡ next l' → l PE.≡ l'
+next-inj {⁰} {⁰} e = PE.refl
+next-inj {¹} {¹} e = PE.refl
+
 -- ≤<∞ : ∀ {i j k } → i ≤ j → ι j <∞ k → ι i <∞ k
 -- ≤<∞ (<is≤ 0<1) ∞< = ∞<⁰
 -- ≤<∞ (≡is≤ PE.refl) e = e

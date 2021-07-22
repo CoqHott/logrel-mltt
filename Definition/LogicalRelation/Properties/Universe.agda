@@ -33,8 +33,6 @@ U-Relevance-Level : ∀ {l ll Γ A} ([U] : Γ ⊩⟨ l ⟩U A ^ ll) → Relevanc
 U-Relevance-Level (noemb (Uᵣ r l′ l< eq d)) =  r , l′
 U-Relevance-Level (emb x X) = U-Relevance-Level X
 
-toTypeInfo : Relevance × Level → TypeInfo
-toTypeInfo ( r , l ) = [ r , ι l ]
 
 univRedTerm : ∀ {Γ r l u t ti}
         → Γ ⊢ Univ r l ⇒ u ∷ t ^ ti
@@ -77,10 +75,6 @@ univEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A�
   ⊥-elim (univRedTerm x)
 univEq {ι ¹} (emb _ [U]′) [A] = univEq [U]′ [A]
 univEq {∞} (emb _ [U]′) [A] = univEq [U]′ [A]
-
-next-inj : ∀ {l l'} → next l PE.≡ next l' → l PE.≡ l'
-next-inj {⁰} {⁰} e = PE.refl
-next-inj {¹} {¹} e = PE.refl
 
 univEqGen : ∀ {Γ UA A l′}
        → ([U] : ((next l′) LogRel.⊩¹U logRelRec (next l′) ^ Γ) UA (next l′))
