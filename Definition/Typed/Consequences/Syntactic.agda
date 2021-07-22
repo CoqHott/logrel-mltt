@@ -60,7 +60,7 @@ syntacticRedTerm d | [Γ] , modelsTermEq [A] [t] [u] [t≡u] =
 
 
 -- Syntactic validity of Π-types.
-syntacticΠ : ∀ {Γ F G rF lF lG rΠ lΠ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] → Γ ⊢ F ^ [ rF , ι lF ] × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ rΠ , ι lG ]
+syntacticΠ : ∀ {Γ F G rF lF lG rΠ lΠ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rΠ , ι lΠ ] → Γ ⊢ F ^ [ rF , ι lF ] × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ rΠ , ι lG ]
 syntacticΠ ΠFG with injectivity (refl ΠFG)
 syntacticΠ ΠFG | F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = proj₁ (syntacticEq F≡F) , proj₁ (syntacticEq G≡G)
 

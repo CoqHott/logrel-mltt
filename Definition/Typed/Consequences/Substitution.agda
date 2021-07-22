@@ -187,7 +187,7 @@ substTerm {F} {G} {t} {f} ⊢f ⊢t =
   let ⊢Γ = wfTerm ⊢t
   in  substitutionTerm ⊢f (singleSubst ⊢t) ⊢Γ
 
-substTypeΠ : ∀ {t F rF lF lG G rΠ lΠ Γ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ^ [ rΠ , ι lΠ ] → Γ ⊢ t ∷ F ^ [ rF , ι lF ]
+substTypeΠ : ∀ {t F rF lF lG G rΠ lΠ Γ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rΠ , ι lΠ ] → Γ ⊢ t ∷ F ^ [ rF , ι lF ]
                                      → Γ ⊢ G [ t ] ^ [ rΠ , ι lG ] 
 substTypeΠ ΠFG t with syntacticΠ ΠFG
 substTypeΠ ΠFG t | F , G = substType G t
