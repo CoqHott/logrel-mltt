@@ -88,9 +88,6 @@ maxLevel ¹ ¹ = ¹ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
 levelBounded : (i : Level) → Σ TypeLevel λ k → ι i <∞ k
 levelBounded i = next i , <next
 
-toTypeInfo : Relevance × Level → TypeInfo
-toTypeInfo ( r , l ) = [ r , ι l ]
-
 next-inj : ∀ {l l'} → next l PE.≡ next l' → l PE.≡ l'
 next-inj {⁰} {⁰} e = PE.refl
 next-inj {¹} {¹} e = PE.refl
@@ -104,6 +101,9 @@ record TypeInfo : Set where
   field
     r : Relevance
     l : TypeLevel
+
+toTypeInfo : Relevance × Level → TypeInfo
+toTypeInfo ( r , l ) = [ r , ι l ]
 
 -- Typing contexts (snoc-lists, isomorphic to lists).
 
