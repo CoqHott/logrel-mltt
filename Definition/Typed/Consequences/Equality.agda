@@ -108,18 +108,18 @@ U≡A-whnf {A} X whnfA = whnfRed* (U≡A X) whnfA
   in ℕ≡A′ (ℕ-elim [ℕ]) (irrelevanceEq [ℕ] (ℕ-intr (ℕ-elim [ℕ])) [ℕ≡A]) whnfA
 
 -- If A in WHNF is judgmentally equal to Empty, then A is propositionally equal to Empty.
-Empty≡A′ : ∀ {A Γ l ll} ([Empty] : Γ ⊩⟨ l ⟩Empty Empty ^ ll)
-    → Γ ⊩⟨ l ⟩ Empty ≡ A ^ [ % , ι ll ] / (Empty-intr [Empty])
+Empty≡A′ : ∀ {A Γ l ll} ([Empty] : Γ ⊩⟨ l ⟩Empty Empty ll ^ ll)
+    → Γ ⊩⟨ l ⟩ Empty ll ≡ A ^ [ % , ι ll ] / (Empty-intr [Empty])
     → Whnf A
-    → A PE.≡ Empty
+    → A PE.≡ Empty ll
 Empty≡A′ (noemb x) [Empty≡A] whnfA = whnfRed* [Empty≡A] whnfA
 Empty≡A′ (emb emb< [Empty]) [Empty≡A] whnfA = Empty≡A′ [Empty] [Empty≡A] whnfA
 Empty≡A′ (emb ∞< [Empty]) [Empty≡A] whnfA = Empty≡A′ [Empty] [Empty≡A] whnfA
 
 Empty≡A : ∀ {A Γ l}
-    → Γ ⊢ Empty ≡ A ^ [ % , ι l ]
+    → Γ ⊢ Empty l ≡ A ^ [ % , ι l ]
     → Whnf A
-    → A PE.≡ Empty
+    → A PE.≡ Empty l
 Empty≡A {A} Empty≡A whnfA =
   let X = reducibleEq Empty≡A
       [Empty] = proj₁ X
@@ -153,26 +153,26 @@ ne≡A {A} neK ne≡A whnfA =
         (irrelevanceEq [ne] (ne-intr (ne-elim neK [ne])) [ne≡A]) whnfA
 
 
-Π≡A′ : ∀ {A F G rF lF lG rΠ lΠ Γ l} ([Π] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ^[ rΠ , lΠ ] )
-    → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ≡ A ^ [ rΠ ,  ι lΠ ] / (Π-intr [Π])
+Π≡A′ : ∀ {A F G rF lF lG rΠ lΠ Γ l} ([Π] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ rΠ , lΠ ] )
+    → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ A ^ [ rΠ ,  ι lΠ ] / (Π-intr [Π])
     → Whnf A
-    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG
+    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ 
 Π≡A′ (noemb (Πᵣ rF′ lF′ lG′ lF≤ lG≤  F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) whnfA =
-    let _ , rF≡rF′ , lF≡lF′ , _ , lG≡lG′ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
+    let _ , rF≡rF′ , lF≡lF′ , _ , lG≡lG′ , _ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
         X = whnfRed* D′ whnfA
     in F′ , G′ ,
-       PE.subst (λ r → _ PE.≡ Π _ ^ r ° _ ▹ _ ° _) (PE.sym rF≡rF′)
-         (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° l ▹ _ ° _) (PE.sym lF≡lF′)
-           (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° _ ▹ _ ° l) (PE.sym lG≡lG′) X))
+       PE.subst (λ r → _ PE.≡ Π _ ^ r ° _ ▹ _ ° _ ° _) (PE.sym rF≡rF′)
+         (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° l ▹ _ ° _ ° _) (PE.sym lF≡lF′)
+           (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° _ ▹ _ ° l ° _) (PE.sym lG≡lG′) X))
 Π≡A′ (emb emb< [Π]) [Π≡A] whnfA = Π≡A′ [Π] [Π≡A] whnfA
 Π≡A′ (emb ∞< [Π]) [Π≡A] whnfA = Π≡A′ [Π] [Π≡A] whnfA
 
 -- If A is judgmentally equal to Π F ▹ G, then there exists H and E such that
 -- A is propositionally equal to Π H ▹ E.
 Π≡A : ∀ {A F G rF lF lG rΠ lΠ Γ}
-    → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ≡ A ^ [ rΠ ,  ι lΠ ]
+    → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ A ^ [ rΠ ,  ι lΠ ]
     → Whnf A
-    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG
+    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ
 Π≡A {A} Π≡A whnfA  =
   let X = reducibleEq Π≡A
       [Π] = proj₁ X

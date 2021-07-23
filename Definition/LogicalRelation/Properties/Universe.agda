@@ -173,7 +173,7 @@ un-univEq : ∀ {l Γ A r }
                 [U] = Ugen (wf (escape [A]))
             in Γ ⊩⟨ next l ⟩ A ∷ Univ r l ^ [ ! , next l ] / [U]
 un-univEq {⁰} {Γ} {A} {.!} (ℕᵣ [[ ⊢A , ⊢ℕ , D ]] ) = Uₜ ℕ (un-univ:⇒*: [[ ⊢A , ⊢ℕ , D ]]) ℕₙ (≅ₜ-ℕrefl (wf ⊢A)) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ℕᵣ [[ ⊢A , ⊢ℕ , D ]] ))
-un-univEq {⁰} {Γ} {A} {.%} (Emptyᵣ [[ ⊢A , ⊢Empty , D ]]) = Uₜ Empty (un-univ:⇒*: [[ ⊢A , ⊢Empty , D ]]) Emptyₙ (≅ₜ-Emptyrefl (wf ⊢A))
+un-univEq {⁰} {Γ} {A} {.%} (Emptyᵣ [[ ⊢A , ⊢Empty , D ]]) = Uₜ (Empty ⁰) (un-univ:⇒*: [[ ⊢A , ⊢Empty , D ]]) Emptyₙ (≅ₜ-Emptyrefl (wf ⊢A))
                                                                                 (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Emptyᵣ [[ ⊢A , ⊢Empty , D ]] ))
 un-univEq {⁰} {Γ} {A} {r} (ne′ K D neK K≡K) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
 un-univEq {⁰} {Γ} {A} {r} (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
@@ -182,14 +182,14 @@ un-univEq {⁰}  {Γ} {A} {.%} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
   Uₜ (∃ F ▹ G) (un-univ:⇒*: D) ∃ₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
 un-univEq {¹} {Γ} {A} {.!} (Uᵣ (Uᵣ r .⁰ emb< eq [[ ⊢A , ⊢B , D ]])) = Uₜ (Univ r ⁰) (un-univ:⇒*: [[ ⊢A , ⊢B , D ]]) Uₙ (≅-U⁰refl (wf ⊢A))
                                                                               (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ emb< eq [[ ⊢A , ⊢B , D ]] )))
-un-univEq {¹} {Γ} {A} {.%} (Emptyᵣ [[ ⊢A , ⊢Empty , D ]]) = Uₜ Empty (un-univ:⇒*: [[ ⊢A , ⊢Empty , D ]]) Emptyₙ (≅ₜ-Emptyrefl (wf ⊢A))
+un-univEq {¹} {Γ} {A} {.%} (Emptyᵣ [[ ⊢A , ⊢Empty , D ]]) = Uₜ (Empty ¹) (un-univ:⇒*: [[ ⊢A , ⊢Empty , D ]]) Emptyₙ (≅ₜ-Emptyrefl (wf ⊢A))
                                                                                 (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Emptyᵣ [[ ⊢A , ⊢Empty , D ]] ))
 un-univEq {¹} {Γ} {A} {r} (ne′ K D neK K≡K) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
 un-univEq {¹} {Γ} {A} {r} (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext) = 
   Uₜ (Π F ^ rF ° lF ▹ G ° lG ° ¹ ) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
 un-univEq {¹} {Γ} {A} {.%} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
   Uₜ (∃ F ▹ G) (un-univ:⇒*: D) ∃ₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-un-univEq {¹} {Γ} {A} {.%} (emb emb< (Emptyᵣ [[ ⊢A , ⊢Empty , D ]])) = Uₜ Empty (un-univ:⇒*: [[ ⊢A , ⊢Empty , D ]]) Emptyₙ (≅ₜ-Emptyrefl (wf ⊢A))
+un-univEq {¹} {Γ} {A} {.%} (emb emb< (Emptyᵣ [[ ⊢A , ⊢Empty , D ]])) = Uₜ (Empty ¹) (un-univ:⇒*: [[ ⊢A , ⊢Empty , D ]]) Emptyₙ (≅ₜ-Emptyrefl (wf ⊢A))
                                                                                 (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Emptyᵣ [[ ⊢A , ⊢Empty , D ]] ))
 un-univEq {¹} {Γ} {A} {r} (emb emb< (ne′ K D neK K≡K)) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
 un-univEq {¹} {Γ} {A} {r} (emb emb< (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) =

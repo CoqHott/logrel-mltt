@@ -111,7 +111,7 @@ record EqRelSet : Set₁ where
     ≅ₜ-ℕrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ∷ U ⁰ ^ [ ! , next ⁰ ]
 
     -- Empty type reflexivity
-    ≅ₜ-Emptyrefl  : ∀ {Γ l} → ⊢ Γ → Γ ⊢ Empty ≅ Empty ∷ SProp l ^ [ ! , next l ]
+    ≅ₜ-Emptyrefl  : ∀ {Γ l} → ⊢ Γ → Γ ⊢ Empty l ≅ Empty l ∷ SProp l ^ [ ! , next l ]
 
     -- Π-congruence
     ≅ₜ-Π-cong : ∀ {F G H E rF lF r lG l Γ}
@@ -168,8 +168,8 @@ record EqRelSet : Set₁ where
     -- Empty recursion congurence
     ~-Emptyrec : ∀ {e e′ F F′ l lEmpty Γ}
              → Γ ⊢ F ≅ F′ ^ [ ! , l ]
-             → Γ ⊢ e ∷ Empty ^ [ % , ι lEmpty ]
-             → Γ ⊢ e′ ∷ Empty ^ [ % , ι lEmpty ]
+             → Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
+             → Γ ⊢ e′ ∷ Empty lEmpty ^ [ % , ι lEmpty ]
              → Γ     ⊢ Emptyrec F e ~ Emptyrec F′ e′ ∷ F ^ [ ! , l ]
 
     -- Id congruences

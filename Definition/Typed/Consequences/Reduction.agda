@@ -19,9 +19,9 @@ whNorm′ : ∀ {A rA Γ l} ([A] : Γ ⊩⟨ l ⟩ A ^ rA)
                 → ∃ λ B → Whnf B × Γ ⊢ A :⇒*: B ^ rA
 whNorm′ (Uᵣ′ _ _ r l _ e d) = Univ r l , Uₙ , PE.subst (λ ll → _ ⊢ _ :⇒*: Univ r l ^ [ ! , ll ]) e d 
 whNorm′ (ℕᵣ D) = ℕ , ℕₙ , D
-whNorm′ (Emptyᵣ D) = Empty , Emptyₙ , D
+whNorm′ (Emptyᵣ {l = l} D) = Empty l , Emptyₙ , D
 whNorm′ (ne′ K D neK K≡K) = K , ne neK , D
-whNorm′ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = Π F ^ rF ° lF ▹ G ° lG , Πₙ , D
+whNorm′ (Πᵣ {l = l} (Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) = Π F ^ rF ° lF ▹ G ° lG ° l , Πₙ , D
 whNorm′ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = ∃ F ▹ G , ∃ₙ , D
 whNorm′ (emb emb< [A]) = whNorm′ [A]
 whNorm′ (emb ∞< [A]) = whNorm′ [A]

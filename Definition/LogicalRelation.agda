@@ -148,14 +148,14 @@ split (ne (neNfₜ₌ neK neM k≡m)) = ne neK , ne neM
 
 -- Empty type
 _⊩Empty_^_ : (Γ : Con Term) (A : Term) (l : Level) → Set
-Γ ⊩Empty A ^ l = Γ ⊢ A :⇒*: Empty ^ [ % , ι l ]
+Γ ⊩Empty A ^ l = Γ ⊢ A :⇒*: Empty l ^ [ % , ι l ]
 
 -- Empty type equality
 _⊩Empty_≡_^_ : (Γ : Con Term) (A B : Term) (l : Level) → Set
-Γ ⊩Empty A ≡ B ^ l = Γ ⊢ B ⇒* Empty ^ [ % , ι l ]
+Γ ⊩Empty A ≡ B ^ l = Γ ⊢ B ⇒* Empty l ^ [ % , ι l ]
 
 data Empty-prop (Γ : Con Term) (n : Term) (l : Level) : Set where
-  ne    : Γ ⊢ n ∷ Empty ^ [ % , ι l ] → Empty-prop Γ n l
+  ne    : Γ ⊢ n ∷ Empty l ^ [ % , ι l ] → Empty-prop Γ n l
 
 -- -- Empty term
 
@@ -165,7 +165,7 @@ data _⊩Empty_∷Empty^_ (Γ : Con Term) (t : Term) (l : Level) : Set where
          → Γ ⊩Empty t ∷Empty^ l
 
 data [Empty]-prop (Γ : Con Term) : (n n′ : Term)  (l : Level) → Set where
-  ne    : ∀ {n n′ l} → Γ ⊢ n ∷ Empty ^ [ % , ι l ] → Γ ⊢ n′ ∷ Empty ^ [ % , ι l ]  → [Empty]-prop Γ n n′ l
+  ne    : ∀ {n n′ l} → Γ ⊢ n ∷ Empty l ^ [ % , ι l ] → Γ ⊢ n′ ∷ Empty l ^ [ % , ι l ]  → [Empty]-prop Γ n n′ l
 
 -- Empty term equality
 data _⊩Empty_≡_∷Empty^_ (Γ : Con Term) (t u : Term) (l : Level) : Set where

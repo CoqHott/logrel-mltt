@@ -38,7 +38,7 @@ EmptyrecTerm : ∀ {F rF lF lEmpty n Γ Δ σ l}
              ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , lF ] / [Γ])
              (⊢Δ   : ⊢ Δ)
              ([σ]  : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-             ([σn] : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
+             ([σn] : Δ ⊩⟨ l ⟩ n ∷ Empty lEmpty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
            → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
                ∷ subst σ F ^ [ rF , lF ]
                / proj₁ ([F] ⊢Δ [σ])
@@ -71,8 +71,8 @@ Emptyrec-congTerm : ∀ {F F′ rF lF lEmpty n m Γ Δ σ σ′ l}
                   ([σ]      : Δ ⊩ˢ σ  ∷ Γ / [Γ] / ⊢Δ)
                   ([σ′]     : Δ ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ)
                   ([σ≡σ′]   : Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
-                  ([σn]     : Δ ⊩⟨ l ⟩ n ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
-                  ([σm]     : Δ ⊩⟨ l ⟩ m ∷ Empty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
+                  ([σn]     : Δ ⊩⟨ l ⟩ n ∷ Empty lEmpty ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
+                  ([σm]     : Δ ⊩⟨ l ⟩ m ∷ Empty lEmpty  ^ [ % , ι lEmpty ] / Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))))
                 → Δ ⊩⟨ l ⟩ Emptyrec (subst σ F) n
                     ≡ Emptyrec (subst σ′ F′) m
                     ∷ subst σ F ^ [ rF , lF ]
@@ -140,9 +140,9 @@ Emptyrec-congTerm {F} {F′} {rF = %} {lF} {lEmpty} {n} {m} {Γ} {Δ} {σ} {σ�
 
 -- Validity of empty recursion.
 Emptyrecᵛ : ∀ {F rF lF lEmpty  n Γ l} ([Γ] : ⊩ᵛ Γ)
-          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ [ % , ι lEmpty ] / [Γ])
+          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty lEmpty ^ [ % , ι lEmpty ] / [Γ])
           ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , lF ] / [Γ])
-        → ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
+        → ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty lEmpty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
         → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ∷ F ^ [ rF , lF ] / [Γ] / [F]
 Emptyrecᵛ {F} {rF} {lF} {lEmpty} {n} {l = l} [Γ] [Empty] [F] [n]
         {Δ = Δ} {σ = σ} ⊢Δ [σ] =
@@ -161,12 +161,12 @@ Emptyrecᵛ {F} {rF} {lF} {lEmpty} {n} {l = l} [Γ] [Empty] [F] [n]
 
 -- Validity of natural recursion congurence.
 Emptyrec-congᵛ : ∀ {F F′ rF lF lEmpty n n′ Γ l} ([Γ] : ⊩ᵛ Γ)
-          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty ^ [ % , ι lEmpty ] / [Γ])
+          ([Empty]  : Γ ⊩ᵛ⟨ l ⟩ Empty lEmpty ^ [ % , ι lEmpty ] / [Γ])
           ([F]  : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , lF ] / [Γ])
           ([F′]  : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , lF ] / [Γ])
           ([F≡F′]  : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , lF ] / [Γ] / [F])
-          ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
-          ([n′] : Γ ⊩ᵛ⟨ l ⟩ n′ ∷ Empty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
+          ([n] : Γ ⊩ᵛ⟨ l ⟩ n ∷ Empty lEmpty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
+          ([n′] : Γ ⊩ᵛ⟨ l ⟩ n′ ∷ Empty lEmpty ^ [ % , ι lEmpty ] / [Γ] / [Empty])
         → Γ ⊩ᵛ⟨ l ⟩ Emptyrec F n ≡ Emptyrec F′ n′ ∷ F ^ [ rF , lF ] / [Γ] / [F]
 Emptyrec-congᵛ {F} {F′} {rF} {lF} {lEmpty} {n} {n′} {l = l}
              [Γ] [Empty] [F] [F′] [F≡F′]

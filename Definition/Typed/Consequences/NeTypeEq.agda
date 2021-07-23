@@ -81,9 +81,9 @@ natTypeEq (ℕⱼ x) = PE.refl , PE.refl , refl (univ (univ 0<1 x))
 natTypeEq (conv X x) = let eqrA , eqlA , eqAU = natTypeEq X in eqrA , eqlA ,
   trans (sym (PE.subst (λ l → _ ⊢ _ ≡ _ ^ [ _ , l ] ) eqlA (PE.subst (λ r → _ ⊢ _ ≡ _ ^ [ r , _ ]) eqrA x))) eqAU 
 
-emptyTypeEq : ∀ {A rA lA Γ} → Γ ⊢ Empty ∷ A ^ [ rA , lA ] →
-  Σ Level (λ l → rA PE.≡ ! × lA PE.≡ next l × Γ ⊢ A ≡ SProp l ^ [ ! , next l ])
-emptyTypeEq (Emptyⱼ {l} x) = l , PE.refl , PE.refl , refl (Ugenⱼ x) 
-emptyTypeEq (conv X x) = let l , eqrA , eqlA , eqAU = emptyTypeEq X in l , eqrA , eqlA , 
+emptyTypeEq : ∀ {A rA lA Γ l} → Γ ⊢ Empty l ∷ A ^ [ rA , lA ] →
+  rA PE.≡ ! × lA PE.≡ next l × Γ ⊢ A ≡ SProp l ^ [ ! , next l ]
+emptyTypeEq (Emptyⱼ x) = PE.refl , PE.refl , refl (Ugenⱼ x) 
+emptyTypeEq (conv X x) = let eqrA , eqlA , eqAU = emptyTypeEq X in eqrA , eqlA , 
  trans (sym (PE.subst (λ l → _ ⊢ _ ≡ _ ^ [ _ , l ] ) eqlA (PE.subst (λ r → _ ⊢ _ ≡ _ ^ [ r , _ ]) eqrA x))) eqAU 
 

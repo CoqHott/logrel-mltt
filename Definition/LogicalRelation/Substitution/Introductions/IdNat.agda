@@ -159,10 +159,10 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
       [Empty] = Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Γ)))
       [IdA] , [IdA≡ℕ] = redSubst* {l = l} nfId [Empty]
       [IdB] , [IdB≡ℕ] = redSubst* {l = l} nfId' [Empty]
-      [IdA≡ℕ]′ = irrelevanceEq {A = Id ℕ t u} {B = Empty} {l = l} {l′ = l} [IdA] ([Id]ℕ ⊢Γ [t] [u]) [IdA≡ℕ] 
-      [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = Empty} {l = l} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ] 
-  in transEq {A = Id ℕ t u} {B = Empty} {C = Id ℕ v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [t] [u]) [Empty] ([Id]ℕ ⊢Γ [v] [w])
-                  [IdA≡ℕ]′  (symEq {A = Id ℕ v w} {B = Empty} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [v] [w]) [Empty] [IdB≡ℕ]′) 
+      [IdA≡ℕ]′ = irrelevanceEq {A = Id ℕ t u} {B = Empty _} {l = l} {l′ = l} [IdA] ([Id]ℕ ⊢Γ [t] [u]) [IdA≡ℕ] 
+      [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = Empty _} {l = l} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ] 
+  in transEq {A = Id ℕ t u} {B = Empty _} {C = Id ℕ v w} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [t] [u]) [Empty] ([Id]ℕ ⊢Γ [v] [w])
+                  [IdA≡ℕ]′  (symEq {A = Id ℕ v w} {B = Empty _} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [v] [w]) [Empty] [IdB≡ℕ]′) 
 
 
 [IdExt]ℕ {Γ} {l} {u} {t} {w} {v} ⊢Γ 
@@ -185,10 +185,10 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
       [Empty] = Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Γ)))
       [IdA] , [IdA≡ℕ] = redSubst* {l = l} nfId [Empty]
       [IdB] , [IdB≡ℕ] = redSubst* {l = l} nfId' [Empty]
-      [IdA≡ℕ]′ = irrelevanceEq {A = Id ℕ t u} {B = Empty} {l = l} {l′ = l} [IdA] ([Id]ℕ ⊢Γ [t] [u]) [IdA≡ℕ] 
-      [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = Empty} {l = l} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ] 
-   in transEq {A = Id ℕ u t} {B = Empty} {C = Id ℕ w v} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [u] [t]) [Empty] ([Id]ℕ ⊢Γ [w] [v])
-                  [IdB≡ℕ]′  (symEq {A = Id ℕ w v} {B = Empty} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [w] [v]) [Empty] [IdA≡ℕ]′) 
+      [IdA≡ℕ]′ = irrelevanceEq {A = Id ℕ t u} {B = Empty _} {l = l} {l′ = l} [IdA] ([Id]ℕ ⊢Γ [t] [u]) [IdA≡ℕ] 
+      [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = Empty _} {l = l} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ] 
+   in transEq {A = Id ℕ u t} {B = Empty _} {C = Id ℕ w v} {l = l} {l′ = l} {l″ = l} ([Id]ℕ ⊢Γ [u] [t]) [Empty] ([Id]ℕ ⊢Γ [w] [v])
+                  [IdB≡ℕ]′  (symEq {A = Id ℕ w v} {B = Empty _} {l = l} {l′ = l} ([Id]ℕ ⊢Γ [w] [v]) [Empty] [IdA≡ℕ]′) 
 
 [IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ (ℕₜ .zero [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ zeroᵣ) (ℕₜ .zero [[ ⊢uℕ , ⊢nℕ , du ]] n≡n zeroᵣ)
             (ℕₜ .zero [[ ⊢vℕ , ⊢oℕ , dv ]] n≡n₂ zeroᵣ) (ℕₜ .zero [[ ⊢wℕ , ⊢pℕ , dw ]] n≡n₃ zeroᵣ)

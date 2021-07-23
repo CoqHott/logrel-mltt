@@ -128,7 +128,7 @@ data Kind : Set where
   Zerokind : Kind
   Suckind : Kind
   Natreckind : Level → Kind
-  Emptykind : Kind
+  Emptykind : Level → Kind
   Emptyreckind : Kind
   Idkind : Kind
   Idreflkind : Kind
@@ -197,8 +197,8 @@ suc t = gen Suckind (⟦ 0 , t ⟧ ∷ [])
 natrec : (l : Level) (A t u v : Term) → Term  -- Recursor (A is a binder).
 natrec l A t u v = gen (Natreckind l) (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , v ⟧ ∷ [])
 
-Empty : Term
-Empty = gen Emptykind []
+Empty : Level → Term
+Empty l = gen (Emptykind l) []
 
 Emptyrec : (A e : Term) -> Term
 Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
@@ -275,7 +275,7 @@ data Whnf : Term → Set where
   Πₙ    : ∀ {A r lA B lB l} → Whnf (Π A ^ r ° lA ▹ B ° lB ° l)
   ∃ₙ    : ∀ {A B} → Whnf (∃ A ▹ B)
   ℕₙ    : Whnf ℕ
-  Emptyₙ : Whnf Empty
+  Emptyₙ : ∀ {l} → Whnf (Empty l)
 
   -- Introductions are whnfs.
   lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
@@ -294,7 +294,7 @@ data Whnf : Term → Set where
 U≢ℕ : ∀ {r l} → Univ r l PE.≢ ℕ
 U≢ℕ ()
 
-U≢Empty : ∀ {r l} → Univ r l PE.≢ Empty
+U≢Empty : ∀ {r l l'} → Univ r l PE.≢ Empty l'
 U≢Empty ()
 
 U≢Π : ∀ {r r' l F lF G lG l'} → Univ r l PE.≢ Π F ^ r' ° lF ▹ G ° lG ° l'
@@ -312,22 +312,22 @@ U≢ne () PE.refl
 ℕ≢∃ : ∀ {F G} → ℕ PE.≢ ∃ F ▹ G
 ℕ≢∃ ()
 
-ℕ≢Empty : ℕ PE.≢ Empty
+ℕ≢Empty : ∀ {l} → ℕ PE.≢ Empty l
 ℕ≢Empty ()
 
-Empty≢ℕ : Empty PE.≢ ℕ
+Empty≢ℕ : ∀ {l} → Empty l PE.≢ ℕ
 Empty≢ℕ ()
 
 ℕ≢ne : ∀ {K} → Neutral K → ℕ PE.≢ K
 ℕ≢ne () PE.refl
 
-Empty≢ne : ∀ {K} → Neutral K → Empty PE.≢ K
+Empty≢ne : ∀ {l K} → Neutral K → Empty l PE.≢ K
 Empty≢ne () PE.refl
 
-Empty≢Π : ∀ {F r lF G lG l} → Empty PE.≢ Π F ^ r ° lF ▹ G ° lG ° l
+Empty≢Π : ∀ {F r lF G lG l l'} → Empty l' PE.≢ Π F ^ r ° lF ▹ G ° lG ° l
 Empty≢Π ()
 
-Empty≢∃ : ∀ {F G} → Empty PE.≢ ∃ F ▹ G
+Empty≢∃ : ∀ {l F G} → Empty l PE.≢ ∃ F ▹ G
 Empty≢∃ ()
 
 Π≢ne : ∀ {F r lF G lG K l} → Neutral K → Π F ^ r ° lF ▹ G ° lG ° l PE.≢ K
@@ -365,7 +365,7 @@ data Type : Term → Set where
   Πₙ : ∀ {A r lA B lB l} → Type (Π A ^ r ° lA ▹ B ° lB ° l)
   ℕₙ : Type ℕ
   Uₙ : ∀ {r l} → Type (Univ r l)
-  Emptyₙ : Type Empty
+  Emptyₙ : ∀ {l} → Type (Empty l)
   ∃ₙ : ∀ {A B} → Type (∃ A ▹ B)
   ne : ∀{n} → Neutral n → Type n
 
@@ -677,10 +677,10 @@ t [ s ]↑↑ = subst (consSubst (wk1Subst (wk1Subst idSubst)) s) t
 -- Definition of syntaxic sugar
 
 Unit : ∀ {l} → Term
-Unit {l} =  Π Empty ^ % ° l ▹ Empty ° l ° l
+Unit {l} =  Π Empty l ^ % ° l ▹ Empty l ° l ° l
 
-tt : Term -- currently not used
-tt = lam Empty ▹ (Emptyrec Empty (var 0))
+tt : ∀ {l} → Term -- currently not used
+tt {l} = lam (Empty l) ▹ (Emptyrec (Empty l) (var 0))
 
 ap : (l : Level) (A B f x y e : Term) → Term -- currently not used
 ap l A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x ^ l)) ((wk1 f) ∘ (var 0) ^ l)) x (Idrefl B (f ∘ x ^ l)) y e

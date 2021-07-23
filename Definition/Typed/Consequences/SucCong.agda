@@ -15,8 +15,8 @@ import Tools.PropositionalEquality as PE
 
 -- Congurence of the type of the successor case in natrec.
 sucCong : ∀ {F G rF lF Γ} → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ≡ G ^ [ rF , ι lF ]
-        → Γ ⊢ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ) ° lF
-            ≡ Π ℕ ^ ! ° ⁰ ▹ (G ^ rF ° lF ▹▹ G [ suc (var 0) ]↑ ° lF ) ° lF ^ [ rF , ι lF ]
+        → Γ ⊢ Π ℕ ^ ! ° ⁰ ▹ (F ^ rF ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF
+            ≡ Π ℕ ^ ! ° ⁰ ▹ (G ^ rF ° lF ▹▹ G [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ [ rF , ι lF ]
 sucCong F≡G with wfEq F≡G
 sucCong {lF = lF} F≡G | ⊢Γ ∙ ⊢ℕ =
   let ⊢F , _ = syntacticEq F≡G

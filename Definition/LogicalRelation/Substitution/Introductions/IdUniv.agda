@@ -267,7 +267,7 @@ import Data.Nat as Nat
 
 
 [IdExtShape]U ⊢Γ _ _ (ℕᵥ ℕA [[ ⊢A , ⊢K , D ]]) [A≡A′] _ _ (ℕᵥ NB [[ ⊢B , ⊢L , D₁ ]]) [B≡B′] =
-  Π₌ Empty Empty
+  Π₌ (Empty _) (Empty _)
     (trans⇒* (univ⇒* (IdURed*Term′ (un-univ ⊢A) (un-univ ⊢K) (un-univ⇒* D) (un-univ ⊢B)))
                         (trans⇒* (univ⇒* (IdUℕRed*Term′ (un-univ ⊢B) (un-univ ⊢L) (un-univ⇒* D₁))) (univ (Id-U-ℕℕ ⊢Γ) ⇨ id (univ (Unitⱼ ⊢Γ)))))
                         (≅-univ (Unit≡Unit ⊢Γ))
