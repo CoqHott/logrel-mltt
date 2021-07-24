@@ -39,18 +39,7 @@ mutual
   ne~↓! : ∀ {t u A Γ l}
         → Γ ⊢ t ~ u ↓! A ^ l
         → Whnf A × Neutral t × Neutral u
-  ne~↓! ([~] A r D whnfB k~l) = whnfB , ne~↑! k~l
-
--- Extraction of WHNF from algorithmic equality of types in WHNF.
-whnfConv↓ : ∀ {A B rA Γ}
-          → Γ ⊢ A [conv↓] B ^ rA
-          → Whnf A × Whnf B
-whnfConv↓ (U-refl _ _ x) = Uₙ , Uₙ
-whnfConv↓ (ℕ-refl x) = ℕₙ , ℕₙ
-whnfConv↓ (Empty-refl x) = Emptyₙ , Emptyₙ
-whnfConv↓ (ne x) = let _ , neA , neB = ne~↓! x
-                   in  ne neA , ne neB
-whnfConv↓ (Π-cong _ x x₁ x₂) = Πₙ , Πₙ
+  ne~↓! ([~] A D whnfB k~l) = whnfB , ne~↑! k~l
 
 -- Extraction of WHNF from algorithmic equality of terms in WHNF.
 whnfConv↓Term : ∀ {t u A Γ l}
@@ -63,7 +52,17 @@ whnfConv↓Term (ℕ-ins x) = let _ , neT , neU = ne~↓! x
 whnfConv↓Term (ne-ins t u x x₁) =
   let _ , neT , neU = ne~↓! x₁
   in ne x , ne neT , ne neU
-whnfConv↓Term (univ x x₁ x₂) = Uₙ , whnfConv↓ x₂
+whnfConv↓Term (ℕ-refl x) = Uₙ , ℕₙ , ℕₙ
+whnfConv↓Term (Empty-refl x) = Uₙ , Emptyₙ , Emptyₙ
+whnfConv↓Term (Π-cong _ _ _ _ _ x x₁ x₂) = Uₙ , Πₙ , Πₙ
+whnfConv↓Term (U-refl _ _) = Uₙ , Uₙ , Uₙ
 whnfConv↓Term (zero-refl x) = ℕₙ , zeroₙ , zeroₙ
 whnfConv↓Term (suc-cong x) = ℕₙ , sucₙ , sucₙ
-whnfConv↓Term (η-eq x x₁ x₂ y y₁ x₃) = Πₙ , functionWhnf y , functionWhnf y₁
+whnfConv↓Term (η-eq _ _ x x₁ x₂ y y₁ x₃) = Πₙ , functionWhnf y , functionWhnf y₁
+
+-- Extraction of WHNF from algorithmic equality of types in WHNF.
+whnfConv↓ : ∀ {A B rA Γ}
+          → Γ ⊢ A [conv↓] B ^ rA
+          → Whnf A × Whnf B
+whnfConv↓ (U-refl _ _) = Uₙ , Uₙ
+whnfConv↓ (univ x₂) = let _ , A , B = whnfConv↓Term x₂ in A , B

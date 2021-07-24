@@ -16,13 +16,15 @@ open import Definition.Typed.Consequences.Reduction
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+
 mutual
+
   -- Conversion of algorithmic equality.
-  convConv↑Term : ∀ {t u A B Γ Δ}
+  convConv↑Term : ∀ {t u A B Γ Δ l}
                 → ⊢ Γ ≡ Δ
-                → Γ ⊢ A ≡ B ^ !
-                → Γ ⊢ t [conv↑] u ∷ A 
-                → Δ ⊢ t [conv↑] u ∷ B
+                → Γ ⊢ A ≡ B ^ [ ! , l ]
+                → Γ ⊢ t [conv↑] u ∷ A ^ l
+                → Δ ⊢ t [conv↑] u ∷ B ^ l 
   convConv↑Term Γ≡Δ A≡B ([↑]ₜ B₁ t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) =
     let _ , ⊢B = syntacticEq A≡B
         B′ , whnfB′ , D′ = whNorm ⊢B
@@ -33,45 +35,53 @@ mutual
              (convConv↓Term Γ≡Δ B₁≡B′ whnfB′ t<>u)
 
   -- Conversion of algorithmic equality with terms and types in WHNF.
-  convConv↓Term : ∀ {t u A B Γ Δ}
+  convConv↓Term : ∀ {t u A B Γ Δ l}
                 → ⊢ Γ ≡ Δ
-                → Γ ⊢ A ≡ B ^ !
+                → Γ ⊢ A ≡ B ^ [ ! , l ]
                 → Whnf B
-                → Γ ⊢ t [conv↓] u ∷ A 
-                → Δ ⊢ t [conv↓] u ∷ B 
+                → Γ ⊢ t [conv↓] u ∷ A ^ l 
+                → Δ ⊢ t [conv↓] u ∷ B ^ l
   convConv↓Term Γ≡Δ A≡B whnfB (ℕ-ins x) rewrite ℕ≡A A≡B whnfB =
     ℕ-ins (stability~↓! Γ≡Δ x)
-  -- convConv↓Term Γ≡Δ A≡B whnfB (Empty-ins x) rewrite Empty≡A A≡B whnfB =
-  --   Empty-ins (stability~↓% Γ≡Δ x)
   convConv↓Term Γ≡Δ A≡B whnfB (ne-ins t u x x₁) with ne≡A x A≡B whnfB
   convConv↓Term Γ≡Δ A≡B whnfB (ne-ins t u x x₁) | B , neB , PE.refl = 
     ne-ins (stabilityTerm Γ≡Δ (conv t A≡B)) (stabilityTerm Γ≡Δ (conv u A≡B))
-           neB (stability~↓! Γ≡Δ x₁)
-  convConv↓Term Γ≡Δ A≡B whnfB (univ x x₁ x₂) rewrite U≡A A≡B =
-    univ (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityConv↓ Γ≡Δ x₂)
+           neB (stability~↓! Γ≡Δ x₁) 
   convConv↓Term Γ≡Δ A≡B whnfB (zero-refl x) rewrite ℕ≡A A≡B whnfB =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
     in  zero-refl ⊢Δ
   convConv↓Term Γ≡Δ A≡B whnfB (suc-cong x) rewrite ℕ≡A A≡B whnfB =
     suc-cong (stabilityConv↑Term Γ≡Δ x)
-  convConv↓Term Γ≡Δ A≡B whnfB (η-eq x x₁ x₂ y y₁ x₃) with Π≡A A≡B whnfB
-  convConv↓Term Γ≡Δ A≡B whnfB (η-eq x x₁ x₂ y y₁ x₃) | F′ , G′ , PE.refl =
-    let F≡F′ , rF≡rF′ , G≡G′ = injectivity A≡B
+  convConv↓Term Γ≡Δ A≡B whnfB (η-eq l< l<' x x₁ x₂ y y₁ x₃) with Π≡A A≡B whnfB
+  convConv↓Term Γ≡Δ A≡B whnfB (η-eq l< l<' x x₁ x₂ y y₁ x₃) | F′ , G′ , PE.refl =
+    let F≡F′ , rF≡rF′ , _ , _ , G≡G′ = injectivity A≡B
         ⊢F , ⊢F′ = syntacticEq F≡F′
-    in  η-eq (stability Γ≡Δ ⊢F′) (stabilityTerm Γ≡Δ (conv x₁ A≡B))
+    in  η-eq l< l<'
+             (stability Γ≡Δ ⊢F′) (stabilityTerm Γ≡Δ (conv x₁ A≡B))
              (stabilityTerm Γ≡Δ (conv x₂ A≡B)) y y₁
              (convConv↑Term (Γ≡Δ ∙ F≡F′) G≡G′ x₃)
+  convConv↓Term Γ≡Δ A≡B whnfB (U-refl x x₁) rewrite U≡A-whnf A≡B whnfB =
+    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in U-refl x ⊢Δ 
+  convConv↓Term Γ≡Δ A≡B whnfB (ℕ-refl x) rewrite U≡A-whnf A≡B whnfB =
+    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in ℕ-refl ⊢Δ
+  convConv↓Term Γ≡Δ A≡B whnfB (Empty-refl x) rewrite U≡A-whnf A≡B whnfB =
+    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Empty-refl ⊢Δ
+  convConv↓Term Γ≡Δ A≡B whnfB (Π-cong rF lF lG l< l<' x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
+    Π-cong rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂) 
 
 -- Conversion of algorithmic equality with the same context.
-convConvTerm : ∀ {t u A B Γ}
-              → Γ ⊢ t [conv↑] u ∷ A 
-              → Γ ⊢ A ≡ B ^ !
-              → Γ ⊢ t [conv↑] u ∷ B 
+convConvTerm : ∀ {t u A B Γ l}
+              → Γ ⊢ t [conv↑] u ∷ A ^ l
+              → Γ ⊢ A ≡ B ^ [ ! , l ]
+              → Γ ⊢ t [conv↑] u ∷ B ^ l
 convConvTerm t<>u A≡B = convConv↑Term (reflConEq (wfEq A≡B)) A≡B t<>u
 
-conv~↑% : ∀ {t u A B Γ}
+
+
+conv~↑% : ∀ {t u A B Γ l}
               -- → ⊢ Γ ≡ Δ
-              → Γ ⊢ t ~ u ↑% A 
-              → Γ ⊢ A ≡ B ^ %
-              → Γ ⊢ t ~ u ↑% B 
-conv~↑% (%~↑ ⊢k ⊢l) e = %~↑ (conv ⊢k e) (conv ⊢l e) --(stabilityTerm ⊢Γ≡Δ (conv ⊢k e)) (stabilityTerm ⊢Γ≡Δ (conv ⊢l e))
+              → Γ ⊢ t ~ u ↑% A ^ l
+              → Γ ⊢ A ≡ B ^ [ % , l ]
+              → Γ ⊢ t ~ u ↑% B ^ l
+conv~↑% (%~↑ ⊢k ⊢l) e = %~↑ (conv ⊢k e) (conv ⊢l e)
+--(stabilityTerm ⊢Γ≡Δ (conv ⊢k e)) (stabilityTerm ⊢Γ≡Δ (conv ⊢l e))
