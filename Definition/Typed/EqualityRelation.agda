@@ -170,7 +170,7 @@ record EqRelSet : Set₁ where
              → Γ ⊢ F ≅ F′ ^ [ ! , l ]
              → Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
              → Γ ⊢ e′ ∷ Empty lEmpty ^ [ % , ι lEmpty ]
-             → Γ     ⊢ Emptyrec F e ~ Emptyrec F′ e′ ∷ F ^ [ ! , l ]
+             → Γ     ⊢ Emptyrec lEmpty F e ~ Emptyrec lEmpty F′ e′ ∷ F ^ [ ! , l ]
 
     -- Id congruences
     ~-Id  : ∀ {A A' l t t' u u' Γ}

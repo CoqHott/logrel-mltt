@@ -129,7 +129,7 @@ data Kind : Set where
   Suckind : Kind
   Natreckind : Level → Kind
   Emptykind : Level → Kind
-  Emptyreckind : Kind
+  Emptyreckind : Level → Kind
   Idkind : Kind
   Idreflkind : Kind
   Transpkind : Kind
@@ -200,8 +200,8 @@ natrec l A t u v = gen (Natreckind l) (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0
 Empty : Level → Term
 Empty l = gen (Emptykind l) []
 
-Emptyrec : (A e : Term) -> Term
-Emptyrec A e = gen Emptyreckind (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
+Emptyrec : (l : Level) (A e : Term) -> Term
+Emptyrec l A e = gen (Emptyreckind l) (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
 Id : (A t u : Term) → Term
 Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
@@ -263,7 +263,7 @@ data Neutral : Term → Set where
   castΠℕₙ : ∀ {l A rA B e t} → Neutral (cast l (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l) ℕ e t)
   castΠΠ%!ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ % ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° l) e t)
   castΠΠ!%ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° l) e t)
-  Emptyrecₙ : ∀ {A e} -> Neutral (Emptyrec A e)
+  Emptyrecₙ : ∀ {l A e} -> Neutral (Emptyrec l A e)
 
 -- Weak head normal forms (whnfs).
 -- These are the (lazy) values of our language.
@@ -680,7 +680,7 @@ Unit : ∀ {l} → Term
 Unit {l} =  Π Empty l ^ % ° l ▹ Empty l ° l ° l
 
 tt : ∀ {l} → Term -- currently not used
-tt {l} = lam (Empty l) ▹ (Emptyrec (Empty l) (var 0))
+tt {l} = lam (Empty l) ▹ (Emptyrec l (Empty l) (var 0))
 
 ap : (l : Level) (A B f x y e : Term) → Term -- currently not used
 ap l A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x ^ l)) ((wk1 f) ∘ (var 0) ^ l)) x (Idrefl B (f ∘ x ^ l)) y e

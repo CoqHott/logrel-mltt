@@ -97,7 +97,7 @@ mutual
            → Γ       ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ       ⊢ natrec lG G z s n ∷ G [ n ] ^ [ rG , ι lG ]
     Emptyrecⱼ : ∀ {A l rA e}
-           → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty l ^ [ % ,  ι l ] -> Γ ⊢ Emptyrec A e ∷ A ^ rA
+           → Γ ⊢ A ^ rA → Γ ⊢ e ∷ Empty l ^ [ % ,  ι l ] -> Γ ⊢ Emptyrec l A e ∷ A ^ rA
     Idⱼ : ∀ {A l t u}
           → Γ ⊢ A ∷ U l ^ [ ! , next l ]
           → Γ ⊢ t ∷ A ^ [ ! , ι l ]
@@ -220,7 +220,7 @@ mutual
                 → Γ ⊢ A ≡ A' ^ [ ! , l ]
                 → Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
                 → Γ ⊢ e' ∷ Empty lEmpty ^ [ % , ι lEmpty ]
-                → Γ ⊢ Emptyrec A e ≡ Emptyrec A' e' ∷ A ^ [ ! , l ]
+                → Γ ⊢ Emptyrec lEmpty A e ≡ Emptyrec lEmpty A' e' ∷ A ^ [ ! , l ]
     proof-irrelevance : ∀ {t u A l}
                       → Γ ⊢ t ∷ A ^ [ % , l ]
                       → Γ ⊢ u ∷ A ^ [ % , l ]
