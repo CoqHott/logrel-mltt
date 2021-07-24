@@ -146,12 +146,42 @@ mutual
   trans~↑! el Γ≡Δ (cast-ℕℕ X x x₁) (cast-ℕℕ Y x₂ x₃) =
     let XY , N = trans~↑! PE.refl Γ≡Δ X Y
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
-    in cast-ℕℕ XY x (stabilityTerm (symConEq Γ≡Δ) x₃) , {!N!}
-  trans~↑! el Γ≡Δ (cast-Π x X x₁ x₂ x₃) Y = {!!}
-  trans~↑! el Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) Y = {!!}
-  trans~↑! el Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) Y = {!!}
-  trans~↑! el Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) Y = {!!}
-  trans~↑! el Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) Y = {!!}
+    in cast-ℕℕ XY x (stabilityTerm (symConEq Γ≡Δ) x₃) , N
+  trans~↑! el Γ≡Δ (cast-Π x X x₁ x₂ x₃) (cast-Π x₄ Y x₅ x₆ x₇) =
+    let XY , [U] = trans~↑! PE.refl Γ≡Δ X Y
+        X≡Y = soundness~↑! XY
+        Y≡Y = univ (soundnessConv↑Term x₄)
+        t~t = transConv↑Term Γ≡Δ [U] x x₄
+        u~u = transConv↑Term Γ≡Δ (univ (soundnessConv↑Term t~t)) x₁ (convConvTerm x₅ Y≡Y)
+        A₁≡B = trans X≡Y (sym (soundness~↑! (stability~↑! (symConEq Γ≡Δ) Y)))
+        ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
+    in cast-Π t~t XY u~u x₂ (stabilityTerm (symConEq Γ≡Δ) x₇) , univ A₁≡B
+  trans~↑! el Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) (cast-Πℕ x₄ x₅ x₆ x₇) =
+    let Y≡Y = univ (soundnessConv↑Term x₄)
+        ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
+        t~t = transConv↑Term Γ≡Δ (refl (Ugenⱼ ⊢Γ)) x x₄
+        u~u = transConv↑Term Γ≡Δ (univ (soundnessConv↑Term t~t)) x₁ (convConvTerm x₅ Y≡Y)
+    in cast-Πℕ t~t u~u x₂ (stabilityTerm (symConEq Γ≡Δ) x₇) , refl (univ (ℕⱼ  ⊢Γ)) 
+  trans~↑! el Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) (cast-ℕΠ x₄ x₅ x₆ x₇) =
+    let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
+        t~t = transConv↑Term Γ≡Δ (refl (Ugenⱼ ⊢Γ)) x x₄
+        u~u = transConv↑Term Γ≡Δ (refl (univ (ℕⱼ  ⊢Γ))) x₁ x₅
+    in cast-ℕΠ t~t u~u x₂ (stabilityTerm (symConEq Γ≡Δ) x₇) , univ (soundnessConv↑Term x) 
+  trans~↑! el Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) (cast-ΠΠ%! x₅ x₆ x₇ x₈ x₉) =
+    let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
+        A~A = transConv↑Term Γ≡Δ (refl (Ugenⱼ ⊢Γ)) x x₅
+        B~B = transConv↑Term Γ≡Δ (refl (Ugenⱼ ⊢Γ)) x₁ x₆
+        u~u = transConv↑Term Γ≡Δ (univ (soundnessConv↑Term x)) x₂ x₇
+    in cast-ΠΠ%! A~A B~B u~u x₃ (stabilityTerm (symConEq Γ≡Δ) x₉) ,
+       trans (univ (soundnessConv↑Term B~B)) (sym (univ (soundnessConv↑Term (stabilityConv↑Term (symConEq Γ≡Δ) x₆))))
+  trans~↑! el Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) (cast-ΠΠ!% x₅ x₆ x₇ x₈ x₉) =
+    let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
+        A~A = transConv↑Term Γ≡Δ (refl (Ugenⱼ ⊢Γ)) x x₅
+        B~B = transConv↑Term Γ≡Δ (refl (Ugenⱼ ⊢Γ)) x₁ x₆
+        u~u = transConv↑Term Γ≡Δ (univ (soundnessConv↑Term x)) x₂ x₇
+    in cast-ΠΠ!% A~A B~B u~u x₃ (stabilityTerm (symConEq Γ≡Δ) x₉) ,
+       trans (univ (soundnessConv↑Term B~B)) (sym (univ (soundnessConv↑Term (stabilityConv↑Term (symConEq Γ≡Δ) x₆))))
+
 
   trans~↑% : ∀ {t u v A Γ Δ l}
          → ⊢ Γ ≡ Δ
