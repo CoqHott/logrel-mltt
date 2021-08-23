@@ -35,17 +35,19 @@ dec-relevance % ! = no (λ ())
 dec-relevance % % = yes PE.refl
 
 -- Algorithmic equality of variables infers propositional equality.
-strongVarEq : ∀ {m n A Γ} → Γ ⊢ var n ~ var m ↑! A → n PE.≡ m
+strongVarEq : ∀ {m n A Γ l} → Γ ⊢ var n ~ var m ↑! A ^ l → n PE.≡ m
 strongVarEq (var-refl x x≡y) = x≡y
 
 -- Helper function for decidability of applications.
-dec~↑!-app : ∀ {k k₁ l l₁ F F₁ G G₁ rF B Γ Δ}
+dec~↑!-app : ∀ {k k₁ l l₁ F F₁ G G₁ rF B Γ Δ lF lG lΠ lK}
           → ⊢ Γ ≡ Δ
-          → Γ ⊢ k ∷ Π F ^ rF ▹ G ^ !
-          → Δ ⊢ k₁ ∷ Π F₁ ^ rF ▹ G₁ ^ !
-          → Γ ⊢ k ~ k₁ ↓! B
-          → Dec (Γ ⊢ l [genconv↑] l₁ ∷ F ^ rF)
-          → Dec (∃ λ A → Γ ⊢ k ∘ l ~ k₁ ∘ l₁ ↑! A)
+          → Γ ⊢ k ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ]
+          → Δ ⊢ k₁ ∷ Π F₁ ^ rF ° lF ▹ G₁ ° lG ° lΠ ^ [ ! , ι lΠ ]
+          → Γ ⊢ k ~ k₁ ↓! B ^ lK
+          → Dec (Γ ⊢ l [genconv↑] l₁ ∷ F ^ [ rF , ι lF ])
+          → Dec (∃ λ A → Γ ⊢ k ∘ l ^ lG ~ k₁ ∘ l₁ ^ lG ↑! A ^ ι lG)
+dec~↑!-app = {!!} 
+{-
 dec~↑!-app {rF = !} Γ≡Δ k k₁ k~k₁ (yes p) =
   let whnfA , neK , neL = ne~↓! k~k₁
       ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! k~k₁)
@@ -86,13 +88,16 @@ dec~↑!-app {rF = %} Γ≡Δ k₂ k₃ k~k₁ (no ¬p) =
           ΠFG≡ΠF₂G₂ = neTypeEq neK k₂ ⊢k
           F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
       in  ⊥-elim (relevance-discr (PE.sym rF≡rF₂))})
+-}
 
 mutual
   -- Decidability of algorithmic equality of neutrals.
-  dec~↑! : ∀ {k l R T Γ Δ}
+  dec~↑! : ∀ {k l R T Γ Δ lR lT}
         → ⊢ Γ ≡ Δ
-        → Γ ⊢ k ~ k ↑! R → Δ ⊢ l ~ l ↑! T
-        → Dec (∃ λ A → Γ ⊢ k ~ l ↑! A)
+        → Γ ⊢ k ~ k ↑! R ^ lR → Δ ⊢ l ~ l ↑! T ^ lT
+        → Dec (∃ λ A → ∃ λ lA → Γ ⊢ k ~ l ↑! A ^ lA)
+  dec~↑! = {!!}
+{-
   dec~↑! Γ≡Δ (var-refl {n} x₂ x≡y) (var-refl {m} x₃ x≡y₁) with n ≟ m
   dec~↑! Γ≡Δ (var-refl {n} x₂ x≡y) (var-refl .{n} x₃ x≡y₁) | yes PE.refl = yes (_ , var-refl x₂ x≡y₁)
   dec~↑! Γ≡Δ (var-refl x₂ x≡y) (var-refl x₃ x≡y₁) | no ¬p = no (λ { (A , k~l) → ¬p (strongVarEq k~l) })
@@ -189,10 +194,10 @@ mutual
     no (λ { (_ , Emptyrec-cong a b) → ¬p a })
 
   -- Decidability of algorithmic equality of neutrals with types in WHNF.
-  dec~↓! : ∀ {k l R T Γ Δ}
+  dec~↓! : ∀ {k l R T Γ Δ lR lT}
         → ⊢ Γ ≡ Δ
-        → Γ ⊢ k ~ k ↓! R → Δ ⊢ l ~ l ↓! T
-        → Dec (∃ λ A → Γ ⊢ k ~ l ↓! A)
+        → Γ ⊢ k ~ k ↓! R ^ lR → Δ ⊢ l ~ l ↓! T ^ lT
+        → Dec (∃ λ A → ∃ λ lA → Γ ⊢ k ~ l ↓! A ^ lA)
   dec~↓! Γ≡Δ ([~] A D whnfB k~l) ([~] A₁ D₁ whnfB₁ k~l₁)
         with dec~↑! Γ≡Δ k~l k~l₁
   dec~↓! Γ≡Δ ([~] A D whnfB k~l) ([~] A₁ D₁ whnfB₁ k~l₁)
@@ -203,6 +208,7 @@ mutual
   dec~↓! Γ≡Δ ([~] A D whnfB k~l) ([~] A₁ D₁ whnfB₁ k~l₁)
         | no ¬p =
     no (λ { (A₂ , [~] A₃ D₂ whnfB₂ k~l₂) → ¬p (A₃ , k~l₂) })
+-}
 
   -- Decidability of algorithmic equality of types.
   decConv↑ : ∀ {A B r Γ Δ}
@@ -230,6 +236,8 @@ mutual
            → ⊢ Γ ≡ Δ
            → Γ ⊢ A [conv↓] A ^ r → Δ ⊢ B [conv↓] B ^ r
            → Dec (Γ ⊢ A [conv↓] B ^ r)
+  decConv↓ = {!!}
+{-
   decConv↓ Γ≡Δ (U-refl {r = r} _ x) (U-refl {r = r′} _ x₁) with dec-relevance r r′
   ... | yes p = yes (U-refl p x)
   ... | no ¬p = no λ p → ¬p (Uinjectivity (soundnessConv↓ p))
@@ -292,21 +300,24 @@ mutual
     yes (Π-cong PE.refl x p p₁)
 
   -- Helper function for decidability of neutral types.
-  decConv↓-ne : ∀ {A B r Γ}
-              → Γ ⊢ A [conv↓] B ^ r
-              → Γ ⊢ A ~ A ↓! Univ r
-              → Γ ⊢ A ~ B ↓! Univ r
+  decConv↓-ne : ∀ {A B r Γ l}
+              → Γ ⊢ A [conv↓] B ^ [ r , ι l ]
+              → Γ ⊢ A ~ A ↓! Univ r l ^ [ ! , next l ]
+              → Γ ⊢ A ~ B ↓! Univ r l ^ [ ! , next l ]
   decConv↓-ne (U-refl PE.refl x) A~A = A~A
   decConv↓-ne (ℕ-refl x) A~A = A~A
   decConv↓-ne (Empty-refl x) A~A = A~A
   decConv↓-ne (ne x) A~A = x
   decConv↓-ne (Π-cong e x x₁ x₂) ([~] A D whnfB ())
+-}
 
   -- Decidability of algorithmic equality of terms.
-  decConv↑Term : ∀ {t u A Γ Δ}
+  decConv↑Term : ∀ {t u A Γ Δ l}
                → ⊢ Γ ≡ Δ
-               → Γ ⊢ t [conv↑] t ∷ A → Δ ⊢ u [conv↑] u ∷ A
-               → Dec (Γ ⊢ t [conv↑] u ∷ A)
+               → Γ ⊢ t [conv↑] t ∷ A ^ l → Δ ⊢ u [conv↑] u ∷ A ^ l
+               → Dec (Γ ⊢ t [conv↑] u ∷ A ^ l)
+  decConv↑Term = {!!}
+{-
   decConv↑Term Γ≡Δ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u)
                    ([↑]ₜ B₁ t″ u″ D₁ d₁ d″ whnfB₁ whnft″ whnfu″ t<>u₁)
                rewrite whrDet* (D , whnfB) (stabilityRed* (symConEq Γ≡Δ) D₁ , whnfB₁)
@@ -369,12 +380,15 @@ mutual
   decConv↓Term-ℕ (ne-ins x x₁ () x₃) t~t ¬u~u
   decConv↓Term-ℕ (zero-refl x) ([~] A D whnfB ()) ¬u~u
   decConv↓Term-ℕ (suc-cong x) ([~] A D whnfB ()) ¬u~u
+-}
 
   -- Decidability of algorithmic equality of terms in WHNF.
-  decConv↓Term : ∀ {t u A Γ Δ}
+  decConv↓Term : ∀ {t u A Γ Δ l}
                → ⊢ Γ ≡ Δ
-               → Γ ⊢ t [conv↓] t ∷ A → Δ ⊢ u [conv↓] u ∷ A 
-               → Dec (Γ ⊢ t [conv↓] u ∷ A)
+               → Γ ⊢ t [conv↓] t ∷ A ^ l → Δ ⊢ u [conv↓] u ∷ A ^ l
+               → Dec (Γ ⊢ t [conv↓] u ∷ A ^ l)
+  decConv↓Term = {!!}
+{-
   decConv↓Term Γ≡Δ (ℕ-ins x) (ℕ-ins x₁) with dec~↓! Γ≡Δ x x₁
   decConv↓Term Γ≡Δ (ℕ-ins x) (ℕ-ins x₁) | yes (A , k~l) =
     let whnfA , neK , neL = ne~↓! k~l
@@ -436,6 +450,7 @@ mutual
   decConv↓Term Γ≡Δ (η-eq x x₁ x₂ x₃ x₄ x₅) (η-eq x₆ x₇ x₈ x₉ x₁₀ x₁₁) | no ¬p =
     no (λ { (ne-ins x₁₂ x₁₃ () x₁₅)
           ; (η-eq x₁₂ x₁₃ x₁₄ x₁₅ x₁₆ x₁₇) → ¬p x₁₇ })
+-}
 
   -- Decidability of algorithmic equality of terms of equal types.
   decConv↑TermConv : ∀ {t u A B r Γ Δ}
@@ -444,7 +459,8 @@ mutual
                 → Γ ⊢ t [genconv↑] t ∷ A ^ r
                 → Δ ⊢ u [genconv↑] u ∷ B ^ r
                 → Dec (Γ ⊢ t [genconv↑] u ∷ A ^ r)
-  decConv↑TermConv {r = !} Γ≡Δ A≡B t u =
+  decConv↑TermConv {r = [ ! , l ]} Γ≡Δ A≡B t u =
     decConv↑Term Γ≡Δ t (convConvTerm u (stabilityEq Γ≡Δ (sym A≡B)))
-  decConv↑TermConv {r = %} Γ≡Δ A≡B (%~↑ ⊢t ⊢t') (%~↑ ⊢u ⊢u') =
+  decConv↑TermConv {r = [ % , l ]} Γ≡Δ A≡B (%~↑ ⊢t ⊢t') (%~↑ ⊢u ⊢u') =
     yes (%~↑ ⊢t (conv (stabilityTerm (symConEq Γ≡Δ) ⊢u) (sym A≡B)))
+
