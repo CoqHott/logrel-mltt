@@ -56,6 +56,7 @@ whnfConv↓Term (ne-ins t u x x₁) =
 whnfConv↓Term (ℕ-refl x) = Uₙ , ℕₙ , ℕₙ
 whnfConv↓Term (Empty-refl x) = Uₙ , Emptyₙ , Emptyₙ
 whnfConv↓Term (Π-cong _ _ _ _ _ x x₁ x₂) = Uₙ , Πₙ , Πₙ
+whnfConv↓Term (∃-cong x x₁ x₂) = Uₙ , ∃ₙ , ∃ₙ
 whnfConv↓Term (U-refl _ _) = Uₙ , Uₙ , Uₙ
 whnfConv↓Term (zero-refl x) = ℕₙ , zeroₙ , zeroₙ
 whnfConv↓Term (suc-cong x) = ℕₙ , sucₙ , sucₙ

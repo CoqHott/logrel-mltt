@@ -128,3 +128,6 @@ mutual
   wkConv↓Term ρ ⊢Δ (Π-cong eqr eqlF eqlG l< l<'   x A<>B A<>B₁) =
     let ⊢ρF = wk ρ ⊢Δ x
     in  Π-cong eqr eqlF eqlG l< l<' ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)
+  wkConv↓Term ρ ⊢Δ (∃-cong x A<>B A<>B₁) =
+    let ⊢ρF = wk ρ ⊢Δ x
+    in  ∃-cong ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)

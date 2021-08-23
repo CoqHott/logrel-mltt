@@ -69,6 +69,8 @@ mutual
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Empty-refl ⊢Δ
   convConv↓Term Γ≡Δ A≡B whnfB (Π-cong rF lF lG l< l<' x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
     Π-cong rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂) 
+  convConv↓Term Γ≡Δ A≡B whnfB (∃-cong x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
+    ∃-cong (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂) 
 
 -- Conversion of algorithmic equality with the same context.
 convConvTerm : ∀ {t u A B Γ l}

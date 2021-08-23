@@ -236,6 +236,9 @@ mutual
   stabilityConv↓Term Γ≡Δ (Π-cong PE.refl PE.refl PE.refl l< l<' F A<>B A<>B₁) =
     Π-cong PE.refl PE.refl PE.refl l< l<' (stability Γ≡Δ F) (stabilityConv↑Term Γ≡Δ A<>B)
            (stabilityConv↑Term (Γ≡Δ ∙ refl F) A<>B₁)
+  stabilityConv↓Term Γ≡Δ (∃-cong F A<>B A<>B₁) =
+    ∃-cong (stability Γ≡Δ F) (stabilityConv↑Term Γ≡Δ A<>B)
+           (stabilityConv↑Term (Γ≡Δ ∙ refl F) A<>B₁)
   stabilityConv↓Term Γ≡Δ (ℕ-ins x) =
     ℕ-ins (stability~↓! Γ≡Δ x)
   -- stabilityConv↓Term Γ≡Δ (Empty-ins x) =

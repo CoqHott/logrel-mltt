@@ -213,6 +213,11 @@ mutual
   symConv↓Term Γ≡Δ (Empty-refl x) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
     in  Empty-refl ⊢Δ
+  symConv↓Term Γ≡Δ (∃-cong x A<>B A<>B₁) =
+    let F≡H = soundnessConv↑Term A<>B
+        _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))
+    in ∃-cong ⊢H (symConv↑Term Γ≡Δ A<>B)
+                 (symConv↑Term (Γ≡Δ ∙ univ F≡H) A<>B₁)
   symConv↓Term Γ≡Δ (Π-cong PE.refl PE.refl PE.refl l< l<' x A<>B A<>B₁) =
     let F≡H = soundnessConv↑Term A<>B
         _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))

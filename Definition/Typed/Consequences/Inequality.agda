@@ -74,6 +74,30 @@ U≢Π! U≡Π =
   let _ , ⊢Π = syntacticEq U≡Π
   in  U≢Π-red (id ⊢Π) U≡Π
 
+
+-- ∃ vs Pi
+
+∃≢Π′ : ∀ {A lA B rB lB Γ l l′}
+       ([∃] : Γ ⊩′⟨ l ⟩∃ A ^ lA)
+       ([Π] : Γ ⊩′⟨ l′ ⟩Π B ^[ rB , lB ])
+     → ShapeView Γ l l′ _ _ _ _ (∃ᵣ [∃]) (Πᵣ [Π]) → ⊥
+∃≢Π′ a b ()
+
+∃≢Π-red : ∀ {ll B F G rF lF lG P Q Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° lG ° ll ^ [ % , ι ll ]
+            → Γ ⊢ ∃ P ▹ Q ≡ B ^ [ % , ι ll ] → ⊥
+∃≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩∃ A ^ ι ll)
+                (λ Γ l A → Γ ⊩′⟨ l ⟩Π A ^[ % , ll ]) ∃ᵣ Πᵣ
+                (λ x → extractMaybeEmb (∃-elim x))
+                (λ x → extractMaybeEmb (Π-elim′ D x))
+                ∃≢Π′
+
+-- U and Π F ▹ G for any F and G cannot be judgmentally equal.
+∃≢Π! : ∀ {P Q F rF lF lG G l Γ} → Γ ⊢ ∃ P ▹ Q ≡ Π F ^ rF ° lF ▹ G  ° lG ° l ^ [ % , ι l ] → ⊥
+∃≢Π! ∃≡Π =
+  let _ , ⊢Π = syntacticEq ∃≡Π
+  in ∃≢Π-red (id ⊢Π) ∃≡Π
+
+
 U≢ne′ : ∀ {A lU r lK K Γ l l′}
        ([U] : Γ ⊩′⟨ l ⟩U A ^ lU)
        ([K] : Γ ⊩ne K ^[ r , lK ] )
