@@ -32,21 +32,21 @@ mutual
                           (wk~↓! [ρ] ⊢Δ t~u))
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Emptyrec-cong {k} {l} {F} {G} x t~u) =
     Emptyrec-cong (wkConv↑ [ρ] ⊢Δ x) (wk~↑% [ρ] ⊢Δ t~u)      
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-cong X x x₁) = Id-cong (wk~↑! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ x x₁) = Id-ℕ (wk~↑! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) 
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ0 x) = Id-ℕ0 (wk~↑! [ρ] ⊢Δ x)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕS x x₁) = Id-ℕS (wkConv↑Term [ρ] ⊢Δ x) (wk~↑! [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-U x x₁) = Id-U (wk~↑! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-Uℕ x) = Id-Uℕ (wk~↑! [ρ] ⊢Δ x)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-UΠ x x₁) = Id-UΠ (wkConv↑Term [ρ] ⊢Δ x) (wk~↑! [ρ] ⊢Δ x₁)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-cong X x x₁) = Id-cong (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ x x₁) = Id-ℕ (wk~↓! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) 
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ0 x) = Id-ℕ0 (wk~↓! [ρ] ⊢Δ x)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕS x x₁) = Id-ℕS (wkConv↑Term [ρ] ⊢Δ x) (wk~↓! [ρ] ⊢Δ x₁)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-U x x₁) = Id-U (wk~↓! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-Uℕ x) = Id-Uℕ (wk~↓! [ρ] ⊢Δ x)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-UΠ x x₁) = Id-UΠ (wkConv↑Term [ρ] ⊢Δ x) (wk~↓! [ρ] ⊢Δ x₁)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-cong X x x₁ x₂ x₃) =
-    cast-cong (wk~↑! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
+    cast-cong (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-ℕ X x x₁ x₂) =
-    cast-ℕ (wk~↑! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂)
+    cast-ℕ (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-ℕℕ X x x₁) =
-    cast-ℕℕ (wk~↑! [ρ] ⊢Δ X) (wkTerm [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁)
+    cast-ℕℕ (wk~↓! [ρ] ⊢Δ X) (wkTerm [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-Π x X x₁ x₂ x₃) =
-    cast-Π (wkConv↑Term [ρ] ⊢Δ x) (wk~↑! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
+    cast-Π (wkConv↑Term [ρ] ⊢Δ x) (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-Πℕ x x₁ x₂ x₃) =
     cast-Πℕ (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-ℕΠ x x₁ x₂ x₃) =
