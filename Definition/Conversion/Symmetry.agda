@@ -158,8 +158,8 @@ mutual
   sym~↑% Γ≡Δ (%~↑ ⊢k ⊢l) = %~↑ (stabilityTerm Γ≡Δ ⊢l) (stabilityTerm Γ≡Δ ⊢k)
 
   sym~↑ : ∀ {t u A rA Γ Δ l} → ⊢ Γ ≡ Δ
-        → Γ ⊢ t ~ u ↑ A ^[ rA , l ]
-        → ∃ λ B → Γ ⊢ A ≡ B ^ [ rA , l ] × Δ ⊢ u ~ t ↑ B ^[ rA , l ]
+        → Γ ⊢ t ~ u ↑ A ^ [ rA , l ]
+        → ∃ λ B → Γ ⊢ A ≡ B ^ [ rA , l ] × Δ ⊢ u ~ t ↑ B ^ [ rA , l ]
   sym~↑ Γ≡Δ (~↑! x) =
     let B , A≡B , x′ = sym~↑! Γ≡Δ x
     in B , A≡B , ~↑! x′

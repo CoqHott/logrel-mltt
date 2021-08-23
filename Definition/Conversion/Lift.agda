@@ -106,7 +106,7 @@ mutual
 
   lift~toConv↑′ : ∀ {t u A  Γ l lA}
                 → Γ ⊩⟨ l ⟩ A ^ [ ! , lA ]
-                → Γ ⊢ t ~ u ↑ A ^[ ! , lA ]
+                → Γ ⊢ t ~ u ↑ A ^ [ ! , lA ]
                 → Γ ⊢ t [conv↑] u ∷ A ^ lA
   lift~toConv↑′ [A] (~↑! x) = lift~toConv↑!′ [A] x
 
@@ -130,6 +130,6 @@ lift~toConv↑! t~u =
   lift~toConv↑!′ (reducible (proj₁ (syntacticEqTerm (soundness~↑! t~u)))) t~u
 
 lift~toConv↑ : ∀ {t u A Γ lA}
-             → Γ ⊢ t ~ u ↑ A ^[ ! , lA ] 
+             → Γ ⊢ t ~ u ↑ A ^ [ ! , lA ] 
              → Γ ⊢ t [conv↑] u ∷ A ^ lA
 lift~toConv↑ (~↑! t~u) = lift~toConv↑! t~u

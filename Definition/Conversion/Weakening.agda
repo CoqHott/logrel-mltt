@@ -63,8 +63,8 @@ mutual
     %~↑ (wkTerm [ρ] ⊢Δ ⊢k) (wkTerm [ρ] ⊢Δ ⊢l)
 
   wk~↑ : ∀ {ρ t u A rA lA Γ Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
-      → Γ ⊢ t ~ u ↑ A ^[ rA , lA ]
-      → Δ ⊢ U.wk ρ t ~ U.wk ρ u ↑ U.wk ρ A ^[ rA , lA ]
+      → Γ ⊢ t ~ u ↑ A ^ [ rA , lA ]
+      → Δ ⊢ U.wk ρ t ~ U.wk ρ u ↑ U.wk ρ A ^ [ rA , lA ]
   wk~↑ [ρ] ⊢Δ (~↑! x) = ~↑! (wk~↑! [ρ] ⊢Δ x)
   wk~↑ [ρ] ⊢Δ (~↑% x) = ~↑% (wk~↑% [ρ] ⊢Δ x)
 

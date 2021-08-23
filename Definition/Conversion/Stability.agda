@@ -176,8 +176,8 @@ mutual
 
   stability~↑ : ∀ {k l A rA lA Γ Δ}
               → ⊢ Γ ≡ Δ
-              → Γ ⊢ k ~ l ↑ A ^[ rA , lA ]
-              → Δ ⊢ k ~ l ↑ A ^[ rA , lA ]
+              → Γ ⊢ k ~ l ↑ A ^ [ rA , lA ]
+              → Δ ⊢ k ~ l ↑ A ^ [ rA , lA ]
   stability~↑ Γ≡Δ (~↑! x) = ~↑! (stability~↑! Γ≡Δ x)
   stability~↑ Γ≡Δ (~↑% x) = ~↑% (stability~↑% Γ≡Δ x)
 

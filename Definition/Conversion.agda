@@ -11,12 +11,12 @@ open import Tools.Nat
 import Tools.PropositionalEquality as PE
 
 
-infix 10 _⊢_~_↑_^[_,_]
+infix 10 _⊢_~_↑_^_
 infix 10 _⊢_[conv↑]_^_
 infix 10 _⊢_[conv↓]_^_
 infix 10 _⊢_[conv↑]_∷_^_
 infix 10 _⊢_[conv↓]_∷_^_
-infix 10 _⊢_[genconv↑]_∷_^[_,_]
+infix 10 _⊢_[genconv↑]_∷_^_
 
 mutual
   -- Neutral equality.
@@ -27,7 +27,7 @@ mutual
                 → Γ ⊢ var x ~ var y ↑! A ^ l 
     app-cong    : ∀ {k l t v F rF lF lG G lΠ}
                 → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ι lΠ
-                → Γ ⊢ t [genconv↑] v ∷ F ^[ rF , ι lF ] 
+                → Γ ⊢ t [genconv↑] v ∷ F ^ [ rF , ι lF ] 
                 → Γ ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑! G [ t ] ^ ι lG 
     natrec-cong : ∀ {k l h g a₀ b₀ F G lF}
                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] G ^ [ ! , ι lF ]
@@ -128,9 +128,9 @@ mutual
       ⊢k : Γ ⊢ k ∷ A ^ [ % , ll ]
       ⊢l : Γ ⊢ l ∷ A ^ [ % , ll ]
 
-  data _⊢_~_↑_^[_,_] (Γ : Con Term) : (k l A : Term) → Relevance → TypeLevel → Set where
-    ~↑! : ∀ {k l A ll} → Γ ⊢ k ~ l ↑! A ^ ll → Γ ⊢ k ~ l ↑ A ^[ ! , ll ]
-    ~↑% : ∀ {k l A ll} → Γ ⊢ k ~ l ↑% A ^ ll → Γ ⊢ k ~ l ↑ A ^[ % , ll ]
+  data _⊢_~_↑_^_ (Γ : Con Term) : (k l A : Term) → TypeInfo → Set where
+    ~↑! : ∀ {k l A ll} → Γ ⊢ k ~ l ↑! A ^ ll → Γ ⊢ k ~ l ↑ A ^ [ ! , ll ]
+    ~↑% : ∀ {k l A ll} → Γ ⊢ k ~ l ↑% A ^ ll → Γ ⊢ k ~ l ↑ A ^ [ % , ll ]
 
   -- Neutral equality with types in WHNF.
   record _⊢_~_↓!_^_ (Γ : Con Term) (k l B : Term) (ll : TypeLevel) : Set where
@@ -221,13 +221,13 @@ mutual
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ wk1 f ∘ var 0 ^ l [conv↑] wk1 g ∘ var 0 ^ l ∷ G ^ ι lG
                 → Γ ⊢ f [conv↓] g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ι l
 
-  _⊢_[genconv↑]_∷_^[_,_] : (Γ : Con Term) (t u A : Term) (r : Relevance) (ll : TypeLevel) → Set 
-  _⊢_[genconv↑]_∷_^[_,_] Γ k l A ! ll =  Γ ⊢ k [conv↑] l ∷ A ^ ll
-  _⊢_[genconv↑]_∷_^[_,_] Γ k l A % ll =  Γ ⊢ k ~ l ↑% A ^  ll
+  _⊢_[genconv↑]_∷_^_ : (Γ : Con Term) (t u A : Term) (r : TypeInfo) → Set 
+  _⊢_[genconv↑]_∷_^_ Γ k l A [ ! , ll ] =  Γ ⊢ k [conv↑] l ∷ A ^ ll
+  _⊢_[genconv↑]_∷_^_ Γ k l A [ % , ll ] =  Γ ⊢ k ~ l ↑% A ^  ll
   
 
 var-refl′ : ∀ {Γ x A rA ll}
           → Γ ⊢ var x ∷ A ^ [ rA , ll ]
-          → Γ ⊢ var x ~ var x ↑ A ^[ rA , ll ]
+          → Γ ⊢ var x ~ var x ↑ A ^ [ rA , ll ]
 var-refl′ {rA = !} ⊢x = ~↑! (var-refl ⊢x PE.refl)
 var-refl′ {rA = %} ⊢x = ~↑% (%~↑ ⊢x ⊢x)
