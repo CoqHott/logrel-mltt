@@ -263,6 +263,8 @@ mutual
                 → Γ ⊢ t [conv↓] u ∷ A ^ l
                 → Δ ⊢ u [conv↓] v ∷ B ^ l'
                 → Γ ⊢ t [conv↓] v ∷ A ^ l
+
+  transConv↓Term {Δ = Δ} Γ≡Δ A≡B el (ne x) (ne x₁) = ne (proj₁ (trans~↓! Γ≡Δ x (PE.subst (λ lx → Δ ⊢ _ ~ _ ↓! Univ _ _ ^ lx) (PE.sym el) x₁)))
   transConv↓Term Γ≡Δ A≡B el (ℕ-ins x) (ℕ-ins x₁) =
     ℕ-ins (proj₁ (trans~↓! Γ≡Δ x x₁))
   transConv↓Term {Δ = Δ} Γ≡Δ A≡B el (ne-ins t u x x₁) (ne-ins {k} {l} {M} {N} t′ u′ x₂ x₃) =
@@ -290,7 +292,6 @@ mutual
   transConv↓Term Γ≡Δ A≡B el (ℕ-refl x) (ℕ-refl x₁) = ℕ-refl x
   transConv↓Term Γ≡Δ A≡B el (Empty-refl x) (Empty-refl x₁) = Empty-refl x
   transConv↓Term Γ≡Δ A≡B el (U-refl e x) (U-refl e₁ x₁) = U-refl (PE.trans e e₁) x
-
   transConv↓Term Γ≡Δ A≡B el (Π-cong PE.refl PE.refl PE.refl l< l<' x₅ x₆ x₇) (Π-cong PE.refl PE.refl PE.refl x₁₁ x₁₂ x₁₃ x₁₄ x₁₅) =
     let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
         rF≡rF₁ , _ = Uinjectivity A≡B
@@ -305,15 +306,21 @@ mutual
   transConv↓Term Γ≡Δ A≡B el (Π-cong {rΠ = rΠ} {lΠ = lΠ} x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (η-eq x₈ x₉ x₁₀ x₁₁ x₁₂ x₁₃ x₁₄ x₁₅) =
     let X = PE.subst (λ lx → _ ⊢ Univ rΠ lΠ ≡  Π _ ^ _ ° _ ▹ _ ° _ ° _ ^ [ _ , lx ]) el A≡B
     in ⊥-elim (WF.U≢Π! X)
+
+  transConv↓Term Γ≡Δ A≡B el (ne x) (ℕ-ins x₁) = ⊥-elim (WF.U≢ℕ! A≡B)
+  transConv↓Term Γ≡Δ A≡B PE.refl (ne x) (ne-ins x₁ x₂ x₃ x₄) = ⊥-elim (WF.U≢ne! x₃ A≡B)
+  transConv↓Term Γ≡Δ A≡B PE.refl (ne x) (η-eq x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) = ⊥-elim (WF.U≢Π! A≡B)
+  --transConv↓Term Γ≡Δ A≡B el (zero-refl x) (zero-refl x₁) = {!!}
   transConv↓Term Γ≡Δ A≡B el (ℕ-ins x) (ne-ins t u x₂ x₃) = ⊥-elim (WF.ℕ≢ne! x₂ A≡B)
-  transConv↓Term Γ≡Δ A≡B el (ℕ-ins ([~] A D whnfB ())) (zero-refl x₂)
-  transConv↓Term Γ≡Δ A≡B el (ℕ-ins ([~] A D whnfB ())) (suc-cong x₂)
   transConv↓Term Γ≡Δ A≡B PE.refl (ℕ-ins x) (η-eq _ _ x₂ x₃ x₄ y y₁ x₅) = ⊥-elim (WF.ℕ≢Π! A≡B)
+  transConv↓Term Γ≡Δ A≡B el (ℕ-ins x) (ne x₁) = ⊥-elim (WF.U≢ℕ! (sym A≡B))
+  transConv↓Term Γ≡Δ A≡B PE.refl (ne-ins x x₁ x₂ x₃) (ne x₄) = ⊥-elim (WF.U≢ne! x₂ (sym A≡B))
   transConv↓Term  Γ≡Δ A≡B PE.refl (ne-ins t u x x₁) (ℕ-ins x₂) =
-    ⊥-elim (WF.ℕ≢ne! x (sym A≡B))
-  transConv↓Term Γ≡Δ A≡B PE.refl (ne-ins t u x x₁) (η-eq _ _ x₃ x₄ x₅ y y₁ x₆) = ⊥-elim (WF.Π≢ne x (sym A≡B))
-  transConv↓Term Γ≡Δ A≡B PE.refl (zero-refl x) (η-eq _ _ x₁ x₂ x₃ y y₁ x₄) = ⊥-elim (WF.ℕ≢Π! A≡B)
-  transConv↓Term Γ≡Δ A≡B PE.refl (suc-cong x) (η-eq _ _ x₁ x₂ x₃ y y₁ x₄) = ⊥-elim (WF.ℕ≢Π! A≡B)
+    ⊥-elim (WF.ℕ≢ne! x (sym A≡B)) 
+  transConv↓Term Γ≡Δ A≡B PE.refl (ne-ins x x₁ x₂ x₃) (η-eq x₄ x₅ x₆ x₇ x₈ x₉ x₁₀ x₁₁) = ⊥-elim (WF.Π≢ne x₂ (sym A≡B))
+  transConv↓Term Γ≡Δ A≡B PE.refl (zero-refl x) (η-eq x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) =  ⊥-elim (WF.ℕ≢Π! A≡B)
+  transConv↓Term Γ≡Δ A≡B PE.refl (suc-cong x) (η-eq x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) =  ⊥-elim (WF.ℕ≢Π! A≡B)
+  transConv↓Term Γ≡Δ A≡B el (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (ne x₈) = ⊥-elim (WF.U≢Π! (sym A≡B))
   transConv↓Term Γ≡Δ A≡B el (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (ℕ-refl x₈) = ⊥-elim (WF.U≢Π! (sym A≡B))
   transConv↓Term Γ≡Δ A≡B el (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (Empty-refl x₈) = ⊥-elim (WF.U≢Π! (sym A≡B))
   transConv↓Term Γ≡Δ A≡B el (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (Π-cong x₈ x₉ x₁₀ x₁₁ x₁₂ x₁₃ x₁₄ x₁₅) = ⊥-elim (WF.U≢Π! (sym A≡B))

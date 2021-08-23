@@ -14,7 +14,6 @@ open import Definition.Conversion.Stability
 open import Definition.Conversion.Soundness
 open import Definition.Conversion.Lift
 open import Definition.Conversion.Conversion
-open import Definition.Conversion.Symmetry
 open import Definition.Conversion.Transitivity
 open import Definition.Conversion.Weakening
 open import Definition.Conversion.Whnf
@@ -24,6 +23,7 @@ open import Definition.Typed.Consequences.Substitution
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Equality
 open import Definition.Typed.Consequences.Reduction
+open import Definition.Conversion.Symmetry
 
 open import Tools.Nat
 open import Tools.Product

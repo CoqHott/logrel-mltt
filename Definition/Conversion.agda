@@ -40,53 +40,53 @@ mutual
                   → Γ ⊢ k ~ l ↑% Empty lEmpty ^ ι lEmpty
                   → Γ ⊢ Emptyrec lEmpty F k ~ Emptyrec lEmpty G l ↑! F ^ ll
     Id-cong : ∀ {l A A' t t' u u'}
-              → Γ ⊢ A ~ A' ↑! U l ^ next l
+              → Γ ⊢ A ~ A' ↓! U l ^ next l
               → Γ ⊢ t [conv↑] t' ∷ A ^ ι l
               → Γ ⊢ u [conv↑] u' ∷ A ^ ι l
               → Γ ⊢ Id A t u ~ Id A' t' u' ↑! SProp l ^ next l
     Id-ℕ : ∀ {t t' u u'}
-              → Γ ⊢ t ~ t' ↑! ℕ ^ ι ⁰
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
               → Γ ⊢ u [conv↑] u' ∷ ℕ ^ ι ⁰
               → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ↑! SProp ⁰ ^ next ⁰
     Id-ℕ0 : ∀ {t t'}
-              → Γ ⊢ t ~ t' ↑! ℕ ^ ι ⁰ 
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰ 
               → Γ ⊢ Id ℕ zero t ~ Id ℕ zero t' ↑! SProp ⁰ ^ next ⁰
     Id-ℕS : ∀ {t t' u u'}
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
-              → Γ ⊢ u ~ u' ↑! ℕ ^ ι ⁰ 
+              → Γ ⊢ u ~ u' ↓! ℕ ^ ι ⁰ 
               → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ↑! SProp ⁰ ^ next ⁰
     Id-U : ∀ {t t' u u'}
-              → Γ ⊢ t ~ t' ↑! U ⁰ ^ ι ¹
+              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
               → Γ ⊢ u [conv↑] u' ∷ U ⁰ ^ ι ¹
               → Γ ⊢ Id (U ⁰) t u ~ Id (U ⁰) t' u' ↑! SProp ¹ ^ next ¹
     Id-Uℕ : ∀ {t t'}
-              → Γ ⊢ t ~ t' ↑! U ⁰ ^ ι ¹
+              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
               → Γ ⊢ Id (U ⁰) ℕ t ~ Id (U ⁰) ℕ t' ↑! SProp ¹ ^ next ¹
     Id-UΠ : ∀ {A rA B A' B' t t'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰  [conv↑] Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ t ~ t' ↑! U ⁰ ^ ι ¹
+              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
               → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰  ) t ~ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰  ) t' ↑! SProp ¹ ^ next ¹
     cast-cong : ∀ {A A' B B' t t' e e'}
-              → Γ ⊢ A ~ A' ↑! U ⁰ ^ next ⁰
+              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ B [conv↑] B' ∷ U ⁰ ^ ι ¹
               → Γ ⊢ t [conv↑] t' ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , next ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , next ⁰ ]
               → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ↑! B ^ ι ⁰
     cast-ℕ : ∀ {A A' t t' e e'}
-              → Γ ⊢ A ~ A' ↑! U ⁰ ^ next ⁰
+              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ A) ^ [ % , next ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ A') ^ [ % , next ⁰ ]
               → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ A' e' t' ↑! A ^ ι ⁰
     cast-ℕℕ : ∀ {t t' e e'}
-              → Γ ⊢ t ~ t' ↑! ℕ ^ ι ⁰
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , next ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , next ⁰ ]
               → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
     cast-Π : ∀ {A rA P A' P' B B' t t' e e'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ∷ U ⁰ ^ next ⁰
-              → Γ ⊢ B ~ B' ↑! U ⁰ ^ next ⁰
+              → Γ ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ) B) ^ [ % , next ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ) B') ^ [ % , next ⁰ ]
@@ -182,6 +182,9 @@ mutual
     U-refl    : ∀ {r r' }
               → r PE.≡ r' -- needed for K issues
               → ⊢ Γ → Γ ⊢ Univ r ⁰ [conv↓] Univ r' ⁰ ∷ U ¹ ^ next ¹
+    ne        : ∀ {r K L lU l}
+                → Γ ⊢ K ~ L ↓! Univ r lU ^ l
+                → Γ ⊢ K [conv↓] L ∷ Univ r lU ^ l 
     ℕ-refl    : ⊢ Γ → Γ ⊢ ℕ [conv↓] ℕ ∷ U ⁰ ^ next ⁰
     Empty-refl : ∀ {l} → ⊢ Γ → Γ ⊢ Empty l [conv↓] Empty l ∷ SProp l ^ next l 
     Π-cong    : ∀ {F G H E rF rH rΠ lF lH lG lE lΠ}

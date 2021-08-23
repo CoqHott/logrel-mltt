@@ -26,19 +26,19 @@ mutual
                 (soundnessConv↑Term x₃) (soundness~↓! k~l)
   soundness~↑! (Emptyrec-cong x₁ k~l) = let ⊢k , ⊢l , _ = soundness~↑% k~l in
     Emptyrec-cong (soundnessConv↑ x₁) ⊢k ⊢l 
-  soundness~↑! (Id-cong X x x₁) = Id-cong (soundness~↑! X) (soundnessConv↑Term x) (soundnessConv↑Term x₁) 
-  soundness~↑! (Id-ℕ X x) = Id-cong (refl (ℕⱼ (wfEqTerm (soundness~↑! X)))) (soundness~↑! X) (soundnessConv↑Term x)
-  soundness~↑! (Id-ℕ0 X) = let XX = soundness~↑! X in Id-cong (refl (ℕⱼ (wfEqTerm XX))) (refl (zeroⱼ (wfEqTerm XX))) XX
-  soundness~↑! (Id-ℕS x X) = let XX = soundness~↑! X in Id-cong (refl (ℕⱼ (wfEqTerm XX))) (suc-cong (soundnessConv↑Term x)) XX
-  soundness~↑! (Id-U X x) = Id-cong (refl (univ 0<1 (wfEqTerm (soundness~↑! X)))) (soundness~↑! X) (soundnessConv↑Term x)
-  soundness~↑! (Id-Uℕ X) = let XX = soundness~↑! X in Id-cong (refl (univ 0<1 (wfEqTerm XX))) (refl (ℕⱼ (wfEqTerm XX))) XX
-  soundness~↑! (Id-UΠ x X) = let XX = soundness~↑! X
+  soundness~↑! (Id-cong X x x₁) = Id-cong (soundness~↓! X) (soundnessConv↑Term x) (soundnessConv↑Term x₁) 
+  soundness~↑! (Id-ℕ X x) = Id-cong (refl (ℕⱼ (wfEqTerm (soundness~↓! X)))) (soundness~↓! X) (soundnessConv↑Term x)
+  soundness~↑! (Id-ℕ0 X) = let XX = soundness~↓! X in Id-cong (refl (ℕⱼ (wfEqTerm XX))) (refl (zeroⱼ (wfEqTerm XX))) XX
+  soundness~↑! (Id-ℕS x X) = let XX = soundness~↓! X in Id-cong (refl (ℕⱼ (wfEqTerm XX))) (suc-cong (soundnessConv↑Term x)) XX
+  soundness~↑! (Id-U X x) = Id-cong (refl (univ 0<1 (wfEqTerm (soundness~↓! X)))) (soundness~↓! X) (soundnessConv↑Term x)
+  soundness~↑! (Id-Uℕ X) = let XX = soundness~↓! X in Id-cong (refl (univ 0<1 (wfEqTerm XX))) (refl (ℕⱼ (wfEqTerm XX))) XX
+  soundness~↑! (Id-UΠ x X) = let XX = soundness~↓! X
                                  xx = soundnessConv↑Term x
                              in Id-cong (refl (univ 0<1 (wfEqTerm XX))) xx XX
-  soundness~↑! (cast-cong X x x₁ x₂ x₃) = cast-cong (soundness~↑! X) (soundnessConv↑Term x) (soundnessConv↑Term x₁) x₂ x₃
-  soundness~↑! (cast-ℕ X x x₁ x₂) = let XX = soundness~↑! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x) x₁ x₂
-  soundness~↑! (cast-ℕℕ X x x₁) = let XX = soundness~↑! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) (refl (ℕⱼ (wfEqTerm XX))) XX x x₁
-  soundness~↑! (cast-Π x X x₁ x₂ x₃) = cast-cong (soundnessConv↑Term x) (soundness~↑! X) (soundnessConv↑Term x₁) x₂ x₃
+  soundness~↑! (cast-cong X x x₁ x₂ x₃) = cast-cong (soundness~↓! X) (soundnessConv↑Term x) (soundnessConv↑Term x₁) x₂ x₃
+  soundness~↑! (cast-ℕ X x x₁ x₂) = let XX = soundness~↓! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x) x₁ x₂
+  soundness~↑! (cast-ℕℕ X x x₁) = let XX = soundness~↓! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) (refl (ℕⱼ (wfEqTerm XX))) XX x x₁
+  soundness~↑! (cast-Π x X x₁ x₂ x₃) = cast-cong (soundnessConv↑Term x) (soundness~↓! X) (soundnessConv↑Term x₁) x₂ x₃
   soundness~↑! (cast-Πℕ x x₁ x₂ x₃) = let XX = (soundnessConv↑Term x) in cast-cong XX (refl (ℕⱼ (wfEqTerm XX))) (soundnessConv↑Term x₁) x₂ x₃
   soundness~↑! (cast-ℕΠ x x₁ x₂ x₃) = let XX = (soundnessConv↑Term x) in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x₁) x₂ x₃
   soundness~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = cast-cong (soundnessConv↑Term x) (soundnessConv↑Term x₁) (soundnessConv↑Term x₂) x₃ x₄
@@ -75,6 +75,7 @@ mutual
 
   -- Algorithmic equality of terms in WHNF is well-formed.
   soundnessConv↓Term : ∀ {a b A lA Γ} → Γ ⊢ a [conv↓] b ∷ A ^ lA → Γ ⊢ a ≡ b ∷ A ^ [ ! , lA ]
+  soundnessConv↓Term (ne x) = soundness~↓! x
   soundnessConv↓Term (ℕ-refl ⊢Γ) = refl (ℕⱼ ⊢Γ)
   soundnessConv↓Term (Empty-refl ⊢Γ) = refl (Emptyⱼ ⊢Γ)
   soundnessConv↓Term (Π-cong PE.refl PE.refl PE.refl l< l<' F c c₁) =

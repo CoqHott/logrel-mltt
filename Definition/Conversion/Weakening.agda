@@ -23,7 +23,7 @@ mutual
     PE.subst (λ x → _ ⊢ _ ~ _ ↑! x ^ _) (PE.sym (wk-β G))
              (app-cong (wk~↓! ρ ⊢Δ t~u) (wk~↑% ρ ⊢Δ x))
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (natrec-cong {k} {l} {h} {g} {a₀} {b₀} {F} {G} {ll} x x₁ x₂ t~u) =
-    PE.subst (λ x → _ ⊢ U.wk ρ (natrec F a₀ h k) ~ _ ↑! x ^ _) (PE.sym (wk-β F))
+    PE.subst (λ x → _ ⊢ U.wk ρ (natrec _ F a₀ h k) ~ _ ↑! x ^ _) (PE.sym (wk-β F))
              (natrec-cong (wkConv↑ (lift [ρ]) (⊢Δ ∙ (univ (ℕⱼ ⊢Δ))) x)
                           (PE.subst (λ x → _ ⊢ _ [conv↑] _ ∷ x ^ _) (wk-β F)
                                     (wkConv↑Term [ρ] ⊢Δ x₁))
@@ -72,8 +72,8 @@ mutual
   wk~↓! : ∀ {ρ t u A Γ Δ l} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
       → Γ ⊢ t ~ u ↓! A ^ l
       → Δ ⊢ U.wk ρ t ~ U.wk ρ u ↓! U.wk ρ A ^ l
-  wk~↓! {ρ} [ρ] ⊢Δ ([~] A₁ r D whnfA k~l) =
-    [~] (U.wk ρ A₁) r (wkRed* [ρ] ⊢Δ D) (wkWhnf ρ whnfA) (wk~↑! [ρ] ⊢Δ k~l)
+  wk~↓! {ρ} [ρ] ⊢Δ ([~] A₁ D whnfA k~l) =
+    [~] (U.wk ρ A₁) (wkRed* [ρ] ⊢Δ D) (wkWhnf ρ whnfA) (wk~↑! [ρ] ⊢Δ k~l)
 
   -- Weakening of algorithmic equality of types.
   wkConv↑ : ∀ {ρ A B rA Γ Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
@@ -87,13 +87,8 @@ mutual
   wkConv↓ : ∀ {ρ A B rA Γ Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
          → Γ ⊢ A [conv↓] B ^ rA
          → Δ ⊢ U.wk ρ A [conv↓] U.wk ρ B ^ rA
-  wkConv↓ ρ ⊢Δ (U-refl eqr eql x) = U-refl eqr eql ⊢Δ
-  wkConv↓ ρ ⊢Δ (ℕ-refl x) = ℕ-refl ⊢Δ
-  wkConv↓ ρ ⊢Δ (Empty-refl x) = Empty-refl ⊢Δ
-  wkConv↓ ρ ⊢Δ (ne x) = ne (wk~↓! ρ ⊢Δ x)
-  wkConv↓ ρ ⊢Δ (Π-cong eqr x A<>B A<>B₁) =
-    let ⊢ρF = wk ρ ⊢Δ x
-    in  Π-cong eqr ⊢ρF (wkConv↑ ρ ⊢Δ A<>B) (wkConv↑ (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)
+  wkConv↓ ρ ⊢Δ (U-refl eqr x) = U-refl eqr ⊢Δ
+  wkConv↓ ρ ⊢Δ (univ x) = univ (wkConv↓Term ρ ⊢Δ x)
 
   -- Weakening of algorithmic equality of terms.
   wkConv↑Term : ∀ {ρ t u A Γ Δ l} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
@@ -109,22 +104,27 @@ mutual
   wkConv↓Term : ∀ {ρ t u A Γ Δ l} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
              → Γ ⊢ t [conv↓] u ∷ A ^ l
              → Δ ⊢ U.wk ρ t [conv↓] U.wk ρ u ∷ U.wk ρ A ^ l
+  wkConv↓Term ρ ⊢Δ (U-refl eqr x) = U-refl eqr ⊢Δ
+  wkConv↓Term ρ ⊢Δ (ne x) = ne (wk~↓! ρ ⊢Δ x)
   wkConv↓Term ρ ⊢Δ (ℕ-ins x) =
     ℕ-ins (wk~↓! ρ ⊢Δ x)
   -- wkConv↓Term ρ ⊢Δ (Empty-ins x) =
   --   Empty-ins (wk~↓% ρ ⊢Δ x)
   wkConv↓Term {ρ} [ρ] ⊢Δ (ne-ins t u x x₁) =
     ne-ins (wkTerm [ρ] ⊢Δ t) (wkTerm [ρ] ⊢Δ u) (wkNeutral ρ x) (wk~↓! [ρ] ⊢Δ x₁)
-  wkConv↓Term ρ ⊢Δ (univ x x₁ x₂) =
-    univ (wkTerm ρ ⊢Δ x) (wkTerm ρ ⊢Δ x₁) (wkConv↓ ρ ⊢Δ x₂)
   wkConv↓Term ρ ⊢Δ (zero-refl x) = zero-refl ⊢Δ
   wkConv↓Term ρ ⊢Δ (suc-cong t<>u) = suc-cong (wkConv↑Term ρ ⊢Δ t<>u)
-  wkConv↓Term {ρ} {Δ = Δ} [ρ] ⊢Δ (η-eq {F = F} {G = G} {rF = rF} {lF = lF} {lG = lG} x x₁ x₂ y y₁ t<>u) =
+  wkConv↓Term {ρ} {Δ = Δ} [ρ] ⊢Δ (η-eq {F = F} {G = G} {rF = rF} {lF = lF} {lG = lG} l< l<' x x₁ x₂ y y₁ t<>u) =
     let ⊢ρF = wk [ρ] ⊢Δ x
-    in  η-eq ⊢ρF (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂)
+    in  η-eq l< l<' ⊢ρF (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂)
              (wkFunction ρ y) (wkFunction ρ y₁)
              (PE.subst₃ (λ x y z → Δ ∙ U.wk ρ F ^ [ rF , ι lF ] ⊢ x [conv↑] y ∷ z ^ ι lG)
-                        (PE.cong₂ _∘_ (PE.sym (wk1-wk≡lift-wk1 _ _)) PE.refl)
-                        (PE.cong₂ _∘_ (PE.sym (wk1-wk≡lift-wk1 _ _)) PE.refl)
+                        (PE.cong₃ _∘_^_ (PE.sym (wk1-wk≡lift-wk1 _ _)) PE.refl PE.refl)
+                        (PE.cong₃ _∘_^_ (PE.sym (wk1-wk≡lift-wk1 _ _)) PE.refl PE.refl)
                         PE.refl
                         (wkConv↑Term (lift [ρ]) (⊢Δ ∙ ⊢ρF) t<>u))
+  wkConv↓Term ρ ⊢Δ (ℕ-refl x) = ℕ-refl ⊢Δ
+  wkConv↓Term ρ ⊢Δ (Empty-refl x) = Empty-refl ⊢Δ
+  wkConv↓Term ρ ⊢Δ (Π-cong eqr eqlF eqlG l< l<'   x A<>B A<>B₁) =
+    let ⊢ρF = wk ρ ⊢Δ x
+    in  Π-cong eqr eqlF eqlG l< l<' ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)
