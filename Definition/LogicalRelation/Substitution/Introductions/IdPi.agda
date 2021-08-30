@@ -69,8 +69,8 @@ abstract
         ⊢tΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ΠAB] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([t]ₜ ⊢Δ [σ]))
         ⊢uΔ = λ {Δ} {σ} ⊢Δ [σ] → escapeTerm (proj₁ ([ΠAB] {Δ} {σ} ⊢Δ [σ])) (proj₁ ([u]ₜ ⊢Δ [σ]))
         Id-Π-res = λ A B → Π A ^ rA ° lA ▹ (Id B ((wk1 t) ∘ (var 0) ^ l ) ((wk1 u) ∘ (var 0) ^ l)) ° lB ° l
-        [liftσ] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A} [Γ] ⊢Δ [A] [σ] 
-        ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([A] ⊢Δ [σ]))
+        [liftσ] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A} {σ = σ} {Δ  = Δ} [Γ] ⊢Δ [A] [σ] 
+        ⊢AΔ = λ {Δ} {σ} ⊢Δ [σ] → escape (proj₁ ([A] {Δ  = Δ} {σ = σ} ⊢Δ [σ]))
         [SPropB] = maybeEmbᵛ {A = SProp lB} [ΓA] (λ {Δ} {σ} → Uᵛ <next [ΓA] {Δ} {σ})
         [wA] = wk1ᵛ {A = A} {F = A} [Γ] [A] [A]
         [wΠ] = wk1ᵛ {A =  Π A ^ rA ° lA ▹ B ° lB ° l} {F = A} [Γ] [A] [ΠAB]

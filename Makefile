@@ -4,7 +4,7 @@ htmldir=$(HOME)/popl17/html
 # htmldir=/tmp/logrel-mltt/html
 
 # Agda-2.5.3 needed to generate the links we use in the paper
-agda=agda-2.5.3
+agda=agda
 
 .PHONY : clean pack check agda-check html loc agda-loc agda-woc
 
