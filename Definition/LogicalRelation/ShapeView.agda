@@ -42,7 +42,7 @@ _⊩⟨_⟩ne_^[_,_] : (Γ : Con Term) (l : TypeLevel) (A : Term) (r : Relevance
 _⊩⟨_⟩Π_^[_,_] : (Γ : Con Term) (l : TypeLevel) (A : Term) → Relevance → Level → Set
 Γ ⊩⟨ l ⟩Π A ^[ r , lΠ ] = MaybeEmb l (λ l′ → Γ ⊩′⟨ l′ ⟩Π A ^[ r , lΠ ])
 
-_⊩⟨_⟩∃_^_ : (Γ : Con Term) (l : TypeLevel) (A : Term) (ll : TypeLevel) → Set
+_⊩⟨_⟩∃_^_ : (Γ : Con Term) (l : TypeLevel) (A : Term) (ll : Level) → Set
 Γ ⊩⟨ l ⟩∃ A ^ ll = MaybeEmb l (λ l′ → Γ ⊩′⟨ l′ ⟩∃ A ^ ll)
 
 -- Construct a general reducible type from a specific
@@ -72,7 +72,7 @@ ne-intr {l = ∞}  (emb ∞< x) = emb ∞< (ne-intr x)
 Π-intr {l = ι ¹} (emb emb< x) = emb emb< (Π-intr x)
 Π-intr {l = ∞}  (emb ∞< x) = emb ∞< (Π-intr x)
 
-∃-intr : ∀ {l A Γ ll} → Γ ⊩⟨ l ⟩∃ A ^ ll → Γ ⊩⟨ l ⟩ A ^ [ % , ll ]
+∃-intr : ∀ {l A Γ ll} → Γ ⊩⟨ l ⟩∃ A ^ ll → Γ ⊩⟨ l ⟩ A ^ [ % , ι ll ]
 ∃-intr (noemb x) = ∃ᵣ x
 ∃-intr {l = ι ¹} (emb emb< x) = emb emb< (∃-intr x)
 ∃-intr {l = ∞}  (emb ∞< x) = emb ∞< (∃-intr x)
@@ -170,7 +170,7 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
 Π-elim : ∀ {Γ F G rF lF lG r lΠ l} → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ] → Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ r , lΠ ]
 Π-elim [Π] = Π-elim′ (id (escape [Π])) [Π]
 
-∃-elim′ : ∀ {l A Γ F G ll} → Γ ⊢ A ⇒* ∃ F ▹ G ^ [ % , ll ] → Γ ⊩⟨ l ⟩ A ^ [ % , ll ] → Γ ⊩⟨ l ⟩∃ A  ^ ll
+∃-elim′ : ∀ {l A Γ F G ll} → Γ ⊢ A ⇒* ∃ F ▹ G ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩ A ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩∃ A  ^ ll
 ∃-elim′ D (Emptyᵣ D′) = ⊥-elim (Empty≢∃ (whrDet* (red D′ , Emptyₙ) (D , ∃ₙ)))
 ∃-elim′ D (ne′ K D′ neK K≡K) =
   ⊥-elim (∃≢ne neK (whrDet* (D , ∃ₙ) (red D′ , ne neK)))
@@ -185,7 +185,7 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
 ∃-elim′ {∞} D (emb ∞< x) | noemb x₁ = emb ∞< (noemb x₁)
 ∃-elim′ {∞} D (emb ∞< x) | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
-∃-elim : ∀ {Γ F G l ll} → Γ ⊩⟨ l ⟩ ∃ F ▹ G ^ [ % , ll ] → Γ ⊩⟨ l ⟩∃ (∃ F ▹ G) ^ ll
+∃-elim : ∀ {Γ F G l ll} → Γ ⊩⟨ l ⟩ ∃ F ▹ G ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩∃ (∃ F ▹ G) ^ ll
 ∃-elim [∃] = ∃-elim′ (id (escape [∃])) [∃]
 
 -- Extract a type and a level from a maybe embedding
@@ -205,7 +205,7 @@ data ShapeView Γ : ∀ l l′ A B r r' (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩�
   Πᵥ : ∀ {A B l l′ r r' lΠ lΠ' } ΠA ΠB
     → ShapeView Γ l l′ A B [ r , ι lΠ ] [ r' , ι lΠ' ] (Πᵣ ΠA) (Πᵣ ΠB)
   ∃ᵥ : ∀ {A B l l′ ll ll'} ∃A ∃B
-    → ShapeView Γ l l′ A B [ % , ll ] [ % , ll' ] (∃ᵣ ∃A) (∃ᵣ ∃B)
+    → ShapeView Γ l l′ A B [ % , ι ll ] [ % , ι ll' ] (∃ᵣ ∃A) (∃ᵣ ∃B)
   emb⁰¹ : ∀ {A B r r' l p q} 
         → ShapeView Γ (ι ⁰) l A B r r' p q
         → ShapeView Γ (ι ¹) l A B r r' (emb emb< p) q
@@ -323,7 +323,7 @@ data ShapeView₃ Γ : ∀ l l′ l″ A B C r1 r2 r3
   Πᵥ : ∀ {A B C r1 r2 r3 lΠ1 lΠ2 lΠ3 l l′ l″} ΠA ΠB ΠC
     → ShapeView₃ Γ l l′ l″ A B C [ r1 , ι lΠ1 ] [ r2 , ι lΠ2 ] [ r3 , ι lΠ3 ] (Πᵣ ΠA) (Πᵣ ΠB) (Πᵣ ΠC)
   ∃ᵥ : ∀ {A B C l l′ l″ ll ll' ll''} ΠA ΠB ΠC
-    → ShapeView₃ Γ l l′ l″ A B C [ % , ll ] [ % , ll' ] [ % , ll'' ] (∃ᵣ ΠA) (∃ᵣ ΠB) (∃ᵣ ΠC)
+    → ShapeView₃ Γ l l′ l″ A B C [ % , ι ll ] [ % , ι ll' ] [ % , ι ll'' ] (∃ᵣ ΠA) (∃ᵣ ΠB) (∃ᵣ ΠC)
   emb⁰¹¹ : ∀ {A B C l l′ r1 r2 r3 p q r}
          → ShapeView₃ Γ (ι ⁰) l l′ A B C r1 r2 r3 p q r
          → ShapeView₃ Γ (ι ¹) l l′ A B C r1 r2 r3 (emb emb< p) q r

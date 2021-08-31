@@ -186,7 +186,7 @@ record LogRelKit : Set₁ where
   field
     _⊩U_^_ : (Γ : Con Term) → Term → TypeLevel → Set
     _⊩Π_^[_,_] : (Γ : Con Term) → Term → Relevance → Level → Set
-    _⊩∃_^_ : (Γ : Con Term) → Term → TypeLevel → Set
+    _⊩∃_^_ : (Γ : Con Term) → Term → Level → Set
 
     _⊩_^_ : (Γ : Con Term) → Term → TypeInfo → Set
     _⊩_≡_^_/_ : (Γ : Con Term) (A B : Term) (r : TypeInfo) → Γ ⊩ A ^ r → Set
@@ -333,31 +333,31 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
           ×
           (Γ ⊢ u ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ % , ι l′ ])
 
-    record _⊩¹∃_^_ (Γ : Con Term) (A : Term) (l′ : TypeLevel) : Set where
+    record _⊩¹∃_^_ (Γ : Con Term) (A : Term) (l′ : Level) : Set where
       inductive
       eta-equality
       constructor ∃ᵣ
       field
         F : Term
         G : Term
-        D : Γ ⊢ A :⇒*: ∃ F ▹ G ^ [ % , l′ ]
-        ⊢F : Γ ⊢ F ^ [ % , l′ ]
-        ⊢G : Γ ∙ F ^ [ % , l′ ] ⊢ G ^ [ % , l′ ]
-        A≡A : Γ ⊢ (∃ F ▹ G) ≅ (∃ F ▹ G) ^ [ % , l′ ]
-        [F] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ F ^ [ % , l′ ]
+        D : Γ ⊢ A :⇒*: ∃ F ▹ G ^ [ % , ι l′ ]
+        ⊢F : Γ ⊢ F ^ [ % , ι l′ ]
+        ⊢G : Γ ∙ F ^ [ % , ι l′ ] ⊢ G ^ [ % , ι l′ ]
+        A≡A : Γ ⊢ (∃ F ▹ G) ≅ (∃ F ▹ G) ^ [ % , ι l′ ]
+        [F] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ F ^ [ % , ι l′ ]
         [G] : ∀ {ρ Δ a}
             → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-            → Δ ⊩¹ a ∷ U.wk ρ F ^ [ % , l′ ] / [F] [ρ] ⊢Δ
-            → Δ ⊩¹ U.wk (lift ρ) G [ a ] ^ [ % , l′ ]
+            → Δ ⊩¹ a ∷ U.wk ρ F ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ
+            → Δ ⊩¹ U.wk (lift ρ) G [ a ] ^ [ % , ι l′ ]
         G-ext : ∀ {ρ Δ a b}
               → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-              → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ % , l′ ] / [F] [ρ] ⊢Δ)
-              → ([b] : Δ ⊩¹ b ∷ U.wk ρ F ^ [ % , l′ ] / [F] [ρ] ⊢Δ)
-              → Δ ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ % , l′ ] / [F] [ρ] ⊢Δ
-              → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ % , l′ ] / [G] [ρ] ⊢Δ [a]
+              → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ)
+              → ([b] : Δ ⊩¹ b ∷ U.wk ρ F ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ)
+              → Δ ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ
+              → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ % , ι l′ ] / [G] [ρ] ⊢Δ [a]
 
     -- Π-type equality
-    record _⊩¹∃_≡_^_/_ (Γ : Con Term) (A B : Term) (l′ : TypeLevel) ([A] : Γ ⊩¹∃ A ^ l′) : Set where
+    record _⊩¹∃_≡_^_/_ (Γ : Con Term) (A B : Term) (l′ : Level) ([A] : Γ ⊩¹∃ A ^ l′) : Set where
       inductive
       eta-equality
       constructor ∃₌
@@ -365,25 +365,25 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       field
         F′     : Term
         G′     : Term
-        D′     : Γ ⊢ B ⇒* ∃ F′ ▹ G′ ^ [ % , l′ ]
-        A≡B    : Γ ⊢ ∃ F ▹ G ≅ ∃ F′ ▹ G′ ^ [ % , l′ ]
+        D′     : Γ ⊢ B ⇒* ∃ F′ ▹ G′ ^ [ % , ι l′ ]
+        A≡B    : Γ ⊢ ∃ F ▹ G ≅ ∃ F′ ▹ G′ ^ [ % , ι l′ ]
         [F≡F′] : ∀ {ρ Δ}
                → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-               → Δ ⊩¹ U.wk ρ F ≡ U.wk ρ F′ ^ [ % , l′ ] / [F] [ρ] ⊢Δ
+               → Δ ⊩¹ U.wk ρ F ≡ U.wk ρ F′ ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ
         [G≡G′] : ∀ {ρ Δ a}
                → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-               → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ % , l′ ] / [F] [ρ] ⊢Δ)
-               → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G′ [ a ] ^ [ % , l′ ] / [G] [ρ] ⊢Δ [a]
+               → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ)
+               → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G′ [ a ] ^ [ % , ι l′ ] / [G] [ρ] ⊢Δ [a]
 
-    _⊩¹∃_∷_^_/_ : (Γ : Con Term) (t A : Term) (l′ : TypeLevel) ([A] : Γ ⊩¹∃ A ^ l′) → Set
+    _⊩¹∃_∷_^_/_ : (Γ : Con Term) (t A : Term) (l′ : Level) ([A] : Γ ⊩¹∃ A ^ l′) → Set
     Γ ⊩¹∃ t ∷ A ^ l′ / ∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
-      Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , l′ ]
+      Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , ι l′ ]
 
-    _⊩¹∃_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (l′ : TypeLevel) ([A] : Γ ⊩¹∃ A ^ l′) → Set
+    _⊩¹∃_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (l′ : Level) ([A] : Γ ⊩¹∃ A ^ l′) → Set
     Γ ⊩¹∃ t ≡ u ∷ A ^ l′ / ∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
-          (Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , l′ ])
+          (Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , ι l′ ])
           ×
-          (Γ ⊢ u ∷ ∃ F ▹ G ^ [ % , l′ ])
+          (Γ ⊢ u ∷ ∃ F ▹ G ^ [ % , ι l′ ])
 
     -- Logical relation definition
 
@@ -393,7 +393,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       Emptyᵣ : ∀ {A l} → Γ ⊩Empty A ^ l → Γ ⊩¹ A ^ [ % , ι l ]
       ne  : ∀ {A r l} → Γ ⊩ne A ^[ r , l ] → Γ ⊩¹ A ^ [ r , ι l ]
       Πᵣ  : ∀ {A r l} → Γ ⊩¹Π A ^[ r , l ] → Γ ⊩¹ A ^ [ r , ι l ]
-      ∃ᵣ  : ∀ {A l} → Γ ⊩¹∃ A ^ l → Γ ⊩¹ A ^ [ % , l ]
+      ∃ᵣ  : ∀ {A l} → Γ ⊩¹∃ A ^ l → Γ ⊩¹ A ^ [ % , ι l ]
       emb : ∀ {A r l′} (l< : l′ <∞ l) (let open LogRelKit (rec l<))
             ([A] : Γ ⊩ A ^ r) → Γ ⊩¹ A ^ r
 
@@ -403,7 +403,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     Γ ⊩¹ A ≡ B ^ [ .% , .ι l ] / Emptyᵣ D = Γ ⊩Empty A ≡ B ^ l
     Γ ⊩¹ A ≡ B ^ [ r , ι l ] / ne neA = Γ ⊩ne A ≡ B ^[ r , l ]/ neA
     Γ ⊩¹ A ≡ B ^ [ r , ι l ] / Πᵣ ΠA =  Γ ⊩¹Π A ≡ B ^[ r , l ]/ ΠA
-    Γ ⊩¹ A ≡ B ^ [ .% , l ] / ∃ᵣ ∃A = Γ ⊩¹∃ A ≡ B ^ l / ∃A
+    Γ ⊩¹ A ≡ B ^ [ .% , ι l ] / ∃ᵣ ∃A = Γ ⊩¹∃ A ≡ B ^ l / ∃A
     Γ ⊩¹ A ≡ B ^ r / emb l< [A] = Γ ⊩ A ≡ B ^ r / [A]
       where open LogRelKit (rec l<)
 
@@ -415,7 +415,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     Γ ⊩¹ t ∷ A ^ .([ % , ι l ]) / ne {r = %} {l} neA = Γ ⊩neIrr t ∷ A ^ l / neA
     Γ ⊩¹ t ∷ A ^ [ ! , ι l ] / Πᵣ ΠA  = Γ ⊩¹Π t ∷ A ^ l / ΠA
     Γ ⊩¹ t ∷ A ^ [ % , ι l ] / Πᵣ ΠA  = Γ ⊩¹Πirr t ∷ A ^ l / ΠA
-    Γ ⊩¹ t ∷ A ^ .([ % , l ]) / ∃ᵣ {l = l} ∃A = Γ ⊩¹∃ t ∷ A ^ l / ∃A
+    Γ ⊩¹ t ∷ A ^ .([ % , ι l ]) / ∃ᵣ {l = l} ∃A = Γ ⊩¹∃ t ∷ A ^ l / ∃A
     Γ ⊩¹ t ∷ A ^ r / emb l< [A] =  Γ ⊩ t ∷ A ^ r / [A]
       where open LogRelKit (rec l<)
 
@@ -427,7 +427,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     Γ ⊩¹ t ≡ u ∷ A ^ .([ % , ι l ]) / ne {r = %} {l} neA = Γ ⊩neIrr t ≡ u ∷ A ^ l / neA
     Γ ⊩¹ t ≡ u ∷ A ^ [ ! , ι l ] / Πᵣ ΠA = Γ ⊩¹Π t ≡ u ∷ A ^ l  / ΠA
     Γ ⊩¹ t ≡ u ∷ A ^ [ % , ι l ] / Πᵣ ΠA = Γ ⊩¹Πirr t ≡ u ∷ A ^ l / ΠA
-    Γ ⊩¹ t ≡ u ∷ A ^ .([ % , l ]) / ∃ᵣ {l = l} ∃A = Γ ⊩¹∃ t ≡ u ∷ A ^ l / ∃A
+    Γ ⊩¹ t ≡ u ∷ A ^ .([ % , ι l ]) / ∃ᵣ {l = l} ∃A = Γ ⊩¹∃ t ≡ u ∷ A ^ l / ∃A
     Γ ⊩¹ t ≡ u ∷ A ^ r / emb l< [A] = Γ ⊩ t ≡ u ∷ A ^ r / [A]
       where open LogRelKit (rec l<)
 
@@ -468,7 +468,7 @@ _⊩′⟨_⟩U_^_ : (Γ : Con Term) (l : TypeLevel) → Term → TypeLevel → 
 _⊩′⟨_⟩Π_^[_,_] : (Γ : Con Term) (l : TypeLevel) → Term → Relevance → Level → Set
 Γ ⊩′⟨ l ⟩Π A ^[ r , lΠ ] = Γ ⊩Π A ^[ r , lΠ ]  where open LogRelKit (kit l)
 
-_⊩′⟨_⟩∃_^_ : (Γ : Con Term) (l : TypeLevel) → Term → TypeLevel → Set
+_⊩′⟨_⟩∃_^_ : (Γ : Con Term) (l : TypeLevel) → Term → Level → Set
 Γ ⊩′⟨ l ⟩∃ A ^ l' = Γ ⊩∃ A ^ l' where open LogRelKit (kit l)
 
 _⊩⟨_⟩_^_ : (Γ : Con Term) (l : TypeLevel) → Term → TypeInfo → Set

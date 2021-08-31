@@ -139,7 +139,7 @@ import Data.Nat as Nat
 
       ⊢t▹u = escape [t▹u]
 
-  in ∃₌ {l′ = ι ¹} (t′ ^ % ° ⁰ ▹▹ u′ ° ⁰ ° ¹ ) (wk1 (u′ ^ % ° ⁰ ▹▹ t′ ° ⁰ ° ¹ ))
+  in ∃₌ {l′ = ¹} (t′ ^ % ° ⁰ ▹▹ u′ ° ⁰ ° ¹ ) (wk1 (u′ ^ % ° ⁰ ▹▹ t′ ° ⁰ ° ¹ ))
         (univ (Id-SProp (un-univ ⊢t′) (un-univ ⊢u′)) ⇨ id (univ (××ⱼ (▹▹ⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢t′ ▹ un-univ ⊢u′) ▹
                                                                      (▹▹ⱼ <is≤ 0<1 ▹ <is≤ 0<1 ▹ un-univ ⊢u′ ▹ un-univ ⊢t′))))
         (≅-univ (≅ₜ-∃-cong ⊢t▹u
