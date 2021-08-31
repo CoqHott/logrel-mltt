@@ -14,75 +14,82 @@ import Tools.PropositionalEquality as PE
 
 
 -- Inversion of natural number type.
-inversion-ℕ : ∀ {Γ C r} → Γ ⊢ ℕ ∷ C ^ r → Γ ⊢ C ≡ Univ ! ^ ! × r PE.≡ !
-inversion-ℕ (ℕⱼ x) = refl (Uⱼ x) , PE.refl
+inversion-ℕ : ∀ {Γ C r} → Γ ⊢ ℕ ∷ C ^ r → Γ ⊢ C ≡ U ⁰ ^ [ ! , next ⁰ ] × r PE.≡ [ ! , next ⁰ ]
+inversion-ℕ (ℕⱼ x) = refl (Ugenⱼ x) , PE.refl
 inversion-ℕ (conv x x₁) with inversion-ℕ x
 ... | [C≡U] , PE.refl = trans (sym x₁) [C≡U] , PE.refl
 
 -- Inversion of Π-types.
-inversion-Π : ∀ {F rF G r Γ C}
-            → Γ ⊢ Π F ^ rF ▹ G ∷ C ^ r
+inversion-Π : ∀ {F rF G r Γ C lF lG lΠ}
+            → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ  ∷ C ^ r
             → ∃ λ rG
-              → Γ ⊢ F ∷ Univ rF ^ !
-              × Γ ∙ F ^ rF ⊢ G ∷ Univ rG ^ !
-              × Γ ⊢ C ≡ Univ rG ^ !
-              × r PE.≡ !
-inversion-Π (Πⱼ_▹_ {rF = rF} {rG = rG} x x₁) = rG , x , x₁ , refl (Uⱼ (wfTerm x)) , PE.refl
-inversion-Π (conv x x₁) = let rG , a , b , c , r≡! = inversion-Π x
-                          in rG , a , b
+            → ∃ λ lΠ
+                → Γ ⊢ F ∷ Univ rF lF ^ [ ! , next lF ]
+                  × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ Univ rG lG ^ [ ! , next lG ]
+                  × Γ ⊢ C ≡ Univ rG lΠ ^ [ ! , next lΠ ]
+                  × r PE.≡ [ ! , next lΠ ]
+inversion-Π (Πⱼ_▹_▹_▹_ {rF = rF} {r = rG} l< l<' x x₁) = rG , _ , x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl
+inversion-Π (conv x x₁) = let rG , l , a , b , c , r≡! = inversion-Π x
+                          in rG , l , a , b
                             , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c
                             , r≡!
 
-inversion-Empty : ∀ {Γ C r} → Γ ⊢ Empty ∷ C ^ r → Γ ⊢ C ≡ Univ % ^ ! × r PE.≡ !
-inversion-Empty (Emptyⱼ x) = refl (Uⱼ x) , PE.refl
-inversion-Empty (conv x x₁) with inversion-Empty x
-... | [C≡U] , PE.refl = trans (sym x₁) [C≡U] , PE.refl
+inversion-Empty : ∀ {Γ C r l} → Γ ⊢ Empty l ∷ C ^ r → Γ ⊢ C ≡ SProp l ^ [ ! , next l ] × r PE.≡ [ ! , next l ]
+inversion-Empty (Emptyⱼ x) = refl (Ugenⱼ x) , PE.refl
+inversion-Empty (conv x x₁) =
+  let C≡SProp , r = inversion-Empty x
+  in trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r x₁)) C≡SProp , r 
 
 -- Inversion of zero.
-inversion-zero : ∀ {Γ C r} → Γ ⊢ zero ∷ C ^ r → Γ ⊢ C ≡ ℕ ^ ! × r PE.≡ !
-inversion-zero (zeroⱼ x) = refl (ℕⱼ x) , PE.refl
+inversion-zero : ∀ {Γ C r} → Γ ⊢ zero ∷ C ^ r → Γ ⊢ C ≡ ℕ ^ [ ! , ι ⁰ ] × r PE.≡ [ ! , ι ⁰ ]
+inversion-zero (zeroⱼ x) = univ (refl (ℕⱼ x)) , PE.refl
 inversion-zero (conv x x₁) with inversion-zero x
 ... | [C≡ℕ] , PE.refl = trans (sym x₁) [C≡ℕ] , PE.refl
 
 -- Inversion of successor.
-inversion-suc : ∀ {Γ t C r} → Γ ⊢ suc t ∷ C ^ r → Γ ⊢ t ∷ ℕ ^ ! × Γ ⊢ C ≡ ℕ ^ ! × r PE.≡ !
-inversion-suc (sucⱼ x) = x , refl (ℕⱼ (wfTerm x)) , PE.refl
+inversion-suc : ∀ {Γ t C r} → Γ ⊢ suc t ∷ C ^ r → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ] × Γ ⊢ C ≡ ℕ ^ [ ! , ι ⁰ ] × r PE.≡ [ ! , ι ⁰ ]
+inversion-suc (sucⱼ x) = x , refl (univ (ℕⱼ (wfTerm x))) , PE.refl
 inversion-suc (conv x x₁) with inversion-suc x
 ... | a , b , PE.refl = a , trans (sym x₁) b , PE.refl
 
 -- Inversion of natural recursion.
-inversion-natrec : ∀ {Γ c g n A C rC} → Γ ⊢ natrec C c g n ∷ A ^ rC
-  → (Γ ∙ ℕ ^ ! ⊢ C ^ rC)
-  × Γ ⊢ c ∷ C [ zero ] ^ rC
-  × Γ ⊢ g ∷ Π ℕ ^ ! ▹ (C ^ rC ▹▹ C [ suc (var 0) ]↑) ^ rC
-  × Γ ⊢ n ∷ ℕ ^ !
-  × Γ ⊢ A ≡ C [ n ] ^ rC
-inversion-natrec (natrecⱼ x d d₁ n) = x , d , d₁ , n , refl (substType x n)
-inversion-natrec (conv d x) = let a , b , c , d , e = inversion-natrec d
-                              in  a , b , c , d , trans (sym x) e
+inversion-natrec : ∀ {Γ c g n A C rlC lC} → Γ ⊢ natrec lC C c g n ∷ A ^ rlC
+  →  ∃ λ rC → (Γ ∙ ℕ ^ [ ! , ι ⁰ ]) ⊢ C ^ [ rC , ι lC ]
+  × Γ ⊢ c ∷ C [ zero ] ^ [ rC , ι lC ]
+  × Γ ⊢ g ∷ Π ℕ ^ ! ° ⁰ ▹ (C ^ rC ° lC ▹▹ C [ suc (var 0) ]↑ ° lC ° lC) ° lC ° lC ^ [ rC , ι lC ]
+  × Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
+  × Γ ⊢ A ≡ C [ n ] ^ [ rC , ι lC ]
+  × rlC PE.≡ [ rC , ι lC ]
+inversion-natrec (natrecⱼ x d d₁ n) = _ , x , d , d₁ , n , refl (substType x n) , PE.refl
+inversion-natrec (conv d x) = let a' , a , b , c , d , e , e' = inversion-natrec d
+                              in  a' , a , b , c , d , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) e' x)) e , e'
 
-inversion-Emptyrec : ∀ {Γ e A C rC} → Γ ⊢ Emptyrec C e ∷ A ^ rC
+inversion-Emptyrec : ∀ {Γ e A C rC lEmpty} → Γ ⊢ Emptyrec lEmpty C e ∷ A ^ rC
   → Γ ⊢ C ^ rC
-  × Γ ⊢ e ∷ Empty ^ %
+  × Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
   × Γ ⊢ A ≡ C ^ rC
 inversion-Emptyrec (Emptyrecⱼ [C] [e]) = [C] , [e] , refl [C]
 inversion-Emptyrec (conv d x) = let a , b , c = inversion-Emptyrec d
                                 in a , b , trans (sym x) c
 
 -- Inversion of application.
-inversion-app :  ∀ {Γ f a A r} → Γ ⊢ (f ∘ a) ∷ A ^ r →
-  ∃₂ λ F rF → ∃ λ G → Γ ⊢ f ∷ Π F ^ rF ▹ G ^ r
-  × Γ ⊢ a ∷ F ^ rF
-  × Γ ⊢ A ≡ G [ a ] ^ r
-inversion-app (d ∘ⱼ d₁) = _ , _ , _ , d , d₁ , refl (substTypeΠ (syntacticTerm d) d₁)
-inversion-app (conv d x) = let a , b , c , d , e , f = inversion-app d
-                           in  a , b , c , d , e , trans (sym x) f
+inversion-app :  ∀ {Γ f a A r lΠ} → Γ ⊢ (f ∘ a ^ lΠ) ∷ A ^ r →
+  ∃₂ λ F rF → ∃₂ λ lF G → ∃₂ λ lG rG → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rG , ι lΠ ]
+  × Γ ⊢ a ∷ F ^ [ rF , ι lF ]
+  × Γ ⊢ A ≡ G [ a ] ^ [ rG , ι lG ]
+  × r PE.≡ [ rG , ι lG ]
+inversion-app (d ∘ⱼ d₁) = _ , _ , _ , _ , _ , _ , d , d₁ , refl (substTypeΠ (syntacticTerm d) d₁) , PE.refl
+inversion-app (conv d x) = let a , b , c , d , e , f , g , h , i , j = inversion-app d
+                           in  a , b , c , d , e , f , g , h , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) j x)) i , j
+
 
 -- Inversion of lambda.
 inversion-lam : ∀ {t F A r Γ} → Γ ⊢ lam F ▹ t ∷ A ^ r →
-  ∃ λ rF → ∃ λ G → Γ ⊢ F ^ rF
-  × (Γ ∙ F ^ rF ⊢ t ∷ G ^ r
-  × Γ ⊢ A ≡ Π F ^ rF ▹ G ^ r)
-inversion-lam (lamⱼ x x₁) = _ , _ , x , x₁ , refl (Πⱼ x ▹ (syntacticTerm x₁))
-inversion-lam (conv x x₁) = let a , b , c , d , e = inversion-lam x
-                            in  a , b , c , d , trans (sym x₁) e
+  ∃₂ λ rF lF → ∃₂ λ G rG → ∃₂ λ lG lΠ → Γ ⊢ F ^ [ rF , ι lF ]
+  × Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ rG , ι lG ]
+  × Γ ⊢ A ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rG , ι lΠ ]
+  × r PE.≡ [ rG , ι lΠ ]
+inversion-lam (lamⱼ l< l<' x x₁) = _ , _ , _ , _ , _ , _ , x , x₁ ,
+                                   refl (univ (Πⱼ l< ▹ l<' ▹ (un-univ x) ▹ un-univ (syntacticTerm x₁))) , PE.refl
+inversion-lam (conv x x₁) = let a , b , c , d , e , f , g , h , i , j = inversion-lam x
+                            in  a , b , c , d , e , f , g , h , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) j x₁)) i , j
