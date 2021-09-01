@@ -14,7 +14,14 @@ import Tools.PropositionalEquality as PE
 
 
 -- Inversion of natural number type.
-inversion-ℕ : ∀ {Γ C r} → Γ ⊢ ℕ ∷ C ^ r → Γ ⊢ C ≡ U ⁰ ^ [ ! , next ⁰ ] × r PE.≡ [ ! , next ⁰ ]
+inversion-U : ∀ {Γ C rU lU r} → Γ ⊢ Univ rU lU ∷ C ^ r → Γ ⊢ C ≡ U ¹ ^ [ ! , next ¹ ] × r PE.≡ [ ! , next ¹ ] × lU PE.≡ ⁰
+inversion-U (univ 0<1 x) = refl (Ugenⱼ x) , PE.refl , PE.refl
+inversion-U (conv x x₁) with inversion-U x
+... | [C≡U] , PE.refl , PE.refl  = trans (sym x₁) [C≡U] , PE.refl , PE.refl
+
+
+-- Inversion of natural number type.
+inversion-ℕ : ∀ {Γ C r} → Γ ⊢ ℕ ∷ C ^ r → Γ ⊢ C ≡ U ⁰ ^ r × r PE.≡ [ ! , next ⁰ ]
 inversion-ℕ (ℕⱼ x) = refl (Ugenⱼ x) , PE.refl
 inversion-ℕ (conv x x₁) with inversion-ℕ x
 ... | [C≡U] , PE.refl = trans (sym x₁) [C≡U] , PE.refl
@@ -34,11 +41,11 @@ inversion-Π (conv x x₁) = let rG , l , a , b , c , r≡! = inversion-Π x
                             , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c
                             , r≡!
 
-inversion-Empty : ∀ {Γ C r l} → Γ ⊢ Empty l ∷ C ^ r → Γ ⊢ C ≡ SProp l ^ [ ! , next l ] × r PE.≡ [ ! , next l ]
+inversion-Empty : ∀ {Γ C r l} → Γ ⊢ Empty l ∷ C ^ r → Γ ⊢ C ≡ SProp l ^ r × r PE.≡ [ ! , next l ]
 inversion-Empty (Emptyⱼ x) = refl (Ugenⱼ x) , PE.refl
 inversion-Empty (conv x x₁) =
   let C≡SProp , r = inversion-Empty x
-  in trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r x₁)) C≡SProp , r 
+  in trans (sym x₁) C≡SProp , r 
 
 -- Inversion of zero.
 inversion-zero : ∀ {Γ C r} → Γ ⊢ zero ∷ C ^ r → Γ ⊢ C ≡ ℕ ^ [ ! , ι ⁰ ] × r PE.≡ [ ! , ι ⁰ ]

@@ -85,7 +85,7 @@ U≢Π! U≡Π =
 
 ∃≢Π-red : ∀ {ll B F G rF lF lG P Q Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° lG ° ll ^ [ % , ι ll ]
             → Γ ⊢ ∃ P ▹ Q ≡ B ^ [ % , ι ll ] → ⊥
-∃≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩∃ A ^ ι ll)
+∃≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩∃ A ^ ll)
                 (λ Γ l A → Γ ⊩′⟨ l ⟩Π A ^[ % , ll ]) ∃ᵣ Πᵣ
                 (λ x → extractMaybeEmb (∃-elim x))
                 (λ x → extractMaybeEmb (Π-elim′ D x))

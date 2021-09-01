@@ -15,112 +15,118 @@ open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.PiNorm
+open import Definition.Typed.Consequences.Substitution
 
 open import Tools.Product
 open import Tools.Empty
 open import Tools.Sum using (_⊎_; inj₁; inj₂)
 import Tools.PropositionalEquality as PE
 
-ℕ-relevant-term : ∀ {Γ A} → Γ ⊢ ℕ ∷ A ^ ! → A PE.≡ Univ !
-ℕ-relevant-term [ℕ] = U≡A (sym (proj₁ (inversion-ℕ [ℕ])))
+ℕ-relevant-term : ∀ {Γ A r} → Γ ⊢ ℕ ∷ A ^ r → Whnf A → A PE.≡ Univ ! ⁰
+ℕ-relevant-term [ℕ] whnfA = let [[N]] , e = inversion-ℕ [ℕ]
+                             in U≡A-whnf (sym (PE.subst (λ r → _ ⊢ _ ≡ _ ^ r) e [[N]])) whnfA
 
-ℕ-relevant : ∀ {Γ r} → Γ ⊢ ℕ ^ r → r PE.≡ !
-ℕ-relevant (ℕⱼ _) = PE.refl
-ℕ-relevant (univ [ℕ]) = Univ-PE-injectivity (ℕ-relevant-term [ℕ])
+ℕ-relevant : ∀ {Γ r} → Γ ⊢ ℕ ^ r → r PE.≡ [ ! , ι ⁰ ]
+ℕ-relevant (univ [ℕ]) = let er , el = Univ-PE-injectivity (ℕ-relevant-term [ℕ] Uₙ)
+                         in PE.cong₂ (λ x y → [ x , ι y ]) er el
 
-Empty-irrelevant-term : ∀ {Γ A} → Γ ⊢ Empty ∷ A ^ ! → A PE.≡ Univ %
-Empty-irrelevant-term (Emptyⱼ _) = PE.refl
-Empty-irrelevant-term (conv [Empty] [A₁≡A]) rewrite Empty-irrelevant-term [Empty] =
-  U≡A [A₁≡A]
+Empty-irrelevant-term : ∀ {Γ A lEmpty r} → Γ ⊢ Empty lEmpty ∷ A ^ r → Whnf A → A PE.≡ SProp lEmpty
+Empty-irrelevant-term [Empty] whnfA = let [[Empty]] , e = inversion-Empty [Empty]
+                                      in U≡A-whnf (sym (PE.subst (λ r → _ ⊢ _ ≡ _ ^ r) e [[Empty]])) whnfA
 
-Empty-irrelevant : ∀ {Γ r} → Γ ⊢ Empty ^ r → r PE.≡ %
-Empty-irrelevant (Emptyⱼ _) = PE.refl
-Empty-irrelevant (univ [Empty]) = Univ-PE-injectivity (Empty-irrelevant-term [Empty])
+Empty-irrelevant : ∀ {Γ lEmpty r} → Γ ⊢ Empty lEmpty ^ r → r PE.≡ [ % , ι lEmpty ]
+Empty-irrelevant (univ [Empty]) = let er , el = Univ-PE-injectivity (Empty-irrelevant-term [Empty] Uₙ)
+                                  in PE.cong₂ (λ x y → [ x , ι y ]) er el
 
--- helper
-subst-Univ-typed : ∀ {r Γ a T rT b}
-                 → Γ ⊢ a ∷ T ^ rT
-                 → subst (sgSubst a) b PE.≡ Univ r
-                 → b PE.≡ Univ r
-subst-Univ-typed {r} {Γ} {a} {T} {rT} {b} [a] e with subst-Univ-either a b e
-... | inj₁ (PE.refl , PE.refl) = ⊥-elim (noU [a] ∃U)
-... | inj₂ x = x
+Univ-relevant-term : ∀ {Γ A rU lU r} → Γ ⊢ Univ rU lU ∷ A ^ r → Whnf A → A PE.≡ U ¹ × lU PE.≡ ⁰
+Univ-relevant-term [U] whnfA = U≡A-whnf (sym (proj₁ (inversion-U [U]))) whnfA , proj₂ (proj₂ (inversion-U [U]))
 
-Univ-relevant : ∀ {Γ rU r} → Γ ⊢ Univ rU ^ r → r PE.≡ !
+Univ-relevant : ∀ {Γ rU lU r} → Γ ⊢ Univ rU lU ^ r → r PE.≡ [ ! , next lU ]
 Univ-relevant (Uⱼ _) = PE.refl
-Univ-relevant (univ [U]) = ⊥-elim (noU [U] ∃U)
+Univ-relevant (univ [U]) = let er , el = Univ-PE-injectivity (proj₁ (Univ-relevant-term [U] Uₙ))
+                           in PE.cong₂ (λ x y → [ x , y ]) er
+                                       (PE.trans (PE.cong ι el) (PE.cong next (PE.sym  (proj₂ (Univ-relevant-term [U] Uₙ)))))
 
-Univ-uniq′ : ∀ {Γ A T₁ T₂ r₁ r₂} → Γ ⊢ T₁ ≡ Univ r₁ ^ ! → Γ ⊢ T₂ ≡ Univ r₂ ^ ! → ΠNorm A
-  → Γ ⊢ A ∷ T₁ ^ ! → Γ ⊢ A ∷ T₂ ^ ! → r₁ PE.≡ r₂
-Univ-uniq′ e₁ e₂ w (conv x x₁) y = Univ-uniq′ (trans x₁ e₁) e₂ w x y
-Univ-uniq′ e₁ e₂ w x (conv y y₁) = Univ-uniq′ e₁ (trans y₁ e₂) w x y
-Univ-uniq′ e₁ e₂ w (ℕⱼ x) y =
-  let e₁′ = Uinjectivity e₁
-      e₃ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-ℕ y)))
-  in PE.sym (PE.trans e₃ e₁′)
-Univ-uniq′ e₁ e₂ w (Emptyⱼ x) y =
-  let e₁′ = Uinjectivity e₁
-      e₃ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-Empty y)))
-  in PE.sym (PE.trans e₃ e₁′)
-Univ-uniq′ e₁ e₂ w (Πⱼ x ▹ x₁) (Πⱼ y ▹ y₁) =
-  Univ-uniq′ (wkEq (step id) (wfTerm x₁) e₁) (wkEq (step id) (wfTerm x₁) e₂) (ΠNorm-Π w) x₁ y₁
-Univ-uniq′ e₁ e₂ w (var _ x) (var _ y) =
+Univ-uniq′ : ∀ {Γ A T₁ T₂ r₁ r₂ l₁ l₁' l₂ l₂'} → Γ ⊢ T₁ ≡ Univ r₁ l₁ ^ [ ! , l₁' ] → Γ ⊢ T₂ ≡ Univ r₂ l₂ ^ [ ! , l₂' ]
+  → next l₁ PE.≡ l₁' → next l₂ PE.≡ l₂' → l₁' PE.≡ l₂' 
+  → ΠNorm A
+  → Γ ⊢ A ∷ T₁ ^ [ ! , l₁' ] → Γ ⊢ A ∷ T₂ ^ [ ! , l₂' ] → r₁ PE.≡ r₂
+Univ-uniq′ e₁ e₂ el₁ el₂ ell w (univ x x₁) (univ x₂ x₃) =
+  let er₁ , _ = Uinjectivity e₁ 
+      er₂ , _ = Uinjectivity e₂
+  in PE.trans (PE.sym er₁) er₂
+Univ-uniq′ e₁ e₂ el₁ PE.refl ell w (ℕⱼ x) y =
+  let e₁′ , el₁′  = Uinjectivity e₁
+      e₂′ , el₂′ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-ℕ y)) ) 
+  in PE.sym (PE.trans e₂′ e₁′) 
+Univ-uniq′ e₁ e₂ el₁ el₂ ell w (Emptyⱼ x) y =
+  let e₁′ , el₁′  = Uinjectivity e₁
+      e₂′ , el₂′ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-Empty y)) ) 
+  in PE.sym (PE.trans e₂′ e₁′)
+Univ-uniq′ e₁ e₂ el₁ el₂ ell w (Πⱼ a ▹ b ▹ x ▹ x₁) (Πⱼ a' ▹ b' ▹ y ▹ y₁) =
+  let er₁ , _ = Uinjectivity e₁ 
+      er₂ , _ = Uinjectivity e₂
+  in PE.trans (PE.sym er₁) (PE.trans (Univ-uniq′ (refl (Ugenⱼ (wfTerm x₁))) (refl (Ugenⱼ (wfTerm x₁)))
+                                                 PE.refl PE.refl PE.refl (ΠNorm-Π w) x₁ y₁) er₂)
+Univ-uniq′ e₁ e₂ el₁ el₂ ell w (∃ⱼ x ▹ x₁) (∃ⱼ y ▹ y₁) =
+  let er₁ , _ = Uinjectivity e₁ 
+      er₂ , _ = Uinjectivity e₂
+  in  PE.trans (PE.sym er₁) er₂ 
+Univ-uniq′ e₁ e₂ el₁ el₂ PE.refl w (var _ x) (var _ y) =
   let T≡T = proj₁ (varTypeEq′ x y )
       ⊢T≡T = PE.subst (λ T → _ ⊢ _ ≡ T ^ _) T≡T (refl (proj₁ (syntacticEq e₁)))
-  in Uinjectivity (trans (trans (sym e₁) ⊢T≡T) e₂)
-Univ-uniq′ e₁ e₂ w (natrecⱼ x x₁ x₂ x₃) (natrecⱼ x₄ y y₁ y₂) = Uinjectivity (trans (sym e₁) e₂)
-Univ-uniq′ e₁ e₂ w (Emptyrecⱼ x x₁) (Emptyrecⱼ x₂ y) = Uinjectivity (trans (sym e₁) e₂)
-Univ-uniq′ e₁ e₂ (ne ()) (lamⱼ x x₁) y
-Univ-uniq′ e₁ e₂ (ne (∘ₙ n)) (_∘ⱼ_ {G = G} x x₁) (_∘ⱼ_ {G = G₁} y y₁) =
-  let e₁′ = subst-Univ-typed {b = G} x₁ (U≡A (sym e₁))
-      e₂′ = subst-Univ-typed {b = G₁} y₁ (U≡A (sym e₂))
-      F≡F , rF≡rF , G≡G = injectivity (neTypeEq n x y)
-  in Uinjectivity (PE.subst₂ (λ a b → _ ⊢ a ≡ b ^ _) e₁′ e₂′ G≡G)
-Univ-uniq′ e₁ e₂ (ne ()) (zeroⱼ x) y
-Univ-uniq′ e₁ e₂ (ne ()) (sucⱼ x) y
+  in proj₁ (Uinjectivity (trans (trans (sym e₁) ⊢T≡T) e₂)) 
+Univ-uniq′ e₁ e₂ el₁ el₂ ell (ne ()) (lamⱼ x x₁ x₂ X) y
+Univ-uniq′ e₁ e₂ el₁ el₂ PE.refl (ne (∘ₙ n)) (_∘ⱼ_ {G = G} x x₁) (_∘ⱼ_ {G = G₁} y y₁) =
+  let F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = injectivity (neTypeEq n PE.refl x y)
+      r≡r , _ = Uinjectivity (trans (sym e₁) (trans (substitutionEq G≡G (substRefl (singleSubst x₁)) (wfEq F≡F)) e₂))
+  in r≡r
+Univ-uniq′ e₁ e₂ el₁ el₂ ell (ne ()) (zeroⱼ x) y 
+Univ-uniq′ e₁ e₂ el₁ el₂ ell (ne ()) (sucⱼ X) y 
+Univ-uniq′ e₁ e₂ el₁ el₂ PE.refl w (natrecⱼ x x₁ x₂ x₃) (natrecⱼ x₄ y y₁ y₂) = proj₁ (Uinjectivity (trans (sym e₁) e₂))
+Univ-uniq′ e₁ e₂ el₁ el₂ PE.refl w (Emptyrecⱼ x x₁) (Emptyrecⱼ x₂ y) = proj₁ (Uinjectivity (trans (sym e₁) e₂))
+Univ-uniq′ e₁ e₂ el₁ el₂ ell w (Idⱼ X X₁ X₂) (Idⱼ {l = ll} y y₁ y₂) =
+  proj₁ (Uinjectivity (trans (sym e₁) (PE.subst (λ _l → _ ⊢ SProp _l ≡ Univ _ _ ^ [ _ , next _l ]) (PE.sym (next-inj ell)) e₂)))
+Univ-uniq′ e₁ e₂ el₁ el₂ PE.refl w (castⱼ X X₁ X₂ X₃) (castⱼ y y₁ y₂ y₃) = proj₁ (Uinjectivity (trans (sym e₁) e₂))
+Univ-uniq′ e₁ e₂ el₁ el₂ ell w (conv x x₁) y = Univ-uniq′ (trans x₁ e₁) e₂ el₁ el₂ ell w x y
+Univ-uniq′ e₁ e₂ el₁ el₂ ell w x (conv y y₁) = Univ-uniq′ e₁ (trans y₁ e₂) el₁ el₂ ell w x y
 
-Univ-uniq : ∀ {Γ A r₁ r₂} → ΠNorm A
-  → Γ ⊢ A ∷ Univ r₁ ^ ! → Γ ⊢ A ∷ Univ r₂ ^ ! → r₁ PE.≡ r₂
+
+Univ-uniq : ∀ {Γ A r₁ r₂ l} → ΠNorm A
+  → Γ ⊢ A ∷ Univ r₁ l ^ [ ! , next l ] → Γ ⊢ A ∷ Univ r₂ l ^ [ ! , next l ] → r₁ PE.≡ r₂
 Univ-uniq n ⊢A₁ ⊢A₂ =
    let ⊢Γ = wfTerm ⊢A₁
-   in Univ-uniq′ (refl (Uⱼ ⊢Γ)) (refl (Uⱼ ⊢Γ)) n ⊢A₁ ⊢A₂
+   in Univ-uniq′ (refl (Ugenⱼ ⊢Γ)) (refl (Ugenⱼ ⊢Γ)) PE.refl PE.refl PE.refl n ⊢A₁ ⊢A₂
 
-relevance-unicity′ : ∀ {Γ A r1 r2} → ΠNorm A → Γ ⊢ A ^ r1 → Γ ⊢ A ^ r2 → r1 PE.≡ r2
-relevance-unicity′ (Πₙ n) (Πⱼ F ▹ G) (Πⱼ F' ▹ G') = relevance-unicity′ n G G'
-relevance-unicity′ (ne ()) _ (Πⱼ _ ▹ _)
-relevance-unicity′ (ne ()) (Πⱼ _ ▹ _) _
-relevance-unicity′ n (ℕⱼ _) b = PE.sym (ℕ-relevant b)
-relevance-unicity′ n a (ℕⱼ x) = ℕ-relevant a
-relevance-unicity′ n (Emptyⱼ _) b = PE.sym (Empty-irrelevant b)
-relevance-unicity′ n a (Emptyⱼ x) = Empty-irrelevant a
-relevance-unicity′ n (Uⱼ _) b = PE.sym (Univ-relevant b)
-relevance-unicity′ n a (Uⱼ x) = Univ-relevant a
-relevance-unicity′ (Πₙ n) (Πⱼ a ▹ a₁) (univ x) with inversion-Π x
-... | rG , [F] , [G] , [eq] , _ with Uinjectivity [eq]
-... | PE.refl = relevance-unicity′ n a₁ (univ [G])
-relevance-unicity′ (Πₙ n) (univ a) (Πⱼ b ▹ b₁) with inversion-Π a
-... | rG , [F] , [G] , [eq] , _ with Uinjectivity [eq]
-... | PE.refl = relevance-unicity′ n (univ [G]) b₁
-relevance-unicity′ n (univ a) (univ x) = Univ-uniq n a x
+relevance-unicity′ : ∀ {Γ A r₁ r₂ l₁ l₂} → ΠNorm A → l₁ PE.≡ l₂ → Γ ⊢ A ^ [ r₁ , l₁ ] → Γ ⊢ A ^ [ r₂ , l₂ ] → r₁ PE.≡ r₂
+relevance-unicity′ n el (Uⱼ x) (Uⱼ x₁) = PE.refl
+relevance-unicity′ n el (Uⱼ x) (univ x₁) = let _ , _ , ¹≡⁰ = inversion-U x₁ in ⊥-elim (⁰≢¹ (PE.sym  ¹≡⁰))
+relevance-unicity′ n el (univ x) (Uⱼ x₁) = let _ , _ , ¹≡⁰ = inversion-U x in ⊥-elim (⁰≢¹ (PE.sym  ¹≡⁰))
+relevance-unicity′ n PE.refl (univ x) (univ x₁) = Univ-uniq n x x₁
 
-relevance-unicity : ∀ {Γ A r1 r2} → Γ ⊢ A ^ r1 → Γ ⊢ A ^ r2 → r1 PE.≡ r2
+relevance-unicity : ∀ {Γ A r₁ r₂ l} → Γ ⊢ A ^ [ r₁ , l ] → Γ ⊢ A ^ [ r₂ , l ] → r₁ PE.≡ r₂
 relevance-unicity ⊢A₁ ⊢A₂ with doΠNorm ⊢A₁
 ... | _ with doΠNorm ⊢A₂
 relevance-unicity ⊢A₁ ⊢A₂ | B , nB , ⊢B , rB | C , nC , ⊢C , rC =
   let e = detΠNorm* nB nC rB rC
-  in relevance-unicity′ nC (PE.subst _ e ⊢B) ⊢C
+  in relevance-unicity′ nC PE.refl (PE.subst _ e ⊢B) ⊢C
 
-univ-unicity : ∀ {Γ A r₁ r₂} → Γ ⊢ A ∷ Univ r₁ ^ ! → Γ ⊢ A ∷ Univ r₂ ^ ! → r₁ PE.≡ r₂
+
+univ-unicity : ∀ {Γ A r₁ r₂ l} → Γ ⊢ A ∷ Univ r₁ l ^ [ ! , next l ] → Γ ⊢ A ∷ Univ r₂ l ^ [ ! , next l ] → r₁ PE.≡ r₂
 univ-unicity ⊢₁ ⊢₂ = relevance-unicity (univ ⊢₁) (univ ⊢₂)
 
--- inequalities at any relevance
-U≢ℕ : ∀ {r r′ Γ} → Γ ⊢ Univ r ≡ ℕ ^ r′ → ⊥
-U≢ℕ U≡ℕ = Ineq.U≢ℕ! (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx)
-                   (relevance-unicity (proj₂ (syntacticEq U≡ℕ))
-                                      (ℕⱼ (wfEq U≡ℕ)))
-                   U≡ℕ)
+{-
 
-U≢Π : ∀ {rU F rF G r Γ} → Γ ⊢ Univ rU ≡ Π F ^ rF ▹ G ^ r → ⊥
+-- inequalities at any relevance
+U≢ℕ : ∀ {r r′ l l′ Γ} → Γ ⊢ Univ r l ≡ ℕ ^ [ r′ , l′ ] → ⊥
+U≢ℕ U≡ℕ = Ineq.U≢ℕ! (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ [ rx , _ ]) (relevance-unicity {!!} (univ (ℕⱼ (wfEq U≡ℕ))))
+                              -- (relevance-unicity (proj₂ (syntacticEq U≡ℕ))
+                              --                    (ℕⱼ (wfEq U≡ℕ)))
+                              U≡ℕ)
+          
+
+
+U≢Π : ∀ {rU lU  F rF G lF lG lΠ r Γ} → Γ ⊢ Univ rU lU ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ  ^ [ r , ι lΠ ] → ⊥
 U≢Π U≡Π =
   let r≡! = relevance-unicity (proj₁ (syntacticEq U≡Π)) (Uⱼ (wfEq U≡Π))
   in Ineq.U≢Π! (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! U≡Π)
@@ -130,12 +136,12 @@ U≢ne neK U≡K =
   let r≡! = relevance-unicity (proj₁ (syntacticEq U≡K)) (Uⱼ (wfEq U≡K))
   in Ineq.U≢ne! neK (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! U≡K)
 
-ℕ≢Π : ∀ {F rF G r Γ} → Γ ⊢ ℕ ≡ Π F ^ rF ▹ G ^ r → ⊥
+ℕ≢Π : ∀ {F rF G lF lG lΠ r Γ} → Γ ⊢ ℕ ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ  ^ [ r , ι lΠ ] → ⊥
 ℕ≢Π ℕ≡Π =
   let r≡! = relevance-unicity (proj₁ (syntacticEq ℕ≡Π)) (ℕⱼ (wfEq ℕ≡Π))
   in Ineq.ℕ≢Π! (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! ℕ≡Π)
 
-Empty≢Π : ∀ {F rF G r Γ} → Γ ⊢ Empty ≡ Π F ^ rF ▹ G ^ r → ⊥
+Empty≢Π : ∀ {F rF G lF lG lΠ r Γ} → Γ ⊢ Empty ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ  ^ [ r , ι lΠ ] → ⊥
 Empty≢Π Empty≡Π =
   let r≡% = relevance-unicity (proj₁ (syntacticEq Empty≡Π)) (Emptyⱼ (wfEq Empty≡Π))
   in Ineq.Empty≢Π% (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡% Empty≡Π)
@@ -165,3 +171,4 @@ U≢Empty U≡Empty =
       e₁ = relevance-unicity ⊢ℕ (ℕⱼ (wfEq ℕ≡Empty))
       e₂ = relevance-unicity ⊢Empty (Emptyⱼ (wfEq ℕ≡Empty))
   in !≢% (PE.trans (PE.sym e₁) e₂)
+-}

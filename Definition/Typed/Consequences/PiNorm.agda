@@ -27,40 +27,43 @@ import Tools.PropositionalEquality as PE
 -- the ones in types aren't ⇒
 
 data ΠNorm : Term → Set where
-  Uₙ : ∀ {r} → ΠNorm (Univ r)
-  Πₙ : ∀ {A r B} → ΠNorm B → ΠNorm (Π A ^ r ▹ B)
+  Uₙ : ∀ {r l} → ΠNorm (Univ r l)
+  Πₙ : ∀ {F rF lF G lG lΠ} → ΠNorm G → ΠNorm (Π F ^ rF ° lF ▹ G ° lG ° lΠ)
+  ∃ₙ : ∀ {F G} → ΠNorm (∃ F ▹ G)
   ℕₙ : ΠNorm ℕ
-  Emptyₙ : ΠNorm Empty
+  Emptyₙ : ∀ {lEmpty} → ΠNorm (Empty lEmpty)
   ne   : ∀ {n} → Neutral n → ΠNorm n
 
-ΠNorm-Π : ∀ {A rA B} → ΠNorm (Π A ^ rA ▹ B) → ΠNorm B
+ΠNorm-Π : ∀ {F rF lF G lG lΠ} → ΠNorm (Π F ^ rF ° lF ▹ G ° lG ° lΠ) → ΠNorm G
 ΠNorm-Π (Πₙ x) = x
 ΠNorm-Π (ne ())
 
-data _⊢_⇒Π_∷_ (Γ : Con Term) : Term → Term → Term → Set where
-  regular : ∀ {t u A} → Γ ⊢ t ⇒ u ∷ A → Γ ⊢ t ⇒Π u ∷ A 
-  deep : ∀ {A rA B B′ rB}
-       → Γ ∙ A ^ rA ⊢ B ⇒Π B′ ∷ Univ rB 
-       → Γ ⊢ Π A ^ rA ▹ B ⇒Π Π A ^ rA ▹ B′ ∷ Univ rB 
 
-data _⊢_⇒Π_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
-  univ : ∀ {A B r}
-       → Γ ⊢ A ⇒Π B ∷ (Univ r)
-       → Γ ⊢ A ⇒Π B ^ r
+data _⊢_⇒Π_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeLevel → Set where
+  regular : ∀ {t u A l} → Γ ⊢ t ⇒ u ∷ A ^ l → Γ ⊢ t ⇒Π u ∷ A ^ l
+  deep : ∀ {F rF lF G G′ lG rG lΠ}
+       → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ⇒Π G′ ∷ Univ rG lG ^ next lG
+       → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ⇒Π Π F ^ rF ° lF ▹ G′ ° lG ° lΠ ∷ Univ rG lΠ ^ next lΠ 
 
-data _⊢_⇒*Π_∷_ (Γ : Con Term) : Term → Term → Term → Set where
-  id : ∀ {t T} → Γ ⊢ t ⇒*Π t ∷ T 
-  _⇨_ : ∀ {t t' u T}
-      → Γ ⊢ t  ⇒Π t' ∷ T 
-      → Γ ⊢ t' ⇒*Π u ∷ T 
-      → Γ ⊢ t  ⇒*Π u ∷ T 
+data _⊢_⇒Π_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
+  univ : ∀ {A B r l}
+       → Γ ⊢ A ⇒Π B ∷ (Univ r l) ^ next l
+       → Γ ⊢ A ⇒Π B ^ [ r , ι l ]
 
-data _⊢_⇒*Π_^_ (Γ : Con Term) : Term → Term → Relevance → Set where
+data _⊢_⇒*Π_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeLevel → Set where
+  id : ∀ {t T l} → Γ ⊢ t ⇒*Π t ∷ T ^ l
+  _⇨_ : ∀ {t t' u T l}
+      → Γ ⊢ t  ⇒Π t' ∷ T ^ l
+      → Γ ⊢ t' ⇒*Π u ∷ T ^ l
+      → Γ ⊢ t  ⇒*Π u ∷ T ^ l
+
+data _⊢_⇒*Π_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
   id : ∀ {t r} → Γ ⊢ t ⇒*Π t ^ r
   _⇨_ : ∀ {t t' u r}
       → Γ ⊢ t  ⇒Π t' ^ r
       → Γ ⊢ t' ⇒*Π u ^ r
       → Γ ⊢ t  ⇒*Π u ^ r
+
 
 deepstep : ∀ {Γ A B r} → Γ ⊢ A ⇒Π B ^ r → Γ ⊢ A ⇒*Π B ^ r
 deepstep x = x ⇨ id
@@ -73,48 +76,54 @@ regular* : ∀ {Γ t u r} → Γ ⊢ t ⇒* u ^ r → Γ ⊢ t ⇒*Π u ^ r
 regular* (id x) = id
 regular* (univ x ⇨ x₁) = univ (regular x) ⇨ regular* x₁
 
-deep* : ∀ {Γ A rA B B′ rB}
-      → Γ ∙ A ^ rA ⊢ B ⇒*Π B′ ^ rB
-      → Γ ⊢ Π A ^ rA ▹ B ⇒*Π Π A ^ rA ▹ B′ ^ rB
+deep* : ∀ {Γ F rF lF G G′ lG rG lΠ}
+      → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ⇒*Π G′ ^ [ rG , ι lG ]
+      → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ⇒*Π Π F ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ rG , ι lΠ ]
 deep* id = id
 deep* (univ (regular x) ⇨ x₁) = univ (deep (regular x)) ⇨ deep* x₁
 deep* (univ (deep x) ⇨ x₁) = univ (deep (deep x)) ⇨ deep* x₁
 
 doΠNorm′ : ∀ {A rA Γ l} ([A] : Γ ⊩⟨ l ⟩ A ^ rA)
          → ∃ λ B → ΠNorm B × Γ ⊢ B ^ rA × Γ ⊢ A ⇒*Π B ^ rA
-doΠNorm′ (Uᵣ′ rU .⁰ 0<1 ⊢Γ) = Univ rU , Uₙ , Uⱼ ⊢Γ , id
-doΠNorm′ (ℕᵣ [ _ , ⊢B , D ]) = ℕ , ℕₙ , ⊢B , regular* D
-doΠNorm′ (Emptyᵣ [ _ , ⊢B , D ]) = Empty , Emptyₙ , ⊢B , regular* D
-doΠNorm′ (ne′ K [ _ , ⊢B , D ] neK K≡K) = K , ne neK , ⊢B , regular* D
-doΠNorm′ (Πᵣ′ rF F G [ _ , ⊢B , D ] ⊢F ⊢G A≡A [F] [G] G-ext) =
+doΠNorm′ (Uᵣ (Uᵣ r l′ l< PE.refl [[ A , U , d ]])) = Univ r l′ , Uₙ , Ugenⱼ (wf A) , regular* d
+doΠNorm′ (ℕᵣ [[ ⊢A , ⊢B , D ]]) = ℕ , ℕₙ , ⊢B , regular* D
+doΠNorm′ (Emptyᵣ {l = l} [[ ⊢A , ⊢B , D ]]) = Empty l , Emptyₙ , ⊢B , regular* D
+doΠNorm′ (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) = K , ne neK , ⊢B , regular* D
+doΠNorm′ (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
   let redF₀ , red₀ = reducibleTerm (var (wf ⊢G) here)
       [F]′ = irrelevanceTerm redF₀ ([F] (step id) (wf ⊢G)) red₀
       G′ , nG′ , ⊢G′ , D′ = PE.subst (λ G′ → ∃ λ B → ΠNorm B × _ ⊢ B ^ _ × _ ⊢ G′ ⇒*Π B ^ _)
                               (wkSingleSubstId _)
                               (doΠNorm′ ([G] (step id) (wf ⊢G) [F]′))
-  in Π F ^ rF ▹ G′ , Πₙ nG′ , Πⱼ ⊢F ▹ ⊢G′ , regular* D ⇨* deep* D′
-doΠNorm′ (emb 0<1 [A]) = doΠNorm′ [A]
+  in Π F ^ rF ° lF ▹ G′ ° lG ° _ , Πₙ nG′ , univ (Πⱼ lF≤ ▹ lG≤ ▹ (un-univ ⊢F) ▹ (un-univ ⊢G′)) , regular* D ⇨* deep* D′
+doΠNorm′ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = ∃ F ▹ G , ∃ₙ , univ (∃ⱼ un-univ ⊢F ▹ un-univ ⊢G) , regular* (red D)
+doΠNorm′ (emb emb< [A]) = doΠNorm′ [A]
+doΠNorm′ (emb ∞< [A]) = doΠNorm′ [A]
 
 doΠNorm : ∀ {A rA Γ} → Γ ⊢ A ^ rA
         → ∃ λ B → ΠNorm B × Γ ⊢ B ^ rA × Γ ⊢ A ⇒*Π B ^ rA
 doΠNorm ⊢A = doΠNorm′ (reducible ⊢A)
 
+
 ΠNorm-whnf : ∀ {A} → ΠNorm A → Whnf A
 ΠNorm-whnf Uₙ = Uₙ
 ΠNorm-whnf (Πₙ x) = Πₙ
+ΠNorm-whnf ∃ₙ = ∃ₙ
 ΠNorm-whnf ℕₙ = ℕₙ
 ΠNorm-whnf Emptyₙ = Emptyₙ
 ΠNorm-whnf (ne x) = ne x
 
-ΠNorm-noredTerm : ∀ {Γ A B T } → Γ ⊢ A ⇒Π B ∷ T  → ΠNorm A → ⊥
+ΠNorm-noredTerm : ∀ {Γ A B T r} → Γ ⊢ A ⇒Π B ∷ T ^ r  → ΠNorm A → ⊥
 ΠNorm-noredTerm (regular x) w = whnfRedTerm x (ΠNorm-whnf w)
 ΠNorm-noredTerm (deep x) (Πₙ w) = ΠNorm-noredTerm x w
 ΠNorm-noredTerm (deep x) (ne ())
 
+
+
 ΠNorm-nored : ∀ {Γ A B r} → Γ ⊢ A ⇒Π B ^ r → ΠNorm A → ⊥
 ΠNorm-nored (univ x) w = ΠNorm-noredTerm x w
 
-detΠRedTerm : ∀ {Γ A B B′ T T′} → Γ ⊢ A ⇒Π B ∷ T  → Γ ⊢ A ⇒Π B′ ∷ T′ → B PE.≡ B′
+detΠRedTerm : ∀ {Γ A B B′ T T′ r r'} → Γ ⊢ A ⇒Π B ∷ T ^ r  → Γ ⊢ A ⇒Π B′ ∷ T′ ^ r' → B PE.≡ B′
 detΠRedTerm (regular x) (regular x₁) = whrDetTerm x x₁
 detΠRedTerm (regular x) (deep y) = ⊥-elim (whnfRedTerm x Πₙ)
 detΠRedTerm (deep x) (regular x₁) = ⊥-elim (whnfRedTerm x₁ Πₙ)
