@@ -91,12 +91,12 @@ inversion-app (conv d x) = let a , b , c , d , e , f , g , h , i , j = inversion
 
 
 -- Inversion of lambda.
-inversion-lam : ∀ {t F A r Γ} → Γ ⊢ lam F ▹ t ∷ A ^ r →
-  ∃₂ λ rF lF → ∃₂ λ G rG → ∃₂ λ lG lΠ → Γ ⊢ F ^ [ rF , ι lF ]
+inversion-lam : ∀ {t F A r lΠ Γ} → Γ ⊢ lam F ▹ t ^ lΠ ∷ A ^ r →
+  ∃₂ λ rF lF → ∃₂ λ G rG → ∃ λ lG → Γ ⊢ F ^ [ rF , ι lF ]
   × Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ rG , ι lG ]
   × Γ ⊢ A ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rG , ι lΠ ]
   × r PE.≡ [ rG , ι lΠ ]
-inversion-lam (lamⱼ l< l<' x x₁) = _ , _ , _ , _ , _ , _ , x , x₁ ,
+inversion-lam (lamⱼ l< l<' x x₁) = _ , _ , _ , _ , _ , x , x₁ ,
                                    refl (univ (Πⱼ l< ▹ l<' ▹ (un-univ x) ▹ un-univ (syntacticTerm x₁))) , PE.refl
-inversion-lam (conv x x₁) = let a , b , c , d , e , f , g , h , i , j = inversion-lam x
-                            in  a , b , c , d , e , f , g , h , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) j x₁)) i , j
+inversion-lam (conv x x₁) = let a , b , c , d , e , f , g , h , i = inversion-lam x
+                            in  a , b , c , d , e , f , g , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) i x₁)) h , i

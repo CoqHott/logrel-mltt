@@ -210,8 +210,8 @@ cast-Πᵗᵛ-aux : ∀ {A B A' B' rA Γ e f} ([Γ] : ⊩ᵛ Γ) →
                          Id (Univ rA ⁰) (wk1 (wk1 (wk1 A))) (wk1 (wk1 (wk1 A'))) ^ [ % , ι ¹ ] / [ΓA'IdA'] / [wwwIdAA'])
          → [ Γ ⊩ᵛ⟨ l ⟩ (cast lΠ (Π A ^ rA ° lΠ ▹ B ° lΠ ° lΠ) (Π A' ^ rA ° lΠ ▹ B' ° lΠ ° lΠ) e f) ≡
                        (lam A' ▹
-                         let a = cast lΠ (wk1 A') (wk1 A) (Idsym (Univ rA lΠ) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                         cast lΠ (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ lΠ))
+                         (let a = cast lΠ (wk1 A') (wk1 A) (Idsym (Univ rA lΠ) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
+                         cast lΠ (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ lΠ)) ^ ⁰)
                        ∷ Π A' ^ rA ° lΠ ▹ B' ° lΠ ° lΠ ^ [ ! , ι lΠ ] / [Γ] ]
 
 cast-Πᵗᵛ-aux {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
@@ -381,12 +381,12 @@ cast-Πᵗᵛ-aux {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
 
       cast-Π-res A A' B B' e f =
                  cast ⁰ (B [ cast-Π-a A A' e ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ cast-Π-a A A' e ^ ⁰)
-      [cast-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ lam A' ▹ cast-Π-res A A' B B' e f ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ] / [Γ] / [ΠAB']
+      [cast-Π-res] : Γ ⊩ᵛ⟨ ∞ ⟩ lam A' ▹ cast-Π-res A A' B B' e f ^ ⁰ ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ] / [Γ] / [ΠAB']
       [cast-Π-res] = lamᵛ {F = A'} {G = B'} {t = cast-Π-res A A' B B' e f} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A'] [B']
                           (castᵗᵛ {B [ cast-Π-a A A' e ]↑} {B'} {t = (wk1 f) ∘ cast-Π-a A A' e ^ ⁰} {e = (snd (wk1 e)) ∘ (var 0) ^ ¹}
                                   [ΓA'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) B[cast-Π-a]↑ₜ [B']ₜ (subst↑S {F = A'} {G = B} {F' = A} [Γ] [A'] [A] [B] [cast-Π-a]) [B']
                                   [f°cast-Π-a] [wIdBB'] [wsnde])
-      [cast-Π] : Γ ⊩ᵛ cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) e f ⇒ lam A' ▹ cast-Π-res A A' B B' e f ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ ι ⁰ / [Γ]
+      [cast-Π] : Γ ⊩ᵛ cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) e f ⇒ lam A' ▹ cast-Π-res A A' B B' e f ^ ⁰ ∷ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ ι ⁰ / [Γ]
       [cast-Π] = λ {Δ} {σ} ⊢Δ [σ] → let Aσ  = ⊢AΔ {Δ} {σ} ⊢Δ [σ]
                                         Bσ  = ⊢BΔ {Δ ∙ subst σ A ^ _} {liftSubst σ} (⊢Δ ∙ ⊢A {Δ} {σ} ⊢Δ [σ]) ([liftσ] {Δ} {σ} ⊢Δ [σ])
                                         A'σ = ⊢A'Δ {Δ} {σ} ⊢Δ [σ]
@@ -394,14 +394,14 @@ cast-Πᵗᵛ-aux {A} {B} {A'} {B'} {rA} {Γ} {e} {f}
                                         eσ  = ⊢e {Δ} {σ} ⊢Δ [σ]
                                         fσ  = ⊢f {Δ} {σ} ⊢Δ [σ]
                                         X : Δ ⊢ (cast ⁰ (Π (subst σ A) ^ rA ° ⁰ ▹ (subst (liftSubst σ) B) ° ⁰ ° ⁰) (Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰ ° ⁰) (subst σ e) (subst σ f))
-                                                  ⇒ lam (subst σ A') ▹ cast-Π-res (subst σ A) (subst σ A') (subst (liftSubst σ) B) (subst (liftSubst σ) B') (subst σ e) (subst σ f)
+                                                  ⇒ lam (subst σ A') ▹ cast-Π-res (subst σ A) (subst σ A') (subst (liftSubst σ) B) (subst (liftSubst σ) B') (subst σ e) (subst σ f) ^ ⁰
                                                   ∷ Π (subst σ A') ^ rA ° ⁰ ▹ (subst (liftSubst σ) B') ° ⁰  ° ⁰ ^ ι ⁰
                                         X = cast-Π {Δ} {subst σ A} {subst σ A'} {rA} {subst (liftSubst σ) B} {subst (liftSubst σ) B'} {subst σ e} {subst σ f} Aσ Bσ A'σ B'σ eσ fσ
-                                     in PE.subst (λ BB → Δ ⊢ subst σ (cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) e f) ⇒ lam subst σ A' ▹ BB ∷ subst σ (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) ^ ι ⁰ )
+                                     in PE.subst (λ BB → Δ ⊢ subst σ (cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) e f) ⇒ lam subst σ A' ▹ BB ^ ⁰ ∷ subst σ (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) ^ ι ⁰ )
                                                  (PE.cong₄ (cast ⁰)
                                                            (B-cast-subst  σ A' A rA e B)
                                                            PE.refl (PE.cong₂ (λ X Y → snd X ∘ Y ^ ¹) (PE.sym (Idsym-subst-lemma σ e)) PE.refl) (wk1f-cast-subst σ f A' A rA e)) X
-      [id] , [eq] = redSubstTermᵛ {Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰} {cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) e f} {lam A' ▹ cast-Π-res A A' B B' e f}
+      [id] , [eq] = redSubstTermᵛ {Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰} {cast ⁰ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) e f} {lam A' ▹ cast-Π-res A A' B B' e f ^ ⁰}
                                   [Γ] (λ {Δ} {σ} ⊢Δ [σ] → [cast-Π] {Δ} {σ} ⊢Δ [σ])
                                   [ΠAB'] [cast-Π-res]
 
@@ -429,8 +429,8 @@ cast-Πᵗᵛ : ∀ {A B A' B' rA Γ e f} ([Γ] : ⊩ᵛ Γ) →
            ([f]ₜ : Γ ⊩ᵛ⟨ l ⟩ f ∷ Π A ^ rA ° lΠ ▹ B ° lΠ ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠAB]) →
            [ Γ ⊩ᵛ⟨ l ⟩ (cast lΠ (Π A ^ rA ° lΠ ▹ B ° lΠ ° lΠ) (Π A' ^ rA ° lΠ ▹ B' ° lΠ ° lΠ) e f) ≡
                        (lam A' ▹
-                         let a = cast lΠ (wk1 A') (wk1 A) (Idsym (Univ rA lΠ) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                         cast lΠ (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ ⁰))
+                         (let a = cast lΠ (wk1 A') (wk1 A) (Idsym (Univ rA lΠ) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
+                         cast lΠ (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ ⁰)) ^ ⁰)
                        ∷ Π A' ^ rA ° lΠ ▹ B' ° lΠ ° lΠ ^ [ ! , ι lΠ ] / [Γ] ]
 
 abstract

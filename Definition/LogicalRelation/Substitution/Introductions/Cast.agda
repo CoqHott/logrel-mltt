@@ -687,8 +687,8 @@ import Data.Nat as Nat
         (f₂ , [[ ⊢t₂ , ⊢f₂ , Df₂ ]] , funf₂ , f₂≡f₂ , [f₂ext] , [f₂])
         (f₁′ , f₂′ , [[ _ , ⊢f₁′ , Df₁′ ]] , [[ _ , ⊢f₂′ , Df₂′ ]] , funf₁′ , funf₂′ , _ , _ , _ , [f₁′≡f₂′])
         ⊢e₁₃ ⊢e₂₄ =
-          ( (lam F₃ ▹ g₁.g (step id) (var 0))
-          , (lam F₄ ▹ g₂.g (step id) (var 0))
+          ( (lam F₃ ▹ g₁.g (step id) (var 0) ^ ⁰)
+          , (lam F₄ ▹ g₂.g (step id) (var 0) ^ ⁰)
           , g₁.Dg
           , conv:* g₂.Dg (sym (≅-eq A₃≡A₄))
           , lamₙ
@@ -736,8 +736,8 @@ import Data.Nat as Nat
         (f₄ , [[ ⊢t₄ , ⊢f₄ , Df₄ ]] , funf₄ , f₄≡f₄ , [f₄ext] , [f₄])
         (f₃′ , f₄′ , [[ _ , ⊢f₃′ , Df₃′ ]] , [[ _ , ⊢f₄′ , Df₄′ ]] , funf₃′ , funf₄′ , _ , _ , _ , [f₃′≡f₄′])
         ⊢e₃₁ ⊢e₄₂ =
-          ( (lam F₁ ▹ g₁.g (step id) (var 0))
-          , (lam F₂ ▹ g₂.g (step id) (var 0))
+          ( (lam F₁ ▹ g₁.g (step id) (var 0) ^ ⁰)
+          , (lam F₂ ▹ g₂.g (step id) (var 0) ^ ⁰)
           , g₁.Dg
           , conv:* g₂.Dg (sym (≅-eq A₁≡A₂))
           , lamₙ
@@ -868,8 +868,8 @@ import Data.Nat as Nat
         (f₂ , [[ ⊢t₂ , ⊢f₂ , Df₂ ]] , funf₂ , f₂≡f₂ , [f₂ext] , [f₂])
         (f₁′ , f₂′ , [[ _ , ⊢f₁′ , Df₁′ ]] , [[ _ , ⊢f₂′ , Df₂′ ]] , funf₁′ , funf₂′ , _ , _ , _ , [f₁′≡f₂′])
         ⊢e₁₃ ⊢e₂₄ =
-          ( (lam F₃ ▹ g₁.g (step id) (var 0))
-          , (lam F₄ ▹ g₂.g (step id) (var 0))
+          ( (lam F₃ ▹ g₁.g (step id) (var 0) ^ ⁰)
+          , (lam F₄ ▹ g₂.g (step id) (var 0) ^ ⁰)
           , g₁.Dg
           , conv:* g₂.Dg (sym (≅-eq A₃≡A₄))
           , lamₙ
@@ -917,8 +917,8 @@ import Data.Nat as Nat
         (f₄ , [[ ⊢t₄ , ⊢f₄ , Df₄ ]] , funf₄ , f₄≡f₄ , [f₄ext] , [f₄])
         (f₃′ , f₄′ , [[ _ , ⊢f₃′ , Df₃′ ]] , [[ _ , ⊢f₄′ , Df₄′ ]] , funf₃′ , funf₄′ , _ , _ , _ , [f₃′≡f₄′])
         ⊢e₃₁ ⊢e₄₂ =
-          ( (lam F₁ ▹ g₁.g (step id) (var 0))
-          , (lam F₂ ▹ g₂.g (step id) (var 0))
+          ( (lam F₁ ▹ g₁.g (step id) (var 0) ^ ⁰)
+          , (lam F₂ ▹ g₂.g (step id) (var 0) ^ ⁰)
           , g₁.Dg
           , conv:* g₂.Dg (sym (≅-eq A₁≡A₂))
           , lamₙ

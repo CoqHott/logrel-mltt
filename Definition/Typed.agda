@@ -64,7 +64,7 @@ mutual
            → lG ≤ l
            → Γ     ⊢ F ^ [ rF , ι lF ]
            → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ r , ι lG ]
-           → Γ     ⊢ lam F ▹ t ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ r , ι l ]
+           → Γ     ⊢ lam F ▹ t ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ r , ι l ]
     _∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
            → Γ ⊢     g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
            → Γ ⊢     a ∷ F ^ [ rF , ι lF ]
@@ -186,7 +186,7 @@ mutual
                 → Γ     ⊢ F ^ [ rF , ι lF ]
                 → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ ! , ι lG ]
                 → Γ     ⊢ a ∷ F ^ [ rF , ι lF ]
-                → Γ     ⊢ (lam F ▹ t) ∘ a ^ l ≡ t [ a ] ∷ G [ a ] ^ [ ! , ι lG ]
+                → Γ     ⊢ (lam F ▹ t ^ l) ∘ a ^ l ≡ t [ a ] ∷ G [ a ] ^ [ ! , ι lG ]
     η-eq        : ∀ {f g F rF lF lG l G}
                 → lF ≤ l
                 → lG ≤ l
@@ -308,8 +308,9 @@ mutual
              → Γ ⊢ f ∷ (Π A ^ rA ° lA ▹ B ° lB ° l) ^ [ ! , ι l ]
              → Γ ⊢ (cast l (Π A ^ rA ° lA ▹ B ° lB ° l) (Π A' ^ rA ° lA ▹ B' ° lB ° l) e f)
                ≡ (lam A' ▹
-                 let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                 cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l))
+                      (let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
+                      cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l))
+                      ^ l)
                    ∷ Π A' ^ rA ° lA ▹ B' ° lB ° l ^ [ ! , ι l ]
     cast-ℕ-0 : ∀ {e}
                → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]
@@ -339,7 +340,7 @@ mutual
                  → Γ     ⊢ A ^ [ rA , ι lA ]
                  → Γ ∙ A ^ [ rA , ι lA ] ⊢ t ∷ B ^ [ ! , ι lB ]
                  → Γ     ⊢ a ∷ A ^ [ rA , ι lA ]
-                 → Γ     ⊢ (lam A ▹ t) ∘ a ^ l ⇒ t [ a ] ∷ B [ a ] ^ ι lB
+                 → Γ     ⊢ (lam A ▹ t ^ l) ∘ a ^ l ⇒ t [ a ] ∷ B [ a ] ^ ι lB
     natrec-subst : ∀ {z s n n′ F l}
                  → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , ι l ]
                  → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , ι l ]
@@ -475,8 +476,9 @@ mutual
              → Γ ⊢ f ∷ (Π A ^ rA ° l ▹ B ° l ° l) ^ [ ! , ι l ]
              → Γ ⊢ (cast l (Π A ^ rA ° l ▹ B ° l ° l) (Π A' ^ rA ° l ▹ B' ° l ° l) e f)
                ⇒ (lam A' ▹
-                 let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                 cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l))
+                      (let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) 
+                       in cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l))
+                       ^ l )
                    ∷ Π A' ^ rA ° l ▹ B' ° l ° l ^ ι l
     cast-ℕ-0 : ∀ {e}
                → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ]

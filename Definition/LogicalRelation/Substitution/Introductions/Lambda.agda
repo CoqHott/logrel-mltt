@@ -33,7 +33,7 @@ lamᵛ : ∀ {F G rF lF lG lΠ rΠ t Γ l}
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F])
        ([t] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ t ∷ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F] / [G])
-     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rΠ , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
+     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ^ lΠ ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rΠ , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
 lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
@@ -41,7 +41,7 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] 
       _ , Πᵣ rF′ lF lG l< l<' F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
         extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
       lamt : ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-           → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t) ∷ subst σ (Π F ^ rF ° lF ▹ G ° lG ° lΠ) ^ [ ! , ι lΠ ] / proj₁ ([ΠFG] ⊢Δ [σ])
+           → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t ^ lΠ) ∷ subst σ (Π F ^ rF ° lF ▹ G ° lG ° lΠ) ^ [ ! , ι lΠ ] / proj₁ ([ΠFG] ⊢Δ [σ])
       lamt {Δ} {σ} ⊢Δ [σ] =
         let [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
             [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -62,7 +62,7 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] 
                                                      (var (⊢Δ ∙ ⊢F) here)) 
             _ , Πᵣ rF′ _ _ _ _ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
               extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
-        in  Πₜ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
+        in  Πₜ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t) ^ _)
                (idRedTerm:*: (lamⱼ lF≤ lG≤ ⊢F ⊢t))
                lamₙ
                (≅-η-eq lF≤ lG≤ ⊢F (lamⱼ lF≤ lG≤ ⊢F ⊢t) (lamⱼ lF≤ lG≤ ⊢F ⊢t) lamₙ lamₙ
@@ -166,8 +166,8 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] 
                               (~-var (var (⊢Δ ∙ ⊢F) here))
              σlamt∘a≡σ′lamt∘a : ∀ {ρ Δ₁ a} → ([ρ] : ρ ∷ Δ₁ ⊆ Δ) (⊢Δ₁ : ⊢ Δ₁)
                  → ([a] : Δ₁ ⊩⟨ l ⟩ a ∷ U.wk ρ (subst σ F) ^ [ rF , _ ] / [F]′ [ρ] ⊢Δ₁)
-                 → Δ₁ ⊩⟨ l ⟩ U.wk ρ (subst σ (lam F ▹ t)) ∘ a ^ lΠ 
-                           ≡ U.wk ρ (subst σ′ (lam F ▹ t)) ∘ a ^ lΠ
+                 → Δ₁ ⊩⟨ l ⟩ U.wk ρ (subst σ (lam F ▹ t ^ _ )) ∘ a ^ lΠ 
+                           ≡ U.wk ρ (subst σ′ (lam F ▹ t ^ _)) ∘ a ^ lΠ
                            ∷ U.wk (lift ρ) (subst (liftSubst σ) G) [ a ]
                             ^ [ ! , _ ]
                            / [G]′ [ρ] ⊢Δ₁ [a]
@@ -260,8 +260,8 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {rΠ = !} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] 
                 in  transEqTerm G[a] [σlamt∘a≡σt[a]]
                                 (transEqTerm G[a] [σt[a]≡σ′t[a]]
                                              [σ′t[a]≡σ′lamt∘a])
-         in  Πₜ₌ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t))
-                 (lam (subst (repeat liftSubst σ′ 0) F) ▹ (subst (liftSubst σ′) t))
+         in  Πₜ₌ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t) ^ _)
+                 (lam (subst (repeat liftSubst σ′ 0) F) ▹ (subst (liftSubst σ′) t) ^ _)
                  (idRedTerm:*: (lamⱼ lF≤ lG≤ ⊢F ⊢t))
                  (idRedTerm:*: (conv (lamⱼ lF≤ lG≤ ⊢F′ ⊢t′)
                                      (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))

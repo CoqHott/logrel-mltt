@@ -123,7 +123,7 @@ data Kind : Set where
   Ukind : Relevance → Level → Kind
   Pikind : Relevance → Level → Level → Level → Kind
   Natkind : Kind
-  Lamkind : Kind
+  Lamkind : Level → Kind
   Appkind : Level → Kind
   Zerokind : Kind
   Suckind : Kind
@@ -172,8 +172,8 @@ pattern Univ r l = gen (Ukind r l) []
 -- var    : (x : Nat)        → Term  -- Variable (de Bruijn index).
 -- var = var
 
-lam_▹_    : Term → Term → Term  -- Function abstraction (binder).
-lam A ▹ t = gen Lamkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , t ⟧ ∷ [])
+lam_▹_^_    : Term → Term → Level → Term  -- Function abstraction (binder).
+lam A ▹ t ^ l = gen (Lamkind l) (⟦ 0 , A ⟧ ∷ ⟦ 1 , t ⟧ ∷ [])
 
 _∘_^_    : (t u : Term) (l : Level)    → Term  -- Application.
 t ∘ u ^ l = gen (Appkind l) (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
@@ -278,7 +278,7 @@ data Whnf : Term → Set where
   Emptyₙ : ∀ {l} → Whnf (Empty l)
 
   -- Introductions are whnfs.
-  lamₙ  : ∀ {A t} → Whnf (lam A ▹ t)
+  lamₙ  : ∀ {A t l} → Whnf (lam A ▹ t ^ l)
   zeroₙ : Whnf zero
   sucₙ  : ∀ {t} → Whnf (suc t)
 
@@ -372,7 +372,7 @@ data Type : Term → Set where
 -- A whnf of type Π A B is either lam t or neutral.
 
 data Function : Term → Set where
-  lamₙ : ∀{A t} → Function (lam A ▹ t)
+  lamₙ : ∀{A t l} → Function (lam A ▹ t ^ l)
   ne : ∀{n} → Neutral n → Function n
 
 -- These views classify only whnfs.
@@ -680,7 +680,7 @@ Unit : ∀ {l} → Term
 Unit {l} =  Π Empty l ^ % ° l ▹ Empty l ° l ° l
 
 tt : ∀ {l} → Term -- currently not used
-tt {l} = lam (Empty l) ▹ (Emptyrec l (Empty l) (var 0))
+tt {l} = lam (Empty l) ▹ (Emptyrec l (Empty l) (var 0)) ^ l
 
 ap : (l : Level) (A B f x y e : Term) → Term -- currently not used
 ap l A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x ^ l)) ((wk1 f) ∘ (var 0) ^ l)) x (Idrefl B (f ∘ x ^ l)) y e

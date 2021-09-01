@@ -389,7 +389,7 @@ whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 whrDetTerm-aux1 : ∀{Γ t u F lF A A' rA lA lB rA' l B B' e f}
   → (d :  t PE.≡ cast l (Π A ^ rA ° lA ▹ B ° lB ° l) (Π A' ^ rA' ° lA ▹ B' ° lB ° l) e f)
   → (d′ : Γ ⊢ t ⇒ u ∷ F ^ lF)
-  → (lam A' ▹ let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l)) PE.≡ u
+  → (lam A' ▹ (let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l)) ^ l) PE.≡ u
 whrDetTerm-aux1 d (conv d' x) = whrDetTerm-aux1 d d'
 whrDetTerm-aux1 PE.refl (cast-subst d' x x₁ x₂) = ⊥-elim (whnfRedTerm d' Πₙ)
 whrDetTerm-aux1 PE.refl (cast-Π-subst x x₁ d' x₂ x₃) = ⊥-elim (whnfRedTerm d' Πₙ)
@@ -663,9 +663,6 @@ toLevelInj : ∀ {l₁ l₁′ : TypeLevel} {l<₁ : l₁′ <∞ l₁} {l₂ l�
 toLevelInj {.(ι ¹)} {.(ι ⁰)} {emb<} {.(ι ¹)} {.(ι ⁰)} {emb<} e = PE.refl
 toLevelInj {.∞} {.(ι ¹)} {∞<} {.(ι ¹)} {.(ι ⁰)} {emb<} ()
 toLevelInj {.∞} {.(ι ¹)} {∞<} {.∞} {.(ι ¹)} {∞<} e = PE.refl
--- toLevelInj {l<₁ = ∞<⁰} {l<₂ = emb<} x = PE.refl
--- toLevelInj {l<₁ = emb<} {l<₂ = ∞<⁰} x = PE.refl
--- toLevelInj {l<₁ = ∞<⁰} {l<₂ = ∞<⁰} x = PE.refl
 
 redSProp′ : ∀ {Γ A B l}
            (D : Γ ⊢ A ⇒* B ∷ SProp l ^ next l )
