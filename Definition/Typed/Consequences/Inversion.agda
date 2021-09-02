@@ -30,17 +30,30 @@ inversion-ℕ (conv x x₁) with inversion-ℕ x
 inversion-Π : ∀ {F rF G r Γ C lF lG lΠ}
             → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ  ∷ C ^ r
             → ∃ λ rG
-            → ∃ λ lΠ
-                → Γ ⊢ F ∷ Univ rF lF ^ [ ! , next lF ]
-                  × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ Univ rG lG ^ [ ! , next lG ]
-                  × Γ ⊢ C ≡ Univ rG lΠ ^ [ ! , next lΠ ]
-                  × r PE.≡ [ ! , next lΠ ]
-inversion-Π (Πⱼ_▹_▹_▹_ {rF = rF} {r = rG} l< l<' x x₁) = rG , _ , x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl
-inversion-Π (conv x x₁) = let rG , l , a , b , c , r≡! = inversion-Π x
-                          in rG , l , a , b
+            → lF ≤ lΠ
+              × lG ≤ lΠ
+              × Γ ⊢ F ∷ Univ rF lF ^ [ ! , next lF ]
+              × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ Univ rG lG ^ [ ! , next lG ]
+              × Γ ⊢ C ≡ Univ rG lΠ ^ [ ! , next lΠ ]
+              × r PE.≡ [ ! , next lΠ ]
+inversion-Π (Πⱼ_▹_▹_▹_ {rF = rF} {r = rG} l< l<' x x₁) = rG , l< , l<' , x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl
+inversion-Π (conv x x₁) = let rG , l< , l<' , a , b , c , r≡! = inversion-Π x
+                          in rG , l< , l<' , a , b
                             , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c
                             , r≡!
 
+-- Inversion of Π-types.
+inversion-∃ : ∀ {F G Γ C  r}
+            → Γ ⊢ ∃ F ▹ G ∷ C ^ r
+            → ∃ λ l∃
+              → Γ ⊢ F ∷ Univ % l∃ ^ [ ! , next l∃ ]
+              × Γ ∙ F ^ [ % , ι l∃ ] ⊢ G ∷ Univ % l∃ ^ [ ! , next l∃ ]
+              × Γ ⊢ C ≡ Univ % l∃ ^ [ ! , next l∃ ]
+              × r PE.≡ [ ! , next l∃ ]
+inversion-∃ (∃ⱼ_▹_ {l = l∃} x x₁) = l∃ , x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl
+inversion-∃ (conv x x₁) = let l∃ , a , b , c , r≡! = inversion-∃ x
+                          in l∃ , a , b , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c , r≡!
+                            
 inversion-Empty : ∀ {Γ C r l} → Γ ⊢ Empty l ∷ C ^ r → Γ ⊢ C ≡ SProp l ^ r × r PE.≡ [ ! , next l ]
 inversion-Empty (Emptyⱼ x) = refl (Ugenⱼ x) , PE.refl
 inversion-Empty (conv x x₁) =
