@@ -14,6 +14,9 @@ open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Fundamental.Reducibility
 open import Definition.Typed.Consequences.Inversion
 open import Definition.Typed.Consequences.InverseUniv
+open import Definition.Typed.Consequences.Injectivity
+open import Definition.Typed.Consequences.Syntactic
+open import Definition.Conversion.Stability
 
 open import Tools.Product
 open import Tools.Empty
@@ -29,7 +32,7 @@ import Tools.PropositionalEquality as PE
 data ΠNorm : Term → Set where
   Uₙ : ∀ {r l} → ΠNorm (Univ r l)
   Πₙ : ∀ {F rF lF G lG lΠ} → ΠNorm G → ΠNorm (Π F ^ rF ° lF ▹ G ° lG ° lΠ)
-  ∃ₙ : ∀ {F G} → ΠNorm (∃ F ▹ G)
+  ∃ₙ : ∀ {F G} → ΠNorm F → ΠNorm (∃ F ▹ G)
   ℕₙ : ΠNorm ℕ
   Emptyₙ : ∀ {lEmpty} → ΠNorm (Empty lEmpty)
   ne   : ∀ {n} → Neutral n → ΠNorm n
@@ -41,9 +44,12 @@ data ΠNorm : Term → Set where
 
 data _⊢_⇒Π_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeLevel → Set where
   regular : ∀ {t u A l} → Γ ⊢ t ⇒ u ∷ A ^ l → Γ ⊢ t ⇒Π u ∷ A ^ l
-  deep : ∀ {F rF lF G G′ lG rG lΠ}
+  deepΠ : ∀ {F rF lF G G′ lG rG lΠ}
        → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ⇒Π G′ ∷ Univ rG lG ^ next lG
        → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ⇒Π Π F ^ rF ° lF ▹ G′ ° lG ° lΠ ∷ Univ rG lΠ ^ next lΠ 
+  deep∃ : ∀ {F G F′ l∃}
+       → Γ ⊢ F ⇒Π F′ ∷ Univ % l∃ ^ next l∃
+       → Γ ⊢ ∃ F ▹ G ⇒Π ∃ F′ ▹ G ∷ Univ % l∃ ^ next l∃
 
 data _⊢_⇒Π_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
   univ : ∀ {A B r l}
@@ -58,30 +64,71 @@ data _⊢_⇒*Π_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeLevel �
       → Γ ⊢ t  ⇒*Π u ∷ T ^ l
 
 data _⊢_⇒*Π_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
-  id : ∀ {t r} → Γ ⊢ t ⇒*Π t ^ r
+  id : ∀ {A r} → Γ ⊢ A ⇒*Π A ^ r
   _⇨_ : ∀ {t t' u r}
       → Γ ⊢ t  ⇒Π t' ^ r
       → Γ ⊢ t' ⇒*Π u ^ r
       → Γ ⊢ t  ⇒*Π u ^ r
-
-
-deepstep : ∀ {Γ A B r} → Γ ⊢ A ⇒Π B ^ r → Γ ⊢ A ⇒*Π B ^ r
-deepstep x = x ⇨ id
 
 _⇨*_ : ∀ {Γ A B C r} → Γ ⊢ A ⇒*Π B ^ r → Γ ⊢ B ⇒*Π C ^ r → Γ ⊢ A ⇒*Π C ^ r
 id ⇨* y = y
 (x ⇨ x₁) ⇨* y = x ⇨ (x₁ ⇨* y)
 
 regular* : ∀ {Γ t u r} → Γ ⊢ t ⇒* u ^ r → Γ ⊢ t ⇒*Π u ^ r
-regular* (id x) = id
+regular* (id _) = id
 regular* (univ x ⇨ x₁) = univ (regular x) ⇨ regular* x₁
 
 deep* : ∀ {Γ F rF lF G G′ lG rG lΠ}
       → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ⇒*Π G′ ^ [ rG , ι lG ]
       → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ⇒*Π Π F ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ rG , ι lΠ ]
-deep* id = id
-deep* (univ (regular x) ⇨ x₁) = univ (deep (regular x)) ⇨ deep* x₁
-deep* (univ (deep x) ⇨ x₁) = univ (deep (deep x)) ⇨ deep* x₁
+deep* id = id 
+deep* (univ (regular x) ⇨ x₁) = univ (deepΠ (regular x)) ⇨ deep* x₁
+deep* (univ (deepΠ x) ⇨ x₁) = univ (deepΠ (deepΠ x)) ⇨ deep* x₁
+deep* (univ (deep∃ x) ⇨ x₁) = univ (deepΠ (deep∃ x)) ⇨ deep* x₁
+
+deep∃* : ∀ {Γ F G F′ l∃}
+      → Γ ⊢ F ⇒*Π F′ ^ [ % , ι l∃ ]
+      → Γ ⊢ ∃ F ▹ G ⇒*Π ∃ F′ ▹ G ^ [ % , ι l∃ ]
+deep∃* id = id
+deep∃* (univ (regular x) ⇨ x₁) = univ (deep∃ (regular x)) ⇨ deep∃* x₁
+deep∃* (univ (deepΠ x) ⇨ x₁) = univ (deep∃ (deepΠ x)) ⇨ deep∃* x₁
+deep∃* (univ (deep∃ x) ⇨ x₁) = univ (deep∃ (deep∃ x)) ⇨ deep∃* x₁
+
+deep-correct-term : ∀ {Γ t u T l} → Γ ⊢ t ∷ T ^ [ ! , l ] → Γ ⊢ t ⇒Π u ∷ T ^ l → Γ ⊢ u ∷ T ^ [ ! , l ] × Γ ⊢ t ≡ u ∷ T ^ [ ! , l ]
+deep-correct-term ⊢t (regular x) =
+  let t≡u = subsetTerm x
+      _ , _ , ⊢u = syntacticEqTerm t≡u
+  in ⊢u , t≡u
+deep-correct-term ⊢t (deepΠ X) =
+  let _ , l< , l<' , ⊢F , ⊢G , e , _ = inversion-Π ⊢t
+      erG , _ = Uinjectivity e
+      ⊢G' , G≡G' = deep-correct-term (PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ _ ) (PE.sym erG) ⊢G) X
+  in Πⱼ l< ▹ l<' ▹ ⊢F ▹ ⊢G' , Π-cong l< l<' (univ ⊢F) (refl ⊢F) G≡G'
+deep-correct-term ⊢t (deep∃ X) =
+  let l , ⊢F , ⊢G , e , _ = inversion-∃ ⊢t
+      _ , el = Uinjectivity e
+      ⊢Fl = PE.subst (λ ll → _ ⊢ _ ∷ SProp ll ^ [ ! , next ll ] ) (PE.sym el) ⊢F
+      ⊢F' , F≡F' = deep-correct-term ⊢Fl X
+      ⊢Gl = PE.subst (λ ll → _ ∙ _ ^ [ % , ι ll ] ⊢ _ ∷ SProp ll ^ [ ! , next ll ] ) (PE.sym el) ⊢G
+  in ∃ⱼ ⊢F' ▹ stabilityTerm (reflConEq (wfTerm ⊢F) ∙ (univ F≡F')) ⊢Gl , ∃-cong (univ ⊢Fl) F≡F' (refl ⊢Gl)
+
+
+deep-correct : ∀ {Γ A B r} → Γ ⊢ A ^ r → Γ ⊢ A ⇒Π B ^ r → Γ ⊢ B ^ r × Γ ⊢ A ≡ B ^ r
+deep-correct ⊢A (univ x) =
+  let ⊢B , A≡B = deep-correct-term (un-univ ⊢A) x
+  in univ ⊢B , univ A≡B
+
+deep*-correct-term : ∀ {Γ t u T l} → Γ ⊢ t ∷ T ^ [ ! , l ] → Γ ⊢ t ⇒*Π u ∷ T ^ l → Γ ⊢ t ≡ u ∷ T ^ [ ! , l ]
+deep*-correct-term ⊢t id = refl ⊢t
+deep*-correct-term ⊢t (x ⇨ X) =
+  let ⊢u , t≡u = deep-correct-term ⊢t x
+  in trans t≡u (deep*-correct-term ⊢u X)
+
+deep*-correct : ∀ {Γ A B r} → Γ ⊢ A ^ r → Γ ⊢ A ⇒*Π B ^ r → Γ ⊢ A ≡ B ^ r
+deep*-correct ⊢A id = refl ⊢A
+deep*-correct ⊢A (x ⇨ X) =
+  let ⊢B , A≡B = deep-correct ⊢A x
+  in trans A≡B (deep*-correct ⊢B X)
 
 doΠNorm′ : ∀ {A rA Γ l} ([A] : Γ ⊩⟨ l ⟩ A ^ rA)
          → ∃ λ B → ΠNorm B × Γ ⊢ B ^ rA × Γ ⊢ A ⇒*Π B ^ rA
@@ -96,7 +143,12 @@ doΠNorm′ (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A
                               (wkSingleSubstId _)
                               (doΠNorm′ ([G] (step id) (wf ⊢G) [F]′))
   in Π F ^ rF ° lF ▹ G′ ° lG ° _ , Πₙ nG′ , univ (Πⱼ lF≤ ▹ lG≤ ▹ (un-univ ⊢F) ▹ (un-univ ⊢G′)) , regular* D ⇨* deep* D′
-doΠNorm′ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = ∃ F ▹ G , ∃ₙ , univ (∃ⱼ un-univ ⊢F ▹ un-univ ⊢G) , regular* (red D)
+doΠNorm′ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
+  let F′ , nF′ ,  ⊢F′ , D′ = doΠNorm′ ([F] id (wf ⊢F))
+      DD = (PE.subst (λ FF → _ ⊢ FF ⇒*Π F′ ^ _ ) (wk-id _) D′)
+      F≡F′ = deep*-correct ⊢F DD
+  in ∃ F′ ▹ G , ∃ₙ nF′ , univ (∃ⱼ un-univ ⊢F′ ▹ un-univ (stability (reflConEq (wf ⊢F) ∙ F≡F′) ⊢G)) ,
+     regular* (red D) ⇨* deep∃* DD
 doΠNorm′ (emb emb< [A]) = doΠNorm′ [A]
 doΠNorm′ (emb ∞< [A]) = doΠNorm′ [A]
 
@@ -104,19 +156,20 @@ doΠNorm : ∀ {A rA Γ} → Γ ⊢ A ^ rA
         → ∃ λ B → ΠNorm B × Γ ⊢ B ^ rA × Γ ⊢ A ⇒*Π B ^ rA
 doΠNorm ⊢A = doΠNorm′ (reducible ⊢A)
 
-
 ΠNorm-whnf : ∀ {A} → ΠNorm A → Whnf A
 ΠNorm-whnf Uₙ = Uₙ
-ΠNorm-whnf (Πₙ x) = Πₙ
-ΠNorm-whnf ∃ₙ = ∃ₙ
+ΠNorm-whnf (Πₙ _) = Πₙ
+ΠNorm-whnf (∃ₙ _) = ∃ₙ
 ΠNorm-whnf ℕₙ = ℕₙ
 ΠNorm-whnf Emptyₙ = Emptyₙ
 ΠNorm-whnf (ne x) = ne x
 
 ΠNorm-noredTerm : ∀ {Γ A B T r} → Γ ⊢ A ⇒Π B ∷ T ^ r  → ΠNorm A → ⊥
 ΠNorm-noredTerm (regular x) w = whnfRedTerm x (ΠNorm-whnf w)
-ΠNorm-noredTerm (deep x) (Πₙ w) = ΠNorm-noredTerm x w
-ΠNorm-noredTerm (deep x) (ne ())
+ΠNorm-noredTerm (deepΠ x) (Πₙ w) = ΠNorm-noredTerm x w
+ΠNorm-noredTerm (deepΠ x) (ne ())
+ΠNorm-noredTerm (deep∃ x) (∃ₙ w) = ΠNorm-noredTerm x w
+ΠNorm-noredTerm (deep∃ x) (ne ())
 
 
 
@@ -125,9 +178,12 @@ doΠNorm ⊢A = doΠNorm′ (reducible ⊢A)
 
 detΠRedTerm : ∀ {Γ A B B′ T T′ r r'} → Γ ⊢ A ⇒Π B ∷ T ^ r  → Γ ⊢ A ⇒Π B′ ∷ T′ ^ r' → B PE.≡ B′
 detΠRedTerm (regular x) (regular x₁) = whrDetTerm x x₁
-detΠRedTerm (regular x) (deep y) = ⊥-elim (whnfRedTerm x Πₙ)
-detΠRedTerm (deep x) (regular x₁) = ⊥-elim (whnfRedTerm x₁ Πₙ)
-detΠRedTerm (deep x) (deep y) = PE.cong _ (detΠRedTerm x y)
+detΠRedTerm (regular x) (deepΠ y) = ⊥-elim (whnfRedTerm x Πₙ)
+detΠRedTerm (deepΠ x) (regular x₁) = ⊥-elim (whnfRedTerm x₁ Πₙ)
+detΠRedTerm (deepΠ x) (deepΠ y) = PE.cong _ (detΠRedTerm x y)
+detΠRedTerm (regular x) (deep∃ y) = ⊥-elim (whnfRedTerm x ∃ₙ)
+detΠRedTerm (deep∃ x) (regular x₁) = ⊥-elim (whnfRedTerm x₁ ∃ₙ)
+detΠRedTerm (deep∃ x) (deep∃ y) = PE.cong _ (detΠRedTerm x y)
 
 detΠRed : ∀ {Γ A B B′ r r′} → Γ ⊢ A ⇒Π B ^ r → Γ ⊢ A ⇒Π B′ ^ r′ → B PE.≡ B′
 detΠRed (univ x) (univ y) = detΠRedTerm x y
@@ -138,3 +194,5 @@ detΠNorm* w w′ id (x ⇨ b) = ⊥-elim (ΠNorm-nored x w)
 detΠNorm* w w′ (x ⇨ a) id = ⊥-elim (ΠNorm-nored x w′)
 detΠNorm* w w′ (x ⇨ a) (x₁ ⇨ b) =
   detΠNorm* w w′ a (PE.subst (λ t → _ ⊢ t ⇒*Π _ ^ _) (detΠRed x₁ x) b)
+
+
