@@ -88,7 +88,7 @@ mutual
     let whnfM , neA , neB = ne~↓! x₁
         X = soundness~↓! x₁
         _ , t∷M , _ = syntacticEqTerm X
-        M≡A' = neTypeEq neA PE.refl t∷M t -- soundnessConv↑ M≡A 
+        _ , M≡A' = neTypeEq neA t∷M t -- soundnessConv↑ M≡A 
     in conv X M≡A'
   soundnessConv↓Term (zero-refl ⊢Γ) = refl (zeroⱼ ⊢Γ)
   soundnessConv↓Term (suc-cong c) = suc-cong (soundnessConv↑Term c)
