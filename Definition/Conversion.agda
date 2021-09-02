@@ -38,7 +38,7 @@ mutual
     Emptyrec-cong : ∀ {k l F G ll lEmpty}
                   → Γ ⊢ F [conv↑] G ^ [ ! , ι ll ]
                   → Γ ⊢ k ~ l ↑% Empty lEmpty ^ ι lEmpty
-                  → Γ ⊢ Emptyrec ll F k ~ Emptyrec ll G l ↑! F ^ ι ll
+                  → Γ ⊢ Emptyrec ll lEmpty F k ~ Emptyrec ll lEmpty G l ↑! F ^ ι ll
     Id-cong : ∀ {l A A' t t' u u'}
               → Γ ⊢ A ~ A' ↓! U l ^ next l
               → Γ ⊢ t [conv↑] t' ∷ A ^ ι l

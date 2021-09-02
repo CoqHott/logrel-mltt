@@ -88,6 +88,10 @@ maxLevel ¹ ¹ = ¹ , ((≡is≤ PE.refl) , (≡is≤ PE.refl))
 levelBounded : (i : Level) → Σ TypeLevel λ k → ι i <∞ k
 levelBounded i = next i , <next
 
+ιinj : ∀ {l l'} → ι l PE.≡ ι l' → l PE.≡ l'
+ιinj {⁰} {⁰} e = PE.refl
+ιinj {¹} {¹} e = PE.refl
+
 next-inj : ∀ {l l'} → next l PE.≡ next l' → l PE.≡ l'
 next-inj {⁰} {⁰} e = PE.refl
 next-inj {¹} {¹} e = PE.refl
@@ -129,7 +133,7 @@ data Kind : Set where
   Suckind : Kind
   Natreckind : Level → Kind
   Emptykind : Level → Kind
-  Emptyreckind : Level → Kind
+  Emptyreckind : Level → Level → Kind
   Idkind : Kind
   Idreflkind : Kind
   Transpkind : Kind
@@ -200,8 +204,8 @@ natrec l A t u v = gen (Natreckind l) (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0
 Empty : Level → Term
 Empty l = gen (Emptykind l) []
 
-Emptyrec : (l : Level) (A e : Term) -> Term
-Emptyrec l A e = gen (Emptyreckind l) (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
+Emptyrec : (l lEmpty : Level) (A e : Term) -> Term
+Emptyrec l lEmpty A e = gen (Emptyreckind l lEmpty) (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
 Id : (A t u : Term) → Term
 Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
@@ -263,7 +267,7 @@ data Neutral : Term → Set where
   castΠℕₙ : ∀ {l A rA B e t} → Neutral (cast l (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l) ℕ e t)
   castΠΠ%!ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ % ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° l) e t)
   castΠΠ!%ₙ : ∀ {l A B A' B' e t} → Neutral (cast l (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° l) e t)
-  Emptyrecₙ : ∀ {l A e} -> Neutral (Emptyrec l A e)
+  Emptyrecₙ : ∀ {l lEmpty A e} -> Neutral (Emptyrec l lEmpty A e)
 
 -- Weak head normal forms (whnfs).
 -- These are the (lazy) values of our language.
@@ -680,7 +684,7 @@ Unit : ∀ {l} → Term
 Unit {l} =  Π Empty l ^ % ° l ▹ Empty l ° l ° l
 
 tt : ∀ {l} → Term -- currently not used
-tt {l} = lam (Empty l) ▹ (Emptyrec l (Empty l) (var 0)) ^ l
+tt {l} = lam (Empty l) ▹ (Emptyrec l l (Empty l) (var 0)) ^ l
 
 ap : (l : Level) (A B f x y e : Term) → Term -- currently not used
 ap l A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x ^ l)) ((wk1 f) ∘ (var 0) ^ l)) x (Idrefl B (f ∘ x ^ l)) y e

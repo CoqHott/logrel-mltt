@@ -87,10 +87,10 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 
 
 ~-Emptyrec : ∀ {e e' F F′ Γ l lEmpty}
-         → Γ ⊢ F [conv↑] F′ ^ [ ! , l ] →
+         → Γ ⊢ F [conv↑] F′ ^ [ ! , ι l ] →
          Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ] →
          Γ ⊢ e' ∷ Empty lEmpty ^ [ % , ι lEmpty ] →
-         Γ ⊢ Emptyrec l F e ~ Emptyrec l F′ e' ∷ F ^ [ ! , l ]
+         Γ ⊢ Emptyrec l lEmpty F e ~ Emptyrec l lEmpty F′ e' ∷ F ^ [ ! , ι l ]
 ~-Emptyrec {e = e} {e' = e'} x ⊢e ⊢e' =
   let k~l′ = %~↑ ⊢e ⊢e' 
       ⊢F , _ = syntacticEq (soundnessConv↑ x)

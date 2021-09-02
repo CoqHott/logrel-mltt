@@ -13,11 +13,6 @@ open import Definition.Typed.Consequences.Substitution
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
-ιinj : ∀ {l l'} → ι l PE.≡ ι l' → l PE.≡ l'
-ιinj {⁰} {⁰} e = PE.refl
-ιinj {¹} {¹} e = PE.refl
-
-
 -- to be moved in Untyped
 
 typelevel-injectivity : ∀ {r r' l l'} → [ r , l ] PE.≡ [ r' , l' ] → r PE.≡ r' × l PE.≡ l'

@@ -612,7 +612,7 @@ abstract
         [F≡F′]′ = S.irrelevanceEq {A = F} {B = F′} [Γ] [Γn′] [F] [F]′ [F≡F′]
     in [Γn′]
       , modelsTermEq [F]′ (Emptyrecᵛ {F} { ! } {lF} {lEmpty} {n} [Γn′] [Empty]′ [F]′ [n]′)
-                     (conv₂ᵛ {Emptyrec lF F′ n′} {F} {F′} { [ ! , ι lF ] } [Γn′] [F]′ [F′]′ [F≡F′]′
+                     (conv₂ᵛ {Emptyrec lF lEmpty F′ n′} {F} {F′} { [ ! , ι lF ] } [Γn′] [F]′ [F′]′ [F≡F′]′
                        (Emptyrecᵛ {F′} { ! } {lF} {lEmpty} {n′} [Γn′] [Empty]′ [F′]′ [n′]))
                      (Emptyrec-congᵛ {F} {F′} { ! } {lF} {lEmpty} {n} {n′}
                         [Γn′] [Empty]′ [F]′ [F′]′ [F≡F′]′ [n]′ [n′])

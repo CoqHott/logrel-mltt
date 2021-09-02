@@ -114,5 +114,5 @@ natrec-cong′ F=G a=b h=g k~l = ~↑! (natrec-cong F=G a=b h=g k~l)
 Emptyrec-cong′ : ∀ {Γ k l F lF lEmpty G}
                → Γ ⊢ F [conv↑] G ^ [ ! , ι lF ] 
                → Γ ⊢ k ~ l ↑% Empty lEmpty ^ ι lEmpty
-               → Γ ⊢ Emptyrec lF F k ~ Emptyrec lF G l ↑ F ^ [ ! , ι lF ]
+               → Γ ⊢ Emptyrec lF lEmpty F k ~ Emptyrec lF lEmpty G l ↑ F ^ [ ! , ι lF ]
 Emptyrec-cong′ F=G k~l = ~↑! (Emptyrec-cong F=G k~l)
