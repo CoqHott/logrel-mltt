@@ -135,3 +135,47 @@ Uinjectivity ⊢U≡U =
   let [U] , _ , [U≡U] = reducibleEq ⊢U≡U
   in Uinjectivity′ (U-elim [U]) (irrelevanceEq [U] (U-intr (U-elim [U])) [U≡U])
 
+
+-- injectivity of ∃
+
+∃injectivity′ : ∀ {F G H E Γ l∃ l}
+               ([∃FG] : Γ ⊩⟨ l ⟩∃ ∃ F ▹ G ^ l∃ )
+             → Γ ⊩⟨ l ⟩ ∃ F ▹ G ≡ ∃ H ▹ E ^ [ % , ι l∃ ] / ∃-intr [∃FG]
+             → Γ ⊢ F ≡ H ^ [ % , ι l∃ ]
+             × Γ ∙ F ^ [ % , ι l∃ ] ⊢ G ≡ E ^ [ % , ι l∃ ]
+∃injectivity′ {F₁} {G₁} {H} {E} {Γ = Γ} 
+         (noemb (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
+         (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
+  let F≡F₁ , G≡G₁ = ∃-PE-injectivity (whnfRed* (red D) ∃ₙ)
+      H≡F′ , E≡G′ = ∃-PE-injectivity (whnfRed* D′ ∃ₙ)
+      ⊢Γ = wf ⊢F
+      [F]₁ = [F] id ⊢Γ
+      [F]′ = irrelevance′ (PE.trans (wk-id _) (PE.sym F≡F₁)) [F]₁
+      [x∷F] = neuTerm ([F] (step id) (⊢Γ ∙ ⊢F)) (var 0) (var (⊢Γ ∙ ⊢F) here) (proof-irrelevance (var (⊢Γ ∙ ⊢F) here) (var (⊢Γ ∙ ⊢F) here))  
+      [G]₁ = [G] (step id) (⊢Γ ∙ ⊢F) [x∷F]
+      [G]′ = PE.subst₂ (λ x y → _ ∙ y ^ _ ⊩⟨ _ ⟩ x ^ _)
+                       (PE.trans (wkSingleSubstId _) (PE.sym G≡G₁))
+                       (PE.sym F≡F₁) [G]₁
+      [F≡H]₁ = [F≡F′] id ⊢Γ
+      [F≡H]′ = irrelevanceEq″ (PE.trans (wk-id _) (PE.sym F≡F₁))
+                              (PE.trans (wk-id _) (PE.sym H≡F′))
+                              PE.refl PE.refl 
+                              [F]₁ [F]′ [F≡H]₁
+      [G≡E]₁ = [G≡G′] (step id) (⊢Γ ∙ ⊢F) [x∷F]
+      [G≡E]′ = irrelevanceEqLift″ (PE.trans (wkSingleSubstId _) (PE.sym G≡G₁))
+                                   (PE.trans (wkSingleSubstId _) (PE.sym E≡G′))
+                                   (PE.sym F≡F₁) [G]₁ [G]′ [G≡E]₁
+  in escapeEq [F]′ [F≡H]′ , escapeEq [G]′ [G≡E]′
+∃injectivity′ (emb emb< x) [∃FG≡∃HE] = ∃injectivity′ x [∃FG≡∃HE]
+∃injectivity′ (emb ∞< x) [∃FG≡∃HE] = ∃injectivity′ x [∃FG≡∃HE]
+
+-- Injectivity of ∃
+∃injectivity : ∀ {Γ F G H E l∃} →
+              Γ ⊢ ∃ F ▹ G ≡ ∃ H ▹ E ^ [ % , ι l∃ ]
+            → Γ ⊢ F ≡ H ^ [ % , ι l∃ ]
+            × Γ ∙ F ^ [ % , ι l∃ ] ⊢ G ≡ E ^ [ % , ι l∃ ]
+∃injectivity ⊢∃FG≡∃HE =
+  let [∃FG] , _ , [∃FG≡∃HE] = reducibleEq ⊢∃FG≡∃HE
+  in ∃injectivity′ (∃-elim [∃FG])
+                   (irrelevanceEq [∃FG] (∃-intr (∃-elim [∃FG])) [∃FG≡∃HE])
+
