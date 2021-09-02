@@ -45,7 +45,7 @@ dec~↑!-app : ∀ {k k₁ l l₁ F F₁ G G₁ rF B Γ Δ lF lG lΠ lK}
           → Δ ⊢ k₁ ∷ Π F₁ ^ rF ° lF ▹ G₁ ° lG ° lΠ ^ [ ! , ι lΠ ]
           → Γ ⊢ k ~ k₁ ↓! B ^ lK
           → Dec (Γ ⊢ l [genconv↑] l₁ ∷ F ^ [ rF , ι lF ])
-          → Dec (∃ λ A → Γ ⊢ k ∘ l ^ lG ~ k₁ ∘ l₁ ^ lG ↑! A ^ ι lG)
+          → Dec (∃ λ A → ∃ λ lA → Γ ⊢ k ∘ l ^ lG ~ k₁ ∘ l₁ ^ lG ↑! A ^ lA)
 dec~↑!-app {rF = !} Γ≡Δ k k₁ k~k₁ (yes p) = {!!}
   -- let whnfA , neK , neL = ne~↓! k~k₁
   --     ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! k~k₁)
@@ -98,9 +98,11 @@ mutual
     yes (_ , (_ , var-refl ⊢x n≡n))
   dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) | no ¬p =
     no λ (_ , (_ , eq)) → ¬p (strongVarEq eq)
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) [l] = {!!}
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) [l] = no (λ { (_ , _ , var-refl x x₁) → {!!} })
+
   dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) with dec~↓! Γ≡Δ x~x y~y
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | yes (A , x~y) = {!!}
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | yes (A , x~y) =
+    {!dec~↑!-app Γ≡Δ ? ? ? ?!}
   dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | no ¬p = no (λ { (_ , (_ , app-cong x′ y′)) → ¬p (_ , (_ , x′)) })
   -- dec~↑! Γ≡Δ (app-cong x x₁) (app-cong x₂ x₃)
   --       with dec~↓! Γ≡Δ x x₂
