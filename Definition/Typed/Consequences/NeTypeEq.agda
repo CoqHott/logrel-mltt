@@ -13,6 +13,11 @@ open import Definition.Typed.Consequences.Substitution
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+ιinj : ∀ {l l'} → ι l PE.≡ ι l' → l PE.≡ l'
+ιinj {⁰} {⁰} e = PE.refl
+ιinj {¹} {¹} e = PE.refl
+
+
 -- to be moved in Untyped
 
 typelevel-injectivity : ∀ {r r' l l'} → [ r , l ] PE.≡ [ r' , l' ] → r PE.≡ r' × l PE.≡ l'
@@ -36,44 +41,54 @@ varTypeEq A B x∷A x∷B with varTypeEq′ x∷A x∷B
 
 -- The same neutral term have equal types.
 -- to use this with different relevances rA rB we need unicity of relevance for types
-neTypeEq : ∀ {t A B rA lA lA' Γ} → Neutral t → lA PE.≡ lA' → Γ ⊢ t ∷ A ^ [ rA , lA ] → Γ ⊢ t ∷ B ^ [ rA , lA' ] →
-  Γ ⊢ A ≡ B ^ [ rA , lA ]
-neTypeEq (var x) PE.refl (var x₁ x₂) (var x₃ x₄) =
+neTypeEq : ∀ {t A B rA lA lA' Γ} → Neutral t → Γ ⊢ t ∷ A ^ [ rA , lA ] → Γ ⊢ t ∷ B ^ [ rA , lA' ] →
+  lA PE.≡ lA' × Γ ⊢ A ≡ B ^ [ rA , lA ]
+neTypeEq (var x) (var x₁ x₂) (var x₃ x₄) =
   let V , e = varTypeEq (syntacticTerm (var x₃ x₂)) (syntacticTerm (var x₃ x₄)) x₂ x₄
-  in V 
-neTypeEq (∘ₙ neT) PE.refl (t∷A ∘ⱼ t∷A₁) (t∷B ∘ⱼ t∷B₁) with neTypeEq neT PE.refl t∷A t∷B
-... | q = let _ , _ , _ , elG , w = injectivity q
-              in substTypeEq (PE.subst (λ x → _ ⊢ _ ≡ _ ^ [ _ , ι x ]) elG w) (genRefl t∷A₁)
-neTypeEq (natrecₙ neT) PE.refl (natrecⱼ x t∷A t∷A₁ t∷A₂) (natrecⱼ x₁ t∷B t∷B₁ t∷B₂) =
-  refl (substType x₁ t∷B₂)
-neTypeEq Emptyrecₙ PE.refl  (Emptyrecⱼ x t∷A) (Emptyrecⱼ x₁ t∷B) =
-  refl x₁
-neTypeEq (Idₙ X) el (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let l≡l = next-inj el
-  in PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) l≡l (refl (Ugenⱼ (wfTerm Y) ) )
-neTypeEq (Idℕₙ X) el (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let l≡l = next-inj el
-  in PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) l≡l (refl (Ugenⱼ (wfTerm Y) ) )
-neTypeEq (Idℕ0ₙ X) el (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let l≡l = next-inj el
-  in PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) l≡l (refl (Ugenⱼ (wfTerm Y) ) )
-neTypeEq (IdℕSₙ X) el (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let l≡l = next-inj el
-  in PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) l≡l (refl (Ugenⱼ (wfTerm Y) ) )
-neTypeEq (IdUₙ X) el (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let l≡l = next-inj el
-  in PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) l≡l (refl (Ugenⱼ (wfTerm Y) ) )
-neTypeEq (IdUℕₙ X) el (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let l≡l = next-inj el
-  in PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) l≡l (refl (Ugenⱼ (wfTerm Y) ) )
-neTypeEq (IdUΠₙ X) el (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let l≡l = next-inj el
-  in PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) l≡l (refl (Ugenⱼ (wfTerm Y) ) )
-neTypeEq X el (castⱼ Y Y₁ Y₂ Y₃)  (castⱼ Z Z₁ Z₂ Z₃) = refl (univ Y₁)
-neTypeEq x PE.refl (conv t∷A x₁) t∷B = let q = neTypeEq x PE.refl t∷A t∷B
-                               in trans (sym x₁) q
-neTypeEq x PE.refl t∷A (conv t∷B x₃) = let q = neTypeEq x PE.refl t∷A t∷B
-                               in trans q x₃
+      _ , el = typelevel-injectivity e
+  in el , V 
+neTypeEq (∘ₙ neT) (t∷A ∘ⱼ t∷A₁) (t∷B ∘ⱼ t∷B₁) with neTypeEq neT t∷A t∷B
+... | e , q = let _ , _ , _ , elG , w = injectivity q
+              in PE.cong _ elG , substTypeEq w (genRefl t∷A₁)
+neTypeEq (natrecₙ neT) (natrecⱼ x t∷A t∷A₁ t∷A₂) (natrecⱼ x₁ t∷B t∷B₁ t∷B₂) =
+  PE.refl , refl (substType x₁ t∷B₂)
+neTypeEq Emptyrecₙ (Emptyrecⱼ x t∷A) (Emptyrecⱼ x₁ t∷B) =
+  PE.refl , refl x₁
+neTypeEq (Idₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
+  let e , q = neTypeEq X Y Z
+      el = next-inj e
+  in e , PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) el (refl (Ugenⱼ (wfTerm Y) ) )
+neTypeEq (Idℕₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
+  let e , q = neTypeEq X Y₁ Z₁
+      el = ιinj e
+  in PE.cong next el , PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) el (refl (Ugenⱼ (wfTerm Y) ) )
+neTypeEq (Idℕ0ₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
+  let e , q = neTypeEq X Y₂ Z₂
+      el = ιinj e
+  in PE.cong next el , PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) el (refl (Ugenⱼ (wfTerm Y) ) )
+neTypeEq (IdℕSₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
+  let e , q = neTypeEq X Y₂ Z₂
+      el = ιinj e
+  in PE.cong next el , PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) el (refl (Ugenⱼ (wfTerm Y) ) )
+neTypeEq (IdUₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
+  let e , q = neTypeEq X Y₁ Z₁
+      el = ιinj e
+  in PE.cong next el , PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) el (refl (Ugenⱼ (wfTerm Y) ) )
+neTypeEq (IdUℕₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
+  let e , q = neTypeEq X Y₂ Z₂
+      el = ιinj e
+  in PE.cong next el , PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) el (refl (Ugenⱼ (wfTerm Y) ) )
+neTypeEq (IdUΠₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
+  let e , q = neTypeEq X Y₂ Z₂
+      el = ιinj e
+  in PE.cong next el , PE.subst (λ l → _ ⊢ _ ≡ SProp l ^ _) el (refl (Ugenⱼ (wfTerm Y) ) )
+neTypeEq X (castⱼ Y Y₁ Y₂ Y₃)  (castⱼ Z Z₁ Z₂ Z₃) = PE.refl , refl (univ Y₁) 
+neTypeEq x (conv t∷A x₁) t∷B = 
+  let e , q = neTypeEq x t∷A t∷B
+  in e , trans (sym x₁) q 
+neTypeEq x t∷A (conv t∷B x₃) =
+  let e , q = neTypeEq x t∷A t∷B
+  in e , trans q (PE.subst (λ l → _ ⊢ _ ≡ _ ^ [ _ , l ]) (PE.sym e) x₃) 
 
 
 natTypeEq : ∀ {A rA lA Γ} → Γ ⊢ ℕ ∷ A ^ [ rA , lA ] → rA PE.≡ ! × lA PE.≡ ι ¹ × Γ ⊢ A ≡ U ⁰ ^ [ ! , ι ¹ ]
