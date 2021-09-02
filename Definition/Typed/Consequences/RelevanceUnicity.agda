@@ -81,7 +81,7 @@ mutual
     in proj₁ (Uinjectivity (trans (trans (sym e₁) ⊢T≡T) (PE.subst (λ lx → _ ⊢ _ ≡ _ ^ [ _ , lx ]) (PE.sym el) e₂))) , el
   Univ-uniq′ e₁ e₂ el₁ el₂ (ne ()) (lamⱼ x x₁ x₂ X) y
   Univ-uniq′ e₁ e₂ el₁ el₂ (ne (∘ₙ n)) (_∘ⱼ_ {G = G} x x₁) (_∘ⱼ_ {G = G₁} y y₁) =
-    let F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = injectivity (neTypeEq n PE.refl x y)
+    let F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = injectivity (proj₂ (neTypeEq n x y))
         r≡r , _ = Uinjectivity (trans (sym e₁) (trans (substitutionEq G≡G (substRefl (singleSubst x₁)) (wfEq F≡F))
                                                (PE.subst (λ lx → _ ⊢ _ ≡ _ ^ [ _ , ι lx ]) (PE.sym lG≡lG) e₂))) 
     in r≡r , PE.cong ι lG≡lG
