@@ -264,7 +264,7 @@ abstract
                            (Idreflᵛ {A = U _} {t = A} [Γ] [UA]′ [A]ₜ′))
     in  [Γ] , [Id] , castreflᵛ {Γ} {A} {t} [Γ] [UA]′ [A]ₜ′ [A] [t]ₜ
 
-  fundamentalTerm (Emptyrecⱼ {A} {lEmpty} {[ rA , lA ]} {n} ⊢A ⊢n)
+  fundamentalTerm (Emptyrecⱼ {A} {lEmpty} {lA} {rA} {n} ⊢A ⊢n)
     with fundamental ⊢A | fundamentalTerm ⊢n
   ... | [Γ] , [A] | [Γ]′ , [Empty] , [n] =
     let [A]′ = S.irrelevance {A = A} [Γ] [Γ]′ [A]
@@ -612,7 +612,7 @@ abstract
         [F≡F′]′ = S.irrelevanceEq {A = F} {B = F′} [Γ] [Γn′] [F] [F]′ [F≡F′]
     in [Γn′]
       , modelsTermEq [F]′ (Emptyrecᵛ {F} { ! } {lF} {lEmpty} {n} [Γn′] [Empty]′ [F]′ [n]′)
-                     (conv₂ᵛ {Emptyrec lEmpty F′ n′} {F} {F′} { [ ! , lF ] } [Γn′] [F]′ [F′]′ [F≡F′]′
+                     (conv₂ᵛ {Emptyrec lF F′ n′} {F} {F′} { [ ! , ι lF ] } [Γn′] [F]′ [F′]′ [F≡F′]′
                        (Emptyrecᵛ {F′} { ! } {lF} {lEmpty} {n′} [Γn′] [Empty]′ [F′]′ [n′]))
                      (Emptyrec-congᵛ {F} {F′} { ! } {lF} {lEmpty} {n} {n′}
                         [Γn′] [Empty]′ [F]′ [F′]′ [F≡F′]′ [n]′ [n′])

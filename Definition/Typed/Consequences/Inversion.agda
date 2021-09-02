@@ -71,13 +71,13 @@ inversion-natrec (natrecⱼ x d d₁ n) = _ , x , d , d₁ , n , refl (substType
 inversion-natrec (conv d x) = let a' , a , b , c , d , e , e' = inversion-natrec d
                               in  a' , a , b , c , d , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) e' x)) e , e'
 
-inversion-Emptyrec : ∀ {Γ e A C rC lEmpty} → Γ ⊢ Emptyrec lEmpty C e ∷ A ^ rC
-  → Γ ⊢ C ^ rC
+inversion-Emptyrec : ∀ {Γ e A C rC lC} → Γ ⊢ Emptyrec lC C e ∷ A ^ [ rC , ι lC ]
+  → ∃ λ lEmpty → Γ ⊢ C ^ [ rC , ι lC ]
   × Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
-  × Γ ⊢ A ≡ C ^ rC
-inversion-Emptyrec (Emptyrecⱼ [C] [e]) = [C] , [e] , refl [C]
-inversion-Emptyrec (conv d x) = let a , b , c = inversion-Emptyrec d
-                                in a , b , trans (sym x) c
+  × Γ ⊢ A ≡ C ^ [ rC , ι lC ]
+inversion-Emptyrec (Emptyrecⱼ {l = lEmpty} [C] [e]) = lEmpty , [C] , [e] , refl [C]
+inversion-Emptyrec (conv d x) = let lEmpty , a , b , c = inversion-Emptyrec d
+                                in lEmpty , a , b , trans (sym x) c
 
 -- Inversion of application.
 inversion-app :  ∀ {Γ f a A r lΠ} → Γ ⊢ (f ∘ a ^ lΠ) ∷ A ^ r →

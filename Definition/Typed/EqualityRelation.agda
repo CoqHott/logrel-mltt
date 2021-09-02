@@ -167,10 +167,10 @@ record EqRelSet : Set₁ where
 
     -- Empty recursion congurence
     ~-Emptyrec : ∀ {e e′ F F′ l lEmpty Γ}
-             → Γ ⊢ F ≅ F′ ^ [ ! , l ]
+             → Γ ⊢ F ≅ F′ ^ [ ! , ι l ]
              → Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
              → Γ ⊢ e′ ∷ Empty lEmpty ^ [ % , ι lEmpty ]
-             → Γ     ⊢ Emptyrec lEmpty F e ~ Emptyrec lEmpty F′ e′ ∷ F ^ [ ! , l ]
+             → Γ     ⊢ Emptyrec l F e ~ Emptyrec l F′ e′ ∷ F ^ [ ! , ι l ]
 
     -- Id congruences
     ~-Id  : ∀ {A A' l t t' u u' Γ}
