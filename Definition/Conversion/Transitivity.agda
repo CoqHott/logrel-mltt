@@ -25,12 +25,6 @@ open import Tools.Product
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
-ιinj : ∀ {l l'} → ι l PE.≡ ι l' → l PE.≡ l'
-ιinj {⁰} {⁰} e = PE.refl
-ιinj {¹} {¹} e = PE.refl
-
-
-
 
 mutual
   -- Transitivity of algorithmic equality of neutrals.
@@ -43,9 +37,9 @@ mutual
          × Γ ⊢ A ≡ B ^ [ ! , l ]
   trans~↑! el Γ≡Δ (var-refl x₁ x≡y) (var-refl x₂ x≡y₁) =
     var-refl x₁ (PE.trans x≡y x≡y₁)
-    , neTypeEq (var _) PE.refl x₁
+    , proj₂ (neTypeEq (var _) x₁
                (PE.subst (λ x → _ ⊢ var x ∷ _ ^ _) (PE.sym x≡y)
-                         (stabilityTerm (symConEq Γ≡Δ) (PE.subst (λ lx → _ ⊢ _ ∷ _ ^ [ ! , lx ]) (PE.sym el) x₂))) 
+                         (stabilityTerm (symConEq Γ≡Δ) (PE.subst (λ lx → _ ⊢ _ ∷ _ ^ [ ! , lx ]) (PE.sym el) x₂))))
   trans~↑! el Γ≡Δ (app-cong {rF = !} t~u a<>b) (app-cong {rF = !} u~v b<>c) =
     let t~v , ΠFG≡ΠF′G′ = trans~↓! PE.refl Γ≡Δ t~u u~v
         F≡F₁ , rF≡rF₁ , lF≡lF₁ , lG≡lG₁ , G≡G₁ = injectivity ΠFG≡ΠF′G′
@@ -62,14 +56,14 @@ mutual
    let whnfA , neK , neL = ne~↓! t~u 
        ⊢A , ⊢k , ⊢l₁ = syntacticEqTerm (soundness~↓! t~u)
        ⊢A' , ⊢l₁' , ⊢l = syntacticEqTerm (soundness~↓! u~v)
-       ΠFG≡ΠF₂G₂ = neTypeEq neL PE.refl ⊢l₁ (stabilityTerm (symConEq Γ≡Δ) ⊢l₁')
+       _ , ΠFG≡ΠF₂G₂ = neTypeEq neL ⊢l₁ (stabilityTerm (symConEq Γ≡Δ) ⊢l₁')
        F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
    in ⊥-elim (relevance-discr rF≡rF₂)
   trans~↑! el Γ≡Δ (app-cong {rF = %} t~u a<>b) (app-cong {rF = !} u~v b<>c) =
    let whnfA , neK , neL = ne~↓! t~u 
        ⊢A , ⊢k , ⊢l₁ = syntacticEqTerm (soundness~↓! t~u)
        ⊢A' , ⊢l₁' , ⊢l = syntacticEqTerm (soundness~↓! u~v)
-       ΠFG≡ΠF₂G₂ = neTypeEq neL PE.refl ⊢l₁ (stabilityTerm (symConEq Γ≡Δ) ⊢l₁')
+       _ , ΠFG≡ΠF₂G₂ = neTypeEq neL ⊢l₁ (stabilityTerm (symConEq Γ≡Δ) ⊢l₁')
        F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
    in ⊥-elim (relevance-discr (PE.sym rF≡rF₂))
   trans~↑! PE.refl Γ≡Δ (natrec-cong A<>B a₀<>b₀ aₛ<>bₛ t~u) (natrec-cong B<>C b₀<>c₀ bₛ<>cₛ u~v) =
