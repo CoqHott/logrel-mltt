@@ -42,7 +42,7 @@ inversion-Π (conv x x₁) = let rG , l< , l<' , a , b , c , r≡! = inversion-�
                             , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c
                             , r≡!
 
--- Inversion of Π-types.
+-- Inversion of ∃-types.
 inversion-∃ : ∀ {F G Γ C  r}
             → Γ ⊢ ∃ F ▹ G ∷ C ^ r
             → ∃ λ l∃
@@ -84,13 +84,14 @@ inversion-natrec (natrecⱼ x d d₁ n) = _ , x , d , d₁ , n , refl (substType
 inversion-natrec (conv d x) = let a' , a , b , c , d , e , e' = inversion-natrec d
                               in  a' , a , b , c , d , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) e' x)) e , e'
 
-inversion-Emptyrec : ∀ {Γ e A C rC lEmpty lC} → Γ ⊢ Emptyrec lC lEmpty C e ∷ A ^ [ rC , ι lC ]
-  → Γ ⊢ C ^ [ rC , ι lC ]
+inversion-Emptyrec : ∀ {Γ e A C rlC lEmpty lC} → Γ ⊢ Emptyrec lC lEmpty C e ∷ A ^ rlC
+  → ∃ λ rC → Γ ⊢ C ^ [ rC , ι lC ]
   × Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
   × Γ ⊢ A ≡ C ^ [ rC , ι lC ]
-inversion-Emptyrec (Emptyrecⱼ [C] [e]) = [C] , [e] , refl [C]
-inversion-Emptyrec (conv d x) = let a , b , c = inversion-Emptyrec d
-                                in a , b , trans (sym x) c
+  × rlC PE.≡ [ rC , ι lC ]
+inversion-Emptyrec (Emptyrecⱼ [C] [e]) = _ , [C] , [e] , refl [C] , PE.refl
+inversion-Emptyrec (conv d x) = let r , a , b , c , e = inversion-Emptyrec d
+                                in r , a , b , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) e x)) c , e 
 
 -- Inversion of application.
 inversion-app :  ∀ {Γ f a A r lΠ} → Γ ⊢ (f ∘ a ^ lΠ) ∷ A ^ r →
@@ -113,3 +114,33 @@ inversion-lam (lamⱼ l< l<' x x₁) = _ , _ , _ , _ , _ , x , x₁ ,
                                    refl (univ (Πⱼ l< ▹ l<' ▹ (un-univ x) ▹ un-univ (syntacticTerm x₁))) , PE.refl
 inversion-lam (conv x x₁) = let a , b , c , d , e , f , g , h , i = inversion-lam x
                             in  a , b , c , d , e , f , g , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) i x₁)) h , i
+
+
+-- Inversion of Id-types.
+inversion-Id : ∀ {A t u C r Γ}
+            → Γ ⊢ Id A t u ∷ C ^ r
+            → ∃ λ l
+              → Γ ⊢ A ∷ U l ^ [ ! , next l ]
+              × Γ ⊢ t ∷ A ^ [ ! , ι l ]
+              × Γ ⊢ u ∷ A ^ [ ! , ι l ]
+              × Γ ⊢ C ≡ SProp l ^ [ ! , next l ]
+              × r PE.≡ [ ! , next l ]
+inversion-Id (Idⱼ {l = l} A t u) = l , A , t , u , refl (Ugenⱼ (wfTerm A)) , PE.refl
+inversion-Id (conv x x₁) = let l , a , b , c , d , r≡! = inversion-Id x
+                           in l , a , b , c , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) d , r≡!
+                            
+
+-- Inversion of cast-types.
+inversion-cast : ∀ {A B e t l C r Γ}
+            → Γ ⊢ cast l A B e t ∷ C ^ r
+            → ∃ λ rA
+              → Γ ⊢ A ∷ Univ rA l ^ [ ! , next ⁰ ]
+              × Γ ⊢ B ∷ Univ rA l ^ [ ! , next ⁰ ]
+              × Γ ⊢ e ∷ Id (Univ rA l) A B ^ [ % , next ⁰ ]
+              × Γ ⊢ t ∷ A ^ [ rA , ι ⁰ ]
+              × Γ ⊢ C ≡ B ^ [ rA , ι ⁰ ]
+              × r PE.≡ [ rA , ι ⁰ ]
+              × l PE.≡ ⁰
+inversion-cast (castⱼ X X₁ X₂ X₃) = _ , X , X₁ , X₂ , X₃ , refl (univ X₁) , PE.refl , PE.refl
+inversion-cast (conv x x₁) = let r , a , b , c , d , e , r≡! , el = inversion-cast x
+                             in r , a , b , c , d , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) e , r≡! , el
