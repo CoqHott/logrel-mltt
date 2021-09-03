@@ -74,7 +74,7 @@ mutual
              → Γ ∙ F ^ [ % , ι l ] ⊢ G ^ [ % , ι l ]
              → Γ ⊢ t ∷ F ^ [ % , ι l ]
              → Γ ⊢ u ∷ G [ t ] ^ [ % , ι l ]
-             → Γ ⊢ ⦅ t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι l ]
+             → Γ ⊢ ⦅ G , t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι l ]
     fstⱼ : ∀ {F G t l}
            → Γ ⊢ F ∷ SProp l ^ [ ! , next l ]
            → Γ ∙ F ^ [ % , ι l ] ⊢ G ∷ SProp l ^ [ ! , next l ]

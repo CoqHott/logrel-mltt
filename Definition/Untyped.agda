@@ -182,8 +182,8 @@ lam A ▹ t ^ l = gen (Lamkind l) (⟦ 0 , A ⟧ ∷ ⟦ 1 , t ⟧ ∷ [])
 _∘_^_    : (t u : Term) (l : Level)    → Term  -- Application.
 t ∘ u ^ l = gen (Appkind l) (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
-⦅_,_⦆ : Term → Term → Term -- Dependent pair formation
-⦅ t , u ⦆ = gen Pairkind (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
+⦅_,_,_⦆ : Term → Term → Term → Term -- Dependent pair formation
+⦅ G , t , u ⦆ = gen Pairkind (⟦ 1 , G ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
 fst : (t : Term) → Term -- Dependent pair elimination
 fst t = gen Fstkind (⟦ 0 , t ⟧ ∷ [])
