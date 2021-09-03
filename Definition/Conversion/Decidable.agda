@@ -45,47 +45,22 @@ dec~↑!-app : ∀ {k k₁ l l₁ F F₁ G G₁ rF B Γ Δ lF lG lΠ lK}
           → Δ ⊢ k₁ ∷ Π F₁ ^ rF ° lF ▹ G₁ ° lG ° lΠ ^ [ ! , ι lΠ ]
           → Γ ⊢ k ~ k₁ ↓! B ^ lK
           → Dec (Γ ⊢ l [genconv↑] l₁ ∷ F ^ [ rF , ι lF ])
-          → Dec (∃ λ A → ∃ λ lA → Γ ⊢ k ∘ l ^ lG ~ k₁ ∘ l₁ ^ lG ↑! A ^ lA)
-dec~↑!-app {rF = !} Γ≡Δ k k₁ k~k₁ (yes p) = {!!}
-  -- let whnfA , neK , neL = ne~↓! k~k₁
-  --     ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! k~k₁)
-  --     ΠFG₁≡A = neTypeEq neK ? k ⊢k
-  --     H , E , A≡ΠHE = Π≡A ΠFG₁≡A whnfA
-  --     F≡H , rF≡rH , G₁≡E = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ^ _) A≡ΠHE ΠFG₁≡A)
-  -- in  yes (E [ _ ] , app-cong (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) A≡ΠHE k~k₁) (convConvTerm p F≡H))
-dec~↑!-app {rF = %} Γ≡Δ k k₁ k~k₁ (yes p) = {!!}
-  -- let whnfA , neK , neL = ne~↓! k~k₁
-  --     ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! k~k₁)
-  --     ΠFG₁≡A = neTypeEq neK k ⊢k
-  --     H , E , A≡ΠHE = Π≡A ΠFG₁≡A whnfA
-  --     F≡H , rF≡rH , G₁≡E = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ^ _) A≡ΠHE ΠFG₁≡A)
-  -- in  yes (E [ _ ] , app-cong (PE.subst (λ x → _ ⊢ _ ~ _ ↓! x) A≡ΠHE k~k₁) (conv~↑% p F≡H))
-dec~↑!-app {rF = !} Γ≡Δ k₂ k₃ k~k₁ (no ¬p) = {!!}
-  -- no (λ { (_ , app-cong {rF = !} x x₁) →
-  --     let whnfA , neK , neL = ne~↓! x
-  --         ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! x)
-  --         ΠFG≡ΠF₂G₂ = neTypeEq neK k₂ ⊢k
-  --         F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
-  --     in  ¬p (convConvTerm x₁ (sym F≡F₂)) ;
-  --     (_ , app-cong {rF = %} x x₁) →
-  --     let whnfA , neK , neL = ne~↓! x
-  --         ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! x)
-  --         ΠFG≡ΠF₂G₂ = neTypeEq neK k₂ ⊢k
-  --         F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
-  --     in  ⊥-elim (relevance-discr rF≡rF₂)})
-dec~↑!-app {rF = %} Γ≡Δ k₂ k₃ k~k₁ (no ¬p) = {!!}
-  -- no (λ { (_ , app-cong {rF = %} x x₁) →
-  --     let whnfA , neK , neL = ne~↓! x
-  --         ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! x)
-  --         ΠFG≡ΠF₂G₂ = neTypeEq neK k₂ ⊢k
-  --         F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
-  --     in  ¬p (conv~↑% x₁ (sym F≡F₂)) ;
-  --     (_ , app-cong {rF = !} x x₁) →
-  --     let whnfA , neK , neL = ne~↓! x
-  --         ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! x)
-  --         ΠFG≡ΠF₂G₂ = neTypeEq neK k₂ ⊢k
-  --         F≡F₂ , rF≡rF₂ , G≡G₂ = injectivity ΠFG≡ΠF₂G₂
-  --     in  ⊥-elim (relevance-discr (PE.sym rF≡rF₂))})
+          → Dec (∃ λ A → ∃ λ lA → Γ ⊢ k ∘ l ^ lΠ ~ k₁ ∘ l₁ ^ lΠ ↑! A ^ lA)
+dec~↑!-app Γ≡Δ k k₁ k~k₁ (yes p) =
+  let
+    whnfA , neK , neL = ne~↓! k~k₁
+    ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! k~k₁)
+    l≡l , ΠFG₁≡A = neTypeEq neK k ⊢k
+    H , E , A≡ΠHE = Π≡A ΠFG₁≡A whnfA
+    F≡H , rF≡rH , lF≡lH , lG≡lE , G₁≡E = injectivity (PE.subst (λ x → _ ⊢ _ ≡ x ^ _) A≡ΠHE ΠFG₁≡A)
+  in yes (E [ _ ] , _ , app-cong (PE.subst₂ (λ x y → _ ⊢ _ ~ _ ↓! x ^ y) A≡ΠHE (PE.sym l≡l) k~k₁) (convConvTerm%! p F≡H))
+dec~↑!-app Γ≡Δ k k₁ k~k₁ (no ¬p) = no (λ { (_ , _ ,  app-cong k~k₁′ p) →
+  let
+    whnfA , neK , neL = ne~↓! k~k₁′
+    ⊢A , ⊢k , ⊢l = syntacticEqTerm (soundness~↓! k~k₁′)
+    l≡l , Π≡Π = neTypeEq neK k ⊢k
+    F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = injectivity Π≡Π
+  in ¬p (convConvTerm%! (PE.subst₂ (λ x y → _ ⊢ _ [genconv↑] _ ∷ _ ^ [ x , ι y ]) (PE.sym rF≡rF) (PE.sym lF≡lF) p) (sym F≡F)) })
 
 mutual
   -- Decidability of algorithmic equality of neutrals.
