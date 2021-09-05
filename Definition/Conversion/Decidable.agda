@@ -81,74 +81,74 @@ mutual
         → Γ ⊢ k ~ k ↑! R ^ lR → Δ ⊢ l ~ l ↑! T ^ lT
         → Dec (∃ λ A → ∃ λ lA → Γ ⊢ k ~ l ↑! A ^ lA)
 
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) with n ≟ m
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) | yes PE.refl =
-    yes (_ , (_ , var-refl ⊢x n≡n))
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) | no ¬p =
-    no λ (_ , (_ , eq)) → ¬p (strongVarEq eq)
+  -- dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) with n ≟ m
+  -- dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) | yes PE.refl =
+  --   yes (_ , (_ , var-refl ⊢x n≡n))
+  -- dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) | no ¬p =
+  --   no λ (_ , (_ , eq)) → ¬p (strongVarEq eq)
 
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) with dec~↓! Γ≡Δ x~x y~y
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | yes (A , lA , x~y) =
-    let
-      whnfA , neK , neK₀ = ne~↓! x~y
-      ⊢A , ⊢k , ⊢k₀ = syntacticEqTerm (soundness~↓! x~y)
-      _ , ⊢k₁ , _ = syntacticEqTerm (soundness~↓! x~x)
-      _ , ⊢k₂ , _ = syntacticEqTerm (soundness~↓! y~y)
-      l₁≡lA , ΠFG≡A = neTypeEq neK ⊢k₁ ⊢k
-      l₂≡lA , ΠF′G′≡A = neTypeEq neK₀ (stabilityTerm (symConEq Γ≡Δ) ⊢k₂) ⊢k₀
-      l₂≡l₁ = ιinj (PE.trans l₂≡lA (PE.sym l₁≡lA))
-      ΠFG≡ΠF′G′ = trans ΠFG≡A (PE.subst (λ X → _ ⊢ _ ≡ _ ^ [ ! , ι X ]) l₂≡l₁ (sym ΠF′G′≡A))
-      F≡F′ , rF≡rF′ , lF≡lF′ , lG≡lG′ , G≡G′ = injectivity ΠFG≡ΠF′G′
-      ⊢k₁′ = PE.subst₄ (λ X Y Z T → _ ⊢ _ ∷ Π _ ^ X ° Y ▹ _ ° Z ° T ^ [ ! , ι T ]) rF≡rF′ lF≡lF′ lG≡lG′ (PE.sym l₂≡l₁) ⊢k₁
-      t≡t′ = PE.subst₂ (λ X Y → _ ⊢ _ [genconv↑] _ ∷ _ ^ [ X , ι Y ]) rF≡rF′ lF≡lF′ t≡t
-      F≡F″ = (PE.subst₂ (λ X Y → _ ⊢ _ ≡ _ ^ [ X , ι Y ]) rF≡rF′ lF≡lF′ F≡F′)
-    in PE.subst (λ X → Dec (∃ λ A → ∃ λ lA → _ ⊢ _ ∘ _ ^ X ~ _ ∘ _ ^ _ ↑! _ ^ _)) l₂≡l₁
-      (dec~↑!-app Γ≡Δ ⊢k₁′ ⊢k₂ x~y (decConv↑TermConv Γ≡Δ F≡F″ t≡t′ u≡u))
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | no ¬p =
-    no (λ { (_ , (_ , app-cong x′ y′)) → ¬p (_ , (_ , x′)) })
+  -- dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) with dec~↓! Γ≡Δ x~x y~y
+  -- dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | yes (A , lA , x~y) =
+  --   let
+  --     whnfA , neK , neK₀ = ne~↓! x~y
+  --     ⊢A , ⊢k , ⊢k₀ = syntacticEqTerm (soundness~↓! x~y)
+  --     _ , ⊢k₁ , _ = syntacticEqTerm (soundness~↓! x~x)
+  --     _ , ⊢k₂ , _ = syntacticEqTerm (soundness~↓! y~y)
+  --     l₁≡lA , ΠFG≡A = neTypeEq neK ⊢k₁ ⊢k
+  --     l₂≡lA , ΠF′G′≡A = neTypeEq neK₀ (stabilityTerm (symConEq Γ≡Δ) ⊢k₂) ⊢k₀
+  --     l₂≡l₁ = ιinj (PE.trans l₂≡lA (PE.sym l₁≡lA))
+  --     ΠFG≡ΠF′G′ = trans ΠFG≡A (PE.subst (λ X → _ ⊢ _ ≡ _ ^ [ ! , ι X ]) l₂≡l₁ (sym ΠF′G′≡A))
+  --     F≡F′ , rF≡rF′ , lF≡lF′ , lG≡lG′ , G≡G′ = injectivity ΠFG≡ΠF′G′
+  --     ⊢k₁′ = PE.subst₄ (λ X Y Z T → _ ⊢ _ ∷ Π _ ^ X ° Y ▹ _ ° Z ° T ^ [ ! , ι T ]) rF≡rF′ lF≡lF′ lG≡lG′ (PE.sym l₂≡l₁) ⊢k₁
+  --     t≡t′ = PE.subst₂ (λ X Y → _ ⊢ _ [genconv↑] _ ∷ _ ^ [ X , ι Y ]) rF≡rF′ lF≡lF′ t≡t
+  --     F≡F″ = (PE.subst₂ (λ X Y → _ ⊢ _ ≡ _ ^ [ X , ι Y ]) rF≡rF′ lF≡lF′ F≡F′)
+  --   in PE.subst (λ X → Dec (∃ λ A → ∃ λ lA → _ ⊢ _ ∘ _ ^ X ~ _ ∘ _ ^ _ ↑! _ ^ _)) l₂≡l₁
+  --     (dec~↑!-app Γ≡Δ ⊢k₁′ ⊢k₂ x~y (decConv↑TermConv Γ≡Δ F≡F″ t≡t′ u≡u))
+  -- dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | no ¬p =
+  --   no (λ { (_ , (_ , app-cong x′ y′)) → ¬p (_ , (_ , x′)) })
 
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = l₀} G b0 bS k₀)
-    with dec-level l l₀
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl
-    with decConv↑ (Γ≡Δ ∙ refl (univ (ℕⱼ (wfEqTerm (soundness~↓! k))))) F G
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p
-    with decConv↑TermConv Γ≡Δ (substTypeEq (soundnessConv↑ p) (refl (zeroⱼ (wfEqTerm (soundness~↓! k))))) a0 b0
-           | decConv↑TermConv Γ≡Δ (sucCong (soundnessConv↑ p)) aS bS
-           | dec~↓! Γ≡Δ k k₀
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | yes p0 | yes pS | yes (_ , _ , pK) =
-    let whnfA , neK , neK₀ = ne~↓! pK
-        ⊢A , ⊢k , ⊢k₀ = syntacticEqTerm (soundness~↓! pK)
-        _ , ⊢k∷ℕ , _ = syntacticEqTerm (soundness~↓! k)
-        l≡l , ⊢ℕ≡A = neTypeEq neK ⊢k∷ℕ ⊢k
-        A≡ℕ = ℕ≡A ⊢ℕ≡A whnfA
-        k~k₀ = PE.subst₂ (λ x y → _ ⊢ _ ~ _ ↓! x ^ y) A≡ℕ (PE.sym l≡l) pK
-    in  yes (_ , _ , natrec-cong p p0 pS k~k₀)
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | yes p0 | yes pS | no ¬pK =
-    no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬pK (_ , _ , x₃) })
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | yes p0 | no ¬pS | _ =
-    no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬pS x₂ })
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | no ¬p0 | _ | _ =
-    no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬p0 x₁ })
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | no ¬p =
-    no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬p x })
-  dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = l₀} G b0 bS k₀) | no ¬p =
-    no (λ { (_ , .(ι l) , natrec-cong x x₁ x₂ x₃) → ¬p PE.refl })
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = l₀} G b0 bS k₀)
+  --   with dec-level l l₀
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl
+  --   with decConv↑ (Γ≡Δ ∙ refl (univ (ℕⱼ (wfEqTerm (soundness~↓! k))))) F G
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p
+  --   with decConv↑TermConv Γ≡Δ (substTypeEq (soundnessConv↑ p) (refl (zeroⱼ (wfEqTerm (soundness~↓! k))))) a0 b0
+  --          | decConv↑TermConv Γ≡Δ (sucCong (soundnessConv↑ p)) aS bS
+  --          | dec~↓! Γ≡Δ k k₀
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | yes p0 | yes pS | yes (_ , _ , pK) =
+  --   let whnfA , neK , neK₀ = ne~↓! pK
+  --       ⊢A , ⊢k , ⊢k₀ = syntacticEqTerm (soundness~↓! pK)
+  --       _ , ⊢k∷ℕ , _ = syntacticEqTerm (soundness~↓! k)
+  --       l≡l , ⊢ℕ≡A = neTypeEq neK ⊢k∷ℕ ⊢k
+  --       A≡ℕ = ℕ≡A ⊢ℕ≡A whnfA
+  --       k~k₀ = PE.subst₂ (λ x y → _ ⊢ _ ~ _ ↓! x ^ y) A≡ℕ (PE.sym l≡l) pK
+  --   in  yes (_ , _ , natrec-cong p p0 pS k~k₀)
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | yes p0 | yes pS | no ¬pK =
+  --   no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬pK (_ , _ , x₃) })
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | yes p0 | no ¬pS | _ =
+  --   no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬pS x₂ })
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | yes p | no ¬p0 | _ | _ =
+  --   no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬p0 x₁ })
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = .l} G b0 bS k₀) | yes PE.refl | no ¬p =
+  --   no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬p x })
+  -- dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = l₀} G b0 bS k₀) | no ¬p =
+  --   no (λ { (_ , .(ι l) , natrec-cong x x₁ x₂ x₃) → ¬p PE.refl })
 
-  dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = l₀} {lEmpty = ll₀} G k₀)
-    with dec-level l l₀ | dec-level ll ll₀
-  dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = .ll} G k₀) | yes PE.refl | yes PE.refl
-    with decConv↑ Γ≡Δ F G
-  dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = .ll} G k₀) | yes PE.refl | yes PE.refl | yes p =
-    let _ , ⊢k , _ = soundness~↑% k
-        _ , ⊢k₀ , _ = soundness~↑% k₀
-        ⊢Γ = wfTerm ⊢k
-    in yes (_ , _ , Emptyrec-cong p (%~↑ ⊢k (stabilityTerm (symConEq Γ≡Δ) ⊢k₀)))
-  dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = .ll} G k₀) | yes PE.refl | yes PE.refl | no ¬p =
-    no (λ { (_ , .(ι l) , Emptyrec-cong x x₁) → ¬p x })
-  dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = ll₀} G k₀) | yes PE.refl | no ¬p =
-    no (λ { (_ , .(ι l) , Emptyrec-cong x x₁) → ¬p PE.refl })
-  dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} F k) (Emptyrec-cong {ll = l₀} G k₀) | no ¬p | _ =
-    no (λ { (_ , .(ι l) , Emptyrec-cong x x₁) → ¬p PE.refl })
+  -- dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = l₀} {lEmpty = ll₀} G k₀)
+  --   with dec-level l l₀ | dec-level ll ll₀
+  -- dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = .ll} G k₀) | yes PE.refl | yes PE.refl
+  --   with decConv↑ Γ≡Δ F G
+  -- dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = .ll} G k₀) | yes PE.refl | yes PE.refl | yes p =
+  --   let _ , ⊢k , _ = soundness~↑% k
+  --       _ , ⊢k₀ , _ = soundness~↑% k₀
+  --       ⊢Γ = wfTerm ⊢k
+  --   in yes (_ , _ , Emptyrec-cong p (%~↑ ⊢k (stabilityTerm (symConEq Γ≡Δ) ⊢k₀)))
+  -- dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = .ll} G k₀) | yes PE.refl | yes PE.refl | no ¬p =
+  --   no (λ { (_ , .(ι l) , Emptyrec-cong x x₁) → ¬p x })
+  -- dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} {lEmpty = ll} F k) (Emptyrec-cong {ll = .l} {lEmpty = ll₀} G k₀) | yes PE.refl | no ¬p =
+  --   no (λ { (_ , .(ι l) , Emptyrec-cong x x₁) → ¬p PE.refl })
+  -- dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} F k) (Emptyrec-cong {ll = l₀} G k₀) | no ¬p | _ =
+  --   no (λ { (_ , .(ι l) , Emptyrec-cong x x₁) → ¬p PE.refl })
 
   dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) [l] = no (λ { (_ , _ , var-refl x x₁) → {!!} })
   dec~↑! Γ≡Δ (app-cong x~x t≡t) [l] = {!!}
@@ -299,7 +299,7 @@ mutual
   ... | yes p = yes (U-refl p x)
   ... | no ¬p = no λ p → ¬p (proj₁ (Uinjectivity (univ (soundnessConv↓Term p))))
 
-  decConv↓Term Γ≡Δ (ne K) (ne K₁) with dec~↓! Γ≡Δ K K₁
+  decConv↓Term Γ≡Δ (ne K) (ne K₁) with dec~↓! Γ≡Δ K K₁ --TERMINATION ISSUES: should be solved by layering levels
   ... | yes (A , lA , K~K₁) =
     let whnfA , neK , neK₁ = ne~↓! K~K₁
         ⊢A , ⊢K , ⊢K₁ = syntacticEqTerm (soundness~↓! K~K₁)
@@ -318,12 +318,14 @@ mutual
   decConv↓Term Γ≡Δ (Empty-refl {l = l} x x₁) (Empty-refl {l = l'} x₂ x₃) | no ¬p =
     no (λ { (Empty-refl x x₁) → ¬p PE.refl })
 
+  decConv↓Term Γ≡Δ (Π-cong l rF lF lG lF< lG< ⊢F F G) (Π-cong l' rH lH lE lH< lE< ⊢H H E) = {!!}
+
   decConv↓Term Γ≡Δ (U-refl x x₁) u = {!!}
   decConv↓Term Γ≡Δ (ne x) u = {!!}
   decConv↓Term Γ≡Δ (ℕ-refl x) u = {!!}
   decConv↓Term Γ≡Δ (Empty-refl x x₁) u = {!!}
-  decConv↓Term Γ≡Δ (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇) u = {!!}
-  decConv↓Term Γ≡Δ (∃-cong x x₁ x₂) u = {!!}
+  decConv↓Term Γ≡Δ (Π-cong l x x₁ x₂ x₃ x₄ x₅ x₆ x₇) u = {!!}
+  decConv↓Term Γ≡Δ (∃-cong l x x₁ x₂) u = {!!}
   decConv↓Term Γ≡Δ (ℕ-ins x) u = {!!}
   decConv↓Term Γ≡Δ (ne-ins x x₁ x₂ x₃) u = {!!}
   decConv↓Term Γ≡Δ (zero-refl x) u = {!!}

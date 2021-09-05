@@ -67,10 +67,10 @@ mutual
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in ℕ-refl ⊢Δ
   convConv↓Term Γ≡Δ A≡B whnfB (Empty-refl x _) rewrite U≡A-whnf A≡B whnfB =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Empty-refl x ⊢Δ
-  convConv↓Term Γ≡Δ A≡B whnfB (Π-cong rF lF lG l< l<' x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
-    Π-cong rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂)
-  convConv↓Term Γ≡Δ A≡B whnfB (∃-cong x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
-    ∃-cong (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂)
+  convConv↓Term Γ≡Δ A≡B whnfB (Π-cong lΠ rF lF lG l< l<' x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
+    Π-cong lΠ rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂)
+  convConv↓Term Γ≡Δ A≡B whnfB (∃-cong lΠ x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
+    ∃-cong lΠ (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂)
 
 -- Conversion of algorithmic equality with the same context.
 convConvTerm : ∀ {t u A B Γ l}

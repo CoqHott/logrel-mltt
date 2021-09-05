@@ -187,7 +187,8 @@ mutual
                 → Γ ⊢ K [conv↓] L ∷ Univ r lU ^ l
     ℕ-refl    : ⊢ Γ → Γ ⊢ ℕ [conv↓] ℕ ∷ U ⁰ ^ next ⁰
     Empty-refl : ∀ {l ll} → ll PE.≡ next l → ⊢ Γ → Γ ⊢ Empty l [conv↓] Empty l ∷ SProp l ^ ll
-    Π-cong    : ∀ {F G H E rF rH rΠ lF lH lG lE lΠ}
+    Π-cong    : ∀ {F G H E rF rH rΠ lF lH lG lE lΠ ll}
+              → ll PE.≡ next lΠ
               → rF PE.≡ rH -- needed for K issues
               → lF PE.≡ lH -- needed for K issues
               → lG PE.≡ lE -- needed for K issues
@@ -196,12 +197,13 @@ mutual
               → Γ ⊢ F ^ [ rF , ι lF ]
               → Γ ⊢ F [conv↑] H ∷ Univ rF lF ^ next lF
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G [conv↑] E  ∷ Univ rΠ lG ^ next lG
-              → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ [conv↓] Π H ^ rH ° lH ▹ E ° lE ° lΠ ∷ Univ rΠ lΠ ^ next lΠ
-    ∃-cong    : ∀ {F G H E l}
+              → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ [conv↓] Π H ^ rH ° lH ▹ E ° lE ° lΠ ∷ Univ rΠ lΠ ^ ll
+    ∃-cong    : ∀ {F G H E l ll}
+              → ll PE.≡ next l
               → Γ ⊢ F ^ [ % , ι l ]
               → Γ ⊢ F [conv↑] H ∷ SProp l ^ next l
               → Γ ∙ F ^ [ % , ι l ] ⊢ G [conv↑] E  ∷ SProp l ^ next l
-              → Γ ⊢ ∃ F ▹ G [conv↓] ∃ H ▹ E ∷ SProp l ^ next l
+              → Γ ⊢ ∃ F ▹ G [conv↓] ∃ H ▹ E ∷ SProp l ^ ll
     ℕ-ins     : ∀ {k l}
               → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
               → Γ ⊢ k [conv↓] l ∷ ℕ ^ ι ⁰
