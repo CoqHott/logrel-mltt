@@ -224,8 +224,6 @@ mutual
                → ⊢ Γ ≡ Δ
                → Γ ⊢ t [conv↑] t ∷ A ^ l → Δ ⊢ u [conv↑] u ∷ A ^ l
                → Dec (Γ ⊢ t [conv↑] u ∷ A ^ l)
-  decConv↑Term = {!!}
-{-
   decConv↑Term Γ≡Δ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u)
                    ([↑]ₜ B₁ t″ u″ D₁ d₁ d″ whnfB₁ whnft″ whnfu″ t<>u₁)
                rewrite whrDet* (D , whnfB) (stabilityRed* (symConEq Γ≡Δ) D₁ , whnfB₁)
@@ -245,16 +243,18 @@ mutual
         let B₂≡B₁ = whrDet* (D₂ , whnfB₂)
                              (stabilityRed* (symConEq Γ≡Δ) D₁ , whnfB₁)
             t‴≡u′ = whrDet*Term (d₂ , whnft‴)
-                              (PE.subst (λ x → _ ⊢ _ ⇒* _ ∷ x ) (PE.sym B₂≡B₁) d′
+                              (PE.subst (λ x → _ ⊢ _ ⇒* _ ∷ x ^ _) (PE.sym B₂≡B₁) d′
                               , whnfu′)
             u‴≡u″ = whrDet*Term (d‴ , whnfu‴)
-                               (PE.subst (λ x → _ ⊢ _ ⇒* _ ∷ x)
+                               (PE.subst (λ x → _ ⊢ _ ⇒* _ ∷ x ^ _)
                                          (PE.sym B₂≡B₁)
                                          (stabilityRed*Term (symConEq Γ≡Δ) d″)
                                , whnfu″)
-        in  ¬p (PE.subst₃ (λ x y z → _ ⊢ x [conv↓] y ∷ z)
+        in  ¬p (PE.subst₃ (λ x y z → _ ⊢ x [conv↓] y ∷ z ^ _)
                           t‴≡u′ u‴≡u″ B₂≡B₁ t<>u₂) })
 
+
+{-
   -- Helper function for decidability for neutrals of natural number type.
   decConv↓Term-ℕ-ins : ∀ {t u Γ}
                      → Γ ⊢ t [conv↓] u ∷ ℕ
