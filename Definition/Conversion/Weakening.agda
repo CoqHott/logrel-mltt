@@ -31,9 +31,9 @@ mutual
                                     (wk-β-natrec _ F ! _) (wkConv↑Term [ρ] ⊢Δ x₂))
                           (wk~↓! [ρ] ⊢Δ t~u))
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Emptyrec-cong {k} {l} {F} {G} x t~u) =
-    Emptyrec-cong (wkConv↑ [ρ] ⊢Δ x) (wk~↑% [ρ] ⊢Δ t~u)      
+    Emptyrec-cong (wkConv↑ [ρ] ⊢Δ x) (wk~↑% [ρ] ⊢Δ t~u)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-cong X x x₁) = Id-cong (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ x x₁) = Id-ℕ (wk~↓! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) 
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ x x₁) = Id-ℕ (wk~↓! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ0 x) = Id-ℕ0 (wk~↓! [ρ] ⊢Δ x)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕS x x₁) = Id-ℕS (wkConv↑Term [ρ] ⊢Δ x) (wk~↓! [ρ] ⊢Δ x₁)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-U x x₁) = Id-U (wk~↓! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
@@ -124,7 +124,7 @@ mutual
                         PE.refl
                         (wkConv↑Term (lift [ρ]) (⊢Δ ∙ ⊢ρF) t<>u))
   wkConv↓Term ρ ⊢Δ (ℕ-refl x) = ℕ-refl ⊢Δ
-  wkConv↓Term ρ ⊢Δ (Empty-refl x) = Empty-refl ⊢Δ
+  wkConv↓Term ρ ⊢Δ (Empty-refl x _) = Empty-refl x ⊢Δ
   wkConv↓Term ρ ⊢Δ (Π-cong eqr eqlF eqlG l< l<'   x A<>B A<>B₁) =
     let ⊢ρF = wk ρ ⊢Δ x
     in  Π-cong eqr eqlF eqlG l< l<' ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)

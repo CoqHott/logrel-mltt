@@ -76,7 +76,7 @@ mutual
         B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
         U≡B = ℕ≡A A≡B whnfB
         A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-ℕ A'≡A (symConv↑Term Γ≡Δ x) 
+    in _ , refl (Ugenⱼ ⊢Γ) , Id-ℕ A'≡A (symConv↑Term Γ≡Δ x)
   sym~↑! Γ≡Δ (Id-ℕ0 X) =
     let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
         B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
@@ -106,7 +106,7 @@ mutual
         B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
         U≡B = U≡A-whnf A≡B whnfB
         A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-UΠ (symConv↑Term Γ≡Δ x) A'≡A 
+    in _ , refl (Ugenⱼ ⊢Γ) , Id-UΠ (symConv↑Term Γ≡Δ x) A'≡A
   sym~↑! Γ≡Δ (cast-cong X x x₁ x₂ x₃) =
       let U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ X
           B'~B = symConv↑Term Γ≡Δ x
@@ -146,11 +146,11 @@ mutual
   sym~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = _ , univ (soundnessConv↑Term x₁) ,
                                          cast-ΠΠ%! (symConv↑Term Γ≡Δ x) (symConv↑Term Γ≡Δ x₁)
                                                    (convConvTerm (symConv↑Term Γ≡Δ x₂) (univ (soundnessConv↑Term (stabilityConv↑Term Γ≡Δ x))))
-                                                   (stabilityTerm Γ≡Δ x₄) (stabilityTerm Γ≡Δ x₃) 
+                                                   (stabilityTerm Γ≡Δ x₄) (stabilityTerm Γ≡Δ x₃)
   sym~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = _ , univ (soundnessConv↑Term x₁) ,
                                          cast-ΠΠ!% (symConv↑Term Γ≡Δ x) (symConv↑Term Γ≡Δ x₁)
                                                    (convConvTerm (symConv↑Term Γ≡Δ x₂) (univ (soundnessConv↑Term (stabilityConv↑Term Γ≡Δ x))))
-                                                   (stabilityTerm Γ≡Δ x₄) (stabilityTerm Γ≡Δ x₃) 
+                                                   (stabilityTerm Γ≡Δ x₄) (stabilityTerm Γ≡Δ x₃)
 
   sym~↑% : ∀ {t u A Γ Δ l} → ⊢ Γ ≡ Δ
          → Γ ⊢ t ~ u ↑% A ^ l
@@ -170,7 +170,7 @@ mutual
 
   -- Symmetry of algorithmic equality of neutrals of types in WHNF.
   sym~↓! : ∀ {t u A Γ Δ l} → ⊢ Γ ≡ Δ → Γ ⊢ t ~ u ↓! A ^ l
-         → ∃ λ B → Whnf B × Γ ⊢ A ≡ B ^ [ ! , l ] × Δ ⊢ u ~ t ↓! B ^ l 
+         → ∃ λ B → Whnf B × Γ ⊢ A ≡ B ^ [ ! , l ] × Δ ⊢ u ~ t ↓! B ^ l
   sym~↓! Γ≡Δ ([~] A₁ D whnfA k~l) =
     let B , A≡B , k~l′ = sym~↑! Γ≡Δ k~l
         _ , ⊢B = syntacticEq A≡B
@@ -201,7 +201,7 @@ mutual
   -- Symmetry of algorithmic equality of terms in WHNF.
   symConv↓Term : ∀ {t u A Γ Δ l} → ⊢ Γ ≡ Δ → Γ ⊢ t [conv↓] u ∷ A ^ l  → Δ ⊢ u [conv↓] t ∷ A ^ l
   symConv↓Term Γ≡Δ (U-refl x x₁) =
-      let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in U-refl (PE.sym x) ⊢Δ 
+      let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in U-refl (PE.sym x) ⊢Δ
   symConv↓Term Γ≡Δ (ne t~u) =
     let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
         B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
@@ -210,9 +210,9 @@ mutual
   symConv↓Term Γ≡Δ (ℕ-refl x) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
     in  ℕ-refl ⊢Δ
-  symConv↓Term Γ≡Δ (Empty-refl x) =
+  symConv↓Term Γ≡Δ (Empty-refl x _) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-    in  Empty-refl ⊢Δ
+    in  Empty-refl x ⊢Δ
   symConv↓Term Γ≡Δ (∃-cong x A<>B A<>B₁) =
     let F≡H = soundnessConv↑Term A<>B
         _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))

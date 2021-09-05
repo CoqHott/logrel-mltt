@@ -24,11 +24,11 @@ mutual
     var-refl    : ∀ {x y A l}
                 → Γ ⊢ var x ∷ A ^ [ ! , l ]
                 → x PE.≡ y
-                → Γ ⊢ var x ~ var y ↑! A ^ l 
+                → Γ ⊢ var x ~ var y ↑! A ^ l
     app-cong    : ∀ {k l t v F rF lF lG G lΠ}
                 → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ι lΠ
-                → Γ ⊢ t [genconv↑] v ∷ F ^ [ rF , ι lF ] 
-                → Γ ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑! G [ t ] ^ ι lG 
+                → Γ ⊢ t [genconv↑] v ∷ F ^ [ rF , ι lF ]
+                → Γ ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑! G [ t ] ^ ι lG
     natrec-cong : ∀ {k l h g a₀ b₀ F G lF}
                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] G ^ [ ! , ι lF ]
                 → Γ ⊢ a₀ [conv↑] b₀ ∷ F [ zero ] ^ ι lF
@@ -49,11 +49,11 @@ mutual
               → Γ ⊢ u [conv↑] u' ∷ ℕ ^ ι ⁰
               → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ↑! SProp ⁰ ^ next ⁰
     Id-ℕ0 : ∀ {t t'}
-              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰ 
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
               → Γ ⊢ Id ℕ zero t ~ Id ℕ zero t' ↑! SProp ⁰ ^ next ⁰
     Id-ℕS : ∀ {t t' u u'}
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
-              → Γ ⊢ u ~ u' ↓! ℕ ^ ι ⁰ 
+              → Γ ⊢ u ~ u' ↓! ℕ ^ ι ⁰
               → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ↑! SProp ⁰ ^ next ⁰
     Id-U : ∀ {t t' u u'}
               → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
@@ -149,7 +149,7 @@ mutual
     field
       A′ B′  : Term
       D      : Γ ⊢ A ⇒* A′ ^ rA
-      D′     : Γ ⊢ B ⇒* B′ ^ rA 
+      D′     : Γ ⊢ B ⇒* B′ ^ rA
       whnfA′ : Whnf A′
       whnfB′ : Whnf B′
       A′<>B′ : Γ ⊢ A′ [conv↓] B′ ^ rA
@@ -161,8 +161,8 @@ mutual
               → ⊢ Γ → Γ ⊢ Univ r ¹ [conv↓] Univ r' ¹ ^ [ ! , next ¹ ]
     univ      : ∀ {A B r l}
               → Γ ⊢ A [conv↓] B ∷ Univ r l ^ next l
-              → Γ ⊢ A [conv↓] B ^ [ r , ι l ] 
-              
+              → Γ ⊢ A [conv↓] B ^ [ r , ι l ]
+
   -- Term equality.
   record _⊢_[conv↑]_∷_^_ (Γ : Con Term) (t u A : Term) (l : TypeLevel) : Set where
     inductive
@@ -170,7 +170,7 @@ mutual
     field
       B t′ u′ : Term
       D       : Γ ⊢ A ⇒* B ^ [ ! , l ]
-      d       : Γ ⊢ t ⇒* t′ ∷ B ^ l 
+      d       : Γ ⊢ t ⇒* t′ ∷ B ^ l
       d′      : Γ ⊢ u ⇒* u′ ∷ B ^ l
       whnfB   : Whnf B
       whnft′  : Whnf t′
@@ -184,9 +184,9 @@ mutual
               → ⊢ Γ → Γ ⊢ Univ r ⁰ [conv↓] Univ r' ⁰ ∷ U ¹ ^ next ¹
     ne        : ∀ {r K L lU l}
                 → Γ ⊢ K ~ L ↓! Univ r lU ^ l
-                → Γ ⊢ K [conv↓] L ∷ Univ r lU ^ l 
+                → Γ ⊢ K [conv↓] L ∷ Univ r lU ^ l
     ℕ-refl    : ⊢ Γ → Γ ⊢ ℕ [conv↓] ℕ ∷ U ⁰ ^ next ⁰
-    Empty-refl : ∀ {l} → ⊢ Γ → Γ ⊢ Empty l [conv↓] Empty l ∷ SProp l ^ next l 
+    Empty-refl : ∀ {l ll} → ll PE.≡ next l → ⊢ Γ → Γ ⊢ Empty l [conv↓] Empty l ∷ SProp l ^ ll
     Π-cong    : ∀ {F G H E rF rH rΠ lF lH lG lE lΠ}
               → rF PE.≡ rH -- needed for K issues
               → lF PE.≡ lH -- needed for K issues
@@ -226,10 +226,10 @@ mutual
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ wk1 f ∘ var 0 ^ l [conv↑] wk1 g ∘ var 0 ^ l ∷ G ^ ι lG
                 → Γ ⊢ f [conv↓] g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ι l
 
-  _⊢_[genconv↑]_∷_^_ : (Γ : Con Term) (t u A : Term) (r : TypeInfo) → Set 
+  _⊢_[genconv↑]_∷_^_ : (Γ : Con Term) (t u A : Term) (r : TypeInfo) → Set
   _⊢_[genconv↑]_∷_^_ Γ k l A [ ! , ll ] =  Γ ⊢ k [conv↑] l ∷ A ^ ll
   _⊢_[genconv↑]_∷_^_ Γ k l A [ % , ll ] =  Γ ⊢ k ~ l ↑% A ^  ll
-  
+
 
 var-refl′ : ∀ {Γ x A rA ll}
           → Γ ⊢ var x ∷ A ^ [ rA , ll ]

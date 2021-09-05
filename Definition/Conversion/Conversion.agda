@@ -65,8 +65,8 @@ mutual
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in U-refl x ⊢Δ
   convConv↓Term Γ≡Δ A≡B whnfB (ℕ-refl x) rewrite U≡A-whnf A≡B whnfB =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in ℕ-refl ⊢Δ
-  convConv↓Term Γ≡Δ A≡B whnfB (Empty-refl x) rewrite U≡A-whnf A≡B whnfB =
-    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Empty-refl ⊢Δ
+  convConv↓Term Γ≡Δ A≡B whnfB (Empty-refl x _) rewrite U≡A-whnf A≡B whnfB =
+    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Empty-refl x ⊢Δ
   convConv↓Term Γ≡Δ A≡B whnfB (Π-cong rF lF lG l< l<' x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
     Π-cong rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂)
   convConv↓Term Γ≡Δ A≡B whnfB (∃-cong x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =

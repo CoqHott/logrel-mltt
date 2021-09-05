@@ -33,7 +33,7 @@ mutual
   ne~↑! (cast-Π x X x₁ x₂ x₃) = let _ , nt , nu = ne~↓! X in castΠₙ nt , castΠₙ nu
   ne~↑! (cast-Πℕ x x₁ x₂ x₃) = castΠℕₙ , castΠℕₙ
   ne~↑! (cast-ℕΠ x x₁ x₂ x₃) = castℕΠₙ , castℕΠₙ
-  ne~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = castΠΠ%!ₙ , castΠΠ%!ₙ 
+  ne~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = castΠΠ%!ₙ , castΠΠ%!ₙ
   ne~↑! (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = castΠΠ!%ₙ , castΠΠ!%ₙ
 
   ne~↓! : ∀ {t u A Γ l}
@@ -54,7 +54,7 @@ whnfConv↓Term (ne-ins t u x x₁) =
   let _ , neT , neU = ne~↓! x₁
   in ne x , ne neT , ne neU
 whnfConv↓Term (ℕ-refl x) = Uₙ , ℕₙ , ℕₙ
-whnfConv↓Term (Empty-refl x) = Uₙ , Emptyₙ , Emptyₙ
+whnfConv↓Term (Empty-refl x x₁) = Uₙ , Emptyₙ , Emptyₙ
 whnfConv↓Term (Π-cong _ _ _ _ _ x x₁ x₂) = Uₙ , Πₙ , Πₙ
 whnfConv↓Term (∃-cong x x₁ x₂) = Uₙ , ∃ₙ , ∃ₙ
 whnfConv↓Term (U-refl _ _) = Uₙ , Uₙ , Uₙ
