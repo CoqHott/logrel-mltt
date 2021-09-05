@@ -295,7 +295,40 @@ mutual
                → ⊢ Γ ≡ Δ
                → Γ ⊢ t [conv↓] t ∷ A ^ l → Δ ⊢ u [conv↓] u ∷ A ^ l
                → Dec (Γ ⊢ t [conv↓] u ∷ A ^ l)
-  decConv↓Term = {!!}
+  decConv↓Term Γ≡Δ (U-refl {r = r} _ x) (U-refl {r = r′} _ x₁) with dec-relevance r r′
+  ... | yes p = yes (U-refl p x)
+  ... | no ¬p = no λ p → ¬p (proj₁ (Uinjectivity (univ (soundnessConv↓Term p))))
+
+  decConv↓Term Γ≡Δ (ne K) (ne K₁) with dec~↓! Γ≡Δ K K₁
+  ... | yes (A , lA , K~K₁) =
+    let whnfA , neK , neK₁ = ne~↓! K~K₁
+        ⊢A , ⊢K , ⊢K₁ = syntacticEqTerm (soundness~↓! K~K₁)
+        _ , ⊢K∷U , _ = syntacticEqTerm (soundness~↓! K)
+        l≡l , ⊢U≡A = neTypeEq neK ⊢K∷U ⊢K
+        A≡U = U≡A-whnf ⊢U≡A whnfA
+        K~K₁′ = PE.subst₂ (λ x y → _ ⊢ _ ~ _ ↓! x ^ y) A≡U (PE.sym l≡l) K~K₁
+    in yes (ne K~K₁′)
+  ... | no ¬p = no (λ { (ne x) → {!¬p x!} })
+
+  decConv↓Term Γ≡Δ (ℕ-refl x) (ℕ-refl x₁) = yes (ℕ-refl x)
+
+  decConv↓Term Γ≡Δ (Empty-refl {l = l} x x₁) (Empty-refl {l = l′} x₂ x₃) with dec-level l l′
+  decConv↓Term Γ≡Δ (Empty-refl {l = l} x x₁) (Empty-refl {l = .l} x₂ x₃) | yes PE.refl =
+    yes (Empty-refl x x₁)
+  decConv↓Term Γ≡Δ (Empty-refl {l = l} x x₁) (Empty-refl {l = l'} x₂ x₃) | no ¬p =
+    no (λ { (Empty-refl x x₁) → ¬p PE.refl })
+
+  decConv↓Term Γ≡Δ (U-refl x x₁) u = {!!}
+  decConv↓Term Γ≡Δ (ne x) u = {!!}
+  decConv↓Term Γ≡Δ (ℕ-refl x) u = {!!}
+  decConv↓Term Γ≡Δ (Empty-refl x x₁) u = {!!}
+  decConv↓Term Γ≡Δ (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇) u = {!!}
+  decConv↓Term Γ≡Δ (∃-cong x x₁ x₂) u = {!!}
+  decConv↓Term Γ≡Δ (ℕ-ins x) u = {!!}
+  decConv↓Term Γ≡Δ (ne-ins x x₁ x₂ x₃) u = {!!}
+  decConv↓Term Γ≡Δ (zero-refl x) u = {!!}
+  decConv↓Term Γ≡Δ (suc-cong x) u = {!!}
+  decConv↓Term Γ≡Δ (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) u = {!!}
 {-
   decConv↓Term Γ≡Δ (ℕ-ins x) (ℕ-ins x₁) with dec~↓! Γ≡Δ x x₁
   decConv↓Term Γ≡Δ (ℕ-ins x) (ℕ-ins x₁) | yes (A , k~l) =
