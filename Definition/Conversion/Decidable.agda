@@ -313,12 +313,24 @@ mutual
   decConv↓Term Γ≡Δ (ℕ-refl x) (ℕ-refl x₁) = yes (ℕ-refl x)
 
   decConv↓Term Γ≡Δ (Empty-refl {l = l} x x₁) (Empty-refl {l = l′} x₂ x₃) with dec-level l l′
-  decConv↓Term Γ≡Δ (Empty-refl {l = l} x x₁) (Empty-refl {l = .l} x₂ x₃) | yes PE.refl =
-    yes (Empty-refl x x₁)
-  decConv↓Term Γ≡Δ (Empty-refl {l = l} x x₁) (Empty-refl {l = l'} x₂ x₃) | no ¬p =
-    no (λ { (Empty-refl x x₁) → ¬p PE.refl })
+  ... | yes PE.refl = yes (Empty-refl x x₁)
+  ... | no ¬p = no (λ { (Empty-refl x x₁) → ¬p PE.refl })
 
-  decConv↓Term Γ≡Δ (Π-cong l rF lF lG lF< lG< ⊢F F G) (Π-cong l' rH lH lE lH< lE< ⊢H H E) = {!!}
+  decConv↓Term Γ≡Δ (Π-cong {rF = rF} {lF = lF} {lG = lG} {lΠ = l} l≡ rF≡rF lF≡lF lG≡lG lF< lG< ⊢F F G)
+    (Π-cong {rF = rH} {lF = lH} {lG = lE} {lΠ = l′} l′≡ _ _ _ _ _ ⊢H H E)
+    with dec-relevance rF rH | dec-level lF lH | dec-level lG lE | dec-level l l′
+  ... | yes PE.refl | yes PE.refl | yes PE.refl | no ¬p = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p PE.refl }
+  ... | yes PE.refl | yes PE.refl | no ¬p | _ = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p x₃ }
+  ... | yes PE.refl | no ¬p | _ | _ = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p x₂ }
+  ... | no ¬p | _ | _ | _ = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p x₁ }
+  ... | yes PE.refl | yes PE.refl | yes PE.refl | yes PE.refl
+    with decConv↑Term Γ≡Δ F H
+  ... | no ¬p = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p x₇ }
+  ... | yes pFH
+    with decConv↑Term (Γ≡Δ ∙ univ (soundnessConv↑Term pFH)) G E
+  ... | no ¬p = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p x₈ }
+  ... | yes pGE = yes (Π-cong l≡ rF≡rF lF≡lF lG≡lG lF< lG< ⊢F pFH pGE)
+
 
   decConv↓Term Γ≡Δ (U-refl x x₁) u = {!!}
   decConv↓Term Γ≡Δ (ne x) u = {!!}
