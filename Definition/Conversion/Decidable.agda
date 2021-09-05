@@ -331,6 +331,16 @@ mutual
   ... | no ¬p = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p x₈ }
   ... | yes pGE = yes (Π-cong l≡ rF≡rF lF≡lF lG≡lG lF< lG< ⊢F pFH pGE)
 
+  decConv↓Term Γ≡Δ (∃-cong {l = l} l≡ ⊢F F G) (∃-cong {l = l′} _ ⊢H H E)
+    with dec-level l l′
+  ... | no ¬p = no λ { (∃-cong x x₁ x₂ x₃) → ¬p PE.refl }
+  ... | yes PE.refl
+    with decConv↑Term Γ≡Δ F H
+  ... | no ¬p = no λ { (∃-cong x x₁ x₂ x₃) → ¬p x₂ }
+  ... | yes pFH
+    with decConv↑Term (Γ≡Δ ∙ univ (soundnessConv↑Term pFH)) G E
+  ... | no ¬p = no λ { (∃-cong x x₁ x₂ x₃) → ¬p x₃ }
+  ... | yes pGE = yes (∃-cong l≡ ⊢F pFH pGE)
 
   decConv↓Term Γ≡Δ (U-refl x x₁) u = {!!}
   decConv↓Term Γ≡Δ (ne x) u = {!!}
