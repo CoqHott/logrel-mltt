@@ -212,80 +212,12 @@ mutual
            → ⊢ Γ ≡ Δ
            → Γ ⊢ A [conv↓] A ^ r → Δ ⊢ B [conv↓] B ^ r
            → Dec (Γ ⊢ A [conv↓] B ^ r)
-  decConv↓ = {!!}
-{-
-  decConv↓ Γ≡Δ (U-refl {r = r} _ x) (U-refl {r = r′} _ x₁) with dec-relevance r r′
-  ... | yes p = yes (U-refl p x)
-  ... | no ¬p = no λ p → ¬p (Uinjectivity (soundnessConv↓ p))
-  decConv↓ Γ≡Δ (U-refl e x) (ℕ-refl x₁) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (U-refl e x) (ne x₁) =
-    no (λ x₂ → let whnfA , neK , neL = ne~↓! x₁
-               in  ⊥-elim (IE.U≢ne! neK (soundnessConv↓ x₂)))
-  decConv↓ Γ≡Δ (U-refl e x) (Π-cong e₁ x₁ x₂ x₃) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (ℕ-refl x) (U-refl e x₁) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (ℕ-refl x) (ℕ-refl x₁) = yes (ℕ-refl x)
-  decConv↓ Γ≡Δ (Empty-refl x) (Empty-refl x₁) = yes (Empty-refl x)
-  decConv↓ Γ≡Δ (ℕ-refl x) (ne x₁) =
-    no (λ x₂ → let whnfA , neK , neL = ne~↓! x₁
-               in  ⊥-elim (IE.ℕ≢ne! neK (soundnessConv↓ x₂)))
-  decConv↓ Γ≡Δ (Empty-refl x) (ne x₁) =
-    no (λ x₂ → let whnfA , neK , neL = ne~↓! x₁
-               in  ⊥-elim (IE.Empty≢ne% neK (soundnessConv↓ x₂)))
-  decConv↓ Γ≡Δ (ℕ-refl x) (Π-cong e x₁ x₂ x₃) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (Empty-refl x) (Π-cong e x₁ x₂ x₃) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (ne x) (U-refl e x₁) =
-    no (λ x₂ → let whnfA , neK , neL = ne~↓! x
-               in  ⊥-elim (IE.U≢ne! neK (sym (soundnessConv↓ x₂))))
-  decConv↓ Γ≡Δ (ne x) (ℕ-refl x₁) =
-    no (λ x₂ → let whnfA , neK , neL = ne~↓! x
-               in  ⊥-elim (IE.ℕ≢ne! neK (sym (soundnessConv↓ x₂))))
-  decConv↓ Γ≡Δ (ne x) (Empty-refl x₁) =
-    no (λ x₂ → let whnfA , neK , neL = ne~↓! x
-               in  ⊥-elim (IE.Empty≢ne% neK (sym (soundnessConv↓ x₂))))
-  decConv↓ Γ≡Δ (ne x) (ne x₁) with dec~↓! Γ≡Δ x x₁
-  decConv↓ Γ≡Δ (ne x) (ne x₁) | yes (A , k~l) =
-    let whnfA , neK , neL = ne~↓! k~l
-        ⊢A , ⊢k , _ = syntacticEqTerm (soundness~↓! k~l)
-        _ , ⊢k∷U , _ = syntacticEqTerm (soundness~↓! x)
-        ⊢U≡A = neTypeEq neK ⊢k∷U ⊢k
-        A≡U = U≡A ⊢U≡A
-        k~l′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x) A≡U k~l
-    in  yes (ne k~l′)
-  decConv↓ {r = r} Γ≡Δ (ne x) (ne x₁) | no ¬p =
-    no (λ x₂ → ¬p (Univ r , decConv↓-ne x₂ x))
-  decConv↓ Γ≡Δ (ne x) (Π-cong e x₁ x₂ x₃) =
-    no (λ x₄ → let whnfA , neK , neL = ne~↓! x
-               in  ⊥-elim (IE.Π≢ne neK (sym (soundnessConv↓ x₄))))
-  decConv↓ Γ≡Δ (Π-cong e x x₁ x₂) (U-refl e₁ x₃) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (Π-cong e x x₁ x₂) (ℕ-refl x₃) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (Π-cong e x x₁ x₂) (Empty-refl x₃) = no (λ { (ne ([~] A D whnfB ())) })
-  decConv↓ Γ≡Δ (Π-cong e x x₁ x₂) (ne x₃) =
-    no (λ x₄ → let whnfA , neK , neL = ne~↓! x₃
-               in  ⊥-elim (IE.Π≢ne neK (soundnessConv↓ x₄)))
-  decConv↓ Γ≡Δ (Π-cong {rF = rF} _ x x₁ x₂) (Π-cong {rF = rF₁} _ x₃ x₄ x₅) with dec-relevance rF rF₁
-  decConv↓ Γ≡Δ (Π-cong _ x x₁ x₂) (Π-cong _ x₃ x₄ x₅) | no rF≢rF₁ = no (λ e → rF≢rF₁ let _ , req , _ = (injectivity (soundnessConv↓ e)) in req)
-  decConv↓ Γ≡Δ (Π-cong _ x x₁ x₂) (Π-cong _ x₃ x₄ x₅) | yes PE.refl
-           with decConv↑ Γ≡Δ x₁ x₄
-  ... | no ¬p =
-    no (λ { (ne ([~] A D whnfB ())) ; (Π-cong _ x₆ x₇ x₈) → ¬p x₇ })
-  ... | yes p
-           with decConv↑ (Γ≡Δ ∙ soundnessConv↑ p) x₂ x₅
-  ... | no ¬p =
-    no (λ { (ne ([~] A D whnfB ())) ; (Π-cong _ x₆ x₇ x₈) → ¬p x₈ })
-  ... | yes p₁ =
-    yes (Π-cong PE.refl x p p₁)
-
-  -- Helper function for decidability of neutral types.
-  decConv↓-ne : ∀ {A B r Γ l}
-              → Γ ⊢ A [conv↓] B ^ [ r , ι l ]
-              → Γ ⊢ A ~ A ↓! Univ r l ^ [ ! , next l ]
-              → Γ ⊢ A ~ B ↓! Univ r l ^ [ ! , next l ]
-  decConv↓-ne (U-refl PE.refl x) A~A = A~A
-  decConv↓-ne (ℕ-refl x) A~A = A~A
-  decConv↓-ne (Empty-refl x) A~A = A~A
-  decConv↓-ne (ne x) A~A = x
-  decConv↓-ne (Π-cong e x x₁ x₂) ([~] A D whnfB ())
--}
+  decConv↓ Γ≡Δ (U-refl {r = r} x x₁) (U-refl {r = r′} x₂ x₃) with dec-relevance r r′
+  ... | yes p = yes (U-refl p x₁)
+  ... | no ¬p = no λ p → ¬p (proj₁ (Uinjectivity (soundnessConv↓ p)))
+  decConv↓ Γ≡Δ (univ x) (univ x₁) with decConv↓Term Γ≡Δ x x₁
+  ... | yes p = yes (univ p)
+  ... | no ¬p = no (λ { (univ x) → ¬p x })
 
   -- Decidability of algorithmic equality of terms.
   decConv↑Term : ∀ {t u A Γ Δ l}
