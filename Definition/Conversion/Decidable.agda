@@ -355,6 +355,17 @@ mutual
     in yes (ne-ins ⊢k (stabilityTerm (symConEq Γ≡Δ) ⊢k₁) neA (PE.subst (λ X → _ ⊢ _ ~ _ ↓! _ ^ X) l≡l k~k₁))
   ... | no ¬p = no λ x → ¬p (decConv↓Term-ne-ins neA x)
 
+  decConv↓Term Γ≡Δ (zero-refl x) (zero-refl x₁) = yes (zero-refl x)
+
+  decConv↓Term Γ≡Δ (suc-cong m) (suc-cong n) with decConv↑Term Γ≡Δ m n
+  ... | yes p = yes (suc-cong p)
+  ... | no ¬p = no λ { (suc-cong x) → ¬p x }
+
+  decConv↓Term Γ≡Δ (η-eq lF< lG< ⊢F ⊢f _ funf _ f) (η-eq _ _ _ ⊢g _ fung _ g)
+    with decConv↑Term (Γ≡Δ ∙ refl ⊢F) f g
+  ... | yes p = yes (η-eq lF< lG< ⊢F ⊢f (stabilityTerm (symConEq Γ≡Δ) ⊢g) funf fung p)
+  ... | no ¬p = no (λ { (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) → ¬p x₇ })
+
   decConv↓Term Γ≡Δ (U-refl x x₁) u = {!!}
   decConv↓Term Γ≡Δ (ne x) u = {!!}
   decConv↓Term Γ≡Δ (ℕ-refl x) u = {!!}
