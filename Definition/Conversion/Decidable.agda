@@ -44,6 +44,25 @@ mutual
   dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (var-refl {m} ⊢y m≡m) | no ¬p =
     no λ (_ , (_ , eq)) → ¬p (strongVarEq eq)
 
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (app-cong x~x t≡t) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (natrec-cong x x₁ x₂ x₃) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Emptyrec-cong x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-cong x x₁ x₂) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-ℕ x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-ℕ0 x) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-ℕS x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-U x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-Uℕ x) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-UΠ x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-cong x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ℕ x x₁ x₂ x₃) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ℕℕ x x₁ x₂) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-Π x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-Πℕ x x₁ x₂ x₃) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ℕΠ x x₁ x₂ x₃) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+
   dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) with dec~↓! Γ≡Δ x~x y~y
   dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | yes (A , lA , x~y) =
     let
@@ -63,6 +82,26 @@ mutual
                 (dec~↑!-app Γ≡Δ ⊢k₁′ ⊢k₂ x~y (decConv↑TermConv Γ≡Δ r≡r′ F≡F′ t≡t u≡u)) 
   dec~↑! Γ≡Δ (app-cong x~x t≡t) (app-cong y~y u≡u) | no ¬p =
     no (λ { (_ , (_ , app-cong x′ y′)) → ¬p (_ , (_ , x′)) })
+
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (var-refl x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (natrec-cong x x₁ x₂ x₃) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Emptyrec-cong x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-cong x x₁ x₂) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-ℕ x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-ℕ0 x) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-ℕS x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-U x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-Uℕ x) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-UΠ x x₁) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-cong x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ℕ x x₁ x₂ x₃) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ℕℕ x x₁ x₂) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-Π x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-Πℕ x x₁ x₂ x₃) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ℕΠ x x₁ x₂ x₃) = no (λ { (_ , ()) }) 
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
+
 
   dec~↑! Γ≡Δ (natrec-cong {lF = l} F a0 aS k) (natrec-cong {lF = l₀} G b0 bS k₀)
     with dec-level l l₀
@@ -107,44 +146,6 @@ mutual
   dec~↑! Γ≡Δ (Emptyrec-cong {ll = l} F k) (Emptyrec-cong {ll = l₀} G k₀) | no ¬p | _ =
     no (λ { (_ , .(ι l) , Emptyrec-cong x x₁) → ¬p PE.refl })
 
-  dec~↑! Γ≡Δ = {!!}
-
-{-
-
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (natrec-cong x x₁ x₂ x₃) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Emptyrec-cong x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-cong x x₁ x₂) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-ℕ x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-ℕ0 x) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-ℕS x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-U x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-Uℕ x) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (Id-UΠ x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-cong x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ℕ x x₁ x₂ x₃) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ℕℕ x x₁ x₂) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-Π x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-Πℕ x x₁ x₂ x₃) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ℕΠ x x₁ x₂ x₃) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (var-refl {n} ⊢x n≡n) (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (var-refl x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (natrec-cong x x₁ x₂ x₃) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Emptyrec-cong x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-cong x x₁ x₂) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-ℕ x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-ℕ0 x) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-ℕS x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-U x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-Uℕ x) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (Id-UΠ x x₁) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-cong x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ℕ x x₁ x₂ x₃) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ℕℕ x x₁ x₂) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-Π x x₁ x₂ x₃ x₄) = no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-Πℕ x x₁ x₂ x₃) =  no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ℕΠ x x₁ x₂ x₃) =  no (λ { (_ , ()) })
-  dec~↑! Γ≡Δ (app-cong x~x t≡t) (cast-ΠΠ!% x x₁ x₂ x₃ x₄) =  no (λ { (_ , ()) })
   dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) (var-refl x₄ x₅) = no (λ { (_ , ()) })
   dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) (app-cong x₄ x₅) = no (λ { (_ , ()) })
   dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) (Emptyrec-cong x₄ x₅) = no (λ { (_ , ()) })
@@ -364,7 +365,7 @@ mutual
   dec~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) [l] = {!!}
   dec~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) [l] = {!!}
   dec~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) [l] = {!!}
--}
+
 
   -- Decidability of algorithmic equality of neutrals with types in WHNF.
   dec~↓! : ∀ {k l R T Γ Δ lR lT}
@@ -387,6 +388,8 @@ mutual
            → ⊢ Γ ≡ Δ
            → Γ ⊢ A [conv↑] A ^ r → Δ ⊢ B [conv↑] B ^ r
            → Dec (Γ ⊢ A [conv↑] B ^ r)
+  decConv↑ = {!!} 
+{-
   decConv↑ Γ≡Δ ([↑] A′ B′ D D′ whnfA′ whnfB′ A′<>B′)
                ([↑] A″ B″ D₁ D″ whnfA″ whnfB″ A′<>B″)
            rewrite whrDet* (D , whnfA′) (D′ , whnfB′)
@@ -414,12 +417,15 @@ mutual
   decConv↓ Γ≡Δ (univ x) (univ x₁) with decConv↓Term Γ≡Δ x x₁
   ... | yes p = yes (univ p)
   ... | no ¬p = no (λ { (univ x) → ¬p x })
+-}
 
   -- Decidability of algorithmic equality of terms.
   decConv↑Term : ∀ {t u A Γ Δ l}
                → ⊢ Γ ≡ Δ
                → Γ ⊢ t [conv↑] t ∷ A ^ l → Δ ⊢ u [conv↑] u ∷ A ^ l
                → Dec (Γ ⊢ t [conv↑] u ∷ A ^ l)
+  decConv↑Term = {!!}
+{-
   decConv↑Term Γ≡Δ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u)
                    ([↑]ₜ B₁ t″ u″ D₁ d₁ d″ whnfB₁ whnft″ whnfu″ t<>u₁)
                rewrite whrDet* (D , whnfB) (stabilityRed* (symConEq Γ≡Δ) D₁ , whnfB₁)
@@ -448,47 +454,8 @@ mutual
                                , whnfu″)
         in  ¬p (PE.subst₃ (λ x y z → _ ⊢ x [conv↓] y ∷ z ^ _)
                           t‴≡u′ u‴≡u″ B₂≡B₁ t<>u₂) })
+-}
 
-  -- Helper functions for decidability for neutrals
-  decConv↓Term-ℕ-ins : ∀ {t u Γ l}
-                     → Γ ⊢ t [conv↓] u ∷ ℕ ^ l
-                     → Γ ⊢ t ~ t ↓! ℕ ^ l
-                     → Γ ⊢ t ~ u ↓! ℕ ^ l
-  decConv↓Term-ℕ-ins (ℕ-ins x) t~t = x
-  decConv↓Term-ℕ-ins (ne-ins x x₁ () x₃) t~t
-  decConv↓Term-ℕ-ins (zero-refl x) ([~] A D whnfB ())
-  decConv↓Term-ℕ-ins (suc-cong x) ([~] A D whnfB ())
-
-  decConv↓Term-U-ins : ∀ {t u Γ r lU l}
-                     → Γ ⊢ t [conv↓] u ∷ Univ r lU ^ l
-                     → Γ ⊢ t ~ t ↓! Univ r lU ^ l
-                     → Γ ⊢ t ~ u ↓! Univ r lU ^ l
-  decConv↓Term-U-ins (ne x) t~r = x
-
-  decConv↓Term-ne-ins : ∀ {t u A Γ l}
-                      → Neutral A
-                      → Γ ⊢ t [conv↓] u ∷ A ^ l
-                      → ∃ λ B → ∃ λ lB → Γ ⊢ t ~ u ↓! B ^ lB
-  decConv↓Term-ne-ins neA (ne-ins x x₁ x₂ x₃) = _ , _ , x₃
-
-  -- Helper function for decidability for impossibility of terms not being equal
-  -- as neutrals when they are equal as terms and the first is a neutral.
-  decConv↓Term-ℕ : ∀ {t u Γ l}
-                 → Γ ⊢ t [conv↓] u ∷ ℕ ^ l
-                 → Γ ⊢ t ~ t ↓! ℕ ^ l
-                 → ¬ (Γ ⊢ t ~ u ↓! ℕ ^ l)
-                 → ⊥
-  decConv↓Term-ℕ (ℕ-ins x) t~t ¬u~u = ¬u~u x
-  decConv↓Term-ℕ (ne-ins x x₁ () x₃) t~t ¬u~u
-  decConv↓Term-ℕ (zero-refl x) ([~] A D whnfB ()) ¬u~u
-  decConv↓Term-ℕ (suc-cong x) ([~] A D whnfB ()) ¬u~u
-
-  decConv↓Term-U : ∀ {t u Γ r lU l}
-                 → Γ ⊢ t [conv↓] u ∷ Univ r lU ^ l
-                 → Γ ⊢ t ~ t ↓! Univ r lU ^ l
-                 → ¬ (Γ ⊢ t ~ u ↓! Univ r lU ^ l)
-                 → ⊥
-  decConv↓Term-U (ne x) t~t ¬u~u = ¬u~u x
 
   -- Decidability of algorithmic equality of terms in WHNF.
   decConv↓Term : ∀ {t u A Γ Δ l}
@@ -496,6 +463,8 @@ mutual
                → Γ ⊢ t [conv↓] t ∷ A ^ l → Δ ⊢ u [conv↓] u ∷ A ^ l
                → Dec (Γ ⊢ t [conv↓] u ∷ A ^ l)
 
+  decConv↓Term = {!!}
+{-
   decConv↓Term Γ≡Δ (U-refl {r = r} _ x) (U-refl {r = r′} _ x₁)
     with dec-relevance r r′
   ... | yes p = yes (U-refl p x)
@@ -629,7 +598,7 @@ mutual
     no (λ x₂ → decConv↓Term-ℕ (symConv↓Term Γ≡Δ x₂) x₁ (λ { ([~] A D whnfB ()) }))
   decConv↓Term Γ≡Δ (suc-cong x) (zero-refl x₁) = no λ { (ℕ-ins ()) ; (ne-ins x x₁ () x₃) }
   decConv↓Term Γ≡Δ (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (ne-ins x₈ x₉ () x₁₁)
-
+-}
 
   -- Decidability of algorithmic equality of terms of equal types.
   decConv↑TermConv : ∀ {t u A B r r' Γ Δ}

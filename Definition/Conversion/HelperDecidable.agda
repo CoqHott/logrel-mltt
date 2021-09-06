@@ -190,3 +190,44 @@ castΠ-elim () (cast-ΠΠ!% x x₁ x₂ x₃ x₄)
 
 castΠ-elim' : ∀ {Γ l A B B' X t e t' e' r P Q} → Neutral A → Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰) B e t ~ cast ⁰ A B' e' t' ↑! X ^ l → ⊥
 castΠ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castΠ-elim neA e'
+
+  -- Helper functions for decidability for neutrals
+decConv↓Term-ℕ-ins : ∀ {t u Γ l}
+ → Γ ⊢ t [conv↓] u ∷ ℕ ^ l
+ → Γ ⊢ t ~ t ↓! ℕ ^ l
+ → Γ ⊢ t ~ u ↓! ℕ ^ l
+decConv↓Term-ℕ-ins (ℕ-ins x) t~t = x
+decConv↓Term-ℕ-ins (ne-ins x x₁ () x₃) t~t
+decConv↓Term-ℕ-ins (zero-refl x) ([~] A D whnfB ())
+decConv↓Term-ℕ-ins (suc-cong x) ([~] A D whnfB ())
+
+decConv↓Term-U-ins : ∀ {t u Γ r lU l}
+  → Γ ⊢ t [conv↓] u ∷ Univ r lU ^ l
+  → Γ ⊢ t ~ t ↓! Univ r lU ^ l
+  → Γ ⊢ t ~ u ↓! Univ r lU ^ l
+decConv↓Term-U-ins (ne x) t~r = x
+
+decConv↓Term-ne-ins : ∀ {t u A Γ l}
+  → Neutral A
+  → Γ ⊢ t [conv↓] u ∷ A ^ l
+  → ∃ λ B → ∃ λ lB → Γ ⊢ t ~ u ↓! B ^ lB
+decConv↓Term-ne-ins neA (ne-ins x x₁ x₂ x₃) = _ , _ , x₃
+
+-- Helper function for decidability for impossibility of terms not being equal
+-- as neutrals when they are equal as terms and the first is a neutral.
+decConv↓Term-ℕ : ∀ {t u Γ l}
+  → Γ ⊢ t [conv↓] u ∷ ℕ ^ l
+  → Γ ⊢ t ~ t ↓! ℕ ^ l
+  → ¬ (Γ ⊢ t ~ u ↓! ℕ ^ l)
+  → ⊥
+decConv↓Term-ℕ (ℕ-ins x) t~t ¬u~u = ¬u~u x
+decConv↓Term-ℕ (ne-ins x x₁ () x₃) t~t ¬u~u
+decConv↓Term-ℕ (zero-refl x) ([~] A D whnfB ()) ¬u~u
+decConv↓Term-ℕ (suc-cong x) ([~] A D whnfB ()) ¬u~u
+
+decConv↓Term-U : ∀ {t u Γ r lU l}
+  → Γ ⊢ t [conv↓] u ∷ Univ r lU ^ l
+  → Γ ⊢ t ~ t ↓! Univ r lU ^ l
+  → ¬ (Γ ⊢ t ~ u ↓! Univ r lU ^ l)
+  → ⊥
+decConv↓Term-U (ne x) t~t ¬u~u = ¬u~u x
