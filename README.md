@@ -5,7 +5,7 @@ conversion of an extension of Martin Löf typ theory with an equality
 satisfying UIP, function extensiaonlity, propositional extensionality
 and admitting quotient types.
 
-The source code can be browsed in HTML [here](https://mr-ohman.github.io/logrel-mltt/decofconv/).
+The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/setoid-universes-hierarchy/html/README.html).
 
 ### Dependencies ###
 
