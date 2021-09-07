@@ -92,7 +92,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
          Γ ⊢ e' ∷ Empty lEmpty ^ [ % , ι lEmpty ] →
          Γ ⊢ Emptyrec l lEmpty F e ~ Emptyrec l lEmpty F′ e' ∷ F ^ [ ! , ι l ]
 ~-Emptyrec {e = e} {e' = e'} x ⊢e ⊢e' =
-  let k~l′ = %~↑ ⊢e ⊢e' 
+  let k~l′ = %~↑ ⊢e ⊢e'
       ⊢F , _ = syntacticEq (soundnessConv↑ x)
   in  ↑ (refl ⊢F) (Emptyrec-cong′ x k~l′)
 
@@ -143,7 +143,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     Γ ⊢ t [genconv↑] t' ∷ ℕ ^ [ ! , ι ⁰ ] →
     Γ ⊢ u ~ u' ∷ ℕ ^ [ ! , ι ⁰ ] →
     Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ⁰ ^ [ ! , next ⁰ ]
-~-IdℕS ⊢Γ X (↑ A≡B (~↑! x)) = 
+~-IdℕS ⊢Γ X (↑ A≡B (~↑! x)) =
      let _ , ⊢B = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B
          ℕ≡B′ = trans A≡B (subset* (red D))
@@ -226,7 +226,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
          B≡U = U≡A-whnf U≡B′ whnfB′
          t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
                       ([~] _ (red D) whnfB′ x)
-         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)         
+         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
      in ↑ (refl (univ ⊢B)) (~↑! (cast-ℕ t~t′ X ⊢e ⊢e'))
 
 ~-castℕℕ : ∀ {e e' t t' : Term} {Γ : Con Term} →
@@ -242,7 +242,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
          B≡ℕ = ℕ≡A ℕ≡B′ whnfB′
          t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡ℕ
                       ([~] _ (red D) whnfB′ x)
-         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)         
+         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
      in ↑ (refl (univ (ℕⱼ ⊢Γ))) (~↑! (cast-ℕℕ t~t′ ⊢e ⊢e'))
 
 ~-castΠ : ∀ {A A' : Term} {rA : Relevance} {P P' B B' e e' t t' : Term}
@@ -260,7 +260,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
          B≡U = U≡A-whnf U≡B′ whnfB′
          t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
                       ([~] _ (red D) whnfB′ x)
-         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)         
+         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
      in ↑ (refl (univ ⊢B)) (~↑! (cast-Π X t~t′ Y ⊢e ⊢e'))
 
 ~-castℕΠ : ∀ {A A' : Term} {rA : Relevance} {P P' e e' t t' : Term}
@@ -327,11 +327,11 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 ~-trans : {k l m A : Term} {r : TypeInfo} {Γ : Con Term}
         → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ m ∷ A ^ r
         → Γ ⊢ k ~ m ∷ A ^ r
-~-trans (↑ x (~↑! x₁)) (↑ x₂ (~↑! x₃)) = 
+~-trans (↑ x (~↑! x₁)) (↑ x₂ (~↑! x₃)) =
   let ⊢Γ = wfEq x
       k~m , _ = trans~↑! PE.refl (reflConEq ⊢Γ) x₁ x₃
   in  ↑ x (~↑! k~m)
-~-trans (↑ x (~↑% x₁)) (↑ x₂ (~↑% x₃)) = 
+~-trans (↑ x (~↑% x₁)) (↑ x₂ (~↑% x₃)) =
   let ⊢Γ = wfEq x
       k~m = trans~↑% (reflConEq ⊢Γ) x₁ (conv~↑% x₃ (trans (sym x₂) x))
   in  ↑ x (~↑% k~m)
@@ -366,7 +366,7 @@ un-univConv {A} {B} {r} {l} ([↑] A′ B′ D D′ whnfA′ whnfB′ (univ x)) 
         → Γ ⊢ F [conv↑] H ∷ Univ rF lF ^ next lF
         → Γ ∙ F ^ [ rF , ι lF ] ⊢ G [conv↑] E ∷ Univ rG lG ^ next lG
         → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ [conv↑] Π H ^ rF ° lF ▹ E ° lG ° lΠ ∷ Univ rG lΠ ^ next lΠ
-Πₜ-cong lF< lG< x x₁ x₂ = liftConvTerm (Π-cong PE.refl PE.refl PE.refl lF< lG< x x₁ x₂) 
+Πₜ-cong lF< lG< x x₁ x₂ = liftConvTerm (Π-cong PE.refl PE.refl PE.refl PE.refl lF< lG< x x₁ x₂)
 
 ~-irrelevance : {k l A : Term} {Γ : Con Term} {ll : TypeLevel}
                → Γ ⊢ k ∷ A ^ [ % , ll ]
@@ -375,7 +375,7 @@ un-univConv {A} {B} {r} {l} ([↑] A′ B′ D D′ whnfA′ whnfB′ (univ x)) 
 ~-irrelevance ⊢k ⊢l =
   let X = ~↑% (%~↑ ⊢k ⊢l)
       ⊢A  = syntacticTerm ⊢k
-  in ↑ (refl ⊢A) X 
+  in ↑ (refl ⊢A) X
 
 soundnessgenConv : ∀ {a b A r Γ} → Γ ⊢ a [genconv↑] b ∷ A ^ r → Γ ⊢ a ≡ b ∷ A ^ r
 soundnessgenConv {r = [ ! , l ]} = soundnessConv↑Term
@@ -390,7 +390,7 @@ wkgenConv↑Term : ∀ {ρ t u A Γ r Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) → ⊢ Δ
              → Γ ⊢ t [genconv↑] u ∷ A ^ r
              → Δ ⊢ wk ρ t [genconv↑] wk ρ u ∷ wk ρ A ^ r
 wkgenConv↑Term {r = [ ! , l ]} = wkConv↑Term
-wkgenConv↑Term {r = [ % , l ]} = wk~↑% 
+wkgenConv↑Term {r = [ % , l ]} = wk~↑%
 
 convgenconv : ∀ {t u A B : Term} {r : TypeInfo} {Γ : Con Term} →
       Γ ⊢ t [genconv↑] u ∷ A ^ r →
@@ -417,9 +417,9 @@ eqRelInstance = eqRel _⊢_[conv↑]_^_ _⊢_[genconv↑]_∷_^_ _⊢_~_∷_^_
                       reductionConv↑ reductionConv↑Term
                       (liftConv ∘ᶠ (U-refl PE.refl)) ( liftConvTerm ∘ᶠ  (U-refl PE.refl))
                       (liftConvTerm ∘ᶠ ℕ-refl)
-                      (liftConvTerm ∘ᶠ Empty-refl)
+                      (liftConvTerm ∘ᶠ (Empty-refl PE.refl))
                       Πₜ-cong
-                      (λ x x₁ x₂ → liftConvTerm (∃-cong x x₁ x₂))
+                      (λ x x₁ x₂ → liftConvTerm (∃-cong PE.refl x x₁ x₂))
                       (liftConvTerm ∘ᶠ zero-refl)
                       (liftConvTerm ∘ᶠ suc-cong)
                       (λ l< l<' x x₁ x₂ x₃ x₄ x₅ → liftConvTerm (η-eq l< l<' x x₁ x₂ x₃ x₄ x₅))
