@@ -13,6 +13,7 @@ open import Definition.Conversion.Stability
 open import Definition.Conversion.Consequences.Completeness
 
 open import Tools.Nullary
+open import Tools.Product
 
 
 -- Decidability of conversion of well-formed types
@@ -24,11 +25,11 @@ dec ⊢A ⊢B =
 
 -- Decidability of conversion of well-formed terms
 decTerm : ∀ {t u A r Γ} → Γ ⊢ t ∷ A ^ r → Γ ⊢ u ∷ A ^ r → Dec (Γ ⊢ t ≡ u ∷ A ^ r)
-decTerm {r = !} ⊢t ⊢u =
+decTerm {r = [ ! , l ]} ⊢t ⊢u =
   let ⊢Γ≡Γ = reflConEq (wfTerm ⊢t)
   in  map soundnessConv↑Term completeEqTerm
           (decConv↑TermConv ⊢Γ≡Γ (refl (syntacticTerm ⊢t)) (completeEqTerm (genRefl ⊢t)) (completeEqTerm (genRefl ⊢u)))
-decTerm {r = %} ⊢t ⊢u =
+decTerm {r = [ % , l ]} ⊢t ⊢u =
   let ⊢Γ≡Γ = reflConEq (wfTerm ⊢t)
-  in  map soundness~↑% completeEqTerm
+  in  map (λ x → proj₂ (proj₂ (soundness~↑% x))) completeEqTerm
           (decConv↑TermConv ⊢Γ≡Γ (refl (syntacticTerm ⊢t)) (completeEqTerm (genRefl ⊢t)) (completeEqTerm (genRefl ⊢u)))
