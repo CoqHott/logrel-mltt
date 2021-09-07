@@ -1,8 +1,18 @@
-# A Logical Relation for Martin-Löf Type Theory in Agda #
+# A Logical Relation for Setoid Type Theory in Agda #
 
-This is a project to formalize a proof of the decidability of conversion of a dependently typed language in Agda.
+This is a project to formalize a proof of the decidability of
+conversion of an extension of Martin Löf typ theory with an equality
+satisfying UIP, function extensiaonlity, propositional extensionality
+and admitting quotient types.
+
 The source code can be browsed in HTML [here](https://mr-ohman.github.io/logrel-mltt/decofconv/).
 
 ### Dependencies ###
 
-This project is written in Agda. It has been tested to be working with Agda version 2.5.3.
+This project is written in Agda. It has been tested to be working with Agda version 2.6.3.
+
+### Warning ###
+
+The files Defintion/LogicalRelations/Substitution/Cast.agda and
+Conversion/Decidability.agda may take a long time to type check (~10
+min for the last one).
