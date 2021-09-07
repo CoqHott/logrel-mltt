@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="utf-8"><title>Everything</title><link rel="stylesheet" href="Agda.css"></head><body><pre class="Agda"><a id="1" class="Symbol">{-#</a> <a id="5" class="Keyword">OPTIONS</a> <a id="13" class="Pragma">--safe</a> <a id="20" class="Symbol">#-}</a>
+
+<a id="25" class="Comment">-- A Logical Relation for Dependent Type Theory Formalized in Agda</a>
+
+<a id="93" class="Keyword">module</a> <a id="100" href="Everything.html" class="Module">Everything</a> <a id="111" class="Keyword">where</a>
+
+<a id="118" class="Comment">-- README</a>
+<a id="128" class="Keyword">import</a> <a id="135" href="README.html" class="Module">README</a>
+
+<a id="143" class="Comment">-- Minimal library</a>
+<a id="162" class="Keyword">import</a> <a id="169" href="Tools.Empty.html" class="Module">Tools.Empty</a>
+<a id="181" class="Keyword">import</a> <a id="188" href="Tools.Unit.html" class="Module">Tools.Unit</a>
+<a id="199" class="Keyword">import</a> <a id="206" href="Tools.Nat.html" class="Module">Tools.Nat</a>
+<a id="216" class="Keyword">import</a> <a id="223" href="Tools.Sum.html" class="Module">Tools.Sum</a>
+<a id="233" class="Keyword">import</a> <a id="240" href="Tools.Product.html" class="Module">Tools.Product</a>
+<a id="254" class="Keyword">import</a> <a id="261" href="Tools.Function.html" class="Module">Tools.Function</a>
+<a id="276" class="Keyword">import</a> <a id="283" href="Tools.Nullary.html" class="Module">Tools.Nullary</a>
+<a id="297" class="Keyword">import</a> <a id="304" href="Tools.List.html" class="Module">Tools.List</a>
+<a id="315" class="Keyword">import</a> <a id="322" href="Tools.PropositionalEquality.html" class="Module">Tools.PropositionalEquality</a>
+
+<a id="351" class="Comment">-- Grammar of the language</a>
+<a id="378" class="Keyword">import</a> <a id="385" href="Definition.Untyped.html" class="Module">Definition.Untyped</a>
+<a id="404" class="Keyword">import</a> <a id="411" href="Definition.Untyped.Properties.html" class="Module">Definition.Untyped.Properties</a>
+
+<a id="442" class="Comment">-- Typing and conversion rules of language</a>
+<a id="485" class="Keyword">import</a> <a id="492" href="Definition.Typed.html" class="Module">Definition.Typed</a>
+<a id="509" class="Keyword">import</a> <a id="516" href="Definition.Typed.Properties.html" class="Module">Definition.Typed.Properties</a>
+<a id="544" class="Keyword">import</a> <a id="551" href="Definition.Typed.Weakening.html" class="Module">Definition.Typed.Weakening</a>
+<a id="578" class="Keyword">import</a> <a id="585" href="Definition.Typed.Reduction.html" class="Module">Definition.Typed.Reduction</a>
+<a id="612" class="Keyword">import</a> <a id="619" href="Definition.Typed.RedSteps.html" class="Module">Definition.Typed.RedSteps</a>
+<a id="645" class="Keyword">import</a> <a id="652" href="Definition.Typed.EqualityRelation.html" class="Module">Definition.Typed.EqualityRelation</a>
+<a id="686" class="Keyword">import</a> <a id="693" href="Definition.Typed.EqRelInstance.html" class="Module">Definition.Typed.EqRelInstance</a>
+
+<a id="725" class="Comment">-- Logical relation</a>
+<a id="745" class="Keyword">import</a> <a id="752" href="Definition.LogicalRelation.html" class="Module">Definition.LogicalRelation</a>
+<a id="779" class="Keyword">import</a> <a id="786" href="Definition.LogicalRelation.ShapeView.html" class="Module">Definition.LogicalRelation.ShapeView</a>
+<a id="823" class="Keyword">import</a> <a id="830" href="Definition.LogicalRelation.Irrelevance.html" class="Module">Definition.LogicalRelation.Irrelevance</a>
+<a id="869" class="Keyword">import</a> <a id="876" href="Definition.LogicalRelation.Weakening.html" class="Module">Definition.LogicalRelation.Weakening</a>
+<a id="913" class="Keyword">import</a> <a id="920" href="Definition.LogicalRelation.Properties.html" class="Module">Definition.LogicalRelation.Properties</a>
+<a id="958" class="Keyword">import</a> <a id="965" href="Definition.LogicalRelation.Application.html" class="Module">Definition.LogicalRelation.Application</a>
+
+<a id="1005" class="Keyword">import</a> <a id="1012" href="Definition.LogicalRelation.Substitution.html" class="Module">Definition.LogicalRelation.Substitution</a>
+<a id="1052" class="Keyword">import</a> <a id="1059" href="Definition.LogicalRelation.Substitution.Properties.html" class="Module">Definition.LogicalRelation.Substitution.Properties</a>
+<a id="1110" class="Keyword">import</a> <a id="1117" href="Definition.LogicalRelation.Substitution.Irrelevance.html" class="Module">Definition.LogicalRelation.Substitution.Irrelevance</a>
+<a id="1169" class="Keyword">import</a> <a id="1176" href="Definition.LogicalRelation.Substitution.Conversion.html" class="Module">Definition.LogicalRelation.Substitution.Conversion</a>
+<a id="1227" class="Keyword">import</a> <a id="1234" href="Definition.LogicalRelation.Substitution.Reduction.html" class="Module">Definition.LogicalRelation.Substitution.Reduction</a>
+<a id="1284" class="Keyword">import</a> <a id="1291" href="Definition.LogicalRelation.Substitution.Reflexivity.html" class="Module">Definition.LogicalRelation.Substitution.Reflexivity</a>
+<a id="1343" class="Keyword">import</a> <a id="1350" href="Definition.LogicalRelation.Substitution.Weakening.html" class="Module">Definition.LogicalRelation.Substitution.Weakening</a>
+<a id="1400" class="Keyword">import</a> <a id="1407" href="Definition.LogicalRelation.Substitution.Reducibility.html" class="Module">Definition.LogicalRelation.Substitution.Reducibility</a>
+<a id="1460" class="Keyword">import</a> <a id="1467" href="Definition.LogicalRelation.Substitution.Escape.html" class="Module">Definition.LogicalRelation.Substitution.Escape</a>
+<a id="1514" class="Keyword">import</a> <a id="1521" href="Definition.LogicalRelation.Substitution.MaybeEmbed.html" class="Module">Definition.LogicalRelation.Substitution.MaybeEmbed</a>
+<a id="1572" class="Keyword">import</a> <a id="1579" href="Definition.LogicalRelation.Substitution.Introductions.html" class="Module">Definition.LogicalRelation.Substitution.Introductions</a>
+
+<a id="1634" class="Keyword">import</a> <a id="1641" href="Definition.LogicalRelation.Fundamental.html" class="Module">Definition.LogicalRelation.Fundamental</a>
+<a id="1680" class="Keyword">import</a> <a id="1687" href="Definition.LogicalRelation.Fundamental.Reducibility.html" class="Module">Definition.LogicalRelation.Fundamental.Reducibility</a>
+
+<a id="1740" class="Comment">-- Consequences of the logical relation for typing and conversion</a>
+<a id="1806" class="Comment">-- import Definition.Typed.Consequences.Canonicity</a>
+<a id="1857" class="Keyword">import</a> <a id="1864" href="Definition.Typed.Consequences.Injectivity.html" class="Module">Definition.Typed.Consequences.Injectivity</a>
+<a id="1906" class="Keyword">import</a> <a id="1913" href="Definition.Typed.Consequences.Syntactic.html" class="Module">Definition.Typed.Consequences.Syntactic</a>
+<a id="1953" class="Keyword">import</a> <a id="1960" href="Definition.Typed.Consequences.Inversion.html" class="Module">Definition.Typed.Consequences.Inversion</a>
+<a id="2000" class="Keyword">import</a> <a id="2007" href="Definition.Typed.Consequences.Inequality.html" class="Module">Definition.Typed.Consequences.Inequality</a>
+<a id="2048" class="Keyword">import</a> <a id="2055" href="Definition.Typed.Consequences.Substitution.html" class="Module">Definition.Typed.Consequences.Substitution</a>
+<a id="2098" class="Keyword">import</a> <a id="2105" href="Definition.Typed.Consequences.Equality.html" class="Module">Definition.Typed.Consequences.Equality</a>
+<a id="2144" class="Keyword">import</a> <a id="2151" href="Definition.Typed.Consequences.InverseUniv.html" class="Module">Definition.Typed.Consequences.InverseUniv</a>
+<a id="2193" class="Keyword">import</a> <a id="2200" href="Definition.Typed.Consequences.Reduction.html" class="Module">Definition.Typed.Consequences.Reduction</a>
+<a id="2240" class="Keyword">import</a> <a id="2247" href="Definition.Typed.Consequences.NeTypeEq.html" class="Module">Definition.Typed.Consequences.NeTypeEq</a>
+<a id="2286" class="Keyword">import</a> <a id="2293" href="Definition.Typed.Consequences.RelevanceUnicity.html" class="Module">Definition.Typed.Consequences.RelevanceUnicity</a>
+<a id="2340" class="Keyword">import</a> <a id="2347" href="Definition.Typed.Consequences.SucCong.html" class="Module">Definition.Typed.Consequences.SucCong</a>
+<a id="2385" class="Keyword">import</a> <a id="2392" href="Definition.Typed.Consequences.Consistency.html" class="Module">Definition.Typed.Consequences.Consistency</a>
+
+<a id="2435" class="Comment">-- Algorithmic equality with lemmas that depend on typing consequences</a>
+<a id="2506" class="Keyword">import</a> <a id="2513" href="Definition.Conversion.html" class="Module">Definition.Conversion</a>
+<a id="2535" class="Keyword">import</a> <a id="2542" href="Definition.Conversion.Conversion.html" class="Module">Definition.Conversion.Conversion</a>
+<a id="2575" class="Keyword">import</a> <a id="2582" href="Definition.Conversion.Lift.html" class="Module">Definition.Conversion.Lift</a>
+<a id="2609" class="Keyword">import</a> <a id="2616" href="Definition.Conversion.Reduction.html" class="Module">Definition.Conversion.Reduction</a>
+<a id="2648" class="Keyword">import</a> <a id="2655" href="Definition.Conversion.Soundness.html" class="Module">Definition.Conversion.Soundness</a>
+<a id="2687" class="Keyword">import</a> <a id="2694" href="Definition.Conversion.Stability.html" class="Module">Definition.Conversion.Stability</a>
+<a id="2726" class="Keyword">import</a> <a id="2733" href="Definition.Conversion.Symmetry.html" class="Module">Definition.Conversion.Symmetry</a>
+<a id="2764" class="Keyword">import</a> <a id="2771" href="Definition.Conversion.Transitivity.html" class="Module">Definition.Conversion.Transitivity</a>
+<a id="2806" class="Keyword">import</a> <a id="2813" href="Definition.Conversion.Universe.html" class="Module">Definition.Conversion.Universe</a>
+<a id="2844" class="Keyword">import</a> <a id="2851" href="Definition.Conversion.Weakening.html" class="Module">Definition.Conversion.Weakening</a>
+<a id="2883" class="Keyword">import</a> <a id="2890" href="Definition.Conversion.Whnf.html" class="Module">Definition.Conversion.Whnf</a>
+<a id="2917" class="Keyword">import</a> <a id="2924" href="Definition.Conversion.EqRelInstance.html" class="Module">Definition.Conversion.EqRelInstance</a>
+<a id="2960" class="Keyword">import</a> <a id="2967" href="Definition.Conversion.FullReduction.html" class="Module">Definition.Conversion.FullReduction</a>
+
+<a id="3004" class="Comment">-- Consequences of the logical relation for algorithmic equality</a>
+<a id="3069" class="Keyword">import</a> <a id="3076" href="Definition.Conversion.Consequences.Completeness.html" class="Module">Definition.Conversion.Consequences.Completeness</a>
+
+<a id="3125" class="Comment">-- Decidability of conversion</a>
+<a id="3155" class="Keyword">import</a> <a id="3162" href="Definition.Typed.Decidable.html" class="Module">Definition.Typed.Decidable</a>
+<a id="3189" class="Keyword">import</a> <a id="3196" href="Definition.Conversion.Decidable.html" class="Module">Definition.Conversion.Decidable</a>
+</pre></body></html>
