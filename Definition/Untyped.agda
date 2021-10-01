@@ -96,10 +96,6 @@ next-inj : ∀ {l l'} → next l PE.≡ next l' → l PE.≡ l'
 next-inj {⁰} {⁰} e = PE.refl
 next-inj {¹} {¹} e = PE.refl
 
--- ≤<∞ : ∀ {i j k } → i ≤ j → ι j <∞ k → ι i <∞ k
--- ≤<∞ (<is≤ 0<1) ∞< = ∞<⁰
--- ≤<∞ (≡is≤ PE.refl) e = e
-
 record TypeInfo : Set where
   constructor [_,_]
   field
@@ -152,7 +148,7 @@ data Term : Set where
 
 -- We represent the expressions of our language as de Bruijn terms.
 -- Variables are natural numbers interpreted as de Bruijn indices.
--- Π, lam, and natrec are binders.
+-- Π, lam, ∃ , transp and natrec are binders.
 
 -- Type constructors.
 U      : Level → Term                     -- Universe.
@@ -207,18 +203,23 @@ Empty l = gen (Emptykind l) []
 Emptyrec : (l lEmpty : Level) (A e : Term) -> Term
 Emptyrec l lEmpty A e = gen (Emptyreckind l lEmpty) (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
+-- Identity type
 Id : (A t u : Term) → Term
 Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
+-- witness of reflexivity of equality
 Idrefl : (A t : Term) → Term
 Idrefl A t = gen Idreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
+-- transport on propositions
 transp : (A P t s u e : Term) → Term
 transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
+-- cast between types, used to implement transport
 cast : Level → (A B e t : Term) → Term
 cast l A B e t = gen (Castkind l) (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
+-- propositional proof that casting with reflexivity is the identity 
 castrefl : (A t : Term) → Term
 castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
@@ -362,7 +363,7 @@ data Natural : Term → Set where
   sucₙ  : ∀ {t}             → Natural (suc t)
   ne    : ∀ {n} → Neutral n → Natural n
 
--- A (small) type in whnf is either Π A B, ℕ, or neutral.
+-- A type in whnf is either Π A B, ℕ, or neutral.
 -- Large types could also be U.
 
 data Type : Term → Set where
@@ -486,16 +487,6 @@ wkNeutral ρ castℕΠₙ = castℕΠₙ
 wkNeutral ρ castΠℕₙ = castΠℕₙ
 wkNeutral ρ castΠΠ%!ₙ = castΠΠ%!ₙ
 wkNeutral ρ castΠΠ!%ₙ = castΠΠ!%ₙ
-
--- Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 u)
--- IdℕSₙ : ∀ {u} → Neutral u → Neutral (Id ℕ 0 (suc u))
--- IdUₙ : ∀ {t u} → Neutral t → Neutral (Id U t u)
--- IdUℕₙ : ∀ {u} → Neutral u → Neutral (Id U ℕ u)
--- IdUΠₙ : ∀ {A rA B u} → Neutral u → Neutral (Id U (Π A ^ rA ▹ B) u)
--- castₙ : ∀ {A B e t} → Neutral A → Neutral (cast A B e t)
--- castℕₙ : ∀ {B e t} → Neutral B → Neutral (cast ℕ B e t)
--- castΠₙ : ∀ {A rA P B e t} → Neutral B → Neutral (cast (Π A ^ rA ▹ P) B e t)
--- castℕℕₙ : ∀ {e t} → Neutral t → Neutral (cast ℕ ℕ e t)
 
 -- Weakening can be applied to our whnf views.
 
@@ -683,14 +674,6 @@ t [ s ]↑↑ = subst (consSubst (wk1Subst (wk1Subst idSubst)) s) t
 Unit : ∀ {l} → Term
 Unit {l} =  Π Empty l ^ % ° l ▹ Empty l ° l ° l
 
-tt : ∀ {l} → Term -- currently not used
-tt {l} = lam (Empty l) ▹ (Emptyrec l l (Empty l) (var 0)) ^ l
-
-ap : (l : Level) (A B f x y e : Term) → Term -- currently not used
-ap l A B f x y e = transp A (Id (wk1 B) (wk1 (f ∘ x ^ l)) ((wk1 f) ∘ (var 0) ^ l)) x (Idrefl B (f ∘ x ^ l)) y e
-
 Idsym : (A x y e : Term) → Term
 Idsym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
 
-Idtrans : (A x y z e f : Term) → Term -- currently not used
-Idtrans A x y z e f = transp A (Id (wk1 A) (wk1 x) (var 0)) y e z f

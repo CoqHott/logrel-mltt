@@ -44,8 +44,6 @@ neuEq′ (noemb (ne K [[ ⊢A , ⊢B , D ]] neK K≡K)) neA neB A B A~B =
 neuEq′ {ι ¹} (emb emb< X) = neuEq′ X 
 neuEq′ {∞} (emb ∞< X) = neuEq′ X
 
--- neuEq′ x neB A:≡:B
-
 -- Neutrally equal types are of reducible equality.
 neuEq : ∀ {l Γ A B r ll} ([A] : Γ ⊩⟨ l ⟩ A ^ [ r , ι ll ])
         (neA : Neutral A)
@@ -335,7 +333,6 @@ neuEq:⇒*:′ (noemb (ne A' [[ ⊢A , ⊢B , D ]] neA A≡A)) neK neL [[ ⊢A' 
 neuEq:⇒*:′ {ι ¹} (emb emb< X) = neuEq:⇒*:′ X 
 neuEq:⇒*:′ {∞} (emb ∞< X) = neuEq:⇒*:′ X
 
--- neuEq′ x neB A:≡:B
 
 -- Neutrally equal types are of reducible equality.
 neuEq:⇒*: : ∀ {l Γ A B K L r ll} ([A] : Γ ⊩⟨ l ⟩ A ^ [ r , ι ll ])

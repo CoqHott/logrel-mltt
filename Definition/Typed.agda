@@ -32,11 +32,6 @@ mutual
          → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
          → Γ ⊢ A ^ [ r , ι l ]
   -- Well-formed term of a type
-    -- We also want:
-    -- Σ Relevant ▹ Relevant ∷ Relevant
-    -- Σ Relevant ▹ Irrelevant ∷ Relevant (allow us to encode relevant Empty, bool)
-    -- Quotients
-    -- J-types (identity types that have J)
 
   data _⊢_∷_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ : ∀ {r l l'}
@@ -144,8 +139,6 @@ mutual
            → Γ ⊢ A ≡ B ^ r
            → Γ ⊢ B ≡ C ^ r
            → Γ ⊢ A ≡ C ^ r
-    -- I dont think we want ∃ and Id conversion rules, as they are always in SProp
-    -- and can therefore be recovered from typed conversion
 
 
   -- Term equality

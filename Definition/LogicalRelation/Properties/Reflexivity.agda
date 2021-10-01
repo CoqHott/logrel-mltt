@@ -49,7 +49,9 @@ reflEmpty-prop : ∀ {Γ n l}
 reflEmpty-prop (ne x) = ne x x
 
 -- Reflexivity of reducible terms.
--- We proceed in a layered way because agda does not understand our recursions are well founded
+-- We proceed in a layered way because Agda does not understand our
+-- recursions are well founded
+
 reflEqTerm⁰ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ r)
            → Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ ι ⁰ ⟩ t ≡ t ∷ A ^ r / [A]

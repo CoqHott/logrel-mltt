@@ -207,7 +207,7 @@ mutual
     ℕ-ins     : ∀ {k l}
               → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
               → Γ ⊢ k [conv↓] l ∷ ℕ ^ ι ⁰
-    ne-ins    : ∀ {k l M N ll} -- should we have 2 relevances here?
+    ne-ins    : ∀ {k l M N ll}
               → Γ ⊢ k ∷ N ^ [ ! , ι ll ]
               → Γ ⊢ l ∷ N ^ [ ! , ι ll ]
               → Neutral N

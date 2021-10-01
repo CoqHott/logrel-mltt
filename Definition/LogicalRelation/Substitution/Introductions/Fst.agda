@@ -29,7 +29,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
--- Valid lambda term construction.
+-- Valid fst term construction.
 fstᵛ : ∀ {F G l∃ tu Γ}
        ([Γ] : ⊩ᵛ Γ) →
        let l    = ∞

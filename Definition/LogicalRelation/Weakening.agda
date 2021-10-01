@@ -67,22 +67,16 @@ mutual
 wkTermEmpty : ∀ {ρ Γ Δ l n} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
   → Γ ⊩Empty n ∷Empty^ l → Δ ⊩Empty U.wk ρ n ∷Empty^ l
 wkTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ (ne d)) = Emptyₜ (ne (T.wkTerm [ρ] ⊢Δ d))
-  -- Emptyₜ (U.wk ρ n) (wkRed:*:Term [ρ] ⊢Δ d)
-  --    (≅ₜ-wk [ρ] ⊢Δ n≡n)
-  --    (ne (wkTermNe [ρ] ⊢Δ prop))
 
 wk[Empty]-prop : ∀ {ρ Γ Δ n l n′} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
   → [Empty]-prop Γ n n′ l
   → [Empty]-prop Δ (U.wk ρ n) (U.wk ρ n′) l
-wk[Empty]-prop {ρ} [ρ] ⊢Δ (ne d d') = ne (T.wkTerm [ρ] ⊢Δ d) (T.wkTerm [ρ] ⊢Δ d') -- ne (wkEqTermNe ρ ⊢Δ x)
+wk[Empty]-prop {ρ} [ρ] ⊢Δ (ne d d') = ne (T.wkTerm [ρ] ⊢Δ d) (T.wkTerm [ρ] ⊢Δ d') 
 
 wkEqTermEmpty : ∀ {ρ Γ Δ t u l } → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
   → Γ ⊩Empty t ≡ u ∷Empty^ l
   → Δ ⊩Empty U.wk ρ t ≡ U.wk ρ u ∷Empty^ l
 wkEqTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ₌ (ne d d')) = Emptyₜ₌ (ne (T.wkTerm [ρ] ⊢Δ d) (T.wkTerm [ρ] ⊢Δ d'))
-  -- Emptyₜ₌ (U.wk ρ k) (U.wk ρ k′) (wkRed:*:Term [ρ] ⊢Δ d)
-  --     (wkRed:*:Term [ρ] ⊢Δ d′) (≅ₜ-wk [ρ] ⊢Δ t≡u)
-  --     (wk[Empty]-prop [ρ] ⊢Δ prop)
 
 
 -- Weakening of the logical relation
@@ -235,7 +229,7 @@ wkTerm : ∀ {ρ Γ Δ A t r l} ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
 wkTerm {ρ} {Δ = Δ} {t = t} {l = ι ¹} [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ l< eq d)) (Uₜ K d₁ typeK K≡K [t]) =
   let
     -- this code is a bit of a mess tbh
-    -- it is mostly about using irrelevance to back and forth between proofs of
+    -- it is mostly about using irrelevance back and forth between proofs of
     -- reducibility using U.wk ρ′ (U.wk ρ t) and proofs using U.wk (ρ′ • ρ) t
     [t]′ = λ {ρ′} {Δ′} [ρ′] (⊢Δ′ : ⊢ Δ′) →
       irrelevance′ (PE.sym (wk-comp ρ′ ρ t)) ([t] ([ρ′] •ₜ [ρ]) ⊢Δ′)

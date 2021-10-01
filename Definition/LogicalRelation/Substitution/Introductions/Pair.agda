@@ -27,7 +27,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
--- Valid lambda term construction.
+-- Valid pair construction.
 ⦅⦆ᵛ : ∀ {F G l∃ t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])

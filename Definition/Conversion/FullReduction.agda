@@ -11,7 +11,6 @@ open import Definition.Typed.Weakening
 open import Definition.Conversion
 open import Definition.Conversion.Whnf
 open import Definition.Conversion.Stability
-open import Definition.Typed.Consequences.InverseUniv
 open import Definition.Typed.Consequences.Inversion
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Syntactic

@@ -5,7 +5,7 @@ open import Definition.Typed.EqualityRelation
 module Definition.LogicalRelation.Substitution.Irrelevance {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
-open import Definition.Untyped hiding (tt)
+open import Definition.Untyped 
 open import Definition.Typed
 open import Definition.LogicalRelation
 import Definition.LogicalRelation.Irrelevance as LR

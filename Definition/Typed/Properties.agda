@@ -384,8 +384,8 @@ whnfRed* (x ⇨ d) w = ⊥-elim (whnfRed x w)
 -- Whr is deterministic
 
 -- somehow the cases (cast-Π, cast-Π) and (Id-U-ΠΠ, Id-U-ΠΠ) fail if
--- I do not introduce a dummy relevance rA'. This is why I need the two
--- auxiliary functions. What the hell Agda?
+-- we do not introduce a dummy relevance rA'. This is why we need the two
+-- auxiliary functions. 
 whrDetTerm-aux1 : ∀{Γ t u F lF A A' rA lA lB rA' l B B' e f}
   → (d :  t PE.≡ cast l (Π A ^ rA ° lA ▹ B ° lB ° l) (Π A' ^ rA' ° lA ▹ B' ° lB ° l) e f)
   → (d′ : Γ ⊢ t ⇒ u ∷ F ^ lF)

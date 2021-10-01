@@ -13,7 +13,6 @@ open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Fundamental.Reducibility
 open import Definition.Typed.Consequences.Inversion
-open import Definition.Typed.Consequences.InverseUniv
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Conversion.Stability

@@ -62,7 +62,6 @@ import Definition.Typed.Consequences.Inversion
 import Definition.Typed.Consequences.Inequality
 import Definition.Typed.Consequences.Substitution
 import Definition.Typed.Consequences.Equality
-import Definition.Typed.Consequences.InverseUniv
 import Definition.Typed.Consequences.Reduction
 import Definition.Typed.Consequences.NeTypeEq
 import Definition.Typed.Consequences.RelevanceUnicity

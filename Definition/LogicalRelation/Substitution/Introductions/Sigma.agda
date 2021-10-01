@@ -703,7 +703,7 @@ open import Tools.Empty using (⊥; ⊥-elim)
                                                 (PE.sym (wk-subst (∃ H ▹ E))) PE.refl PE.refl
                                                 (proj₁ (∃ᵛ {F} {G} [Γ] [F] [G] ⊢Δ₁ [ρσ])) (LogRel._⊩¹U_∷_^_/_.[t] [∃FG]ᵗ [ρ] ⊢Δ₁) X 
 
--- Validity of non-dependent function types.
+-- Validity of non-dependent sum types.
 ××ᵛ : ∀ {F G l∃ Γ l}
       ([Γ] : ⊩ᵛ Γ)
       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])
@@ -712,7 +712,7 @@ open import Tools.Empty using (⊥; ⊥-elim)
 ××ᵛ {F} {G} [Γ] [F] [G] =
   ∃ᵛ {F} {wk1 G} [Γ] [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
 
--- Validity of non-dependent function type congurence.
+-- Validity of non-dependent sum type congurence.
 ××-congᵛ : ∀ {F F′ G G′ l∃ Γ l}
            ([Γ] : ⊩ᵛ Γ)
            ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])

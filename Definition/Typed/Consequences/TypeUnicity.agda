@@ -10,7 +10,6 @@ open import Definition.Typed.Weakening
 open import Definition.Typed.Consequences.Equality
 import Definition.Typed.Consequences.Inequality as Ineq
 open import Definition.Typed.Consequences.Inversion
-open import Definition.Typed.Consequences.InverseUniv
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Typed.Consequences.Syntactic

@@ -160,24 +160,14 @@ data Empty-prop (Γ : Con Term) (n : Term) (l : Level) : Set where
 -- -- Empty term
 
 data _⊩Empty_∷Empty^_ (Γ : Con Term) (t : Term) (l : Level) : Set where
-  Emptyₜ :  -- (n : Term) (d : Γ ⊢ t :⇒*: n ∷ Empty ^ %) (n≡n : Γ ⊢ n ≅ n ∷ Empty ^ %)
-         (prop : Empty-prop Γ t l)
-         → Γ ⊩Empty t ∷Empty^ l
+  Emptyₜ : (prop : Empty-prop Γ t l) → Γ ⊩Empty t ∷Empty^ l
 
 data [Empty]-prop (Γ : Con Term) : (n n′ : Term)  (l : Level) → Set where
   ne    : ∀ {n n′ l} → Γ ⊢ n ∷ Empty l ^ [ % , ι l ] → Γ ⊢ n′ ∷ Empty l ^ [ % , ι l ]  → [Empty]-prop Γ n n′ l
 
 -- Empty term equality
 data _⊩Empty_≡_∷Empty^_ (Γ : Con Term) (t u : Term) (l : Level) : Set where
-  Emptyₜ₌ : -- (k k′ : Term) (d : Γ ⊢ t :⇒*: k ∷ Empty ^ %) (d′ : Γ ⊢ u :⇒*: k′ ∷ Empty ^ %)
-    -- (k≡k′ : Γ ⊢ k ≅ k′ ∷ Empty ^ %)
-      (prop : [Empty]-prop Γ t u l) → Γ ⊩Empty t ≡ u ∷Empty^ l
-
--- empty : ∀ {Γ n} → Empty-prop Γ n → Neutral n
--- empty (ne (neNfₜ neK _ _)) = neK
-
--- esplit : ∀ {Γ a b} → [Empty]-prop Γ a b → Neutral a × Neutral b
--- esplit (ne (neNfₜ₌ neK neM k≡m)) = neK , neM
+  Emptyₜ₌ : (prop : [Empty]-prop Γ t u l) → Γ ⊩Empty t ≡ u ∷Empty^ l
 
 -- Logical relation
 
@@ -449,8 +439,6 @@ pattern ∃ᵣ′  a b c d e f g h i = ∃ᵣ (∃ᵣ a b c d e f g h i)
 
 -- we need to split the LogRelKit into the level part and the general part to convince Agda termination checker
 
-
-
 logRelRec : ∀ l {l′} → l′ <∞ l → LogRelKit
 logRelRec (ι ⁰) = λ ()
 logRelRec (ι ¹) X = LogRel.kit (ι ⁰) λ ()
@@ -458,9 +446,6 @@ logRelRec ∞ X = LogRel.kit (ι ¹) (λ X → LogRel.kit (ι ⁰) λ ())
 
 kit : ∀ (i : TypeLevel) → LogRelKit
 kit l =  LogRel.kit l (logRelRec l)
-
--- a bit of repetition in "kit ¹" definition, would work better with Fin 2 for
--- TypeLevel because you could recurse.
 
 _⊩′⟨_⟩U_^_ : (Γ : Con Term) (l : TypeLevel) → Term → TypeLevel → Set
 Γ ⊩′⟨ l ⟩U A ^ ll = Γ ⊩U A ^ ll where open LogRelKit (kit l)

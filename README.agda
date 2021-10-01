@@ -174,9 +174,6 @@ import Definition.Typed.Consequences.Substitution
 -- Uniqueness of the types of neutral terms.
 import Definition.Typed.Consequences.NeTypeEq
 
--- Universe membership of types.
-import Definition.Typed.Consequences.InverseUniv
-
 -- Consistency of the type theory.
 import Definition.Typed.Consequences.Consistency
 

@@ -386,7 +386,7 @@ un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb¹⁰ (Πᵥ (Πᵣ rF lF lG lF<
              (PE.subst (λ X → _ ⊢ Π F ^ rF ° lF ▹ G ° lG ° _ ≅  Π F′ ^ rF' ° X ▹ G′ ° lG ° _ ^ _ ) lF≡lF
              (PE.subst (λ X → _ ⊢ Π F ^ rF ° lF ▹ G ° lG ° _ ≅  Π F′ ^ X ° lF ▹ G′ ° lG ° _ ^ _ ) rF≡rF A≡B)))))) λ [ρ] ⊢Δ → Lwk.wkEq [ρ] ⊢Δ [A] [A≡B]
 un-univEqEq-Shape {¹} {Γ} {A} {B} {.%} _ _ (emb¹⁰ (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                        (∃ᵣ F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext')))
+                                         (∃ᵣ F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext')))
                                     (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   let [A] = ∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext
       [B] = ∃ᵣ′ F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'

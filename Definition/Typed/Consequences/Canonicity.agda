@@ -26,6 +26,11 @@ sucᵏ (1+ n) = suc (sucᵏ n)
 -- No neutral terms are well-formed in an empty context
 
 -- we need to postulate consistency
+-- as we have several uninhabited propositions, we build an predicate
+-- to characterize them
+
+-- Note that we could also have defined reductions to Empty of other
+-- forms of unihabited types
 
 data isFalse : Term → Set where
   isEmpty : ∀ {lEmpty} → isFalse (Empty lEmpty)
