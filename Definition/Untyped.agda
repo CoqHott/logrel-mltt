@@ -20,14 +20,13 @@ infix 25 _[_]
 infix 25 _[_]↑
 
 data Relevance : Set where
-  ! : Relevance
-  % : Relevance
+  ! : Relevance -- proof-relevant
+  % : Relevance -- proof-irrelevant
 
 !≢% : ! PE.≢ %
 !≢% ()
 
--- two levels of types
-
+-- two levels of small types
 data Level : Set where
   ⁰ : Level
   ¹ : Level
@@ -42,8 +41,7 @@ data _≤_ (i j : Level) : Set where
   <is≤  : i < j → i ≤ j
   ≡is≤ : i PE.≡ j → i ≤ j
 
--- Type levels
-
+-- Large type levels : ι ⁰, ι ¹, ∞
 data TypeLevel : Set where
   ι : Level → TypeLevel
   ∞ : TypeLevel
@@ -96,6 +94,7 @@ next-inj : ∀ {l l'} → next l PE.≡ next l' → l PE.≡ l'
 next-inj {⁰} {⁰} e = PE.refl
 next-inj {¹} {¹} e = PE.refl
 
+-- In a typing judgment, a type is generally annotated with a pair of a relevance and a level
 record TypeInfo : Set where
   constructor [_,_]
   field
@@ -106,7 +105,6 @@ toTypeInfo : Relevance × Level → TypeInfo
 toTypeInfo ( r , l ) = [ r , ι l ]
 
 -- Typing contexts (snoc-lists, isomorphic to lists).
-
 data Con (A : Set) : Set where
   ε   : Con A               -- Empty context.
   _∙_^_ : Con A → A → TypeInfo → Con A  -- Context extension.
@@ -117,7 +115,6 @@ record GenT (A : Set) : Set where
   field
     l : Nat
     t : A
-
 
 data Kind : Set where
   Ukind : Relevance → Level → Kind
@@ -151,21 +148,26 @@ data Term : Set where
 -- Π, lam, ∃ , transp and natrec are binders.
 
 -- Type constructors.
-U      : Level → Term                     -- Universe.
+-- Universes of proof-relevant types
+U      : Level → Term
 U l = gen (Ukind ! l) []
 
+-- Universes of proof-irrelevant types
 SProp : Level → Term
 SProp l = gen (Ukind % l) []
 
 pattern Univ r l = gen (Ukind r l) []
 
+-- Dependent product, with level annotations for the domain, codomain, and resulting type
 Π_^_°_▹_°_°_   : Term → Relevance → Level → Term → Level → Level → Term  -- Dependent function type (B is a binder).
 Π A ^ r ° lA ▹ B ° lB ° lΠ = gen (Pikind r lA lB lΠ) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
-∃_▹_ : Term → Term → Term -- Dependent pairs
+-- Existential type : dependent pairs of proof-irrelevant terms
+∃_▹_ : Term → Term → Term
 ∃ A ▹ B = gen Sigmakind (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
-ℕ      : Term                     -- Type of natural numbers.
+-- Natural numbers
+ℕ      : Term
 ℕ = gen Natkind []
 
 -- Lambda-calculus.
@@ -197,9 +199,11 @@ suc t = gen Suckind (⟦ 0 , t ⟧ ∷ [])
 natrec : (l : Level) (A t u v : Term) → Term  -- Recursor (A is a binder).
 natrec l A t u v = gen (Natreckind l) (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , v ⟧ ∷ [])
 
+-- Empty type
 Empty : Level → Term
 Empty l = gen (Emptykind l) []
 
+-- Eliminator for the empty type
 Emptyrec : (l lEmpty : Level) (A e : Term) -> Term
 Emptyrec l lEmpty A e = gen (Emptyreckind l lEmpty) (⟦ 0 , A ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
 
@@ -219,7 +223,7 @@ transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 ,
 cast : Level → (A B e t : Term) → Term
 cast l A B e t = gen (Castkind l) (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , e ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
--- propositional proof that casting with reflexivity is the identity 
+-- propositional proof that casting with reflexivity is the identity
 castrefl : (A t : Term) → Term
 castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
@@ -245,9 +249,9 @@ Univ-PE-injectivity PE.refl = PE.refl , PE.refl
 
 -- Neutral terms.
 
--- A term is neutral if it has a variable in head position.
--- The variable blocks reduction of such terms.
--- Emptyrec is always neutral
+-- A term is neutral if
+-- either it has a variable in head position that blocks reduction.
+-- either it is of the form Emptyrec (or terms that should reduce to emptyrec, such as incompatible casts)
 
 data Neutral : Term → Set where
   var     : ∀ n                     → Neutral (var n)
@@ -676,4 +680,3 @@ Unit {l} =  Π Empty l ^ % ° l ▹ Empty l ° l ° l
 
 Idsym : (A x y e : Term) → Term
 Idsym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
-

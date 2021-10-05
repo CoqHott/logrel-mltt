@@ -294,7 +294,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     -- Issue: Agda complains about record use not being strictly positive.
     --        Therefore we have to use ×
 
-    -- relevant Term of Π-type
+    -- Irrelevant term of Π-type
     _⊩¹Πirr_∷_^_/_ : (Γ : Con Term) (t A : Term) (l′ : Level) ([A] : Γ ⊩¹Π A ^[ % , l′ ]) → Set
     Γ ⊩¹Πirr t ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
       Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ % , ι l′ ]
@@ -316,13 +316,14 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
           → Δ ⊩¹ U.wk ρ f ∘ a ^ l′ ≡ U.wk ρ g ∘ a ^ l′ ∷ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a])
     -- Issue: Same as above.
 
-    -- Term equality of Π-type
+    -- Irrelevant term equality of Π-type
     _⊩¹Πirr_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (l′ : Level) ([A] : Γ ⊩¹Π A ^[ % , l′ ] ) → Set
     Γ ⊩¹Πirr t ≡ u ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
           (Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ % , ι l′ ])
           ×
           (Γ ⊢ u ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ % , ι l′ ])
 
+    -- Existential types
     record _⊩¹∃_^_ (Γ : Con Term) (A : Term) (l′ : Level) : Set where
       inductive
       eta-equality
@@ -346,7 +347,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
               → Δ ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ
               → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ % , ι l′ ] / [G] [ρ] ⊢Δ [a]
 
-    -- Π-type equality
+    -- ∃-type equality
     record _⊩¹∃_≡_^_/_ (Γ : Con Term) (A B : Term) (l′ : Level) ([A] : Γ ⊩¹∃ A ^ l′) : Set where
       inductive
       eta-equality
@@ -365,10 +366,12 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
                → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ % , ι l′ ] / [F] [ρ] ⊢Δ)
                → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G′ [ a ] ^ [ % , ι l′ ] / [G] [ρ] ⊢Δ [a]
 
+    -- Terms of ∃-types (always irrelevant)
     _⊩¹∃_∷_^_/_ : (Γ : Con Term) (t A : Term) (l′ : Level) ([A] : Γ ⊩¹∃ A ^ l′) → Set
     Γ ⊩¹∃ t ∷ A ^ l′ / ∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
       Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , ι l′ ]
 
+    -- Term equality for ∃-types
     _⊩¹∃_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (l′ : Level) ([A] : Γ ⊩¹∃ A ^ l′) → Set
     Γ ⊩¹∃ t ≡ u ∷ A ^ l′ / ∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
           (Γ ⊢ t ∷ ∃ F ▹ G ^ [ % , ι l′ ])
@@ -468,7 +471,7 @@ _⊩⟨_⟩_∷_^_/_ : (Γ : Con Term) (l : TypeLevel) (t A : Term) (r : TypeInf
 _⊩⟨_⟩_≡_∷_^_/_ : (Γ : Con Term) (l : TypeLevel) (t u A : Term) (r : TypeInfo) → Γ ⊩⟨ l ⟩ A ^ r → Set
 Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A] = Γ ⊩ t ≡ u ∷ A ^ r / [A] where open LogRelKit (kit l)
 
-
+-- Well-typed irrelevant terms are always reducible
 logRelIrr : ∀ {l t Γ l' A} ([A] : Γ ⊩⟨ l ⟩ A ^ [ % , l' ]) (⊢t : Γ ⊢ t ∷ A ^ [ % , l' ]) → Γ ⊩⟨ l ⟩ t ∷ A ^ [ % , l' ] / [A]
 logRelIrr (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t = Emptyₜ (ne (conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
 logRelIrr (ne x) ⊢t = neₜ ⊢t
@@ -477,7 +480,7 @@ logRelIrr (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (redu
 logRelIrr {ι ¹} (emb X [A]) ⊢t = logRelIrr [A] ⊢t
 logRelIrr {∞} (emb X [A]) ⊢t = logRelIrr [A] ⊢t
 
-
+-- Well-typed irrelevant terms are reducibly equal as soon as they have the same type
 logRelIrrEq : ∀ {l t u Γ l' A} ([A] : Γ ⊩⟨ l ⟩ A ^ [ % , l' ]) (⊢t : Γ ⊢ t ∷ A ^ [ % , l' ]) (⊢u : Γ ⊢ u ∷ A ^ [ % , l' ]) → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ % , l' ] / [A]
 logRelIrrEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t ⊢u = Emptyₜ₌ (ne ((conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
                                                          (conv ⊢u (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))

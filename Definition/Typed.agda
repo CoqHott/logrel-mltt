@@ -31,8 +31,8 @@ mutual
     univ : ∀ {A r l}
          → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
          → Γ ⊢ A ^ [ r , ι l ]
-  -- Well-formed term of a type
 
+  -- Well-formed term of a type
   data _⊢_∷_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ : ∀ {r l l'}
          → l < l'
@@ -469,7 +469,7 @@ mutual
              → Γ ⊢ f ∷ (Π A ^ rA ° l ▹ B ° l ° l) ^ [ ! , ι l ]
              → Γ ⊢ (cast l (Π A ^ rA ° l ▹ B ° l ° l) (Π A' ^ rA ° l ▹ B' ° l ° l) e f)
                ⇒ (lam A' ▹
-                      (let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) 
+                      (let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0)
                        in cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l))
                        ^ l )
                    ∷ Π A' ^ rA ° l ▹ B' ° l ° l ^ ι l
@@ -573,6 +573,7 @@ data _⊢ˢ_≡_∷_ (Δ : Con Term) (σ σ′ : Subst) : (Γ : Con Term) → Se
 -- Note that we cannot use the well-formed substitutions.
 -- For that, we need to prove the fundamental theorem for substitutions.
 
+-- Some derivable rules
 Unitⱼ : ∀ {Γ l} (⊢Γ : ⊢ Γ)
       → Γ ⊢ Unit ∷ SProp l ^ [ ! , next l ]
 Unitⱼ ⊢Γ = Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ Emptyⱼ ⊢Γ ▹ Emptyⱼ (⊢Γ ∙ univ (Emptyⱼ ⊢Γ))
