@@ -10,7 +10,7 @@ The companion paper can be found [TODO]
 
 ### Setoid Type Theory ###
 
-The type theory under scrutiny is a simplified version of TT^obs, as described in the companion
+The type theory under scrutiny is a simplified version of TT<sup>obs</sup>, as described in the companion
 paper.
 It features:
 - A hierarchy of universes for proof-relevant types, and one for proof-irrelevant types,
@@ -25,12 +25,12 @@ However, it is subject to the following restrictions:
 - no quotient types.
 
 The interested reader is invited to consult either the companion paper or the formalized definitions
-for a more detailed account of TT^obs.
+for a more detailed account of TT<sup>obs</sup>.
 
 ### Structure of the proof ###
 
 The raw, untyped syntax is defined inductively, followed by an inductive definition of the typing
-derivations of TT^obs.
+derivations of TT<sup>obs</sup>.
 
 The proof then relies on Agda's implementation of induction-recursion to define a logical relation
 that characterizes the computational behaviour of the typing judgments. Some basic properties of
