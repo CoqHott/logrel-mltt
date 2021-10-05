@@ -13,7 +13,7 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 
--- Inversion of natural number type.
+-- Inversion of Universes
 inversion-U : ∀ {Γ C rU lU r} → Γ ⊢ Univ rU lU ∷ C ^ r → Γ ⊢ C ≡ U ¹ ^ [ ! , next ¹ ] × r PE.≡ [ ! , next ¹ ] × lU PE.≡ ⁰
 inversion-U (univ 0<1 x) = refl (Ugenⱼ x) , PE.refl , PE.refl
 inversion-U (conv x x₁) with inversion-U x
@@ -53,12 +53,12 @@ inversion-∃ : ∀ {F G Γ C  r}
 inversion-∃ (∃ⱼ_▹_ {l = l∃} x x₁) = l∃ , x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl
 inversion-∃ (conv x x₁) = let l∃ , a , b , c , r≡! = inversion-∃ x
                           in l∃ , a , b , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c , r≡!
-                            
+
 inversion-Empty : ∀ {Γ C r l} → Γ ⊢ Empty l ∷ C ^ r → Γ ⊢ C ≡ SProp l ^ r × r PE.≡ [ ! , next l ]
 inversion-Empty (Emptyⱼ x) = refl (Ugenⱼ x) , PE.refl
 inversion-Empty (conv x x₁) =
   let C≡SProp , r = inversion-Empty x
-  in trans (sym x₁) C≡SProp , r 
+  in trans (sym x₁) C≡SProp , r
 
 -- Inversion of zero.
 inversion-zero : ∀ {Γ C r} → Γ ⊢ zero ∷ C ^ r → Γ ⊢ C ≡ ℕ ^ [ ! , ι ⁰ ] × r PE.≡ [ ! , ι ⁰ ]
@@ -91,7 +91,7 @@ inversion-Emptyrec : ∀ {Γ e A C rlC lEmpty lC} → Γ ⊢ Emptyrec lC lEmpty 
   × rlC PE.≡ [ rC , ι lC ]
 inversion-Emptyrec (Emptyrecⱼ [C] [e]) = _ , [C] , [e] , refl [C] , PE.refl
 inversion-Emptyrec (conv d x) = let r , a , b , c , e = inversion-Emptyrec d
-                                in r , a , b , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) e x)) c , e 
+                                in r , a , b , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) e x)) c , e
 
 -- Inversion of application.
 inversion-app :  ∀ {Γ f a A r lΠ} → Γ ⊢ (f ∘ a ^ lΠ) ∷ A ^ r →
@@ -128,7 +128,7 @@ inversion-Id : ∀ {A t u C r Γ}
 inversion-Id (Idⱼ {l = l} A t u) = l , A , t , u , refl (Ugenⱼ (wfTerm A)) , PE.refl
 inversion-Id (conv x x₁) = let l , a , b , c , d , r≡! = inversion-Id x
                            in l , a , b , c , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) d , r≡!
-                            
+
 
 -- Inversion of cast-types.
 inversion-cast : ∀ {A B e t l C r Γ}
