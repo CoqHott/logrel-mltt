@@ -36,6 +36,8 @@ import Tools.PropositionalEquality
 -- Natural numbers and decidability of equality.
 import Tools.Nat
 
+-- Lists definition
+import Tools.List
 
 ---------------------------
 -- LANGUAGE INTRODUCTION --
@@ -130,28 +132,52 @@ import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 -- The fundamental theorem.
 import Definition.LogicalRelation.Fundamental
 
--- Certain cases of the logical relation:
+-- Certain cases of the fundamental theorem
 
--- Validity of Π-types.
-import Definition.LogicalRelation.Substitution.Introductions.Pi
+-- Validity of the universes
+import Definition.LogicalRelation.Substitution.Introductions.Universe
 
--- Validity of applications.
-import Definition.LogicalRelation.Substitution.Introductions.Application
+-- Validity of the empty type and its eliminator
+import Definition.LogicalRelation.Substitution.Introductions.Empty
+import Definition.LogicalRelation.Substitution.Introductions.EmptyRec
 
--- Validity of λ-terms.
-import Definition.LogicalRelation.Substitution.Introductions.Lambda
-
--- Validity of natural recursion of natural numbers.
+-- Validity of natural numbers and its eliminator
+import Definition.LogicalRelation.Substitution.Introductions.Nat
 import Definition.LogicalRelation.Substitution.Introductions.Natrec
 
+-- Validity of Π-types, abstractions and applications
+import Definition.LogicalRelation.Substitution.Introductions.Pi
+import Definition.LogicalRelation.Substitution.Introductions.Application
+import Definition.LogicalRelation.Substitution.Introductions.Lambda
+
+-- Validity of ∃-types, pairs and projections
+import Definition.LogicalRelation.Substitution.Introductions.Sigma
+import Definition.LogicalRelation.Substitution.Introductions.Pair
+import Definition.LogicalRelation.Substitution.Introductions.Fst
+import Definition.LogicalRelation.Substitution.Introductions.Snd
+
+-- Validity of type casting and proof-irrelevant transport
+import Definition.LogicalRelation.Substitution.Introductions.CastLemmas
+import Definition.LogicalRelation.Substitution.Introductions.Cast
+import Definition.LogicalRelation.Substitution.Introductions.CastPi
+import Definition.LogicalRelation.Substitution.Introductions.Transp
+
+-- Validity of identity types, and reflexivity
+import Definition.LogicalRelation.Substitution.Introductions.Idlemmas
+import Definition.LogicalRelation.Substitution.Introductions.IdUniv
+import Definition.LogicalRelation.Substitution.Introductions.IdNat
+import Definition.LogicalRelation.Substitution.Introductions.IdPi
+import Definition.LogicalRelation.Substitution.Introductions.IdUPiPi
+import Definition.LogicalRelation.Substitution.Introductions.IdRefl
 
 -- Reducibility of well-formedness.
 import Definition.LogicalRelation.Fundamental.Reducibility
 
 -- Consequences of the fundamental theorem:
 
--- Canonicity of the system.
---import Definition.Typed.Consequences.Canonicity
+-- Consistency (no proof of False in the empty context) implies
+-- canonicity of the system.
+import Definition.Typed.Consequences.Canonicity
 
 -- Injectivity of Π-types.
 import Definition.Typed.Consequences.Injectivity
@@ -168,15 +194,25 @@ import Definition.Typed.Consequences.Equality
 -- Syntactic inequality of types.
 import Definition.Typed.Consequences.Inequality
 
--- Substiution in judgements and substitution composition.
+-- Substitution in judgements and substitution composition.
 import Definition.Typed.Consequences.Substitution
 
 -- Uniqueness of the types of neutral terms.
 import Definition.Typed.Consequences.NeTypeEq
 
--- Consistency of the type theory.
+-- Consistency (0 is not judgementally equal to 1) of the type theory.
 import Definition.Typed.Consequences.Consistency
 
+-- Types can only belong to one universe (because of annotations)
+-- also various inequalities for conversion
+import Definition.Typed.Consequences.PiNorm
+import Definition.Typed.Consequences.RelevanceUnicity
+
+-- Terms can only admit one type
+import Definition.Typed.Consequences.TypeUnicity
+
+-- Various inversion results
+import Definition.Typed.Consequences.TypeUnicity
 
 ------------------
 -- DECIDABILITY --
@@ -196,11 +232,14 @@ import Definition.Conversion.Stability
 -- Soundness of the conversion algorithm.
 import Definition.Conversion.Soundness
 
+-- Results around normalisation of reflexive terms
+import Definition.Conversion.FullReduction
+
 -- Conversion property of algorithmic equality.
 import Definition.Conversion.Conversion
 
 -- Decidability of the conversion algorithm.
--- import Definition.Conversion.Decidable
+import Definition.Conversion.Decidable
 
 -- Symmetry of the conversion algorithm.
 import Definition.Conversion.Symmetry
@@ -221,4 +260,5 @@ import Definition.Conversion.EqRelInstance
 import Definition.Conversion.Consequences.Completeness
 
 -- Decidability of judgemental conversion.
+import Definition.Typed.HelperDecidable
 import Definition.Typed.Decidable
