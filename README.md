@@ -6,7 +6,7 @@ function extensionality, and propositional extensionality.
 
 The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/setoid-universes-hierarchy/html/README.html).
 
-The companion paper can be found [TODO]
+The companion paper can be found [here](https://hal.inria.fr/hal-03367052)
 
 ### Setoid Type Theory ###
 
@@ -49,8 +49,6 @@ equality of terms and types is decidable.
 A more detailed, but still high-level overview of the proof is provided in the companion paper.
 
 ### Files ###
-
-[TODO]
 
 A more detailed description of the role of each file can be found in README.agda
 
