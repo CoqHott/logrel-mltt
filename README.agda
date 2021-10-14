@@ -139,7 +139,7 @@ import Definition.LogicalRelation.Substitution.Introductions.Universe
 
 -- Validity of the empty type and its eliminator
 import Definition.LogicalRelation.Substitution.Introductions.Empty
-import Definition.LogicalRelation.Substitution.Introductions.EmptyRec
+import Definition.LogicalRelation.Substitution.Introductions.Emptyrec
 
 -- Validity of natural numbers and its eliminator
 import Definition.LogicalRelation.Substitution.Introductions.Nat
@@ -157,7 +157,7 @@ import Definition.LogicalRelation.Substitution.Introductions.Fst
 import Definition.LogicalRelation.Substitution.Introductions.Snd
 
 -- Validity of type casting and proof-irrelevant transport
-import Definition.LogicalRelation.Substitution.Introductions.CastLemmas
+import Definition.LogicalRelation.Substitution.Introductions.Castlemmas
 import Definition.LogicalRelation.Substitution.Introductions.Cast
 import Definition.LogicalRelation.Substitution.Introductions.CastPi
 import Definition.LogicalRelation.Substitution.Introductions.Transp
@@ -260,5 +260,5 @@ import Definition.Conversion.EqRelInstance
 import Definition.Conversion.Consequences.Completeness
 
 -- Decidability of judgemental conversion.
-import Definition.Typed.HelperDecidable
+import Definition.Conversion.HelperDecidable
 import Definition.Typed.Decidable
