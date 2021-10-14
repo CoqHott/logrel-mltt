@@ -59,6 +59,6 @@ This project is written in Agda. It has been tested to be working with Agda vers
 ### Warning ###
 
 The reader who wishes to type-check the entire proof should be warned that the files
-Defintion/LogicalRelations/Substitution/Cast.agda and Conversion/Decidability.agda may
+Defintion/LogicalRelations/Substitution/Introductions/Cast.agda and Conversion/Decidable.agda may
 be quite resource-intensive (Type-checking the latter seems to take at least 10 min on a
 higher-end laptop).
