@@ -23,50 +23,67 @@ sucᵏ : Nat → Term
 sucᵏ 0 = zero
 sucᵏ (1+ n) = suc (sucᵏ n)
 
--- No neutral terms are well-formed in an empty context
+consistent : Con Term → Set
+consistent = λ Γ → ∀ t → Γ ⊢ t ∷ Empty ^ % →  ⊥
+
+-- consider only propositional contexts
+
+data prop-ctx : Con Term → Set where
+  prop-ctx-ε : prop-ctx ε
+  prop-ctx-· : ∀ {Γ A} → prop-ctx Γ → prop-ctx (Γ ∙ A ^ %)
+
+prop-ctx-var : ∀ {Γ t A} → prop-ctx Γ → t ∷ A ^ ! ∈ Γ → ⊥
+prop-ctx-var prop-ctx-ε ()
+prop-ctx-var (prop-ctx-· p) (there m) = prop-ctx-var p m
+
+-- A neutral is an SProp in a propositional consistent context
+
+neSProp : ∀ {Γ t A} → prop-ctx Γ → consistent Γ → Neutral t → Γ ⊢ t ∷ A ^ ! → ⊥
+neSProp pΓ e (var n) (var ⊢Γ ⊢n) = prop-ctx-var pΓ ⊢n
+neSProp pΓ e (var n) (conv ⊢t x) = neSProp pΓ e (var n) ⊢t
+neSProp pΓ e (∘ₙ n) (⊢f ∘ⱼ ⊢a) = neSProp pΓ e n ⊢f
+neSProp pΓ e (∘ₙ n) (conv ⊢t x) = neSProp pΓ e (∘ₙ n) ⊢t
+neSProp pΓ e (natrecₙ n) (natrecⱼ ⊢P ⊢p0 ⊢pL ⊢m) = neSProp pΓ e n ⊢m
+neSProp pΓ e (natrecₙ n) (conv ⊢t x) = neSProp pΓ e (natrecₙ n) ⊢t
+neSProp pΓ e (Emptyrecₙ) (Emptyrecⱼ {_} {_} {e₁} x ⊢t) = e e₁ ⊢t
+neSProp pΓ e (Emptyrecₙ {e₁}) (conv ⊢t x) = neSProp pΓ e Emptyrecₙ ⊢t
+
+-- Helper function for canonicity for reducible natural properties
+canonicity″ : ∀ {Γ t}
+               → ⊢ Γ
+               → prop-ctx Γ
+               → consistent Γ
+               → Natural-prop Γ t
+               → ∃ λ k → Γ ⊢ t ≡ sucᵏ k ∷ ℕ ^ !
+canonicity″ ⊢Γ p e (sucᵣ (ℕₜ n₁ d n≡n prop)) =
+  let a , b = canonicity″ ⊢Γ p e prop
+  in  1+ a , suc-cong (trans (subset*Term (redₜ d)) b)
+canonicity″ ⊢Γ p _ zeroᵣ = 0 , refl (zeroⱼ ⊢Γ)
+canonicity″ ⊢Γ p e (ne (neNfₜ neK ⊢k k≡k)) = ⊥-elim (neSProp p e neK ⊢k)
+
+-- Helper function for canonicity for specific reducible natural numbers
+canonicity′ : ∀ {Γ t l}
+              → prop-ctx Γ
+              → consistent Γ
+              → ([ℕ] : Γ ⊩⟨ l ⟩ℕ ℕ)
+              → Γ ⊩⟨ l ⟩ t ∷ ℕ ^ ! / ℕ-intr [ℕ]
+              → ∃ λ k → Γ ⊢ t ≡ sucᵏ k ∷ ℕ ^ !
+canonicity′ p e (noemb [ℕ]) (ℕₜ n d n≡n prop) =
+  let a , b = canonicity″ (wfEqTerm n≡n) p e prop
+  in  a , trans (subset*Term (redₜ d)) b
+canonicity′ p e (emb 0<1 [ℕ]) [t] = canonicity′ p e [ℕ] [t]
+
+-- Canonicity of natural numbers
+canonicity : ∀ {Γ t} → prop-ctx Γ → consistent Γ → Γ ⊢ t ∷ ℕ ^ ! → ∃ λ k → Γ ⊢ t ≡ sucᵏ k ∷ ℕ ^ !
+canonicity p e ⊢t with reducibleTerm ⊢t
+canonicity p e ⊢t | [ℕ] , [t] =
+  canonicity′ p e (ℕ-elim [ℕ]) (irrelevanceTerm [ℕ] (ℕ-intr (ℕ-elim [ℕ])) [t])
+
+-- Canonicity for Empty
 
 -- we need to postulate consistency
 
 postulate noEmpty : ∀ {t} → ε ⊢ t ∷ Empty ^ % → ⊥
-
-noNe : ∀ {t A r} → ε ⊢ t ∷ A ^ r → Neutral t → ⊥
-noNe (var x₁ ()) (var x)
-noNe (conv ⊢t x) (var n) = noNe ⊢t (var n)
-noNe (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe ⊢t neT
-noNe (conv ⊢t x) (∘ₙ neT) = noNe ⊢t (∘ₙ neT)
-noNe (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe ⊢t₂ neT
-noNe (Emptyrecⱼ A ⊢e) Emptyrecₙ = noEmpty ⊢e
-noNe (conv ⊢t x) (natrecₙ neT) = noNe ⊢t (natrecₙ neT)
-noNe (conv ⊢t x) Emptyrecₙ = noNe ⊢t Emptyrecₙ
-
-
--- Helper function for canonicity for reducible natural properties
-canonicity″ : ∀ {t}
-              → Natural-prop ε t
-              → ∃ λ k → ε ⊢ t ≡ sucᵏ k ∷ ℕ ^ !
-canonicity″ (sucᵣ (ℕₜ n₁ d n≡n prop)) =
-  let a , b = canonicity″ prop
-  in  1+ a , suc-cong (trans (subset*Term (redₜ d)) b)
-canonicity″ zeroᵣ = 0 , refl (zeroⱼ ε)
-canonicity″ (ne (neNfₜ neK ⊢k k≡k)) = ⊥-elim (noNe ⊢k neK)
-
--- Helper function for canonicity for specific reducible natural numbers
-canonicity′ : ∀ {t l}
-             → ([ℕ] : ε ⊩⟨ l ⟩ℕ ℕ)
-             → ε ⊩⟨ l ⟩ t ∷ ℕ ^ ! / ℕ-intr [ℕ]
-             → ∃ λ k → ε ⊢ t ≡ sucᵏ k ∷ ℕ ^ !
-canonicity′ (noemb [ℕ]) (ℕₜ n d n≡n prop) =
-  let a , b = canonicity″ prop
-  in  a , trans (subset*Term (redₜ d)) b
-canonicity′ (emb 0<1 [ℕ]) [t] = canonicity′ [ℕ] [t]
-
--- Canonicity of natural numbers
-canonicity : ∀ {t} → ε ⊢ t ∷ ℕ ^ ! → ∃ λ k → ε ⊢ t ≡ sucᵏ k ∷ ℕ ^ !
-canonicity ⊢t with reducibleTerm ⊢t
-canonicity ⊢t | [ℕ] , [t] =
-  canonicity′ (ℕ-elim [ℕ]) (irrelevanceTerm [ℕ] (ℕ-intr (ℕ-elim [ℕ])) [t])
-
--- Canonicity for Empty
 
 ¬Empty′ : ∀ {n} → ε ⊩Empty n ∷Empty → ⊥
 ¬Empty′ (Emptyₜ (ne ⊢n)) = noEmpty ⊢n
