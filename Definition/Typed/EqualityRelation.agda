@@ -51,7 +51,11 @@ record EqRelSet : Set₁ where
            → Γ ⊢ A ≅ B ^ [ r , ι l ]
            → Γ ⊢ A ≅ B ∷ (Univ r l) ^ [ ! , next l ]
 
-    -- Symmetry
+    -- Impredicativity of SProp
+    ≅ₜ-impred : ∀ {l l' l'' Γ} → ⊢ Γ → Γ ⊢ SProp l ≅ SProp l' ∷ U l'' ^ [ ! , next l'' ] 
+    ≅-impred : ∀ {l l' l'' Γ} → ⊢ Γ → Γ ⊢ SProp l ≅ SProp l' ^ [ ! , l'' ] 
+
+  -- Symmetry
     ≅-sym  : ∀ {A B Γ r} → Γ ⊢ A ≅ B ^ r → Γ ⊢ B ≅ A ^ r
     ≅ₜ-sym : ∀ {t u A r Γ} → Γ ⊢ t ≅ u ∷ A ^ r → Γ ⊢ u ≅ t ∷ A ^ r
     ~-sym  : ∀ {k l A Γ r} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
@@ -62,8 +66,8 @@ record EqRelSet : Set₁ where
     ~-trans  : ∀ {k l m A r Γ} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ m ∷ A ^ r → Γ ⊢ k ~ m ∷ A ^ r
 
     -- Conversion
-    ≅-conv : ∀ {t u A B r Γ} → Γ ⊢ t ≅ u ∷ A ^ r → Γ ⊢ A ≡ B ^ r → Γ ⊢ t ≅ u ∷ B ^ r
-    ~-conv : ∀ {k l A B r Γ} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ A ≡ B ^ r → Γ ⊢ k ~ l ∷ B ^ r
+    ≅-conv : ∀ {t u A B r l l' Γ} → Γ ⊢ t ≅ u ∷ A ^ [ r , l ] → Γ ⊢ A ≡ B ^ [ r , l' ] → Γ ⊢ t ≅ u ∷ B ^ [ r , l' ]
+    ~-conv : ∀ {k l A B r ll ll' Γ} → Γ ⊢ k ~ l ∷ A ^ [ r , ll ] → Γ ⊢ A ≡ B ^ [ r , ll' ] → Γ ⊢ k ~ l ∷ B ^ [ r , ll' ]
 
     -- Weakening
     ≅-wk  : ∀ {A B r ρ Γ Δ}
@@ -111,7 +115,7 @@ record EqRelSet : Set₁ where
     ≅ₜ-ℕrefl  : ∀ {Γ} → ⊢ Γ → Γ ⊢ ℕ ≅ ℕ ∷ U ⁰ ^ [ ! , next ⁰ ]
 
     -- Empty type reflexivity
-    ≅ₜ-Emptyrefl  : ∀ {Γ l} → ⊢ Γ → Γ ⊢ Empty l ≅ Empty l ∷ SProp l ^ [ ! , next l ]
+    ≅ₜ-Emptyrefl  : ∀ {Γ l l' l''} → ⊢ Γ → Γ ⊢ Empty l ≅ Empty l' ∷ SProp l'' ^ [ ! , next l'' ]
 
     -- Π-congruence
     ≅ₜ-Π-cong : ∀ {F G H E rF lF r lG l Γ}

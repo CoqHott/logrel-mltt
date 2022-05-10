@@ -115,6 +115,7 @@ mutual
        let ρA = U.wk ρ A
            ρB = U.wk ρ B
        in ⊢ Δ → Γ ⊢ A ≡ B ^ r → Δ ⊢ ρA ≡ ρB ^ r
+  wkEq ρ ⊢Δ (impred ⊢Γ) = impred ⊢Δ
   wkEq ρ ⊢Δ (univ A≡B) = univ (wkEqTerm ρ ⊢Δ A≡B)
   wkEq ρ ⊢Δ (refl A) = refl (wk ρ ⊢Δ A)
   wkEq ρ ⊢Δ (sym A≡B) = sym (wkEq ρ ⊢Δ A≡B)
@@ -125,6 +126,7 @@ mutual
                ρt = U.wk ρ t
                ρu = U.wk ρ u
            in ⊢ Δ → Γ ⊢ t ≡ u ∷ A ^ r → Δ ⊢ ρt ≡ ρu ∷ ρA ^ r
+  wkEqTerm ρ ⊢Δ (impred ⊢Γ) = (impred ⊢Δ)
   wkEqTerm ρ ⊢Δ (refl t) = refl (wkTerm ρ ⊢Δ t)
   wkEqTerm ρ ⊢Δ (sym t≡u) = sym (wkEqTerm ρ ⊢Δ t≡u)
   wkEqTerm ρ ⊢Δ (trans t≡u u≡r) = trans (wkEqTerm ρ ⊢Δ t≡u) (wkEqTerm ρ ⊢Δ u≡r)

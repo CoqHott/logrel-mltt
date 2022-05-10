@@ -48,6 +48,7 @@ wf (univ A) = wfTerm A
 
 mutual
   wfEqTerm : ∀ {Γ A t u r} → Γ ⊢ t ≡ u ∷ A ^ r → ⊢ Γ
+  wfEqTerm (impred ⊢Γ) = ⊢Γ
   wfEqTerm (refl t) = wfTerm t
   wfEqTerm (sym t≡u) = wfEqTerm t≡u
   wfEqTerm (trans t≡u u≡r) = wfEqTerm t≡u
@@ -81,6 +82,7 @@ mutual
   wfEqTerm (cast-ℕ-S e n) = wfTerm n
 
   wfEq : ∀ {Γ A B r} → Γ ⊢ A ≡ B ^ r → ⊢ Γ
+  wfEq (impred ⊢Γ) = ⊢Γ
   wfEq (univ A≡B) = wfEqTerm A≡B
   wfEq (refl A) = wf A
   wfEq (sym A≡B) = wfEq A≡B
@@ -627,12 +629,6 @@ redU* : ∀ {A Γ r l } → Γ ⊢ A ⇒* (Univ r ¹) ^ [ ! , l ] → A PE.≡ (
 redU* (id x) = PE.refl
 redU* (x ⇨ A⇒*U) rewrite redU* A⇒*U = ⊥-elim (redU x)
 
--- convertibility for irrelevant terms implies typing
-
-typeInversion : ∀ {t u A l Γ} → Γ ⊢ t ≡ u ∷ A ^ [ % , l ] → Γ ⊢ t ∷ A ^ [ % , l ]
-typeInversion (conv X x) = let d = typeInversion X in conv d x
-typeInversion (proof-irrelevance x x₁) = x
-
 -- general version of reflexivity, symmetry and transitivity
 
 genRefl : ∀ {A Γ t r l } → Γ ⊢ t ∷ A ^ [ r , l ] → Γ ⊢ t ≡ t ∷ A ^ [ r , l ]
@@ -642,17 +638,10 @@ genRefl {r = %} d = proof-irrelevance d d
 -- Judgmental instance of the equality relation
 
 genSym : ∀ {k l A Γ r lA } → Γ ⊢ k ≡ l ∷ A ^ [ r , lA ] → Γ ⊢ l ≡ k ∷ A ^ [ r , lA ]
-genSym {r = !} = sym
-genSym {r = %} (proof-irrelevance x x₁) = proof-irrelevance x₁ x
-genSym {r = %} (conv x x₁) = conv (genSym x) x₁
+genSym = sym
 
-
-genTrans : ∀ {k l m A r Γ lA } → Γ ⊢ k ≡ l ∷ A ^ [ r , lA ] → Γ ⊢ l ≡ m ∷ A ^ [ r , lA ] → Γ ⊢ k ≡ m ∷ A ^ [ r , lA ]
-genTrans {r = !} = trans
-genTrans {r = %} (conv X x) (conv Y x₁) = conv (genTrans X (conv Y (trans x₁ (sym x)))) x
-genTrans {r = %} (conv X x) (proof-irrelevance x₁ x₂) = proof-irrelevance (conv (typeInversion X) x) x₂
-genTrans {r = %} (proof-irrelevance x x₁) (conv Y x₂) = proof-irrelevance x (conv (typeInversion (genSym Y)) x₂)
-genTrans {r = %} (proof-irrelevance x x₁) (proof-irrelevance x₂ x₃) = proof-irrelevance x x₃
+genTrans : ∀ {k l m A r Γ lA} → Γ ⊢ k ≡ l ∷ A ^ [ r , lA ] → Γ ⊢ l ≡ m ∷ A ^ [ r , lA ] → Γ ⊢ k ≡ m ∷ A ^ [ r , lA ]
+genTrans = trans
 
 genVar : ∀ {x A Γ r l } → Γ ⊢ var x ∷ A ^ [ r , l ] → Γ ⊢ var x ≡ var x ∷ A ^ [ r , l ]
 genVar {r = !} = refl
@@ -679,6 +668,7 @@ un-univ : ∀ {A r Γ l} → Γ ⊢ A ^ [ r , ι l ] → Γ ⊢ A ∷ Univ r l ^
 un-univ (univ x) = x
 
 un-univ≡ : ∀ {A B r Γ l} → Γ ⊢ A ≡ B ^ [ r , ι l ] → Γ ⊢ A ≡ B ∷ Univ r l ^ [ ! , next l ]
+un-univ≡ (impred x) = impred x
 un-univ≡ (univ x) = x
 un-univ≡ (refl x) = refl (un-univ x)
 un-univ≡ (sym X) = sym (un-univ≡ X)

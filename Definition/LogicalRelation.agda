@@ -11,6 +11,7 @@ open import Definition.Typed.Weakening
 open import Definition.Typed.Reduction
 
 open import Tools.Product
+open import Tools.Unit
 import Tools.PropositionalEquality as PE
 
 import Data.Fin as Fin
@@ -148,14 +149,15 @@ split (ne (neNfₜ₌ neK neM k≡m)) = ne neK , ne neM
 
 -- Empty type
 _⊩Empty_^_ : (Γ : Con Term) (A : Term) (l : Level) → Set
-Γ ⊩Empty A ^ l = Γ ⊢ A :⇒*: Empty l ^ [ % , ι l ]
+Γ ⊩Empty A ^ l = ∃ λ l' → Γ ⊢ A :⇒*: Empty l' ^ [ % , ι l ]
 
 -- Empty type equality
 _⊩Empty_≡_^_ : (Γ : Con Term) (A B : Term) (l : Level) → Set
-Γ ⊩Empty A ≡ B ^ l = Γ ⊢ B ⇒* Empty l ^ [ % , ι l ]
+Γ ⊩Empty A ≡ B ^ l = ∃ λ l' → Γ ⊢ B ⇒* Empty l' ^ [ % , ι l ]
 
 data Empty-prop (Γ : Con Term) (n : Term) (l : Level) : Set where
-  ne    : Γ ⊢ n ∷ Empty l ^ [ % , ι l ] → Empty-prop Γ n l
+  ne    : ∀ {l'} → Γ ⊢ n ∷ Empty l' ^ [ % , ι l ] → Empty-prop Γ n l
+
 
 -- -- Empty term
 
@@ -163,7 +165,7 @@ data _⊩Empty_∷Empty^_ (Γ : Con Term) (t : Term) (l : Level) : Set where
   Emptyₜ : (prop : Empty-prop Γ t l) → Γ ⊩Empty t ∷Empty^ l
 
 data [Empty]-prop (Γ : Con Term) : (n n′ : Term)  (l : Level) → Set where
-  ne    : ∀ {n n′ l} → Γ ⊢ n ∷ Empty l ^ [ % , ι l ] → Γ ⊢ n′ ∷ Empty l ^ [ % , ι l ]  → [Empty]-prop Γ n n′ l
+  ne    : ∀ {n n′ l l'} → Γ ⊢ n ∷ Empty l' ^ [ % , ι l ] → Γ ⊢ n′ ∷ Empty l' ^ [ % , ι l ]  → [Empty]-prop Γ n n′ l
 
 -- Empty term equality
 data _⊩Empty_≡_∷Empty^_ (Γ : Con Term) (t u : Term) (l : Level) : Set where
@@ -197,11 +199,19 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       eq : next l′ PE.≡ ll
       d : Γ ⊢ A :⇒*: Univ r l′ ^ [ ! , next l′ ]
 
-  -- Universe type equality
-  _⊩¹U_≡_^_/_ : (Γ : Con Term) (A B : Term) (ll : TypeLevel) ([A] : Γ ⊩¹U A ^ ll) → Set
-  Γ ⊩¹U A ≡ B ^ ll / [A] = Γ ⊢ B ⇒* Univ (_⊩¹U_^_.r [A]) (_⊩¹U_^_.l′ [A]) ^ [ ! , ll ]
+  isPredType : (r : Relevance) (l l' : Level) → Set
+  isPredType ! l l' = l PE.≡ l'
+  isPredType % l l' = ⊤
 
-  -- Universe term
+  -- Universe type equality
+  record _⊩¹U_≡_^_/_ (Γ : Con Term) (A B : Term) (ll : TypeLevel) ([A] : Γ ⊩¹U A ^ ll) : Set where
+    constructor U≡ᵣ
+    field
+      lB : Level
+      red : Γ ⊢ B ⇒* Univ (_⊩¹U_^_.r [A]) lB ^ [ ! , ll ]
+      isPred : isPredType (_⊩¹U_^_.r [A]) (_⊩¹U_^_.l′ [A]) lB
+
+-- Universe term
   record _⊩¹U_∷_^_/_  (Γ : Con Term) (t : Term) (A : Term) (ll : TypeLevel) ([A] : Γ ⊩¹U A ^ ll) : Set where
     constructor Uₜ
     open _⊩¹U_^_ [A]
@@ -473,7 +483,7 @@ _⊩⟨_⟩_≡_∷_^_/_ : (Γ : Con Term) (l : TypeLevel) (t u A : Term) (r : T
 
 -- Well-typed irrelevant terms are always reducible
 logRelIrr : ∀ {l t Γ l' A} ([A] : Γ ⊩⟨ l ⟩ A ^ [ % , l' ]) (⊢t : Γ ⊢ t ∷ A ^ [ % , l' ]) → Γ ⊩⟨ l ⟩ t ∷ A ^ [ % , l' ] / [A]
-logRelIrr (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t = Emptyₜ (ne (conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
+logRelIrr (Emptyᵣ (l' , [[ ⊢A , ⊢B , D ]])) ⊢t = Emptyₜ (ne (conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
 logRelIrr (ne x) ⊢t = neₜ ⊢t
 logRelIrr (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
 logRelIrr (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) ∃ₙ ∃ₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
@@ -482,7 +492,7 @@ logRelIrr {∞} (emb X [A]) ⊢t = logRelIrr [A] ⊢t
 
 -- Well-typed irrelevant terms are reducibly equal as soon as they have the same type
 logRelIrrEq : ∀ {l t u Γ l' A} ([A] : Γ ⊩⟨ l ⟩ A ^ [ % , l' ]) (⊢t : Γ ⊢ t ∷ A ^ [ % , l' ]) (⊢u : Γ ⊢ u ∷ A ^ [ % , l' ]) → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ % , l' ] / [A]
-logRelIrrEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t ⊢u = Emptyₜ₌ (ne ((conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
+logRelIrrEq (Emptyᵣ (l' , [[ ⊢A , ⊢B , D ]])) ⊢t ⊢u = Emptyₜ₌ (ne ((conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
                                                          (conv ⊢u (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
 logRelIrrEq (ne x) ⊢t ⊢u = neₜ₌ ⊢t ⊢u
 logRelIrrEq (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) , (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )

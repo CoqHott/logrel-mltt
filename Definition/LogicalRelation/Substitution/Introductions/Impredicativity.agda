@@ -2,7 +2,7 @@
 
 open import Definition.Typed.EqualityRelation
 
-module Definition.LogicalRelation.Substitution.Introductions.Universe {{eqrel : EqRelSet}} where
+module Definition.LogicalRelation.Substitution.Introductions.Impredicativity {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
 open import Definition.Untyped
@@ -15,6 +15,7 @@ open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
+open import Definition.LogicalRelation.Substitution.Introductions.Universe
 
 open import Tools.Product
 open import Tools.Empty
@@ -23,6 +24,14 @@ import Definition.LogicalRelation.Weakening as wkLR
 import Tools.PropositionalEquality as PE
 import Data.Nat as Nat
 
+impredᵛ :  ∀ {Γ l l' l''} → (l < l'') → (l' < l'') → ([Γ] : ⊩ᵛ Γ)
+      → Γ ⊩ᵛ⟨ ∞ ⟩ Univ % l ≡ Univ % l' ∷ Univ ! l'' ^
+        [ ! , next l'' ] / [Γ] / Uᵛgen∞ [Γ]
+impredᵛ {Γ} {l} {l'} {¹} 0<1 0<1 [Γ] ⊢Δ [σ] =
+  let [Propl] , _ =  Uᵗᵛ 0<1 [Γ] ⊢Δ [σ] in
+  let [Propl'] , _ =  Uᵗᵛ 0<1 [Γ] ⊢Δ [σ] in Uₜ₌ [Propl] [Propl'] (≅ₜ-impred ⊢Δ) λ [ρ] ⊢Δ₁ → {!!}
+
+{-
 -- Validity of the universe type.
 U¹ᵛ : ∀ {Γ rU l} → (ι ¹ <∞ l) → ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ l ⟩ Univ rU ¹ ^ [ ! , ∞ ] / [Γ]
@@ -110,3 +119,4 @@ un-univEqᵛ : ∀ {A B Γ r l} ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ next l ⟩ A ≡ B ∷ Univ r l ^ [ ! , next l ] / [Γ] / [U] 
 un-univEqᵛ {l = l} [Γ] [U] [A] [B] [A≡B] = λ ⊢Δ [σ] → 
   irrelevanceEqTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ])))))  (proj₁ ([U] ⊢Δ [σ])) (un-univEqEq (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([B] ⊢Δ [σ])) ([A≡B] ⊢Δ [σ]))
+-}

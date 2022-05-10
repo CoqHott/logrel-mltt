@@ -119,13 +119,16 @@ mutual
                  → Γ ⊢ A ∷ U ⁰ ^ [ ! , next ⁰ ]
                  → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
                  → Γ ⊢ castrefl A t ∷ (Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t)) ^ [ % , ι ⁰ ]
-    conv   : ∀ {t A B r}
-           → Γ ⊢ t ∷ A ^ r
-           → Γ ⊢ A ≡ B ^ r
-           → Γ ⊢ t ∷ B ^ r
+    conv   : ∀ {t A B r l l'}
+           → Γ ⊢ t ∷ A ^ [ r , l ]
+           → Γ ⊢ A ≡ B ^ [ r , l' ]
+           → Γ ⊢ t ∷ B ^ [ r , l' ]
 
   -- Type equality
   data _⊢_≡_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
+    impred      : ∀ {l l' l''}
+                → ⊢ Γ
+                → Γ ⊢ SProp l ≡ SProp l' ^ [ ! , l'' ]
     univ   : ∀ {A B r l}
            → Γ ⊢ A ≡ B ∷ (Univ r l) ^ [ ! , next l ]
            → Γ ⊢ A ≡ B ^ [ r , ι l ]
@@ -143,20 +146,23 @@ mutual
 
   -- Term equality
   data _⊢_≡_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeInfo → Set where
+    impred      : ∀ {l l' l''}
+                → ⊢ Γ
+                → Γ ⊢ SProp l ≡ SProp l' ∷ (U l'') ^ [ ! , next l'' ]
     refl        : ∀ {t A l}
                 → Γ ⊢ t ∷ A ^ [ ! , l ]
                 → Γ ⊢ t ≡ t ∷ A ^ [ ! , l ]
-    sym         : ∀ {t u A l}
-                → Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
-                → Γ ⊢ u ≡ t ∷ A ^ [ ! , l ]
-    trans       : ∀ {t u v A l}
-                → Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
-                → Γ ⊢ u ≡ v ∷ A ^ [ ! , l ]
-                → Γ ⊢ t ≡ v ∷ A ^ [ ! , l ]
-    conv        : ∀ {A B r t u}
-                → Γ ⊢ t ≡ u ∷ A ^ r
-                → Γ ⊢ A ≡ B ^ r
-                → Γ ⊢ t ≡ u ∷ B ^ r
+    sym         : ∀ {t u A r l}
+                → Γ ⊢ t ≡ u ∷ A ^ [ r , l ]
+                → Γ ⊢ u ≡ t ∷ A ^ [ r , l ]
+    trans       : ∀ {t u v A r l}
+                → Γ ⊢ t ≡ u ∷ A ^ [ r , l ]
+                → Γ ⊢ u ≡ v ∷ A ^ [ r , l ]
+                → Γ ⊢ t ≡ v ∷ A ^ [ r , l ]
+    conv        : ∀ {A B r l l' t u}
+                → Γ ⊢ t ≡ u ∷ A ^ [ r , l ]
+                → Γ ⊢ A ≡ B ^ [ r , l' ]
+                → Γ ⊢ t ≡ u ∷ B ^ [ r , l' ]
     Π-cong      : ∀ {E F G H rF lF rG lG l}
                 → lF ≤ l
                 → lG ≤ l
@@ -214,10 +220,10 @@ mutual
                 → Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
                 → Γ ⊢ e' ∷ Empty lEmpty ^ [ % , ι lEmpty ]
                 → Γ ⊢ Emptyrec l lEmpty  A e ≡ Emptyrec l lEmpty  A' e' ∷ A ^ [ ! , ι l ]
-    proof-irrelevance : ∀ {t u A l}
+    proof-irrelevance : ∀ {t u A l l'}
                       → Γ ⊢ t ∷ A ^ [ % , l ]
-                      → Γ ⊢ u ∷ A ^ [ % , l ]
-                      → Γ ⊢ t ≡ u ∷ A ^ [ % , l ]
+                      → Γ ⊢ u ∷ A ^ [ % , l' ]
+                      → Γ ⊢ t ≡ u ∷ A ^ [ % , l' ]
     Id-cong : ∀ {A A' l t t' u u'}
               → Γ ⊢ A ≡ A' ∷ Univ ! l ^ [ ! , next l ]
               → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
@@ -319,10 +325,10 @@ mutual
 
 mutual
   data _⊢_⇒_∷_^_ (Γ : Con Term) : Term → Term → Term → TypeLevel → Set where
-    conv         : ∀ {A B l t u}
+    conv         : ∀ {A B l l' t u}
                  → Γ ⊢ t ⇒ u ∷ A ^ l
-                 → Γ ⊢ A ≡ B ^ [ ! , l ]
-                 → Γ ⊢ t ⇒ u ∷ B ^ l
+                 → Γ ⊢ A ≡ B ^ [ ! , l' ]
+                 → Γ ⊢ t ⇒ u ∷ B ^ l'
     app-subst    : ∀ {A B t u a rA lA lB l}
                  → Γ ⊢ t ⇒ u ∷ Π A ^ rA ° lA ▹ B ° lB ° l ^ ι l
                  → Γ ⊢ a ∷ A ^ [ rA , ι lA ]

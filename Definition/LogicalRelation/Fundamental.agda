@@ -277,11 +277,14 @@ abstract
           [t]′ = S.irrelevanceTerm {A = A} {t = t} [Γ] [Γ]′ [A′] [A′]₁ [t]
       in  [Γ]′ , [A]
       ,   convᵛ {t} {A} {B} [Γ]′ [A′]₁ [A] [A′≡A] [t]′
-  fundamentalTerm (univ 0<1 ⊢Γ) = let [Γ] = valid ⊢Γ
-                                  in [Γ] , (Uᵛ ∞< [Γ] , Uᵗᵛ [Γ])
+  fundamentalTerm (univ <l ⊢Γ) = let [Γ] = valid ⊢Γ
+                                  in [Γ] , (Uᵛgen∞ [Γ] , Uᵗᵛ <l [Γ]) 
         
                          
   -- Fundamental theorem for term equality.
+  fundamentalTermEq (impred <l <l' ⊢Γ) with valid ⊢Γ
+  ... | [Γ] = [Γ] , modelsTermEq (Uᵛgen∞ [Γ]) (Uᵗᵛ <l [Γ]) (Uᵗᵛ <l' [Γ]) {!!} --(maybeEmbᵛ {A = Univ _ _} [Γ] (Uᵛ emb<  [Γ])) {!!} {!!} {!!}
+  
   fundamentalTermEq (refl D) with fundamentalTerm D
   ... | [Γ] , [A] , [t] =
     [Γ] , modelsTermEq [A] [t] [t]

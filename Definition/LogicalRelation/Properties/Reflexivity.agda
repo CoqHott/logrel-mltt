@@ -10,6 +10,7 @@ open import Definition.LogicalRelation
 
 open import Tools.Product
 open import Tools.Empty
+open import Tools.Unit
 import Tools.PropositionalEquality as PE
 
 
@@ -18,9 +19,10 @@ import Data.Nat as Nat
 
 -- Reflexivity of reducible types.
 reflEq : ∀ {l Γ A r} ([A] : Γ ⊩⟨ l ⟩ A ^ r) → Γ ⊩⟨ l ⟩ A ≡ A ^ r / [A]
-reflEq (Uᵣ′ _ _ _ _ l< PE.refl D) = red D
+reflEq (Uᵣ′ _ _ ! l' l< PE.refl D) = LogRel.U≡ᵣ l' (red D) PE.refl
+reflEq (Uᵣ′ _ _ % l' l< PE.refl D) = LogRel.U≡ᵣ l' (red D) tt
 reflEq (ℕᵣ D) = red D
-reflEq (Emptyᵣ D) = red D
+reflEq (Emptyᵣ (l , D)) = (l , red D)
 reflEq (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) =
   ne₌ _ [[ ⊢A , ⊢B , D ]] neK K≡K
 reflEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) =

@@ -138,9 +138,22 @@ mutual
                                          [a]₁
               in  irrelevanceEq′ (PE.cong (λ y → wk (lift ρ) y [ _ ]) G≡G₁) PE.refl PE.refl
                                  ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([G≡G′] [ρ] ⊢Δ [a]))
-  irrelevanceEqT (Uᵥ (Uᵣ _ _ _ PE.refl D) (Uᵣ _ _ _ e D')) A≡B = let U≡U  = whrDet* (red D , Uₙ) (red D' , Uₙ) in
-                                                                let r≡r , l≡l = Univ-PE-injectivity U≡U in
-                                                                 PE.subst _ l≡l (PE.subst _ r≡r A≡B)
+  irrelevanceEqT (Uᵥ (Uᵣ ! _ _ PE.refl D) (Uᵣ ! _ _ e D')) (LogRel.U≡ᵣ lB red₁ isPred) =
+   let U≡U  = whrDet* (red D , Uₙ) (red D' , Uₙ) in
+   let r≡r , l≡l = Univ-PE-injectivity U≡U in
+      LogRel.U≡ᵣ lB red₁ (PE.trans (PE.sym l≡l) isPred)
+  irrelevanceEqT (Uᵥ (Uᵣ ! _ _ PE.refl D) (Uᵣ % _ _ e D')) (LogRel.U≡ᵣ lB red₁ isPred) =
+    let U≡U  = whrDet* (red D , Uₙ) (red D' , Uₙ) in
+    let r≡r , l≡l = Univ-PE-injectivity U≡U in
+       ⊥-elim (!≢% r≡r)
+  irrelevanceEqT (Uᵥ (Uᵣ % _ _ PE.refl D) (Uᵣ ! _ _ e D')) (LogRel.U≡ᵣ lB red₁ isPred) =
+    let U≡U  = whrDet* (red D , Uₙ) (red D' , Uₙ) in
+    let r≡r , l≡l = Univ-PE-injectivity U≡U in
+       ⊥-elim (!≢% (PE.sym r≡r))
+  irrelevanceEqT (Uᵥ (Uᵣ % _ _ PE.refl D) (Uᵣ % _ _ e D')) (LogRel.U≡ᵣ lB red₁ isPred) =
+    let U≡U  = whrDet* (red D , Uₙ) (red D' , Uₙ) in
+    let r≡r , l≡l = Univ-PE-injectivity U≡U in
+      LogRel.U≡ᵣ lB red₁ isPred
   irrelevanceEqT (emb⁰¹ x) A≡B = irrelevanceEqT x A≡B
   irrelevanceEqT (emb¹⁰ x) A≡B = irrelevanceEqT x A≡B
   irrelevanceEqT (emb¹∞ x) A≡B = irrelevanceEqT x A≡B

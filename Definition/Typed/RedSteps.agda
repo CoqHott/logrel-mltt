@@ -17,9 +17,9 @@ id ⊢u ⇨∷* u⇒v = u⇒v
 (t⇒t′ ⇨ t′⇒u) ⇨∷* u⇒v = t⇒t′ ⇨ (t′⇒u ⇨∷* u⇒v)
 
 -- Conversion of reduction closures
-conv* : ∀ {Γ A B t u l } → Γ ⊢ t ⇒* u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t ⇒* u ∷ B ^ l
+conv* : ∀ {Γ A B t u l l'} → Γ ⊢ t ⇒* u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l' ] → Γ ⊢ t ⇒* u ∷ B ^ l'
 conv* (id x) A≡B = id (conv x A≡B)
-conv* (x ⇨ d) A≡B = conv x A≡B ⇨ conv* d A≡B
+conv* (x ⇨ d) A≡B =  conv x A≡B ⇨ conv* d A≡B -- conv x A≡B ⇨ conv* d A≡B
 
 conv:* : ∀ {Γ A B t u l } → Γ ⊢ t :⇒*: u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t :⇒*: u ∷ B ^ l
 conv:* [[ ⊢t , ⊢u , d ]] e = [[ (conv ⊢t e) , (conv ⊢u e) , (conv* d e) ]]

@@ -25,6 +25,9 @@ import Data.Nat as Nat
 convRed:*: : ∀ {t u A B Γ l} → Γ ⊢ t :⇒*: u ∷ A ^ l → Γ ⊢ A ≡ B ^ [ ! , l ] → Γ ⊢ t :⇒*: u ∷ B ^ l
 convRed:*: [[ ⊢t , ⊢u , d ]] A≡B = [[ conv ⊢t  A≡B , conv ⊢u  A≡B , conv* d  A≡B ]]
 
+convRedImpred:*: : ∀ {A B Γ l l'} → Γ ⊢ A :⇒*: B ∷ SProp l ^ next l → Γ ⊢ A :⇒*: B ∷ SProp l' ^ next l'
+convRedImpred:*: [[ ⊢A , ⊢B , d ]] = let ⊢Γ = wfTerm ⊢B in [[ conv ⊢A (impred ⊢Γ) , conv ⊢B (impred ⊢Γ) , conv* d (impred ⊢Γ) ]]
+
 
 -- helper functions for the universe
 convTermTUniv :  ∀ {Γ A B t l l' r ll l< d r' ll' l<' el' d'}
@@ -44,6 +47,15 @@ convEqTermTUniv {l = ∞} {r = r} {¹} (Uₜ₌ [t] [u] A≡B [t≡u]) =
                    Uₜ₌ (convTermTUniv PE.refl PE.refl [t]) (convTermTUniv PE.refl PE.refl [u]) A≡B [t≡u] 
 
 
+
+logRelImpred : ∀ {l l′ l<  Γ A ll ll'} → Γ ⊩⟨ l ⟩ A ^ [ % , ι ll ] → Γ ⊩⟨ l ⟩ A ^ [ % , ι ll' ]
+logRelImpred (Emptyᵣ x) = {!!} -- Emptyᵣ (univ:⇒*: (convRedImpred:*: (un-univ:⇒*: {!!}))) 
+logRelImpred (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) = ne′ K (univ:⇒*: (convRedImpred:*: (un-univ:⇒*: [[ ⊢A , ⊢B , D ]]))) neK (~-conv K≡K (impred (wf ⊢A)))
+logRelImpred (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = Πᵣ′ rF lF lG {!!} {!!} F G {!!} {!!} {!!} {!!} {!!} {!!} {!!}
+logRelImpred (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = {!!}
+logRelImpred (emb l< [A]) = emb l< {!logRelImpred ?!}
+
+{-
 mutual
   -- Helper function for conversion of terms converting from left to right.
 
@@ -114,10 +126,17 @@ mutual
                      ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ]) (PE.sym ∃F₁G₁≡∃F′G′)
                                           (≅-eq A≡B)
                  in conv d ∃FG≡∃F₁G₁
-  convTermT₁ (Uᵥ (Uᵣ r l l< PE.refl d) (Uᵣ r' l' l<' el' d')) A≡B X = 
+  convTermT₁ (Uᵥ (Uᵣ ! l l< PE.refl d) (Uᵣ r' l' l<' el' d')) (LogRel.U≡ᵣ lB A≡B isPred) X = 
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity U≡U
-    in convTermTUniv r≡r l≡l X
+    in convTermTUniv r≡r (PE.trans isPred l≡l) X
+  convTermT₁ (Uᵥ (Uᵣ % l l< PE.refl [[ ⊢t , _ , _ ]]) (Uᵣ % l' l<' el' d')) (LogRel.U≡ᵣ lB A≡B isPred) (Uₜ K d₁ typeK K≡K [t]) =
+   Uₜ K (convRedImpred:*: d₁) typeK (≅-conv K≡K (impred (wf ⊢t))) λ x ⊢Δ → let foo = [t] x ⊢Δ in {!!}
+--    let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
+ --       r≡r , l≡l = Univ-PE-injectivity U≡U in {!!}
+  convTermT₁ (Uᵥ (Uᵣ % l l< PE.refl d) (Uᵣ ! l' l<' el' d')) (LogRel.U≡ᵣ lB A≡B isPred) X = 
+    let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
+        r≡r , l≡l = Univ-PE-injectivity U≡U in {!!}
   convTermT₁ (emb⁰¹ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb¹⁰ X) A≡B t = convTermT₁ X A≡B t
   convTermT₁ (emb¹∞ X) A≡B t = convTermT₁ X A≡B t
@@ -190,10 +209,10 @@ mutual
                      ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ])
                                           (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
                  in  conv d (sym ∃FG≡∃F₁G₁)
-  convTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) A≡B X = 
+  convTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) (LogRel.U≡ᵣ lB A≡B isPred) X = 
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity U≡U
-    in convTermTUniv (PE.sym r≡r) (PE.sym l≡l) X
+    in {!!} -- convTermTUniv (PE.sym r≡r) (PE.sym l≡l) X
   convTermT₂ (emb⁰¹ X) A≡B t = convTermT₂ X A≡B t
   convTermT₂ (emb¹⁰ X) A≡B t = convTermT₂ X A≡B t
   convTermT₂ (emb¹∞ X) A≡B t = convTermT₂ X A≡B t
@@ -293,11 +312,11 @@ mutual
                               ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ])
                                                    (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
                           in (conv d ∃FG≡∃F₁G₁) , conv d′ ∃FG≡∃F₁G₁                         
-  convEqTermT₁ (Uᵥ (Uᵣ r ll l< PE.refl d) (Uᵣ r' ll' l<' el' d')) A≡B X =
+  convEqTermT₁ (Uᵥ (Uᵣ r ll l< PE.refl d) (Uᵣ r' ll' l<' el' d')) (LogRel.U≡ᵣ lB A≡B isPred) X =
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity U≡U
         dd = PE.subst (λ x → _ ⊢ _ :⇒*: Univ x _ ^ _) (PE.sym r≡r) (PE.subst (λ x → _ ⊢ _ :⇒*: Univ _ x ^ [ ! , next x ]) (PE.sym l≡l) d') 
-    in reduction-irrelevant-Univ= {l< = l<} {l<' = l<'} {el = PE.refl} {el' = el'} {D = dd} {D' = d'} r≡r (convEqTermTUniv X)
+    in {!!} -- reduction-irrelevant-Univ= {l< = l<} {l<' = l<'} {el = PE.refl} {el' = el'} {D = dd} {D' = d'} r≡r (convEqTermTUniv X)
   convEqTermT₁ (emb⁰¹ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb¹⁰ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
   convEqTermT₁ (emb¹∞ X) A≡B t≡u = convEqTermT₁ X A≡B t≡u
@@ -365,11 +384,11 @@ mutual
                    ∃FG≡∃F₁G₁ = PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≡ x ^ [ % , ll ])
                                         (PE.sym ∃F₁G₁≡∃F′G′) (≅-eq A≡B)
                in (conv d (sym ∃FG≡∃F₁G₁)) , (conv d′ (sym ∃FG≡∃F₁G₁))
-  convEqTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) A≡B X =
+  convEqTermT₂ (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) (LogRel.U≡ᵣ lB A≡B isPred) X =
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity (PE.sym U≡U)
-        dd = PE.subst (λ x → _ ⊢ _ :⇒*: Univ x _ ^ _) (PE.sym r≡r) (PE.subst (λ x → _ ⊢ _ :⇒*: Univ _ x ^ [ ! , next x ]) (PE.sym l≡l) d) 
-    in reduction-irrelevant-Univ= {l< = l<'} {el = PE.refl} {D = dd} {D' = d} r≡r (convEqTermTUniv X)
+--        dd = PE.subst (λ x → _ ⊢ _ :⇒*: Univ x _ ^ _) (PE.sym r≡r) (PE.subst (λ x → _ ⊢ _ :⇒*: Univ _ x ^ [ ! , next x ]) (PE.sym l≡l) d) 
+    in {!!} -- reduction-irrelevant-Univ= {l< = l<'} {el = PE.refl} {D = dd} {D' = d} r≡r (convEqTermTUniv X)
   convEqTermT₂ (emb⁰¹ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
   convEqTermT₂ (emb¹⁰ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
   convEqTermT₂ (emb¹∞ X) A≡B t≡u = convEqTermT₂ X A≡B t≡u
@@ -404,3 +423,4 @@ mutual
             → Γ ⊩⟨ l′ ⟩ t ≡ u ∷ B ^ [ r' , ll' ] / [B]
             → Γ ⊩⟨ l ⟩  t ≡ u ∷ A ^ [ r , ll ] / [A]
   convEqTerm₂′ PE.refl PE.refl [A] [B] A≡B t≡u = convEqTerm₂ [A] [B] A≡B t≡u
+-}

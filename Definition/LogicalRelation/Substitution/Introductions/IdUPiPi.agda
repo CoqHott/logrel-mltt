@@ -130,7 +130,7 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
       [liftσ'] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A'} {σ = σ} {Δ = Δ} [Γ] ⊢Δ [A'] [σ]
       [ΠAB] = Πᵗᵛ {A} {B} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A] (λ {Δ} {σ} → [UB] {Δ} {σ}) [A]ₜ [B]ₜ
       [ΠA'B'] = Πᵗᵛ {A'} {B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A']ₜ [B']ₜ
-      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ [Γ])
+      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ 0<1 [Γ])
       [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ 
       Id-U-ΠΠ-res A A' B B' = ∃ (Id (Univ rA ⁰) A A') ▹
                       (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
@@ -145,7 +145,7 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
       [ΓIdA'] = _∙_ {A = wk1 A'} [ΓId] [wA']'
       [wwU¹] = λ {Δ} {σ} r → Uᵛ {rU = r} ∞< [ΓIdA'] {Δ} {σ}
       [wwUA'] = λ {Δ} {σ} r → maybeEmbᵛ {A = Univ r _ } [ΓIdA'] (λ {Δ} {σ} → Uᵛ emb< [ΓIdA'] {Δ} {σ}) {Δ} {σ}
-      [wwUA']ᵗ = Uᵗᵛ [ΓIdA']
+      [wwUA']ᵗ = Uᵗᵛ 0<1 [ΓIdA']
       [ΓIdA] = _∙_ {A = wk1 A} [ΓId] [wA]'
       [wwA'] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A'} {lG = ⁰} [ΓId] [wA']' [wA']
       [wwA] = wk1ᵗᵛ {F = wk1 A'} {G = wk1 A} {lG = ⁰} [ΓId] [wA']' [wA]
@@ -171,7 +171,7 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {rA} {Γ}
                                                  (IdSymᵗᵛ {A = Univ rA ⁰} {t = wk1 (wk1 A)} {u = wk1 (wk1 A')} {e = var 1} [ΓIdA'] ((λ {Δ} {σ} → [wwU¹] {Δ} {σ} !))
                                                           (λ {Δ} {σ} → [wwUA']ᵗ {Δ} {σ}) (λ {Δ} {σ} → [wwUA'] {Δ} {σ} rA)
                                                           [wwA] [wwA'] [wwIdAA'] [wwIdA'A] [var1]ₜ))) [wB']
-                                                          (λ {Δ} {σ} → Uᵗᵛ [ΓIdA'] {Δ} {σ}))
+                                                          (λ {Δ} {σ} → Uᵗᵛ 0<1 [ΓIdA'] {Δ} {σ}))
 
 abstract
   Id-U-ΠΠᵗᵛ : ∀ {A B A' B' rA Γ} ([Γ] : ⊩ᵛ Γ) →
@@ -219,7 +219,7 @@ abstract
         [liftσ'] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A'} {σ = σ} {Δ = Δ} [Γ] ⊢Δ [A'] [σ]
         [ΠAB] = Πᵗᵛ {A} {B} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A] (λ {Δ} {σ} → [UB] {Δ} {σ}) [A]ₜ [B]ₜ
         [ΠA'B'] = Πᵗᵛ {A'} {B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A']ₜ [B']ₜ
-        [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ [Γ])
+        [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ 0<1 [Γ])
         [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
         Id-U-ΠΠ-res A A' B B' = ∃ (Id (Univ rA ⁰) A A') ▹
                          (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
