@@ -229,7 +229,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     -- Reducibility of Π:
 
     -- Π-type
-    record _⊩¹Π_^[_,_] (Γ : Con Term) (A : Term) (r : Relevance) (lΠ : Level)  : Set where
+    record _⊩¹Π_^[_,_] (Γ : Con Term) (A : Term) (lΠ : Level)  : Set where
       inductive
       eta-equality
       constructor Πᵣ
@@ -237,8 +237,8 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
         rF : Relevance
         lF : Level
         lG : Level
-        lF≤ : lF ≤ lΠ
-        lG≤ : lG ≤ lΠ
+        l≤F : lF ≤ lΠ 
+        l≤G : lG ≤ lΠ
         F : Term
         G : Term
         D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
@@ -257,6 +257,33 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
               → Δ ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
               → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ r , ι lG ] / [G] [ρ] ⊢Δ [a]
 
+    -- impredicative and irrelevant Π-type
+    record _⊩¹Π_^[_,_] (Γ : Con Term) (A : Term) : Set where
+      inductive
+      eta-equality
+      constructor Πᵣ
+      field
+        rF : Relevance
+        lF : Level
+        lΠ = ⁰
+        F : Term
+        G : Term
+        D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
+        ⊢F : Γ ⊢ F ^ [ rF , ι lF ]
+        ⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ r , ι lG ]
+        A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≅ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
+        [F] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ F ^ [ rF , ι lF ]
+        [G] : ∀ {ρ Δ a}
+            → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+            → Δ ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
+            → Δ ⊩¹ U.wk (lift ρ) G [ a ] ^ [ r , ι lG ]
+        G-ext : ∀ {ρ Δ a b}
+              → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+              → ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
+              → ([b] : Δ ⊩¹ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
+              → Δ ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
+              → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ r , ι lG ] / [G] [ρ] ⊢Δ [a]
+              
     -- Π-type equality
     record _⊩¹Π_≡_^[_,_]/_ (Γ : Con Term) (A B : Term) (r : Relevance) (lΠ : Level) ([A] : Γ ⊩¹Π A ^[ r , lΠ ]) : Set where
       inductive

@@ -153,8 +153,8 @@ U      : Level → Term
 U l = gen (Ukind ! l) []
 
 -- Universes of proof-irrelevant types
-SProp : Level → Term
-SProp l = gen (Ukind % l) []
+SProp : Term
+SProp = gen (Ukind % ⁰) []
 
 pattern Univ r l = gen (Ukind r l) []
 
@@ -202,6 +202,9 @@ natrec l A t u v = gen (Natreckind l) (⟦ 1 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0
 -- Empty type
 Empty : Level → Term
 Empty l = gen (Emptykind l) []
+
+sEmpty : Term
+sEmpty = Empty ⁰
 
 -- Eliminator for the empty type
 Emptyrec : (l lEmpty : Level) (A e : Term) -> Term
@@ -677,6 +680,9 @@ t [ s ]↑↑ = subst (consSubst (wk1Subst (wk1Subst idSubst)) s) t
 
 Unit : ∀ {l} → Term
 Unit {l} =  Π Empty l ^ % ° l ▹ Empty l ° l ° l
+
+sUnit : Term
+sUnit =  Π sEmpty ^ % ° ⁰ ▹ sEmpty ° ⁰ ° ⁰
 
 Idsym : (A x y e : Term) → Term
 Idsym A x y e = transp A (Id (wk1 A) (var 0) (wk1 x)) x (Idrefl A x) y e
