@@ -5,6 +5,8 @@ module Definition.Typed.EqualityRelation where
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Weakening using (_∷_⊆_)
+import Tools.PropositionalEquality as PE
+open import Tools.Product
 
 
 -- Generic equality relation used with the logical relation
@@ -115,8 +117,8 @@ record EqRelSet : Set₁ where
 
     -- Π-congruence
     ≅ₜ-Π-cong : ∀ {F G H E rF lF r lG l Γ}
-              → lF ≤ l
-              → lG ≤ l
+              → (r PE.≡ ! → lF ≤ l × lG ≤ l)
+              → (r PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
               → Γ ⊢ F ^ [ rF , ι lF ]
               → Γ ⊢ F ≅ H ∷ (Univ rF lF) ^ [ ! , next lF ]
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≅ E ∷ (Univ r lG) ^ [ ! , next lG ]

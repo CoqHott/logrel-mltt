@@ -23,14 +23,14 @@ reflEq (ℕᵣ D) = red D
 reflEq (Emptyᵣ D) = red D
 reflEq (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) =
   ne₌ _ [[ ⊢A , ⊢B , D ]] neK K≡K
-reflEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
+reflEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = 
   Π₌ _ _ D A≡A
      (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
      (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
-reflEq (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
+reflEq (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A) =
+  Πirr₌ _ _ D A≡A
+reflEq (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A) =
   ∃₌ _ _ D A≡A
-    (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
-    (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
 reflEq {ι ¹} (emb X [A]) = reflEq [A]
 reflEq {∞} (emb X [A]) = reflEq [A]
 
@@ -43,9 +43,9 @@ reflNatural-prop (sucᵣ (ℕₜ n d t≡t prop)) =
 reflNatural-prop zeroᵣ = zeroᵣ
 reflNatural-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 
-reflEmpty-prop : ∀ {Γ n l}
-                 → Empty-prop Γ n l
-                 → [Empty]-prop Γ n n l
+reflEmpty-prop : ∀ {Γ n}
+                 → Empty-prop Γ n
+                 → [Empty]-prop Γ n n
 reflEmpty-prop (ne x) = ne x x
 
 -- Reflexivity of reducible terms.
@@ -67,8 +67,8 @@ reflEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm⁰ ([F] ρ ⊢Δ) [a]))
-reflEqTerm⁰ {r = [ % , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
-reflEqTerm⁰ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm⁰ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
+reflEqTerm⁰ (∃ᵣ′ F G D ⊢F ⊢G A≡A) X = X , X
 
 reflEqTerm¹ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
            → Γ ⊩⟨ ι ¹ ⟩ t ∷ A ^ r / [A]
@@ -89,8 +89,8 @@ reflEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm¹ ([F] ρ ⊢Δ) [a]))
-reflEqTerm¹ {r = [ % , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
-reflEqTerm¹ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm¹ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
+reflEqTerm¹ (∃ᵣ′ F G D ⊢F ⊢G A≡A) X = X , X
 reflEqTerm¹ (emb X [A]) = reflEqTerm⁰ [A]
 
 reflEqTerm∞ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
@@ -112,8 +112,8 @@ reflEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm∞ ([F] ρ ⊢Δ) [a]))
-reflEqTerm∞ {r = [ % , l ]} (Πᵣ′ rF lF lG F G _ _ D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
-reflEqTerm∞ (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) X = X , X
+reflEqTerm∞ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
+reflEqTerm∞ (∃ᵣ′ F G D ⊢F ⊢G A≡A) X = X , X
 reflEqTerm∞ (emb X [A]) = reflEqTerm¹ [A]
 
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)

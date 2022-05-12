@@ -56,8 +56,8 @@ mutual
            → x ∷ A ^ rl ∈ Γ
            → Γ ⊢ var x ∷ A ^ rl
     lamⱼ    : ∀ {F r l rF lF G lG t}
-           → lF ≤ l
-           → lG ≤ l
+           → (r PE.≡ ! → lF ≤ l × lG ≤ l)
+           → (r PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
            → Γ     ⊢ F ^ [ rF , ι lF ]
            → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ r , ι lG ]
            → Γ     ⊢ lam F ▹ t ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ r , ι l ]
@@ -159,8 +159,8 @@ mutual
                 → Γ ⊢ A ≡ B ^ r
                 → Γ ⊢ t ≡ u ∷ B ^ r
     Π-cong      : ∀ {E F G H rF lF rG lG l}
-                → lF ≤ l
-                → lG ≤ l
+                → (rG PE.≡ ! → lF ≤ l × lG ≤ l)
+                → (rG PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
                 → Γ     ⊢ F ^ [ rF , ι lF ]
                 → Γ     ⊢ F ≡ H       ∷ (Univ rF lF) ^ [ ! , next lF ]
                 → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≡ E       ∷ (Univ rG lG) ^ [ ! , next lG ]

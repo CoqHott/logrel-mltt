@@ -48,11 +48,14 @@ redSubst* D (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F 
   in  (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
   ,   (Π₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
         (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
-redSubst* D (∃ᵣ′ F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
+redSubst* D (Πirrᵣ′ rF lF F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A) =
   let ⊢A = redFirst* D
-  in  (∃ᵣ′ F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
-  ,   (∃₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
-        (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
+  in  (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A)
+  ,   (Πirr₌ _ _ D′ A≡A)
+redSubst* D (∃ᵣ′ F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A) =
+  let ⊢A = redFirst* D
+  in  (∃ᵣ′ F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A)
+  ,   (∃₌ _ _ D′ A≡A)
 redSubst* {l = ι ¹} D (emb l< X) with redSubst* D X
 redSubst* {l = ι ¹} D (emb l< X) | y , y₁ = emb l< y , y₁
 redSubst* {l = ∞} D (emb l< X) with redSubst* D X

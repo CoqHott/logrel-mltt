@@ -60,31 +60,18 @@ mutual
                in  irrelevanceEq′ ρG′a≡ρG₁′a PE.refl PE.refl
                                   [ρG′a]
                                   ([G]₁ [ρ] ⊢Δ [a]) (symEq′ PE.refl (PE.sym (PE.cong ι lG₁≡lG′)) ([G] [ρ] ⊢Δ [a]₁) [ρG′a] ([G≡G′] [ρ] ⊢Δ [a]₁)))
-  symEqT {Γ = Γ} {r = r} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                     (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
-         (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
+  symEqT {Γ = Γ} {r = [ r , ι lΠ ] } (Πirrᵥ (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A)
+                     (Πirrᵣ rF' lF' F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
+         (Πirr₌ F′ G′ D′ A≡B) =
+    let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
+        F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , lΠ≡lΠ₁ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
+    in  Πirr₌ _ _ (red (PE.subst₂ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) D))
+           (PE.subst₂ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° lΠ ≅ x ^ [ r , ι lΠ ]) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
+  symEqT {Γ = Γ} {r = r} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)
+                     (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
+         (∃₌ F′ G′ D′ A≡B) =
     let ∃F₁G₁≡∃F′G′   = whrDet* (red D₁ , ∃ₙ) (D′ , ∃ₙ)
-        F₁≡F′ , G₁≡G′ = ∃-PE-injectivity ∃F₁G₁≡∃F′G′
-        [F₁≡F] : ∀ {Δ} {ρ} [ρ] ⊢Δ → _
-        [F₁≡F] {Δ} {ρ} [ρ] ⊢Δ =
-          let ρF′≡ρF₁ ρ = PE.cong (wk ρ) (PE.sym F₁≡F′)
-              [ρF′] {ρ} [ρ] ⊢Δ = PE.subst (λ x → Δ ⊩⟨ _ ⟩ wk ρ x ^ _) F₁≡F′ ([F]₁ [ρ] ⊢Δ)
-          in  irrelevanceEq′ {Δ} (ρF′≡ρF₁ ρ) PE.refl PE.refl
-                             ([ρF′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ)
-                             (symEq′ PE.refl PE.refl ([F] [ρ] ⊢Δ) ([ρF′] [ρ] ⊢Δ)
-                                    ([F≡F′] [ρ] ⊢Δ))
     in  ∃₌ _ _ (red D) (≅-sym (PE.subst (λ x → Γ ⊢ ∃ F ▹ G ≅ x ^ r) (PE.sym ∃F₁G₁≡∃F′G′) A≡B))
-          [F₁≡F]
-          (λ {ρ} [ρ] ⊢Δ [a] →
-               let ρG′a≡ρG₁′a = PE.cong (λ x → wk (lift ρ) x [ _ ]) (PE.sym G₁≡G′)
-                   [ρG′a] = PE.subst (λ x → _ ⊩⟨ _ ⟩ wk (lift ρ) x [ _ ] ^ _) G₁≡G′
-                                     ([G]₁ [ρ] ⊢Δ [a])
-                   [a]₁ = convTerm₁′ PE.refl PE.refl ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ) ([F₁≡F] [ρ] ⊢Δ) [a]
-               in  irrelevanceEq′ ρG′a≡ρG₁′a PE.refl PE.refl
-                                  [ρG′a]
-                                  ([G]₁ [ρ] ⊢Δ [a])
-                                  (symEq ([G] [ρ] ⊢Δ [a]₁) [ρG′a]
-                                         ([G≡G′] [ρ] ⊢Δ [a]₁)))
   symEqT (Uᵥ (Uᵣ r l l< el d) (Uᵣ r' l' l<' PE.refl d')) A≡B =
     let U≡U   = whrDet* (A≡B , Uₙ) (red d' , Uₙ)
         r≡r , l≡l = Univ-PE-injectivity (PE.sym U≡U)
@@ -121,9 +108,9 @@ symNatural-prop (sucᵣ (ℕₜ₌ k k′ d d′ t≡u prop)) =
 symNatural-prop zeroᵣ = zeroᵣ
 symNatural-prop (ne prop) = ne (symNeutralTerm prop)
 
-symEmpty-prop : ∀ {Γ k k′ l}
-                → [Empty]-prop Γ k k′ l
-                → [Empty]-prop Γ k′ k l
+symEmpty-prop : ∀ {Γ k k′}
+                → [Empty]-prop Γ k k′
+                → [Empty]-prop Γ k′ k 
 symEmpty-prop (ne t u ) = ne u t
 
 
@@ -140,9 +127,9 @@ symEqTerm⁰ {r = [ ! , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
           (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
       (λ ρ ⊢Δ [a] → symEqTerm⁰ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
-symEqTerm⁰ {r = [ % , ll ]} (Πᵣ′ rF lF _ _ F lG G D ⊢F ⊢G A≡A [F] [G] G-ext)
+symEqTerm⁰ {r = [ % , ll ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
-symEqTerm⁰ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+symEqTerm⁰ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
 
 
@@ -169,9 +156,9 @@ symEqTerm¹ {r = [ ! , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G
           (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
       (λ ρ ⊢Δ [a] → symEqTerm¹ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
-symEqTerm¹ {r = [ % , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+symEqTerm¹ {r = [ % , ll ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
-symEqTerm¹ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+symEqTerm¹ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
 symEqTerm¹ (emb <l x) t≡u = symEqTerm⁰ x t≡u
 
@@ -201,9 +188,9 @@ symEqTerm∞ {r = [ ! , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
           (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   Πₜ₌ g f d′ d funcG funcF (≅ₜ-sym f≡g) [g] [f]
       (λ ρ ⊢Δ [a] → symEqTerm∞ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
-symEqTerm∞ {r = [ % , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+symEqTerm∞ {r = [ % , ll ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
-symEqTerm∞ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+symEqTerm∞ {r = [ % , ll ]} (∃ᵣ′ F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
 symEqTerm∞ (emb <l x) t≡u = symEqTerm¹ x t≡u
 
