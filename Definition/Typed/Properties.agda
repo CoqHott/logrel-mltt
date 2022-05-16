@@ -16,6 +16,10 @@ import Tools.PropositionalEquality as PE
 import Data.Fin as Fin
 import Data.Nat as Nat
 
+un-univ : ∀ {A r Γ l} → Γ ⊢ A ^ [ r , ι l ] → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
+un-univ (univ x) = x
+
+
 -- Escape context extraction
 
 wfTerm : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → ⊢ Γ
@@ -27,7 +31,7 @@ wfTerm (∃ⱼ F ▹ G) = wfTerm F
 wfTerm (var ⊢Γ x₁) = ⊢Γ
 wfTerm (lamⱼ _ _ F t) with wfTerm t
 wfTerm (lamⱼ _ _ F t) | ⊢Γ ∙ F′ = ⊢Γ
-wfTerm (g ∘ⱼ a) = wfTerm a
+wfTerm (_ ▹ _ ▹ g ∘ⱼ a) = wfTerm a
 wfTerm (⦅ F , G , t , u ⦆ⱼ) = wfTerm t
 wfTerm (fstⱼ A B t) = wfTerm t
 wfTerm (sndⱼ A B t) = wfTerm t
@@ -95,9 +99,9 @@ subsetTerm (natrec-subst F z s n⇒n′) =
   natrec-cong (refl F) (refl z) (refl s) (subsetTerm n⇒n′)
 subsetTerm (natrec-zero F z s) = natrec-zero F z s
 subsetTerm (natrec-suc n F z s) = natrec-suc n F z s
-subsetTerm (app-subst {rA = !} t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
-subsetTerm (app-subst {rA = %} t⇒u a) = app-cong (subsetTerm t⇒u) (proof-irrelevance a a)
-subsetTerm (β-red l< l<' A t a) = β-red l< l<' A t a
+subsetTerm (app-subst {rA = !} ⊢F ⊢G t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
+subsetTerm (app-subst {rA = %} ⊢F ⊢G t⇒u a) = app-cong (subsetTerm t⇒u) (proof-irrelevance a a)
+subsetTerm (β-red l< l<' A B t a) = β-red l< l<' A t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
 subsetTerm (Id-subst A t u) = Id-cong (subsetTerm A) (refl t) (refl u)
 subsetTerm (Id-ℕ-subst m n) = Id-cong (refl (ℕⱼ (wfTerm n))) (subsetTerm m) (refl n)
@@ -168,8 +172,8 @@ redFirstTerm : ∀ {Γ t u A l } → Γ ⊢ t ⇒ u ∷ A ^ l → Γ ⊢ t ∷ A
 redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 
 redFirstTerm (conv t⇒u A≡B) = conv (redFirstTerm t⇒u) A≡B
-redFirstTerm (app-subst t⇒u a) = (redFirstTerm t⇒u) ∘ⱼ a
-redFirstTerm (β-red {lA = lA} {lB = lB} lA< lB< ⊢A ⊢t ⊢a) = (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) ⊢A ⊢t) ∘ⱼ ⊢a
+redFirstTerm (app-subst ⊢F ⊢G t⇒u a) = ⊢F ▹ ⊢G ▹ (redFirstTerm t⇒u) ∘ⱼ a
+redFirstTerm (β-red {lA = lA} {lB = lB} lA< lB< ⊢A ⊢B ⊢t ⊢a) = un-univ ⊢A ▹ ⊢B ▹ (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) ⊢A ⊢t) ∘ⱼ ⊢a
 redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ F z s (redFirstTerm n⇒n′)
 redFirstTerm (natrec-zero F z s) = natrecⱼ F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
@@ -224,8 +228,8 @@ whnfRedTerm : ∀ {Γ t u A l} (d : Γ ⊢ t ⇒ u ∷ A ^ l) (w : Whnf t) → �
 whnfRed : ∀ {Γ A B r} (d : Γ ⊢ A ⇒ B ^ r) (w : Whnf A) → ⊥
 
 neRedTerm (conv d x) n = neRedTerm d n
-neRedTerm (app-subst d x) (∘ₙ n) = neRedTerm d n
-neRedTerm (β-red _ _ x x₁ x₂) (∘ₙ ())
+neRedTerm (app-subst _ _ d x) (∘ₙ n) = neRedTerm d n
+neRedTerm (β-red _ _ _ x x₁ x₂) (∘ₙ ())
 neRedTerm (natrec-zero x x₁ x₂) (natrecₙ ())
 neRedTerm (natrec-suc x x₁ x₂ x₃) (natrecₙ ())
 neRedTerm (natrec-subst x x₁ x₂ tr) (natrecₙ tn) = neRedTerm tr tn
@@ -294,8 +298,8 @@ neRedTerm (cast-Π-subst x x₁ d x₂ x₃) castΠΠ!%ₙ = whnfRedTerm d Πₙ
 neRed (univ x) N = neRedTerm x N
 
 whnfRedTerm (conv d x) w = whnfRedTerm d w
-whnfRedTerm (app-subst d x) (ne (∘ₙ x₁)) = neRedTerm d x₁
-whnfRedTerm (β-red _ _ x x₁ x₂) (ne (∘ₙ ()))
+whnfRedTerm (app-subst _ _ d x) (ne (∘ₙ x₁)) = neRedTerm d x₁
+whnfRedTerm (β-red _ _ _ x x₁ x₂) (ne (∘ₙ ()))
 whnfRedTerm (natrec-subst x x₁ x₂ d) (ne (natrecₙ x₃)) = neRedTerm d x₃
 whnfRedTerm (natrec-zero x x₁ x₂) (ne (natrecₙ ()))
 whnfRedTerm (natrec-suc x x₁ x₂ x₃) (ne (natrecₙ ()))
@@ -410,10 +414,10 @@ whrDetTerm : ∀{Γ t u A l u′ A′ l′} (d : Γ ⊢ t ⇒ u ∷ A ^ l) (d′
 whrDet : ∀{Γ A B B′ r r'} (d : Γ ⊢ A ⇒ B ^ r) (d′ : Γ ⊢ A ⇒ B′ ^ r') → B PE.≡ B′
 
 whrDetTerm (conv d x) d′ = whrDetTerm d d′
-whrDetTerm (app-subst d x) (app-subst d′ x₁) rewrite whrDetTerm d d′ = PE.refl
-whrDetTerm (app-subst d x) (β-red _ _ x₁ x₂ x₃) = ⊥-elim (whnfRedTerm d lamₙ)
-whrDetTerm (β-red _ _ x x₁ x₂) (app-subst d' x₃) = ⊥-elim (whnfRedTerm d' lamₙ)
-whrDetTerm (β-red _ _ x x₁ x₂) (β-red _ _ x₃ x₄ x₅) = PE.refl
+whrDetTerm (app-subst _ _ d x) (app-subst _ _ d′ x₁) rewrite whrDetTerm d d′ = PE.refl
+whrDetTerm (app-subst _ _ d x) (β-red _ _ _ x₁ x₂ x₃) = ⊥-elim (whnfRedTerm d lamₙ)
+whrDetTerm (β-red _ _ _ x x₁ x₂) (app-subst _ _ d' x₃) = ⊥-elim (whnfRedTerm d' lamₙ)
+whrDetTerm (β-red _ _ _ x x₁ x₂) (β-red _ _ _ x₃ x₄ x₅) = PE.refl
 whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-subst x₃ x₄ x₅ d') rewrite whrDetTerm d d' = PE.refl
 whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-zero x₃ x₄ x₅) = ⊥-elim (whnfRedTerm d zeroₙ)
 whrDetTerm (natrec-subst x x₁ x₂ d) (natrec-suc x₃ x₄ x₅ x₆) = ⊥-elim (whnfRedTerm d sucₙ)
@@ -599,7 +603,7 @@ UnotInA[t] () x₁ (Πⱼ _ ▹ _ ▹ x₂ ▹ x₃)
 UnotInA[t] x₁ x₂ (var x₃ here) rewrite x₁ = UnotInA x₂
 UnotInA[t] () x₂ (var x₃ (there x₄))
 UnotInA[t] () x₁ (lamⱼ _ _ x₂ x₃)
-UnotInA[t] () x₁ (x₂ ∘ⱼ x₃)
+UnotInA[t] () x₁ (_ ▹ _ ▹ x₂ ∘ⱼ x₃)
 UnotInA[t] () x₁ (zeroⱼ x₂)
 UnotInA[t] () x₁ (sucⱼ x₂)
 UnotInA[t] () x₁ (natrecⱼ x₂ x₃ x₄ x₅)
@@ -608,8 +612,8 @@ UnotInA[t] x x₁ (conv x₂ x₃) = UnotInA[t] x x₁ x₂
 
 redU*Term′ : ∀ {A B U′ l Γ r} → U′ PE.≡ (Univ r ¹) → Γ ⊢ A ⇒ U′ ∷ B ^ l → ⊥
 redU*Term′ U′≡U (conv A⇒U x) = redU*Term′ U′≡U A⇒U
-redU*Term′ () (app-subst A⇒U x)
-redU*Term′ U′≡U (β-red _ _ x x₁ x₂) = UnotInA[t] U′≡U x₂ x₁
+redU*Term′ () (app-subst _ _ A⇒U x)
+redU*Term′ U′≡U (β-red _ _ _ x x₁ x₂) = UnotInA[t] U′≡U x₂ x₁
 redU*Term′ () (natrec-subst x x₁ x₂ A⇒U)
 redU*Term′ U′≡U (natrec-zero x x₁ x₂) rewrite U′≡U = UnotInA x₁
 redU*Term′ () (natrec-suc x x₁ x₂ x₃)
@@ -674,9 +678,6 @@ redSProp : ∀ {Γ A B}
            (D : Γ ⊢ A :⇒*: B ∷ SProp ^ next ⁰ )
          → Γ ⊢ A :⇒*: B ^ [ % , ι ⁰ ]
 redSProp [[ ⊢t , ⊢u , d ]] = [[ (univ ⊢t) , (univ ⊢u) , redSProp′ d ]]
-
-un-univ : ∀ {A r Γ l} → Γ ⊢ A ^ [ r , ι l ] → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
-un-univ (univ x) = x
 
 un-univ≡ : ∀ {A B r Γ l} → Γ ⊢ A ≡ B ^ [ r , ι l ] → Γ ⊢ A ≡ B ∷ Univ r l ^ [ ! , next l ]
 un-univ≡ (univ x) = x
@@ -919,11 +920,13 @@ IdUℕRed*Term [[ ⊢t , ⊢t′ , d ]] = [[ Idⱼ (univ 0<1 (wfTerm ⊢t)) (ℕ
                                      IdUℕRed*Term′ ⊢t ⊢t′ d ]]
 
 appRed* : ∀ {Γ a t u A B rA lA lB l}
-          (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
-          (D : Γ ⊢ t ⇒* u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l) ^ ι l)
-        → Γ ⊢ t ∘ a ^ l ⇒* u ∘ a ^ l ∷ B [ a ] ^ ι lB
-appRed* ⊢a (id x) = id (x ∘ⱼ ⊢a)
-appRed* ⊢a (x ⇨ D) = app-subst x ⊢a ⇨ appRed* ⊢a D
+         → Γ     ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
+         → Γ ∙ A ^ [ rA , ι lA ] ⊢ B ∷ (U lB) ^ [ ! , next lB ]
+         → (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
+           (D : Γ ⊢ t ⇒* u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l) ^ ι l)
+         → Γ ⊢ t ∘ a ^ l ⇒* u ∘ a ^ l ∷ B [ a ] ^ ι lB
+appRed* ⊢F ⊢G ⊢a (id x) = id (⊢F ▹ ⊢G ▹ x ∘ⱼ ⊢a)
+appRed* ⊢F ⊢G ⊢a (x ⇨ D) = app-subst ⊢F ⊢G x ⊢a ⇨ appRed* ⊢F ⊢G ⊢a D
 
 castΠRed* : ∀ {Γ F rF G A B e t}
          (⊢F : Γ ⊢ F ^ [ rF , ι ⁰ ])

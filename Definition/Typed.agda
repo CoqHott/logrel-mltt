@@ -61,7 +61,9 @@ mutual
            → Γ     ⊢ F ^ [ rF , ι lF ]
            → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ r , ι lG ]
            → Γ     ⊢ lam F ▹ t ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ r , ι l ]
-    _∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
+    _▹_▹_∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
+           → Γ     ⊢ F ∷ (Univ rF lF) ^ [ ! , next lF ]
+           → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ (Univ r lG) ^ [ ! , next lG ]
            → Γ ⊢     g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
            → Γ ⊢     a ∷ F ^ [ rF , ι lF ]
            → Γ ⊢ g ∘ a ^ lΠ ∷ G [ a ] ^ [ r , ι lG ]
@@ -325,6 +327,8 @@ mutual
                  → Γ ⊢ A ≡ B ^ [ ! , l ]
                  → Γ ⊢ t ⇒ u ∷ B ^ l
     app-subst    : ∀ {A B t u a rA lA lB l}
+                 → Γ     ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
+                 → Γ ∙ A ^ [ rA , ι lA ] ⊢ B ∷ (U lB) ^ [ ! , next lB ]
                  → Γ ⊢ t ⇒ u ∷ Π A ^ rA ° lA ▹ B ° lB ° l ^ ι l
                  → Γ ⊢ a ∷ A ^ [ rA , ι lA ]
                  → Γ ⊢ t ∘ a ^ l ⇒ u ∘ a ^ l  ∷ B [ a ] ^ ι lB
@@ -332,6 +336,7 @@ mutual
                  → lA ≤ l
                  → lB ≤ l
                  → Γ     ⊢ A ^ [ rA , ι lA ]
+                 → Γ ∙ A ^ [ rA , ι lA ] ⊢ B ∷ (U lB) ^ [ ! , next lB ]
                  → Γ ∙ A ^ [ rA , ι lA ] ⊢ t ∷ B ^ [ ! , ι lB ]
                  → Γ     ⊢ a ∷ A ^ [ rA , ι lA ]
                  → Γ     ⊢ (lam A ▹ t ^ l) ∘ a ^ l ⇒ t [ a ] ∷ B [ a ] ^ ι lB
