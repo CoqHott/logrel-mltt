@@ -305,7 +305,7 @@ mutual
              → Γ ⊢ (cast l (Π A ^ rA ° lA ▹ B ° lB ° l) (Π A' ^ rA ° lA ▹ B' ° lB ° l) e f)
                ≡ (lam A' ▹
                       (let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0) in
-                      cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l))
+                      cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ⁰) ((wk1 f) ∘ a ^ l))
                       ^ l)
                    ∷ Π A' ^ rA ° lA ▹ B' ° lB ° l ^ [ ! , ι l ]
     cast-ℕ-0 : ∀ {e}
@@ -476,7 +476,7 @@ mutual
              → Γ ⊢ (cast l (Π A ^ rA ° l ▹ B ° l ° l) (Π A' ^ rA ° l ▹ B' ° l ° l) e f)
                ⇒ (lam A' ▹
                       (let a = cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0)
-                       in cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ¹) ((wk1 f) ∘ a ^ l))
+                       in cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ⁰) ((wk1 f) ∘ a ^ l))
                        ^ l )
                    ∷ Π A' ^ rA ° l ▹ B' ° l ° l ^ ι l
     cast-ℕ-0 : ∀ {e}
