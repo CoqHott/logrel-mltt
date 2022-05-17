@@ -30,21 +30,21 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 -- Valid fst term construction.
-fstᵛ : ∀ {F G l∃ tu Γ}
+fstᵛ : ∀ {F G tu Γ}
        ([Γ] : ⊩ᵛ Γ) →
        let l    = ∞
-           [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
-           [U∃] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+           [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
+           [U∃] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
        in      
-        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])
-        ([G] : Γ ∙ F ^ [ % , ι l∃ ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι l∃ ] / [Γ] ∙ [F])
-        ([UG] : Γ ∙ F ^ [ % , ι l∃ ] ⊩ᵛ⟨ l ⟩ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] ∙ [F])
-       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] / [UF]
-       → Γ ∙ F ^ [ % , ι l∃ ] ⊩ᵛ⟨ l ⟩ G ∷ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ}) →
-       ([tu] : Γ ⊩ᵛ⟨ l ⟩ tu ∷ ∃ F ▹ G ^ [ % , ι l∃ ] / [Γ] / ∃ᵛ {F} {G} [Γ] [F] [G])
-       → Γ ⊩ᵛ⟨ l ⟩ fst tu ∷ F ^ [ % , ι l∃ ] / [Γ] / [F]
-fstᵛ {F} {G} {l∃} {tu} {Γ} [Γ] [F] [G] [UG] [Fₜ] [Gₜ] [tu] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
-  let [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι ⁰ ] / [Γ])
+        ([G] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F])
+        ([UG] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] ∙ [F])
+       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] / [UF]
+       → Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ G ∷ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ}) →
+       ([tu] : Γ ⊩ᵛ⟨ l ⟩ tu ∷ ∃ F ▹ G ^ [ % , ι ⁰ ] / [Γ] / ∃ᵛ {F} {G} [Γ] [F] [G])
+       → Γ ⊩ᵛ⟨ l ⟩ fst tu ∷ F ^ [ % , ι ⁰ ] / [Γ] / [F]
+fstᵛ {F} {G} {tu} {Γ} [Γ] [F] [G] [UG] [Fₜ] [Gₜ] [tu] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+  let [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
       [σUF] = proj₁ ([UF] ⊢Δ [σ])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
@@ -63,7 +63,7 @@ fstᵛ {F} {G} {l∃} {tu} {Γ} [Γ] [F] [G] [UG] [Fₜ] [Gₜ] [tu] {Δ = Δ} {
                    ⊢Fₜ ⊢Gₜ ⊢tu
    in logRelIrr [σF] ⊢fst ,
       (λ {σ′} [σ]′ [σ≡σ′] → logRelIrrEq [σF] ⊢fst
-     let [UF]′ = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+     let [UF]′ = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
          [σUF]′ = proj₁ ([UF] ⊢Δ [σ]′)
          [σF]′ = proj₁ ([F] ⊢Δ [σ]′)
          ⊢F′ = escape [σF]′

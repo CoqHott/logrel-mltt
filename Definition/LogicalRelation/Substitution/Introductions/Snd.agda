@@ -31,23 +31,23 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 -- Valid snd term construction.
-sndᵛ : ∀ {F G l∃ tu Γ}
+sndᵛ : ∀ {F G tu Γ}
        ([Γ] : ⊩ᵛ Γ) →
        let l    = ∞
-           [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
-           [U∃] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+           [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
+           [U∃] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
        in      
-        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])
-        ([G] : Γ ∙ F ^ [ % , ι l∃ ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι l∃ ] / [Γ] ∙ [F])
-        ([UG] : Γ ∙ F ^ [ % , ι l∃ ] ⊩ᵛ⟨ l ⟩ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] ∙ [F])
-        ([Fₜ] : Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] / [UF])
-        ([Gₜ] : Γ ∙ F ^ [ % , ι l∃ ] ⊩ᵛ⟨ l ⟩ G ∷ Univ % l∃ ^ [ ! , next l∃ ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ}))
-        ([tu] : Γ ⊩ᵛ⟨ l ⟩ tu ∷ ∃ F ▹ G ^ [ % , ι l∃ ] / [Γ] / ∃ᵛ {F} {G} [Γ] [F] [G])
-        → Γ ⊩ᵛ⟨ l ⟩ snd tu ∷ G [ fst tu ] ^ [ % , ι l∃ ] / [Γ] / substS {F} {G} {fst tu} [Γ] [F] [G] (fstᵛ {F} {G} {l∃} {tu} {Γ} [Γ] [F] [G] (λ {Δ} {σ} → [UG] {Δ} {σ}) [Fₜ] [Gₜ] [tu])
-sndᵛ {F} {G} {l∃} {tu} {Γ} [Γ] [F] [G] [UG] [Fₜ] [Gₜ] [tu] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
-  let [fst] = fstᵛ {F} {G} {l∃} {tu} {Γ} [Γ] [F] [G] (λ {Δ} {σ} → [UG] {Δ} {σ}) [Fₜ] [Gₜ] [tu]
+        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι ⁰ ] / [Γ])
+        ([G] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F])
+        ([UG] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] ∙ [F])
+        ([Fₜ] : Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] / [UF])
+        ([Gₜ] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ G ∷ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ}))
+        ([tu] : Γ ⊩ᵛ⟨ l ⟩ tu ∷ ∃ F ▹ G ^ [ % , ι ⁰ ] / [Γ] / ∃ᵛ {F} {G} [Γ] [F] [G])
+        → Γ ⊩ᵛ⟨ l ⟩ snd tu ∷ G [ fst tu ] ^ [ % , ι ⁰ ] / [Γ] / substS {F} {G} {fst tu} [Γ] [F] [G] (fstᵛ {F} {G} {tu} {Γ} [Γ] [F] [G] (λ {Δ} {σ} → [UG] {Δ} {σ}) [Fₜ] [Gₜ] [tu])
+sndᵛ {F} {G} {tu} {Γ} [Γ] [F] [G] [UG] [Fₜ] [Gₜ] [tu] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+  let [fst] = fstᵛ {F} {G} {tu} {Γ} [Γ] [F] [G] (λ {Δ} {σ} → [UG] {Δ} {σ}) [Fₜ] [Gₜ] [tu]
       [G[fsttu]] = substS {F} {G} {fst tu} [Γ] [F] [G] [fst]
-      [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+      [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
       [σUF] = proj₁ ([UF] ⊢Δ [σ])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
@@ -68,7 +68,7 @@ sndᵛ {F} {G} {l∃} {tu} {Γ} [Γ] [F] [G] [UG] [Fₜ] [Gₜ] [tu] {Δ = Δ} {
       ⊢sndSubst = PE.subst (λ x → _ ⊢ _ ∷ x  ^ _) (PE.sym (singleSubstLift G (fst tu))) ⊢snd
    in logRelIrr [σG[fsttu]] ⊢sndSubst , 
       (λ {σ′} [σ]′ [σ≡σ′] → logRelIrrEq [σG[fsttu]] ⊢sndSubst
-     let [UF]′ = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded l∃)) [Γ])
+     let [UF]′ = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
          [σUF]′ = proj₁ ([UF] ⊢Δ [σ]′)
          [σF]′ = proj₁ ([F] ⊢Δ [σ]′)
          ⊢F′ = escape [σF]′
