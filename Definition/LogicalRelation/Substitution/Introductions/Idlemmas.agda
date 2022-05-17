@@ -127,12 +127,12 @@ module IdTypeU-lemmas
           → (Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₁ [ a ] ≡ wk (lift ρ) G₁ [ b ] ^ [ ! , ι ⁰ ] / ([G₁] [ρ] ⊢Δ [a])))
        (recursor₁ : ∀ {ρ Δ}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (Univ rF ⁰) (wk ρ F) (wk ρ F₁) ^ [ % , ι ⁰ ])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (Univ rF ⁰) (wk ρ F) (wk ρ F₁) ^ [ % , ι ⁰ ])
        (recursor₂ : ∀ {ρ Δ x y}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([x] : Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F ^ [ rF , ι ⁰ ] / [F] [ρ] ⊢Δ)
           ([y] : Δ ⊩⟨ ι ⁰ ⟩ y ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift ρ) G [ x ]) (wk (lift ρ) G₁ [ y ]) ^ [ % , ι ⁰ ])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift ρ) G [ x ]) (wk (lift ρ) G₁ [ y ]) ^ [ % , ι ⁰ ])
        (extrecursor : ∀ {ρ Δ x y x′ y′}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([x] : Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F ^ [ rF , ι ⁰ ] / [F] [ρ] ⊢Δ)
@@ -141,12 +141,12 @@ module IdTypeU-lemmas
           ([y] : Δ ⊩⟨ ι ⁰ ⟩ y ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
           ([y′] : Δ ⊩⟨ ι ⁰ ⟩ y′ ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
           ([y≡y′] : Δ ⊩⟨ ι ⁰ ⟩ y ≡ y′ ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift ρ) G [ x ]) (wk (lift ρ) G₁ [ y ]) ≡ Id (U ⁰) (wk (lift ρ) G [ x′ ]) (wk (lift ρ) G₁ [ y′ ]) ^ [ % , ι ⁰ ] / recursor₂ [ρ] ⊢Δ [x] [y])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift ρ) G [ x ]) (wk (lift ρ) G₁ [ y ]) ≡ Id (U ⁰) (wk (lift ρ) G [ x′ ]) (wk (lift ρ) G₁ [ y′ ]) ^ [ % , ι ⁰ ] / recursor₂ [ρ] ⊢Δ [x] [y])
   where
     ⊢IdFF₁ : Γ ⊢ Id (Univ rF ⁰) F F₁ ^ [ % , ι ⁰ ]
     ⊢IdFF₁ = univ (Idⱼ (univ 0<1 ⊢Γ) (un-univ ⊢F) (un-univ ⊢F₁))
 
-    [IdFF₁] : ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ¹ ⟩ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ]
+    [IdFF₁] : ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ ι ⁰ ⟩ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ]
     [IdFF₁] [ρ] ⊢Δ = recursor₁ [ρ] ⊢Δ
 
     b = λ ρ e x → cast ⁰ (wk ρ F₁) (wk ρ F) (Idsym (Univ rF ⁰) (wk ρ F) (wk ρ F₁) e) x
@@ -166,10 +166,10 @@ module IdTypeU-lemmas
 
     abstract
       [Id] : ∀ {ρ Δ e} →([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-        → ([e] : Δ ⊩⟨ ι ¹ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
+        → ([e] : Δ ⊩⟨ ι ⁰ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
         → ∀ {ρ₁ Δ₁ a} → ([ρ₁] : ρ₁ Twk.∷ Δ₁ ⊆ Δ) → (⊢Δ₁ : ⊢ Δ₁)
         → ([a] : Δ₁ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ₁ (wk ρ F₁) ^ [ rF , ι ⁰ ] / (Lwk.wk [ρ₁] ⊢Δ₁ ([F₁] [ρ] ⊢Δ)))
-        → Δ₁ ⊩⟨ ι ¹ ⟩ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁)) [ a ] ^ [ % , ι ⁰ ]
+        → Δ₁ ⊩⟨ ι ⁰ ⟩ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁)) [ a ] ^ [ % , ι ⁰ ]
       [Id] {ρ} {Δ} {e} [ρ] ⊢Δ [e] {ρ₁} {Δ₁} {a} [ρ₁] ⊢Δ₁ [a] =
         let
           [a] : Δ₁ ⊩⟨ ι ⁰ ⟩ a ∷ wk (ρ₁ • ρ) F₁ ^ [ rF , ι ⁰ ] / [F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁
@@ -179,17 +179,17 @@ module IdTypeU-lemmas
           [b] : Δ₁ ⊩⟨ ι ⁰ ⟩ b (ρ₁ • ρ) (wk ρ₁ e) a ∷ wk (ρ₁ • ρ) F ^ [ rF , ι ⁰ ] / [F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁
           [b] = [proj₁cast] ⊢Δ₁ ([F₁] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) ([F] ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁) [a] ⊢e′
           x = recursor₂ ([ρ₁] Twk.•ₜ [ρ]) ⊢Δ₁ [b] [a]
-        in PE.subst (λ X → Δ₁ ⊩⟨ ι ¹ ⟩ X ^ [ % , ι ⁰ ]) (PE.sym (IdTel₂-prettify ρ₁ ρ e a)) x
+        in PE.subst (λ X → Δ₁ ⊩⟨ ι ⁰ ⟩ X ^ [ % , ι ⁰ ]) (PE.sym (IdTel₂-prettify ρ₁ ρ e a)) x
 
     abstract
       [Idext] : ∀ {ρ Δ e e′} →([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-        → ([e] : Δ ⊩⟨ ι ¹ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
-        → ([e′] : Δ ⊩⟨ ι ¹ ⟩ e′ ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
+        → ([e] : Δ ⊩⟨ ι ⁰ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
+        → ([e′] : Δ ⊩⟨ ι ⁰ ⟩ e′ ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
         → ∀ {ρ₁ Δ₁ a a′} → ([ρ₁] : ρ₁ Twk.∷ Δ₁ ⊆ Δ) → (⊢Δ₁ : ⊢ Δ₁)
         → ([a] : Δ₁ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ₁ (wk ρ F₁) ^ [ rF , ι ⁰ ] / (Lwk.wk [ρ₁] ⊢Δ₁ ([F₁] [ρ] ⊢Δ)))
         → ([a′] : Δ₁ ⊩⟨ ι ⁰ ⟩ a′ ∷ wk ρ₁ (wk ρ F₁) ^ [ rF , ι ⁰ ] / (Lwk.wk [ρ₁] ⊢Δ₁ ([F₁] [ρ] ⊢Δ)))
         → ([a≡a′] : Δ₁ ⊩⟨ ι ⁰ ⟩ a ≡ a′ ∷ wk ρ₁ (wk ρ F₁) ^ [ rF , ι ⁰ ] / (Lwk.wk [ρ₁] ⊢Δ₁ ([F₁] [ρ] ⊢Δ)))
-        → Δ₁ ⊩⟨ ι ¹ ⟩ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁)) [ a ]
+        → Δ₁ ⊩⟨ ι ⁰ ⟩ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁)) [ a ]
              ≡ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e′) (var 0) ]) (wk (lift ρ) G₁)) [ a′ ] ^ [ % , ι ⁰ ]
              / [Id] [ρ] ⊢Δ [e] [ρ₁] ⊢Δ₁ [a]
       [Idext] {ρ} {Δ} {e} {e′} [ρ] ⊢Δ [e] [e′] {ρ₁} {Δ₁} {a} {a′} [ρ₁] ⊢Δ₁ [a] [a′] [a≡a′] =
@@ -213,15 +213,15 @@ module IdTypeU-lemmas
         in irrelevanceEq″ (PE.sym (IdTel₂-prettify ρ₁ ρ e a)) (PE.sym (IdTel₂-prettify ρ₁ ρ e′ a′)) PE.refl PE.refl x₁ ([Id] [ρ] ⊢Δ [e] [ρ₁] ⊢Δ₁ [a]) x
 
     [IdGG₁] : ∀ {ρ Δ e} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-      → ([e] : Δ ⊩⟨ ι ¹ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
-      → Δ ⊩⟨ ι ¹ ⟩ IdGG₁ ρ e ^ [ % , ι ⁰ ]
+      → ([e] : Δ ⊩⟨ ι ⁰ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
+      → Δ ⊩⟨ ι ⁰ ⟩ IdGG₁ ρ e ^ [ % , ι ⁰ ]
     [IdGG₁] {ρ} {Δ} {e} [ρ] ⊢Δ [e] =
       let
         ⊢wkF₁ = escape ([F₁] [ρ] ⊢Δ)
         [0] = let ⊢0 = (var (⊢Δ ∙ ⊢wkF₁) here) in
           neuTerm (Lwk.wk (Twk.step Twk.id) (⊢Δ ∙ escape ([F₁] [ρ] ⊢Δ)) ([F₁] [ρ] ⊢Δ)) (var 0) ⊢0 (~-var ⊢0)
-        x : Δ ∙ wk ρ F₁ ^ [ rF , ι ⁰ ] ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁) ^ [ % , ι ⁰ ]
-        x = PE.subst (λ X → Δ ∙ wk ρ F₁ ^ [ rF , ι ⁰ ] ⊩⟨ ι ¹ ⟩ X ^ [ % , ι ⁰ ]) (wkSingleSubstId _) ([Id] [ρ] ⊢Δ [e] (Twk.step Twk.id) (⊢Δ ∙ ⊢wkF₁) [0])
+        x : Δ ∙ wk ρ F₁ ^ [ rF , ι ⁰ ] ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁) ^ [ % , ι ⁰ ]
+        x = PE.subst (λ X → Δ ∙ wk ρ F₁ ^ [ rF , ι ⁰ ] ⊩⟨ ι ⁰ ⟩ X ^ [ % , ι ⁰ ]) (wkSingleSubstId _) ([Id] [ρ] ⊢Δ [e] (Twk.step Twk.id) (⊢Δ ∙ ⊢wkF₁) [0])
         ⊢Id = escape x
       in
       Πirrᵣ′ rF ⁰ (wk ρ F₁) (Id (U ⁰) (wk (lift (step ρ)) G [ b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₁))
@@ -230,10 +230,10 @@ module IdTypeU-lemmas
         
     abstract
       [IdGG₁-ext] : ∀ {ρ Δ e e′} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-        → ([e] : Δ ⊩⟨ ι ¹ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
-        → ([e′] : Δ ⊩⟨ ι ¹ ⟩ e′ ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
-        → ([e≡e′] : Δ ⊩⟨ ι ¹ ⟩ e ≡ e′ ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
-        → Δ ⊩⟨ ι ¹ ⟩ IdGG₁ ρ e ≡ IdGG₁ ρ e′ ^ [ % , ι ⁰ ] / [IdGG₁] [ρ] ⊢Δ [e]
+        → ([e] : Δ ⊩⟨ ι ⁰ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
+        → ([e′] : Δ ⊩⟨ ι ⁰ ⟩ e′ ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
+        → ([e≡e′] : Δ ⊩⟨ ι ⁰ ⟩ e ≡ e′ ∷ wk ρ (Id (Univ rF ⁰) F F₁) ^ [ % , ι ⁰ ] / [IdFF₁] [ρ] ⊢Δ)
+        → Δ ⊩⟨ ι ⁰ ⟩ IdGG₁ ρ e ≡ IdGG₁ ρ e′ ^ [ % , ι ⁰ ] / [IdGG₁] [ρ] ⊢Δ [e]
       [IdGG₁-ext] {ρ} {Δ} {e} {e′} [ρ] ⊢Δ [e] [e′] _ =
         let
           ⊢wkF₁ = escape ([F₁] [ρ] ⊢Δ)
@@ -273,7 +273,7 @@ module IdTypeU-lemmas
             (PE.trans (singleSubstLift (wk (lift (lift (lift ρ))) (wk (lift (step (step id))) G)) (wk (lift (lift ρ)) (b (step (step id)) (var 1) (var 0)))) x₁))
         in PE.cong₃ (λ X Y Z → Π X ^ rF ° ⁰ ▹ Id (U ⁰) Y Z ° ⁰ ° ⁰) (irrelevant-subst′ ρ F₁ e) x₀ (cast-subst-lemma4 ρ e G₁)
 
-    [IdGG₁0] : Γ ∙ Id (Univ rF ⁰) F F₁ ^ [ % , ι ⁰ ] ⊩⟨ ι ¹ ⟩ IdGG₁ (step id) (var 0) ^ [ % , ι ⁰ ]
+    [IdGG₁0] : Γ ∙ Id (Univ rF ⁰) F F₁ ^ [ % , ι ⁰ ] ⊩⟨ ι ⁰ ⟩ IdGG₁ (step id) (var 0) ^ [ % , ι ⁰ ]
     [IdGG₁0] = let
         ⊢0 = var (⊢Γ ∙ ⊢IdFF₁) here
         [0] = neuTerm ([IdFF₁] (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁)) (var 0) ⊢0 (~-var ⊢0)
@@ -288,7 +288,7 @@ module IdTypeU-lemmas
     ∃≡∃ : Γ ⊢ ∃ Id (Univ rF ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ≅ ∃ Id (Univ rF ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ^ [ % , ι ⁰ ]
     ∃≡∃ = (≅-univ (≅ₜ-∃-cong
       ⊢IdFF₁
-      (≅-un-univ (escapeEqRefl (PE.subst (λ X → Γ ⊩⟨ ι ¹ ⟩ X ^ [ % , ι ⁰ ]) (wk-id (Id (Univ rF ⁰) F F₁)) ([IdFF₁] Twk.id ⊢Γ))))
+      (≅-un-univ (escapeEqRefl (PE.subst (λ X → Γ ⊩⟨ ι ⁰ ⟩ X ^ [ % , ι ⁰ ]) (wk-id (Id (Univ rF ⁰) F F₁)) ([IdFF₁] Twk.id ⊢Γ))))
       (≅-un-univ (escapeEqRefl [IdGG₁0]))))
 
     D∃ : Γ ⊢ Id (U ⁰) A B ⇒* ∃ Id (Univ rF ⁰) F F₁ ▹ IdGG₁ (step id) (var 0) ^ [ % , ι ⁰ ]
@@ -380,20 +380,20 @@ module IdTypeU-lemmas-2
 
        (recursor₁ : ∀ {ρ Δ}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (Univ rF ⁰) (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ⁰ ])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (Univ rF ⁰) (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ⁰ ])
        (recursor₂ : ∀ {ρ Δ x y}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([x] : Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
           ([y] : Δ ⊩⟨ ι ⁰ ⟩ y ∷ wk ρ F₃ ^ [ rF , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift ρ) G₁ [ x ]) (wk (lift ρ) G₃ [ y ]) ^ [ % , ι ⁰ ])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift ρ) G₁ [ x ]) (wk (lift ρ) G₃ [ y ]) ^ [ % , ι ⁰ ])
        (recursor₃ : ∀ {ρ Δ}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (Univ rF ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ⁰ ])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (Univ rF ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ⁰ ])
        (recursor₄ : ∀ {ρ Δ x y}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([x] : Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F₂ ^ [ rF , ι ⁰ ] / [F₂] [ρ] ⊢Δ)
           ([y] : Δ ⊩⟨ ι ⁰ ⟩ y ∷ wk ρ F₄ ^ [ rF , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift ρ) G₂ [ x ]) (wk (lift ρ) G₄ [ y ]) ^ [ % , ι ⁰ ])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift ρ) G₂ [ x ]) (wk (lift ρ) G₄ [ y ]) ^ [ % , ι ⁰ ])
        (extrecursor₁ : ∀ {ρ Δ x y x′ y′}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([x] : Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
@@ -402,7 +402,7 @@ module IdTypeU-lemmas-2
           ([y] : Δ ⊩⟨ ι ⁰ ⟩ y ∷ wk ρ F₃ ^ [ rF , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
           ([y′] : Δ ⊩⟨ ι ⁰ ⟩ y′ ∷ wk ρ F₃ ^ [ rF , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
           ([y≡y′] : Δ ⊩⟨ ι ⁰ ⟩ y ≡ y′ ∷ wk ρ F₃ ^ [ rF , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift ρ) G₁ [ x ]) (wk (lift ρ) G₃ [ y ]) ≡ Id (U ⁰) (wk (lift ρ) G₁ [ x′ ]) (wk (lift ρ) G₃ [ y′ ]) ^ [ % , ι ⁰ ] / recursor₂ [ρ] ⊢Δ [x] [y])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift ρ) G₁ [ x ]) (wk (lift ρ) G₃ [ y ]) ≡ Id (U ⁰) (wk (lift ρ) G₁ [ x′ ]) (wk (lift ρ) G₃ [ y′ ]) ^ [ % , ι ⁰ ] / recursor₂ [ρ] ⊢Δ [x] [y])
        (extrecursor₂ : ∀ {ρ Δ x y x′ y′}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           ([x] : Δ ⊩⟨ ι ⁰ ⟩ x ∷ wk ρ F₂ ^ [ rF , ι ⁰ ] / [F₂] [ρ] ⊢Δ)
@@ -411,10 +411,10 @@ module IdTypeU-lemmas-2
           ([y] : Δ ⊩⟨ ι ⁰ ⟩ y ∷ wk ρ F₄ ^ [ rF , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
           ([y′] : Δ ⊩⟨ ι ⁰ ⟩ y′ ∷ wk ρ F₄ ^ [ rF , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
           ([y≡y′] : Δ ⊩⟨ ι ⁰ ⟩ y ≡ y′ ∷ wk ρ F₄ ^ [ rF , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift ρ) G₂ [ x ]) (wk (lift ρ) G₄ [ y ]) ≡ Id (U ⁰) (wk (lift ρ) G₂ [ x′ ]) (wk (lift ρ) G₄ [ y′ ]) ^ [ % , ι ⁰ ] / recursor₄ [ρ] ⊢Δ [x] [y])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift ρ) G₂ [ x ]) (wk (lift ρ) G₄ [ y ]) ≡ Id (U ⁰) (wk (lift ρ) G₂ [ x′ ]) (wk (lift ρ) G₄ [ y′ ]) ^ [ % , ι ⁰ ] / recursor₄ [ρ] ⊢Δ [x] [y])
        (eqrecursor₁ : ∀ {ρ Δ}
           ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ Id (Univ rF ⁰) (wk ρ F₁) (wk ρ F₃) ≡ Id (Univ rF ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ⁰ ] / recursor₁ [ρ] ⊢Δ)
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (Univ rF ⁰) (wk ρ F₁) (wk ρ F₃) ≡ Id (Univ rF ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ⁰ ] / recursor₁ [ρ] ⊢Δ)
        (eqrecursor₂ : ∀ {ρ Δ x₁ x₂ x₃ x₄}
           → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
           → ([x₁] : Δ ⊩⟨ ι ⁰ ⟩ x₁ ∷ wk ρ F₁ ^ [ rF , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
@@ -423,7 +423,7 @@ module IdTypeU-lemmas-2
           → ([x₃] : Δ ⊩⟨ ι ⁰ ⟩ x₃ ∷ wk ρ F₃ ^ [ rF , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
           → ([x₄] : Δ ⊩⟨ ι ⁰ ⟩ x₄ ∷ wk ρ F₄ ^ [ rF , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
           → ([G₃x₃≡G₄x₄] : Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G₃ [ x₃ ] ≡ wk (lift ρ) G₄ [ x₄ ] ^ [ ! , ι ⁰ ] / [G₃] [ρ] ⊢Δ [x₃])
-          → Δ ⊩⟨ ι ¹ ⟩ Id (U ⁰) (wk (lift ρ) G₁ [ x₁ ]) (wk (lift ρ) G₃ [ x₃ ]) ≡ Id (U ⁰) (wk (lift ρ) G₂ [ x₂ ]) (wk (lift ρ) G₄ [ x₄ ]) ^ [ % , ι ⁰ ] / recursor₂ [ρ] ⊢Δ [x₁] [x₃])
+          → Δ ⊩⟨ ι ⁰ ⟩ Id (U ⁰) (wk (lift ρ) G₁ [ x₁ ]) (wk (lift ρ) G₃ [ x₃ ]) ≡ Id (U ⁰) (wk (lift ρ) G₂ [ x₂ ]) (wk (lift ρ) G₄ [ x₄ ]) ^ [ % , ι ⁰ ] / recursor₂ [ρ] ⊢Δ [x₁] [x₃])
   where
     module E₁ = IdTypeU-lemmas ⊢Γ ⊢A₁ ⊢ΠF₁G₁ D₁ ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext ⊢A₃ ⊢ΠF₃G₃ D₃ ⊢F₃ ⊢G₃ A₃≡A₃ [F₃] [G₃] G₃-ext
       recursor₁ recursor₂ extrecursor₁
@@ -431,15 +431,15 @@ module IdTypeU-lemmas-2
       recursor₃ recursor₄ extrecursor₂
 
     [IdFF₁≡IdFF₂] : ∀ {ρ Δ} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-      → Δ ⊩⟨ ι ¹ ⟩ wk ρ (Id (Univ rF ⁰) F₁ F₃) ≡ wk ρ (Id (Univ rF ⁰) F₂ F₄) ^ [ % , ι ⁰ ] / E₁.[IdFF₁] [ρ] ⊢Δ
+      → Δ ⊩⟨ ι ⁰ ⟩ wk ρ (Id (Univ rF ⁰) F₁ F₃) ≡ wk ρ (Id (Univ rF ⁰) F₂ F₄) ^ [ % , ι ⁰ ] / E₁.[IdFF₁] [ρ] ⊢Δ
     [IdFF₁≡IdFF₂] = (λ [ρ] ⊢Δ → irrelevanceEq (recursor₁ [ρ] ⊢Δ) (E₁.[IdFF₁] [ρ] ⊢Δ) (eqrecursor₁ [ρ] ⊢Δ))
 
     abstract
       [Ideq] : ∀ {ρ Δ e} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-        → ([e] : Δ ⊩⟨ ι ¹ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F₁ F₃) ^ [ % , ι ⁰ ] / E₁.[IdFF₁] [ρ] ⊢Δ)
+        → ([e] : Δ ⊩⟨ ι ⁰ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F₁ F₃) ^ [ % , ι ⁰ ] / E₁.[IdFF₁] [ρ] ⊢Δ)
         → ∀ {ρ₁ Δ₁ a} → ([ρ₁] : ρ₁ Twk.∷ Δ₁ ⊆ Δ) → (⊢Δ₁ : ⊢ Δ₁)
         → ([a] : Δ₁ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ₁ (wk ρ F₃) ^ [ rF , ι ⁰ ] / (Lwk.wk [ρ₁] ⊢Δ₁ ([F₃] [ρ] ⊢Δ)))
-        → Δ₁ ⊩⟨ ι ¹ ⟩ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G₁ [ E₁.b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₃)) [ a ]
+        → Δ₁ ⊩⟨ ι ⁰ ⟩ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G₁ [ E₁.b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₃)) [ a ]
              ≡ wk (lift ρ₁) (Id (U ⁰) (wk (lift (step ρ)) G₂ [ E₂.b (step ρ) (wk1 e) (var 0) ]) (wk (lift ρ) G₄)) [ a ] ^ [ % , ι ⁰ ]
              / E₁.[Id] [ρ] ⊢Δ [e] [ρ₁] ⊢Δ₁ [a]
       [Ideq] {ρ} {Δ} {e} [ρ] ⊢Δ [e] {ρ₁} {Δ₁} {a} [ρ₁] ⊢Δ₁ [a] =
@@ -473,8 +473,8 @@ module IdTypeU-lemmas-2
 
     abstract
       [IdGG₁≡IdGG₂] : ∀ {ρ Δ e} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-          → ([e] : Δ ⊩⟨ ι ¹ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F₁ F₃) ^ [ % , ι ⁰ ] / E₁.[IdFF₁] [ρ] ⊢Δ)
-          → Δ ⊩⟨ ι ¹ ⟩ E₁.IdGG₁ ρ e ≡ E₂.IdGG₁ ρ e ^ [ % , ι ⁰ ] / E₁.[IdGG₁] [ρ] ⊢Δ [e]
+          → ([e] : Δ ⊩⟨ ι ⁰ ⟩ e ∷ wk ρ (Id (Univ rF ⁰) F₁ F₃) ^ [ % , ι ⁰ ] / E₁.[IdFF₁] [ρ] ⊢Δ)
+          → Δ ⊩⟨ ι ⁰ ⟩ E₁.IdGG₁ ρ e ≡ E₂.IdGG₁ ρ e ^ [ % , ι ⁰ ] / E₁.[IdGG₁] [ρ] ⊢Δ [e]
       [IdGG₁≡IdGG₂] {ρ} {Δ} {e} [ρ] ⊢Δ [e] = let
           [e]′ = convTerm₁ (E₁.[IdFF₁] [ρ] ⊢Δ) (E₂.[IdFF₁] [ρ] ⊢Δ) ([IdFF₁≡IdFF₂] [ρ] ⊢Δ) [e]
           ⊢wkF₃ = escape ([F₃] [ρ] ⊢Δ)
@@ -493,7 +493,7 @@ module IdTypeU-lemmas-2
                  (id (univ (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ un-univ ⊢wkF₄ ▹ un-univ ⊢x₂)))
                  (≅-univ (≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢wkF₃ (≅-un-univ (escapeEq ([F₃] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ))) (≅-un-univ ⊢x₁)))
 
-    [IdGG₁≡IdGG₂0] : Γ ∙ Id (Univ rF ⁰) F₁ F₃ ^ [ % , ι ⁰ ] ⊩⟨ ι ¹ ⟩ E₁.IdGG₁ (step id) (var 0) ≡ E₂.IdGG₁ (step id) (var 0) ^ [ % , ι ⁰ ] / E₁.[IdGG₁0]
+    [IdGG₁≡IdGG₂0] : Γ ∙ Id (Univ rF ⁰) F₁ F₃ ^ [ % , ι ⁰ ] ⊩⟨ ι ⁰ ⟩ E₁.IdGG₁ (step id) (var 0) ≡ E₂.IdGG₁ (step id) (var 0) ^ [ % , ι ⁰ ] / E₁.[IdGG₁0]
     [IdGG₁≡IdGG₂0] = let
         ⊢0 = var (⊢Γ ∙ E₁.⊢IdFF₁) here
         [0] = neuTerm (E₁.[IdFF₁] (Twk.step Twk.id) (⊢Γ ∙ E₁.⊢IdFF₁)) (var 0) ⊢0 (~-var ⊢0)
