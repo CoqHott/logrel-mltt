@@ -18,50 +18,47 @@ open import Definition.LogicalRelation.Substitution.MaybeEmbed
 open import Tools.Unit as TU
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+open import Tools.Empty using (⊥; ⊥-elim)
+
 
 
 -- Validity of the Empty type.
-Emptyᵛ : ∀ {Γ ll l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ l ⟩ Empty ll ^ [ % , ι ll ] / [Γ]
+Emptyᵛ : ∀ {Γ l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ l ⟩ sEmpty ^ [ % , ι ⁰ ] / [Γ]
 Emptyᵛ [Γ] ⊢Δ [σ] = Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ))) , λ _ x₂ → id (univ (Emptyⱼ ⊢Δ))
 
 -- Validity of the Empty type as a term.
-Emptyᵗᵛ : ∀ {Γ l ll} ([Γ] : ⊩ᵛ Γ) → (l< : ι ll <∞ l)
-    → Γ ⊩ᵛ⟨ l ⟩ Empty ll ∷ Univ % ll ^ [ ! , next ll ]  / [Γ] / Uᵛ l< [Γ]
-Emptyᵗᵛ {ll = ll} [Γ] emb< ⊢Δ [σ] = let ⊢Empty  = Emptyⱼ ⊢Δ
-                       in  Uₜ (Empty ll) (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ'))))
-                           , λ x x₁ → Uₜ₌ -- Empty Empty (idRedTerm:*: ⊢Empty) (idRedTerm:*: ⊢Empty) Emptyₙ Emptyₙ
-                                   (Uₜ (Empty ll) (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
-                                   (Uₜ (Empty ll) (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
-                                   (≅ₜ-Emptyrefl ⊢Δ) λ [ρ] ⊢Δ' → id (univ (Emptyⱼ ⊢Δ'))
-Emptyᵗᵛ {ll = ll} [Γ] ∞< ⊢Δ [σ] = let ⊢Empty  = Emptyⱼ ⊢Δ
-                       in  Uₜ (Empty ll) (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ'))))
-                           , λ x x₁ → Uₜ₌ -- Empty Empty (idRedTerm:*: ⊢Empty) (idRedTerm:*: ⊢Empty) Emptyₙ Emptyₙ
-                                   (Uₜ (Empty ll) (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
-                                   (Uₜ (Empty ll) (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
+Emptyᵗᵛ : ∀ {Γ l } ([Γ] : ⊩ᵛ Γ) → (l< : ι ⁰ <∞ l)
+    → Γ ⊩ᵛ⟨ l ⟩ sEmpty ∷ SProp ^ [ ! , next ⁰ ]  / [Γ] / Uᵛ l< [Γ]
+Emptyᵗᵛ [Γ] emb< ⊢Δ [σ] = let ⊢Empty  = Emptyⱼ ⊢Δ
+                         in  Uₜ sEmpty (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ'))))
+                            , λ x x₁ → Uₜ₌ -- Empty Empty (idRedTerm:*: ⊢Empty) (idRedTerm:*: ⊢Empty) Emptyₙ Emptyₙ
+                                   (Uₜ sEmpty (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
+                                   (Uₜ sEmpty (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
                                    (≅ₜ-Emptyrefl ⊢Δ) λ [ρ] ⊢Δ' → id (univ (Emptyⱼ ⊢Δ'))
 
-Unitᵗᵛ : ∀ {Γ l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ (SProp l) ^ [ ! , next l ] / [Γ] / maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ (proj₂ (levelBounded _)) [Γ])
-Unitᵗᵛ {Γ} {l} [Γ] = let [SProp] = maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])
-                         [Empty] = Emptyᵛ {ll = l} {l = ∞} [Γ]
-                         [Γ∙Empty] = (_∙_ {Γ} {Empty l} [Γ] [Empty])
-                         [SProp]₁ : Γ ∙ Empty l ^ [ % , ι l ] ⊩ᵛ⟨ ∞ ⟩ (SProp l) ^ [ ! , next l ] / [Γ∙Empty]
-                         [SProp]₁ {Δ} {σ} = maybeEmbᵛ {A = SProp l} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded _)) [Γ∙Empty] {Δ} {σ}) {Δ} {σ}
-                         [Empty]₁ = maybeEmbTermᵛ {A = SProp l} {t = Empty l} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ]) (Emptyᵗᵛ {ll = l} [Γ] (proj₂ (levelBounded _)))
-                         [Empty]₂ = maybeEmbTermᵛ {A = SProp l} {t = Empty l} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded _)) [Γ∙Empty] {Δ} {σ}) (Emptyᵗᵛ {ll = l} [Γ∙Empty] (proj₂ (levelBounded _)))
-                in maybeEmbTermᵛ {A = SProp l} {t = Unit} [Γ] [SProp] 
-                                 (Πᵗᵛ {Empty l} {Empty l} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] ( Emptyᵛ {ll = l} [Γ]) (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
+Unitᵗᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp} [Γ] (Uᵛ emb< [Γ])
+Unitᵗᵛ {Γ} [Γ] =
+  let [SProp] = maybeEmbᵛ {A = SProp} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])
+      [Empty] = Emptyᵛ {l = ∞} [Γ]
+      [Γ∙Empty] = (_∙_ {Γ} {sEmpty} [Γ] [Empty])
+      [SProp]₁ : Γ ∙ sEmpty ^ [ % , ι ⁰ ] ⊩ᵛ⟨ ∞ ⟩ SProp ^ [ ! , next ⁰ ] / [Γ∙Empty]
+      [SProp]₁ {Δ} {σ} = maybeEmbᵛ {A = SProp} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) {Δ} {σ}
+      [Empty]₁ = maybeEmbTermᵛ {A = SProp} {t = sEmpty} [Γ] (Uᵛ {rU = %} emb< [Γ]) (Emptyᵗᵛ [Γ] (proj₂ (levelBounded _)))
+      [Empty]₂ = maybeEmbTermᵛ {A = SProp} {t = sEmpty} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) λ {Δ} {σ} → Emptyᵗᵛ [Γ∙Empty] emb< {Δ} {σ}
+  in maybeEmbTermᵛ {A = SProp} {t = Unit} [Γ] [SProp] 
+                   (Πirrᵗᵛ {F = sEmpty} {G = sEmpty} [Γ] (Emptyᵛ [Γ]) (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
 
 
-Unit≡Unit : ∀ {Γ l} (⊢Γ : ⊢ Γ)
-          → Γ ⊢ Unit {l} ≅ Unit {l} ∷ SProp l ^ [ ! , next l ]
-Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (≡is≤ PE.refl) (≡is≤ PE.refl) (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
+Unit≡Unit : ∀ {Γ} (⊢Γ : ⊢ Γ)
+          → Γ ⊢ Unit ≅ Unit ∷ SProp ^ [ ! , next ⁰ ]
+Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
 
-Unitᵛ : ∀ {Γ l} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι l ⟩ Unit ^ [ % , ι l ] / [Γ]
-Unitᵛ {Γ} {l} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (maybeEmbᵛ {A = SProp l} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])) (Unitᵗᵛ {l = l} [Γ])
+Unitᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ] / [Γ]
+Unitᵛ {Γ} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (maybeEmbᵛ {A = SProp} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])) (Unitᵗᵛ [Γ])
 
 
-UnitType : ∀ {Γ l} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι l ⟩ Unit ^ [ % , ι l ]
+UnitType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ]
 UnitType {Γ} ⊢Γ = proj₁ (Unitᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)
 
-EmptyType : ∀ {Γ l} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι l ⟩ Empty l ^ [ % , ι l ]
+EmptyType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ sEmpty ^ [ % , ι ⁰ ]
 EmptyType {Γ} ⊢Γ = proj₁ (Emptyᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)
