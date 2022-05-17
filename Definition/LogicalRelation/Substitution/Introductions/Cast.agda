@@ -47,7 +47,7 @@ import Data.Nat as Nat
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ % , ι ⁰ ])
          ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ % , ι ⁰ ]) →
-         ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ % , ι ⁰ ] / [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ % ⁰) A B ^ [ % , ι ¹ ]) →
+         ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ % , ι ⁰ ] / [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ % ⁰) A B ^ [ % , ι ⁰ ]) →
          Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ % , ι ⁰ ] / [B]
 [cast]irr {A} {B} ⊢Γ [A] [B] {t} {e} [t] ⊢e = 
   let ⊢A = escape {l = ι ⁰} {A = A} [A] 
@@ -66,8 +66,8 @@ import Data.Nat as Nat
        → (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ % , ι ⁰ ] / [A])
                         → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ A′ ^ [ % , ι ⁰ ] / [A′])
                         → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ A ^ [ % , ι ⁰ ] / [A])
-                        → (⊢e : Γ ⊢ e ∷ Id (Univ % ⁰) A B ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ % ⁰) A′ B′ ^ [ % , ι ¹ ])
+                        → (⊢e : Γ ⊢ e ∷ Id (Univ % ⁰) A B ^ [ % , ι ⁰ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ % ⁰) A′ B′ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ % , ι ⁰ ] / [B])
 [castext]irr {A} {A′} {B} {B′} ⊢Γ [A] [A′] [A≡A′] [B] [B′] [B≡B′] [t] [t′] [t≡t′] ⊢e ⊢e′ =
   let ⊢A = escape {l = ι ⁰} {A = A} [A] 
@@ -83,7 +83,7 @@ import Data.Nat as Nat
          (⊢Γ : ⊢ Γ)
          ([A] :  Γ ⊩ne A ^[ ! , ⁰ ])
          ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ ! , ι ⁰ ]) →
-         ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ne [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ ! ⁰) A B ^ [ % , ι ¹ ]) →
+         ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ne [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ ! ⁰) A B ^ [ % , ι ⁰ ]) →
          Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / [B]
 [cast]Ne {A} {B} ⊢Γ (ne K D neK K≡K) [B] {t} {e} [t] ⊢e =
   let [[ ⊢A , ⊢K , DK ]] = D
@@ -105,8 +105,8 @@ import Data.Nat as Nat
        → (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ne [A])
                         → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ A′ ^ [ ! , ι ⁰ ] / ne [A′])
                         → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ A ^ [ ! , ι ⁰ ] / ne [A])
-                        → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (U ⁰) A′ B′ ^ [ % , ι ¹ ])
+                        → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (U ⁰) A′ B′ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ ! , ι ⁰ ] / [B])
 [castext]Ne {A} {A′} {B} {B′} ⊢Γ (ne K D neK K≡K) (ne K′ D′ neK′ K′≡K′) (ne₌ M D′′ neM K≡M) [B] [B′] [B≡B′] [t] [t′] [t≡t′] ⊢e ⊢e′ = 
   let [A] = ne K D neK K≡K
@@ -135,7 +135,7 @@ import Data.Nat as Nat
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩ℕ A)
          ([B] : Γ ⊩ℕ B) →
-         ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ ! ⁰) A B ^ [ % , ι ¹ ]) →
+         ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ ! ⁰) A B ^ [ % , ι ⁰ ]) →
          Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / ℕᵣ [B]
 [cast]ℕ {A} {B} ⊢Γ [[ ⊢A , ⊢ℕ , D ]] [[ ⊢B , ⊢ℕ' , D' ]] {t} {e} (ℕₜ .(suc _) d n≡n (sucᵣ {a} x)) ⊢e =
   let ⊢t = escapeTerm {l = ι ⁰} (ℕᵣ [[ ⊢A , ⊢ℕ , D ]]) (ℕₜ (suc a) d n≡n (sucᵣ x))
@@ -180,8 +180,8 @@ import Data.Nat as Nat
              ∀ {t t' e e' } → (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ])
                         → (⊢t′ : Γ ⊢ t' ∷ A' ^ [ ! , ι ⁰ ])
                         → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t' ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
-                        → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e' ∷ Id (U ⁰) A' B' ^ [ % , ι ¹ ])
+                        → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ])
+                        → (⊢e′ : Γ ⊢ e' ∷ Id (U ⁰) A' B' ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ ! , ι ⁰ ] / ℕᵣ [B]
 [castext]ℕ ⊢Γ [[ ⊢A , ⊢ℕA , DA ]] [[ ⊢A' , ⊢ℕA' , DA' ]] [A≡A′] [[ ⊢B , ⊢ℕB , DB ]] [[ ⊢B' , ⊢ℕB' , DB' ]] [B≡B′] {t} {t'} {e} {e'} ⊢t ⊢t′
               (ℕₜ₌ .(suc a) .(suc a') d d′ k≡k′ (sucᵣ {a} {a'} (ℕₜ₌ k k′ [[ ⊢a , ⊢u , d₁ ]] [[ ⊢a' , ⊢u₁ , d₂ ]] k≡k′₁ prop))) ⊢e ⊢e′ = 
@@ -240,8 +240,8 @@ import Data.Nat as Nat
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ])
          ([B] : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ r , ι ⁰ ])
-       → (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B])
-       × (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ r , ι ⁰ ] / [B]) → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ¹ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ∷ A ^ [ r , ι ⁰ ] / [A])
+       → (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A]) → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B])
+       × (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ r , ι ⁰ ] / [B]) → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ⁰ ]) → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ∷ A ^ [ r , ι ⁰ ] / [A])
 [castext] : ∀ {A A′ B B′ Γ r}
          (⊢Γ : ⊢ Γ)
          ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r , ι ⁰ ])
@@ -253,14 +253,14 @@ import Data.Nat as Nat
        → (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
                         → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ A′ ^ [ r , ι ⁰ ] / [A′])
                         → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ A ^ [ r , ι ⁰ ] / [A])
-                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) A′ B′ ^ [ % , ι ¹ ])
+                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) A′ B′ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
        × (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ r , ι ⁰ ] / [B])
                         → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ B′ ^ [ r , ι ⁰ ] / [B′])
                         → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
-                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) B′ A′ ^ [ % , ι ¹ ])
+                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ⁰ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) B′ A′ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ≡ cast ⁰ B′ A′ e′ t′ ∷ A ^ [ r , ι ⁰ ] / [A])
 [castextShape] : ∀ {A A′ B B′ Γ r}
          (⊢Γ : ⊢ Γ)
@@ -275,14 +275,14 @@ import Data.Nat as Nat
        → (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
                         → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ A′ ^ [ r , ι ⁰ ] / [A′])
                         → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ A ^ [ r , ι ⁰ ] / [A])
-                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) A′ B′ ^ [ % , ι ¹ ])
+                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) A′ B′ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A′ B′ e′ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
        × (∀ {t t′ e e′} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ r , ι ⁰ ] / [B])
                         → ([t′] : Γ ⊩⟨ ι ⁰ ⟩ t′ ∷ B′ ^ [ r , ι ⁰ ] / [B′])
                         → ([t≡t′] : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t′ ∷ B ^ [ r , ι ⁰ ] / [B])
-                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ¹ ])
-                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) B′ A′ ^ [ % , ι ¹ ])
+                        → (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) B A ^ [ % , ι ⁰ ])
+                        → (⊢e′ : Γ ⊢ e′ ∷ Id (Univ r ⁰) B′ A′ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ≡ cast ⁰ B′ A′ e′ t′ ∷ A ^ [ r , ι ⁰ ] / [A])
 
 [cast] ⊢Γ (ℕᵣ x) (ℕᵣ x₁) = (λ [t] ⊢e → [cast]ℕ ⊢Γ x x₁ [t] ⊢e) , (λ [t] ⊢e → [cast]ℕ ⊢Γ x₁ x [t] ⊢e)
@@ -360,7 +360,7 @@ import Data.Nat as Nat
                               (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A ⊢e ⊢t' (un-univ:⇒*: [[ ⊢B , ⊢Π , DΠ ]]))
                                                    (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) )) ⊢B≡Π
                                                                   (refl (un-univ ⊢A))))) ⊢t [[ ⊢A , ⊢K , D ]])) (subset* D) )
-                              (neNfₜ (castΠₙ neK) (castⱼ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G) (un-univ ⊢K) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))
+                              (neNfₜ (castΠₙ neK) (castⱼ (Πⱼ (λ _ → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢F ▹ un-univ ⊢G) (un-univ ⊢K) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))
                                                      ⊢B≡Π (un-univ≡ (subset* D)))))
                                                      ⊢t)
                                               (~-castΠ (≅-un-univ B≡B) K≡K (≅-conv (escapeTermEq {l = ι ⁰} {A = B} [Π] (reflEqTerm {l = ι ⁰} [Π] [t])) ⊢B≡Π' ) ⊢e' ⊢e')))
@@ -403,7 +403,7 @@ import Data.Nat as Nat
                               (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢A ⊢e ⊢t' (un-univ:⇒*: [[ ⊢B , ⊢Π , DΠ ]]))
                                                    (CastRed*TermΠ (un-univ ⊢F) (un-univ ⊢G) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) )) ⊢B≡Π
                                                                   (refl (un-univ ⊢A))))) ⊢t [[ ⊢A , ⊢K , D ]])) (subset* D) )
-                              (neNfₜ (castΠₙ neK) (castⱼ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ un-univ ⊢F ▹ un-univ ⊢G) (un-univ ⊢K) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))
+                              (neNfₜ (castΠₙ neK) (castⱼ (Πⱼ (λ _ → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢F ▹ un-univ ⊢G) (un-univ ⊢K) (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))
                                                      ⊢B≡Π (un-univ≡ (subset* D)))))
                                                      ⊢t)
                                               (~-castΠ (≅-un-univ B≡B) K≡K (≅-conv (escapeTermEq {l = ι ⁰} {A = A} [Π] (reflEqTerm {l = ι ⁰} [Π] [t])) ⊢B≡Π' ) ⊢e' ⊢e'))) ,
@@ -488,7 +488,7 @@ import Data.Nat as Nat
     [B] = (Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
 
     [cast]₁ : ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [A])
-      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ])
+      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ])
       → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / [B]
     [cast]₁ {t} {e} (f , [[ ⊢t , ⊢f , Df ]] , funf , f≡f , [fext] , [f]) ⊢e = [castΠΠ]
       where
@@ -500,7 +500,7 @@ import Data.Nat as Nat
                               ⊢t Df [fext] [f] b₁.[b] b₁.[bext]
 
     [cast]₂ : ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ ! , ι ⁰ ] / [B])
-      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) B A ^ [ % , ι ¹ ])
+      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) B A ^ [ % , ι ⁰ ])
       → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ∷ A ^ [ ! , ι ⁰ ] / [A]
     [cast]₂ {t} {e} (f , [[ ⊢t , ⊢f , Df ]] , funf , f≡f , [fext] , [f]) ⊢e = [castΠΠ]
       where
@@ -525,7 +525,7 @@ import Data.Nat as Nat
     [B] = (Πᵣ′ % ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢ΠF₁G₁ , D₁ ]] ⊢F₁ ⊢G₁ A₁≡A₁ [F₁] [G₁] G₁-ext)
 
     [cast]₁ : ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [A])
-      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ¹ ])
+      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ])
       → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ ! , ι ⁰ ] / [B]
     [cast]₁ {t} {e} (f , [[ ⊢t , ⊢f , Df ]] , funf , f≡f , [fext] , [f]) ⊢e = [castΠΠ]
       where
@@ -537,7 +537,7 @@ import Data.Nat as Nat
                               ⊢t Df [fext] [f] b₁.[b] b₁.[bext]
 
     [cast]₂ : ∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ B ^ [ ! , ι ⁰ ] / [B])
-      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) B A ^ [ % , ι ¹ ])
+      → (⊢e : Γ ⊢ e ∷ Id (U ⁰) B A ^ [ % , ι ⁰ ])
       → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ B A e t ∷ A ^ [ ! , ι ⁰ ] / [A]
     [cast]₂ {t} {e} (f , [[ ⊢t , ⊢f , Df ]] , funf , f≡f , [fext] , [f]) ⊢e = [castΠΠ]
       where
@@ -647,8 +647,8 @@ import Data.Nat as Nat
                          (PE.sym G₄≡G₄′) [G₃≡G₄′]
 
       [b₁≡b₂] : ∀ {ρ Δ e₁₃ e₂₄ x₃ x₄} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → (Δ ⊢ e₁₃ ∷ Id (U ⁰) (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ¹ ])
-          → (Δ ⊢ e₂₄ ∷ Id (U ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ¹ ])
+          → (Δ ⊢ e₁₃ ∷ Id (U ⁰) (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ⁰ ])
+          → (Δ ⊢ e₂₄ ∷ Id (U ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ⁰ ])
           → (Δ ⊩⟨ ι ⁰ ⟩ x₃ ∷ wk ρ F₃ ^ [ ! , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₄ ∷ wk ρ F₄ ^ [ ! , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₃ ≡ x₄ ∷ wk ρ F₃ ^ [ ! , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
@@ -662,8 +662,8 @@ import Data.Nat as Nat
         in proj₂ ([castext] ⊢Δ ([F₁] [ρ] ⊢Δ) ([F₂] [ρ] ⊢Δ) ([F₁≡F₂] [ρ] ⊢Δ) ([F₃] [ρ] ⊢Δ) ([F₄] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ)) [x₃] [x₄] [x₃≡x₄] ⊢e₃₁ ⊢e₄₂
 
       [b₃≡b₄] : ∀ {ρ Δ e₃₁ e₄₂ x₁ x₂} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → (Δ ⊢ e₃₁ ∷ Id (U ⁰) (wk ρ F₃) (wk ρ F₁) ^ [ % , ι ¹ ])
-          → (Δ ⊢ e₄₂ ∷ Id (U ⁰) (wk ρ F₄) (wk ρ F₂) ^ [ % , ι ¹ ])
+          → (Δ ⊢ e₃₁ ∷ Id (U ⁰) (wk ρ F₃) (wk ρ F₁) ^ [ % , ι ⁰ ])
+          → (Δ ⊢ e₄₂ ∷ Id (U ⁰) (wk ρ F₄) (wk ρ F₂) ^ [ % , ι ⁰ ])
           → (Δ ⊩⟨ ι ⁰ ⟩ x₁ ∷ wk ρ F₁ ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₂ ∷ wk ρ F₂ ^ [ ! , ι ⁰ ] / [F₂] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₁ ≡ x₂ ∷ wk ρ F₁ ^ [ ! , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
@@ -679,8 +679,8 @@ import Data.Nat as Nat
       [castext]₁ : (∀ {t₁ t₂ e₁₃ e₂₄} → ([t₁] : Γ ⊩⟨ ι ⁰ ⟩ t₁ ∷ A₁ ^ [ ! , ι ⁰ ] / [A₁])
                         → ([t₁] : Γ ⊩⟨ ι ⁰ ⟩ t₂ ∷ A₂ ^ [ ! , ι ⁰ ] / [A₂])
                         → ([t₁≡t₂] : Γ ⊩⟨ ι ⁰ ⟩ t₁ ≡ t₂ ∷ A₁ ^ [ ! , ι ⁰ ] / [A₁])
-                        → (⊢e₁₃ : Γ ⊢ e₁₃ ∷ Id (U ⁰) A₁ A₃ ^ [ % , ι ¹ ])
-                        → (⊢e₂₄ : Γ ⊢ e₂₄ ∷ Id (U ⁰) A₂ A₄ ^ [ % , ι ¹ ])
+                        → (⊢e₁₃ : Γ ⊢ e₁₃ ∷ Id (U ⁰) A₁ A₃ ^ [ % , ι ⁰ ])
+                        → (⊢e₂₄ : Γ ⊢ e₂₄ ∷ Id (U ⁰) A₂ A₄ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A₁ A₃ e₁₃ t₁ ≡ cast ⁰ A₂ A₄ e₂₄ t₂ ∷ A₃ ^ [ ! , ι ⁰ ] / [A₃])
       [castext]₁ {t₁} {t₂} {e₁₃} {e₂₄}
         (f₁ , [[ ⊢t₁ , ⊢f₁ , Df₁ ]] , funf₁ , f₁≡f₁ , [f₁ext] , [f₁])
@@ -728,8 +728,8 @@ import Data.Nat as Nat
       [castext]₂ : (∀ {t₃ t₄ e₃₁ e₄₂} → ([t₃] : Γ ⊩⟨ ι ⁰ ⟩ t₃ ∷ A₃ ^ [ ! , ι ⁰ ] / [A₃])
                         → ([t₄] : Γ ⊩⟨ ι ⁰ ⟩ t₄ ∷ A₄ ^ [ ! , ι ⁰ ] / [A₄])
                         → ([t₃≡t₄] : Γ ⊩⟨ ι ⁰ ⟩ t₃ ≡ t₄ ∷ A₃ ^ [ ! , ι ⁰ ] / [A₃])
-                        → (⊢e₃₁ : Γ ⊢ e₃₁ ∷ Id (U ⁰) A₃ A₁ ^ [ % , ι ¹ ])
-                        → (⊢e₄₂ : Γ ⊢ e₄₂ ∷ Id (U ⁰) A₄ A₂ ^ [ % , ι ¹ ])
+                        → (⊢e₃₁ : Γ ⊢ e₃₁ ∷ Id (U ⁰) A₃ A₁ ^ [ % , ι ⁰ ])
+                        → (⊢e₄₂ : Γ ⊢ e₄₂ ∷ Id (U ⁰) A₄ A₂ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A₃ A₁ e₃₁ t₃ ≡ cast ⁰ A₄ A₂ e₄₂ t₄ ∷ A₁ ^ [ ! , ι ⁰ ] / [A₁])
       [castext]₂ {t₃} {t₄} {e₃₁} {e₄₂}
         (f₃ , [[ ⊢t₃ , ⊢f₃ , Df₃ ]] , funf₃ , f₃≡f₃ , [f₃ext] , [f₃])
@@ -828,8 +828,8 @@ import Data.Nat as Nat
                          (PE.sym G₄≡G₄′) [G₃≡G₄′]
 
       [b₁≡b₂] : ∀ {ρ Δ e₁₃ e₂₄ x₃ x₄} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → (Δ ⊢ e₁₃ ∷ Id (SProp ⁰) (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ¹ ])
-          → (Δ ⊢ e₂₄ ∷ Id (SProp ⁰) (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ¹ ])
+          → (Δ ⊢ e₁₃ ∷ Id SProp (wk ρ F₁) (wk ρ F₃) ^ [ % , ι ⁰ ])
+          → (Δ ⊢ e₂₄ ∷ Id SProp (wk ρ F₂) (wk ρ F₄) ^ [ % , ι ⁰ ])
           → (Δ ⊩⟨ ι ⁰ ⟩ x₃ ∷ wk ρ F₃ ^ [ % , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₄ ∷ wk ρ F₄ ^ [ % , ι ⁰ ] / [F₄] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₃ ≡ x₄ ∷ wk ρ F₃ ^ [ % , ι ⁰ ] / [F₃] [ρ] ⊢Δ)
@@ -843,8 +843,8 @@ import Data.Nat as Nat
         in proj₂ ([castext] ⊢Δ ([F₁] [ρ] ⊢Δ) ([F₂] [ρ] ⊢Δ) ([F₁≡F₂] [ρ] ⊢Δ) ([F₃] [ρ] ⊢Δ) ([F₄] [ρ] ⊢Δ) ([F₃≡F₄] [ρ] ⊢Δ)) [x₃] [x₄] [x₃≡x₄] ⊢e₃₁ ⊢e₄₂
 
       [b₃≡b₄] : ∀ {ρ Δ e₃₁ e₄₂ x₁ x₂} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
-          → (Δ ⊢ e₃₁ ∷ Id (SProp ⁰) (wk ρ F₃) (wk ρ F₁) ^ [ % , ι ¹ ])
-          → (Δ ⊢ e₄₂ ∷ Id (SProp ⁰) (wk ρ F₄) (wk ρ F₂) ^ [ % , ι ¹ ])
+          → (Δ ⊢ e₃₁ ∷ Id SProp (wk ρ F₃) (wk ρ F₁) ^ [ % , ι ⁰ ])
+          → (Δ ⊢ e₄₂ ∷ Id SProp (wk ρ F₄) (wk ρ F₂) ^ [ % , ι ⁰ ])
           → (Δ ⊩⟨ ι ⁰ ⟩ x₁ ∷ wk ρ F₁ ^ [ % , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₂ ∷ wk ρ F₂ ^ [ % , ι ⁰ ] / [F₂] [ρ] ⊢Δ)
           → (Δ ⊩⟨ ι ⁰ ⟩ x₁ ≡ x₂ ∷ wk ρ F₁ ^ [ % , ι ⁰ ] / [F₁] [ρ] ⊢Δ)
@@ -860,8 +860,8 @@ import Data.Nat as Nat
       [castext]₁ : (∀ {t₁ t₂ e₁₃ e₂₄} → ([t₁] : Γ ⊩⟨ ι ⁰ ⟩ t₁ ∷ A₁ ^ [ ! , ι ⁰ ] / [A₁])
                         → ([t₁] : Γ ⊩⟨ ι ⁰ ⟩ t₂ ∷ A₂ ^ [ ! , ι ⁰ ] / [A₂])
                         → ([t₁≡t₂] : Γ ⊩⟨ ι ⁰ ⟩ t₁ ≡ t₂ ∷ A₁ ^ [ ! , ι ⁰ ] / [A₁])
-                        → (⊢e₁₃ : Γ ⊢ e₁₃ ∷ Id (U ⁰) A₁ A₃ ^ [ % , ι ¹ ])
-                        → (⊢e₂₄ : Γ ⊢ e₂₄ ∷ Id (U ⁰) A₂ A₄ ^ [ % , ι ¹ ])
+                        → (⊢e₁₃ : Γ ⊢ e₁₃ ∷ Id (U ⁰) A₁ A₃ ^ [ % , ι ⁰ ])
+                        → (⊢e₂₄ : Γ ⊢ e₂₄ ∷ Id (U ⁰) A₂ A₄ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A₁ A₃ e₁₃ t₁ ≡ cast ⁰ A₂ A₄ e₂₄ t₂ ∷ A₃ ^ [ ! , ι ⁰ ] / [A₃])
       [castext]₁ {t₁} {t₂} {e₁₃} {e₂₄}
         (f₁ , [[ ⊢t₁ , ⊢f₁ , Df₁ ]] , funf₁ , f₁≡f₁ , [f₁ext] , [f₁])
@@ -909,8 +909,8 @@ import Data.Nat as Nat
       [castext]₂ : (∀ {t₃ t₄ e₃₁ e₄₂} → ([t₃] : Γ ⊩⟨ ι ⁰ ⟩ t₃ ∷ A₃ ^ [ ! , ι ⁰ ] / [A₃])
                         → ([t₄] : Γ ⊩⟨ ι ⁰ ⟩ t₄ ∷ A₄ ^ [ ! , ι ⁰ ] / [A₄])
                         → ([t₃≡t₄] : Γ ⊩⟨ ι ⁰ ⟩ t₃ ≡ t₄ ∷ A₃ ^ [ ! , ι ⁰ ] / [A₃])
-                        → (⊢e₃₁ : Γ ⊢ e₃₁ ∷ Id (U ⁰) A₃ A₁ ^ [ % , ι ¹ ])
-                        → (⊢e₄₂ : Γ ⊢ e₄₂ ∷ Id (U ⁰) A₄ A₂ ^ [ % , ι ¹ ])
+                        → (⊢e₃₁ : Γ ⊢ e₃₁ ∷ Id (U ⁰) A₃ A₁ ^ [ % , ι ⁰ ])
+                        → (⊢e₄₂ : Γ ⊢ e₄₂ ∷ Id (U ⁰) A₄ A₂ ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A₃ A₁ e₃₁ t₃ ≡ cast ⁰ A₄ A₂ e₄₂ t₄ ∷ A₁ ^ [ ! , ι ⁰ ] / [A₁])
       [castext]₂ {t₃} {t₄} {e₃₁} {e₄₂}
         (f₃ , [[ ⊢t₃ , ⊢f₃ , Df₃ ]] , funf₃ , f₃≡f₃ , [f₃ext] , [f₃])
@@ -1380,8 +1380,8 @@ cast∞ : ∀ {A B r t e Γ}
          ([A] : Γ ⊩⟨ ∞ ⟩ A ^ [ r , ι ⁰ ])
          ([B] : Γ ⊩⟨ ∞ ⟩ B ^ [ r , ι ⁰ ])
          ([t] : Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
-         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]) →
-         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Id] ) →
+         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]) →
+         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ] / [Id] ) →
          Γ ⊩⟨ ∞ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B]
 cast∞ {A} {B} {r} {t} {e} {Γ} ⊢Γ [U] [AU] [BU] [A] [B] [t] [Id] [e] =
   let
@@ -1391,7 +1391,7 @@ cast∞ {A} {B} {r} {t} {e} {Γ} ⊢Γ [U] [AU] [BU] [A] [B] [t] [Id] [e] =
     [B]′ = univEq [U] [BU]
     [t]′ : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A]′
     [t]′ = irrelevanceTerm [A] (emb ∞< (emb emb< [A]′)) [t]
-    ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]
+    ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]
     ⊢e = escapeTerm [Id] [e]
     x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [B]′
     x = proj₁ ([cast] ⊢Γ [A]′ [B]′) [t]′ ⊢e
@@ -1415,10 +1415,10 @@ castext∞ : ∀ {A A' B B' r t t' e e' Γ}
          ([t] : Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
          ([t'] : Γ ⊩⟨ ∞ ⟩ t' ∷ A' ^ [ r , ι ⁰ ] / [A'])
          ([t≡t'] : Γ ⊩⟨ ∞ ⟩ t ≡ t' ∷ A ^ [ r , ι ⁰ ] / [A])
-         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]) →
-         ([Id'] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ]) →
-         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Id] ) →
-         ([e'] : Γ ⊩⟨ ∞ ⟩ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ] / [Id'] ) →
+         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]) →
+         ([Id'] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ]) →
+         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ] / [Id] ) →
+         ([e'] : Γ ⊩⟨ ∞ ⟩ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ] / [Id'] ) →
          Γ ⊩⟨ ∞ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ r , ι ⁰ ] / [B]
 castext∞ {A} {A'} {B} {B'} {r} {t} {t'} {e} {e'} {Γ} ⊢Γ [U] [U'] [AU] [AU'] [BU] [BU'] [UA≡UA'] [UB≡UB'] [A] [A'] [B] [B'] [t] [t'] [t≡t'] [Id] [Id'] [e] [e'] =
   let
@@ -1440,9 +1440,9 @@ castext∞ {A} {A'} {B} {B'} {r} {t} {t'} {e} {e'} {Γ} ⊢Γ [U] [U'] [AU] [AU'
     [t']′ = irrelevanceTerm [A'] (emb ∞< (emb emb< [A']′)) [t']
     [t≡t']′ : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t' ∷ A ^ [ r , ι ⁰ ] / [A]′
     [t≡t']′ = irrelevanceEqTerm [A] (emb ∞< (emb emb< [A]′)) [t≡t']
-    ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]
+    ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]
     ⊢e = escapeTerm [Id] [e]
-    ⊢e' : Γ ⊢ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ]
+    ⊢e' : Γ ⊢ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ]
     ⊢e' = escapeTerm [Id'] [e']
     x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ r , ι ⁰ ] / [B]′
     x = proj₁ ([castext] ⊢Γ [A]′ [A']′ [A≡A']′ [B]′ [B']′ [B≡B']′) [t]′ [t']′ [t≡t']′ ⊢e ⊢e'
@@ -1465,10 +1465,10 @@ castext∞' : ∀ {A A' B B' r t t' e e' Γ}
          ([t] : Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
          ([t'] : Γ ⊩⟨ ∞ ⟩ t' ∷ A' ^ [ r , ι ⁰ ] / [A'])
          ([t≡t'] : Γ ⊩⟨ ∞ ⟩ t ≡ t' ∷ A ^ [ r , ι ⁰ ] / [A])
-         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]) →
-         ([Id'] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ]) →
-         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Id] ) →
-         ([e'] : Γ ⊩⟨ ∞ ⟩ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ] / [Id'] ) →
+         ([Id] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]) →
+         ([Id'] : Γ ⊩⟨ ∞ ⟩ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ]) →
+         ([e] : Γ ⊩⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ] / [Id] ) →
+         ([e'] : Γ ⊩⟨ ∞ ⟩ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ] / [Id'] ) →
          Γ ⊩⟨ ∞ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ r , ι ⁰ ] / [B]
 castext∞' {A} {A'} {B} {B'} {r} {t} {t'} {e} {e'} {Γ} ⊢Γ [U] [U'] [AU] [AU'] [BU] [BU'] [UA≡UA'] [UB≡UB'] [A] [A'] [B] [B'] [t] [t'] [t≡t'] [Id] [Id'] [e] [e'] =
   let
@@ -1490,9 +1490,9 @@ castext∞' {A} {A'} {B} {B'} {r} {t} {t'} {e} {e'} {Γ} ⊢Γ [U] [U'] [AU] [AU
     [t']′ = irrelevanceTerm [A'] (emb ∞< (emb emb< [A']′)) [t']
     [t≡t']′ : Γ ⊩⟨ ι ⁰ ⟩ t ≡ t' ∷ A ^ [ r , ι ⁰ ] / [A]′
     [t≡t']′ = irrelevanceEqTerm [A] (emb ∞< (emb emb< [A]′)) [t≡t']
-    ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ]
+    ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]
     ⊢e = escapeTerm [Id] [e]
-    ⊢e' : Γ ⊢ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ]
+    ⊢e' : Γ ⊢ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ]
     ⊢e' = escapeTerm [Id'] [e']
     x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ r , ι ⁰ ] / [B]′
     x = proj₁ ([castext] ⊢Γ [A]′ [A']′ [A≡A']′ [B]′ [B']′ [B≡B']′) [t]′ [t']′ [t≡t']′ ⊢e ⊢e'
@@ -1508,8 +1508,8 @@ abstract
            ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ r , ι ⁰ ] / [Γ])
            ([B] : Γ ⊩ᵛ⟨ ∞ ⟩ B ^ [ r , ι ⁰ ] / [Γ])
            ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [Γ] / [A])
-           ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Γ]) →
-           ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Γ] / [Id] ) →
+           ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ] / [Γ]) →
+           ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ] / [Γ] / [Id] ) →
            Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ] / [Γ] / [B]
   castᵗᵛ {A} {B} {t} {e} {Γ} [Γ] [U] [AU] [BU] [A] [B] [t] [Id] [e] ⊢Δ [σ] =
     cast∞ ⊢Δ (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([AU] ⊢Δ [σ])) (proj₁ ([BU] ⊢Δ [σ]))
@@ -1540,10 +1540,10 @@ abstract
               ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [Γ] / [A])
               ([t'] : Γ ⊩ᵛ⟨ ∞ ⟩ t' ∷ A' ^ [ r , ι ⁰ ] / [Γ] / [A'])
               ([t≡t']ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ t ≡ t' ∷ A ^ [ r , ι ⁰ ] / [Γ] / [A] )
-              ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Γ])
-              ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ¹ ] / [Γ] / [Id] )
-              ([Id'] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ] / [Γ])
-              ([e'] : Γ ⊩ᵛ⟨ ∞ ⟩ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ¹ ] / [Γ] / [Id'] ) →
+              ([Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ] / [Γ])
+              ([e] : Γ ⊩ᵛ⟨ ∞ ⟩ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ] / [Γ] / [Id] )
+              ([Id'] : Γ ⊩ᵛ⟨ ∞ ⟩ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ] / [Γ])
+              ([e'] : Γ ⊩ᵛ⟨ ∞ ⟩ e' ∷ Id (Univ r ⁰) A' B' ^ [ % , ι ⁰ ] / [Γ] / [Id'] ) →
               Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ≡ cast ⁰ A' B' e' t' ∷ B ^ [ r , ι ⁰ ] / [Γ] / [B]
   cast-congᵗᵛ [Γ] [U] [U'] [AU] [AU'] [BU] [BU'] [UA≡UA'] [UB≡UB'] [A] [A'] [B]
               [B'] [t] [t'] [t≡t']ₜ [Id] [e] [Id'] [e'] ⊢Δ [σ] =
