@@ -90,15 +90,15 @@ wk1Termᵛ {F} {G} {rF} {rG} {t} [Γ] [F] [G] [t]ₜ {Δ} {σ} ⊢Δ [σ] =
                             (PE.sym (subst-wk t)) (PE.sym (subst-wk t)) (PE.sym (subst-wk G))
                             [σG] [σG]' (proj₂ ([t]ₜ ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′]))
 
-wk1dᵛ : ∀ {F F' G rF rF' lG Γ l l'}
+wk1dᵛ : ∀ {F F' G rF rF' lG rG Γ l l'}
          ([Γ] : ⊩ᵛ Γ)
          ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
          ([F'] : Γ ⊩ᵛ⟨ l' ⟩ F' ^ rF' / [Γ]) →
        let [ΓF] = _∙_ {A = F} [Γ] [F]
            [ΓF'] = _∙_ {A = F'} [Γ] [F']
            [ΓF'F] = _∙_ {A = wk1 F} [ΓF'] (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
-       in Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ [ ! , lG ] / [ΓF] →
-          Γ ∙ F' ^ rF' ∙ wk1 F ^ rF ⊩ᵛ⟨ l ⟩ wk1d G ^ [ ! , lG ] / [ΓF'F] 
+       in Γ ∙ F ^ rF ⊩ᵛ⟨ l ⟩ G ^ [ rG , lG ] / [ΓF] →
+          Γ ∙ F' ^ rF' ∙ wk1 F ^ rF ⊩ᵛ⟨ l ⟩ wk1d G ^ [ rG , lG ] / [ΓF'F] 
 wk1dᵛ {F} {F'} {G} [Γ] [F] [F'] [G] {Δ} {σ} ⊢Δ [σ] =
      let l    = ∞
          [ΓF'] = _∙_ {A = F'} [Γ] [F']

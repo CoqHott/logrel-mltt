@@ -41,9 +41,9 @@ proof-irrelevanceRel (ne x)
                    (neₜ ⊢t)
                    (neₜ ⊢t₁) =
                    neₜ₌ ⊢t  ⊢t₁
-proof-irrelevanceRel {Γ} {l = l} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
+proof-irrelevanceRel {Γ} {l = l} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) [f] [f₁] =
   [f] , [f₁]
-proof-irrelevanceRel {Γ} {l = l} (∃ᵣ′ F G D ⊢F ⊢G A≡A [F] [G] G-ext) [f] [f₁] =
+proof-irrelevanceRel {Γ} {l = l} (∃ᵣ′ F G D ⊢F ⊢G A≡A) [f] [f₁] =
   [f] , [f₁]
 
 proof-irrelevanceRel (emb emb< [A]) [t] [u] = proof-irrelevanceRel [A] [t] [u]
