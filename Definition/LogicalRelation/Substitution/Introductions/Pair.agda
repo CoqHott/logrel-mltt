@@ -28,16 +28,16 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 -- Valid pair construction.
-⦅⦆ᵛ : ∀ {F G l∃ t u Γ l}
+⦅⦆ᵛ : ∀ {F G t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
-       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι l∃ ] / [Γ])
-       ([G] : Γ ∙ F ^ [ % , ι l∃ ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι l∃ ] / [Γ] ∙ [F]) 
-       ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ F ^ [ % , ι l∃ ] / [Γ] / [F])
-       ([u] : Γ ⊩ᵛ⟨ l ⟩ u ∷ G [ t ] ^ [ % , ι l∃ ] / [Γ] / substS {F} {G} {t} [Γ] [F] [G] [t])
-          → Γ ⊩ᵛ⟨ l ⟩ ⦅ G , t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι l∃ ] / [Γ] / ∃ᵛ {F} {G} [Γ] [F] [G]
-⦅⦆ᵛ {F} {G} {l∃} {t} {u} {Γ} {l} [Γ] [F] [G] [t] [u] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι ⁰ ] / [Γ])
+       ([G] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F]) 
+       ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ F ^ [ % , ι ⁰ ] / [Γ] / [F])
+       ([u] : Γ ⊩ᵛ⟨ l ⟩ u ∷ G [ t ] ^ [ % , ι ⁰ ] / [Γ] / substS {F} {G} {t} [Γ] [F] [G] [t])
+          → Γ ⊩ᵛ⟨ l ⟩ ⦅ G , t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι ⁰ ] / [Γ] / ∃ᵛ {F} {G} [Γ] [F] [G]
+⦅⦆ᵛ {F} {G} {t} {u} {Γ} {l} [Γ] [F] [G] [t] [u] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [G[t]] = substS {F} {G} {t} [Γ] [F] [G] [t]
-      [ΠFG] = Πᵛ {F = F} {G = G} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [F] [G]
+      [ΠFG] = Πirrᵛ {F = F} {G = G} [Γ] [F] [G]
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
       [σG] = proj₁ ([G] (⊢Δ ∙ ⊢F) (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]))
@@ -62,8 +62,6 @@ import Tools.PropositionalEquality as PE
                 ⊢t′ = escapeTerm [σF′] [σt′]
                 [σG′] = proj₁ ([G] {σ = liftSubst σ′} (⊢Δ ∙ ⊢F′) (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ′]))
                 ⊢G′ = escape [σG′]
-                _ , Πᵣ _ _ _  _ _ F′ G′ D′ _ _  A≡A′ [F]₁ [G]₁ G-ext =
-                  extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ′])))
                 [σ′u] = proj₁ ([u] ⊢Δ [σ′])               
                 [σ′G[t]] = proj₁ ([G[t]] ⊢Δ [σ′])
                 [σ′G[t]]′ = irrelevance′ (singleSubstLift G t) [σ′G[t]]
@@ -78,11 +76,11 @@ import Tools.PropositionalEquality as PE
                 [wk1σ′] = wk1SubstS [Γ] ⊢Δ ⊢F′ [σ′]
                 [wk1σ] = wk1SubstS [Γ] ⊢Δ ⊢F′ [σ]
                 foo = proj₁ ([F] (⊢Δ ∙ ⊢F′) [wk1σ′])
-                [liftσ′] : (Δ ∙ subst σ′ F ^ [ % , ι l∃ ]) ⊩ˢ liftSubst σ ∷
-                           Γ ∙ F ^ [ % , ι l∃ ] / [Γ] ∙ [F] / (⊢Δ ∙ escape (proj₁ ([F] ⊢Δ [σ′])))
+                [liftσ′] : (Δ ∙ subst σ′ F ^ [ % , ι ⁰ ]) ⊩ˢ liftSubst σ ∷
+                           Γ ∙ F ^ [ % , ι ⁰ ] / [Γ] ∙ [F] / (⊢Δ ∙ escape (proj₁ ([F] ⊢Δ [σ′])))
                 [liftσ′] =   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
                                  [tailσ] = wk1SubstS {F = subst σ′ F} [Γ] ⊢Δ (escape (proj₁ ([F] ⊢Δ [σ′]))) [σ]
-                                 var0′ : (Δ ∙ subst σ′ F ^ [ % , ι l∃ ]) ⊢ var 0 ∷ subst (wk1Subst σ′) F ^ [ % , ι l∃ ]
+                                 var0′ : (Δ ∙ subst σ′ F ^ [ % , ι ⁰ ]) ⊢ var 0 ∷ subst (wk1Subst σ′) F ^ [ % , ι ⁰ ]
                                  var0′ = var (⊢Δ ∙ ⊢F′) (PE.subst (λ x → 0 ∷ x ^ _ ∈ (Δ ∙ subst σ′ F ^ _))
                                              (wk-subst F) here)
                                  var0 = conv var0′ (≅-eq (escapeEq (proj₁ ([F] (⊢Δ ∙ ⊢F′) [wk1σ′])) (proj₂ ([F] (⊢Δ ∙ ⊢F′) [wk1σ′]) [wk1σ]

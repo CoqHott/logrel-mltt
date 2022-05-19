@@ -20,7 +20,7 @@ open import Definition.LogicalRelation.Substitution.Reflexivity
 open import Definition.LogicalRelation.Substitution.ProofIrrelevance
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
 open import Definition.LogicalRelation.Substitution.Introductions.Nat
-open import Definition.LogicalRelation.Substitution.Introductions.Natrec
+-- open import Definition.LogicalRelation.Substitution.Introductions.Natrec
 open import Definition.LogicalRelation.Substitution.Introductions.Empty
 open import Definition.LogicalRelation.Substitution.Introductions.Emptyrec
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
@@ -52,7 +52,7 @@ Idreflᵛ : ∀{Γ A l t}
   → ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι l ] / [Γ])
   → ([t] : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι l ] / [Γ] / [A])
   → let [Id] = Idᵛ {A = A} {t = t} {u = t } [Γ] [A] [t] [t]
-    in Γ ⊩ᵛ⟨ ∞ ⟩ Idrefl A t ∷ Id A t t ^ [ % , ι l ] / [Γ] / [Id]
+    in Γ ⊩ᵛ⟨ ∞ ⟩ Idrefl A t ∷ Id A t t ^ [ % , ι ⁰ ] / [Γ] / [Id]
 
 Idreflᵛ {Γ} {A} {l} {t} [Γ] [A] [t]  =
   let [Id] = Idᵛ {A = A} {t = t} {u = t } [Γ] [A] [t] [t]
