@@ -85,9 +85,10 @@ mutual
     PE.subst (λ X → _ ⊢ _ ∷ X ^ [ % , _ ]) (PE.sym (wk-β G)) (sndⱼ ρF ρG (wkTerm ρ ⊢Δ t))
   wkTerm ρ ⊢Δ (zeroⱼ ⊢Γ) = zeroⱼ ⊢Δ
   wkTerm ρ ⊢Δ (sucⱼ n) = sucⱼ (wkTerm ρ ⊢Δ n)
-  wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrecⱼ {G = G} {rG = rG} {lG = lG}  {s = s} ⊢G ⊢z ⊢s ⊢n) =
+  wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrecⱼ {G = G} {rG = rG} {lG = lG}  {s = s} rGlG ⊢G ⊢z ⊢s ⊢n) =
     PE.subst (λ x → _ ⊢ natrec _ _ _ _ _ ∷ x ^ _) (PE.sym (wk-β G))
-             (natrecⱼ (wk (lift [ρ]) (⊢Δ ∙ univ (ℕⱼ ⊢Δ)) ⊢G)
+             (natrecⱼ rGlG
+                      (wk (lift [ρ]) (⊢Δ ∙ univ (ℕⱼ ⊢Δ)) ⊢G)
                       (PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (wk-β G) (wkTerm [ρ] ⊢Δ ⊢z))
                       (PE.subst (λ x → Δ ⊢ U.wk ρ s ∷ x ^ [ rG , ι lG ])
                                 (wk-β-natrec ρ G rG lG)

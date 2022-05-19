@@ -1032,6 +1032,14 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
 ▹▹ᵛ {F} {G} lF< lG< [Γ] [F] [G] =
   Πᵛ {F} {wk1 G} lF< lG< [Γ] [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
 
+▹▹irrᵛ : ∀ {F G rF lF Γ l}
+      ([Γ] : ⊩ᵛ Γ)
+      ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+    → Γ ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ]
+    → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ]
+▹▹irrᵛ {F} {G} [Γ] [F] [G] =
+  Πirrᵛ {F} {wk1 G} [Γ] [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
+
 -- Validity of non-dependent function type congurence.
 ▹▹-congᵛ : ∀ {F F′ G G′ rF lF lG lΠ Γ l}
            (lF≤ : lF ≤ lΠ)
@@ -1046,6 +1054,21 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
          → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ° lΠ ≡ F′ ^ rF ° lF ▹▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / ▹▹ᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
 ▹▹-congᵛ {F} {F′} {G} {G′} lF< lG< [Γ] [F] [F′] [F≡F′] [G] [G′] [G≡G′] =
   Π-congᵛ {F} {wk1 G} {F′} {wk1 G′} lF< lG< [Γ]
+          [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
+          [F′] (wk1ᵛ {G′} {F′} [Γ] [F′] [G′])
+          [F≡F′] (wk1Eqᵛ {G} {G′} {F} [Γ] [F] [G] [G≡G′])
+
+▹▹irr-congᵛ : ∀ {F F′ G G′ rF lF Γ l}
+           ([Γ] : ⊩ᵛ Γ)
+           ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+           ([F′] : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ])
+           ([F≡F′] : Γ ⊩ᵛ⟨ l ⟩ F ≡ F′ ^ [ rF , ι lF ] / [Γ] / [F])
+           ([G] : Γ ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ])
+           ([G′] : Γ ⊩ᵛ⟨ l ⟩ G′ ^ [ % , ι ⁰ ] / [Γ])
+           ([G≡G′] : Γ ⊩ᵛ⟨ l ⟩ G ≡ G′ ^ [ % , ι ⁰ ] / [Γ] / [G])
+         → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ≡ F′ ^ rF ° lF ▹▹ G′ ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ] / ▹▹irrᵛ {F} {G} [Γ] [F] [G]
+▹▹irr-congᵛ {F} {F′} {G} {G′} [Γ] [F] [F′] [F≡F′] [G] [G′] [G≡G′] =
+  Πirr-congᵛ {F} {wk1 G} {F′} {wk1 G′} [Γ]
           [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
           [F′] (wk1ᵛ {G′} {F′} [Γ] [F′] [G′])
           [F≡F′] (wk1Eqᵛ {G} {G′} {F} [Γ] [F] [G] [G≡G′])

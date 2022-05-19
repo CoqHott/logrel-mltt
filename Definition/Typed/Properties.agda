@@ -37,7 +37,7 @@ wfTerm (fstⱼ A B t) = wfTerm t
 wfTerm (sndⱼ A B t) = wfTerm t
 wfTerm (zeroⱼ ⊢Γ) = ⊢Γ
 wfTerm (sucⱼ n) = wfTerm n
-wfTerm (natrecⱼ F z s n) = wfTerm z
+wfTerm (natrecⱼ _ F z s n) = wfTerm z
 wfTerm (Emptyrecⱼ A e) = wfTerm e
 wfTerm (Idⱼ A t u) = wfTerm t
 wfTerm (Idreflⱼ t) = wfTerm t
@@ -174,9 +174,9 @@ redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 redFirstTerm (conv t⇒u A≡B) = conv (redFirstTerm t⇒u) A≡B
 redFirstTerm (app-subst ⊢F ⊢G t⇒u a) = ⊢F ▹ ⊢G ▹ (redFirstTerm t⇒u) ∘ⱼ a
 redFirstTerm (β-red {lA = lA} {lB = lB} lA< lB< ⊢A ⊢B ⊢t ⊢a) = un-univ ⊢A ▹ ⊢B ▹ (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) ⊢A ⊢t) ∘ⱼ ⊢a
-redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ F z s (redFirstTerm n⇒n′)
-redFirstTerm (natrec-zero F z s) = natrecⱼ F z s (zeroⱼ (wfTerm z))
-redFirstTerm (natrec-suc n F z s) = natrecⱼ F z s (sucⱼ n)
+redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (redFirstTerm n⇒n′)
+redFirstTerm (natrec-zero F z s) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (zeroⱼ (wfTerm z))
+redFirstTerm (natrec-suc n F z s) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (sucⱼ n)
 redFirstTerm (Id-subst A t u) = Idⱼ (redFirstTerm A) t u
 redFirstTerm (Id-ℕ-subst m n) = Idⱼ (ℕⱼ (wfTerm n)) (redFirstTerm m) n
 redFirstTerm (Id-ℕ-0-subst n) = Idⱼ (ℕⱼ (wfEqTerm (subsetTerm n))) (zeroⱼ (wfEqTerm (subsetTerm n))) (redFirstTerm n)
@@ -606,7 +606,7 @@ UnotInA[t] () x₁ (lamⱼ _ _ x₂ x₃)
 UnotInA[t] () x₁ (_ ▹ _ ▹ x₂ ∘ⱼ x₃)
 UnotInA[t] () x₁ (zeroⱼ x₂)
 UnotInA[t] () x₁ (sucⱼ x₂)
-UnotInA[t] () x₁ (natrecⱼ x₂ x₃ x₄ x₅)
+UnotInA[t] () x₁ (natrecⱼ _ x₂ x₃ x₄ x₅)
 UnotInA[t] () x₁ (Emptyrecⱼ x₂ x₃)
 UnotInA[t] x x₁ (conv x₂ x₃) = UnotInA[t] x x₁ x₂
 

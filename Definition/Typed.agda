@@ -89,6 +89,7 @@ mutual
            → Γ ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ ⊢ suc n ∷ ℕ ^ [ ! ,  ι ⁰ ]
     natrecⱼ : ∀ {G rG lG s z n}
+           → (rG PE.≡ % → lG PE.≡ ⁰)
            → Γ ∙ ℕ ^ [ ! ,  ι ⁰ ] ⊢ G ^ [ rG , ι lG ]
            → Γ       ⊢ z ∷ G [ zero ] ^ [ rG , ι lG ]
            → Γ       ⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (G ^ rG ° lG ▹▹ G [ suc (var Nat.zero) ]↑ ° lG ° lG) ° lG ° lG ^ [ rG , ι lG ]
