@@ -8,10 +8,11 @@ open EqRelSet {{...}}
 open import Definition.Untyped
 open import Definition.Untyped.Properties
 open import Definition.Typed
-open import Definition.Typed.Weakening using (id)
+open import Definition.Typed.Weakening as T
 open import Definition.Typed.Properties
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.ShapeView
+open import Definition.LogicalRelation.Weakening as LW
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Substitution
@@ -20,6 +21,7 @@ open import Definition.LogicalRelation.Substitution.Conversion
 open import Definition.LogicalRelation.Substitution.Weakening
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
+open import Definition.LogicalRelation.Fundamental.Variable
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -358,3 +360,17 @@ substSΠEq {F} {G} {F′} {G′} {t} {u} [Γ] [F] [F′] [ΠFG] [ΠF′G′] [Π
                        in irrelevanceEq″ PE.refl PE.refl PE.refl (PE.cong ι lG≡lG₁) 
                                          (irrelevance′′ PE.refl PE.refl (PE.cong ι (PE.sym lG≡lG₁)) [G[t]]) [G[t]]
                                           X)
+
+
+decompΠ : ∀ {F G Γ rF lF lG l lΠ l′}
+           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ])
+           ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
+         → Γ ∙ F ^ [ rF , ι lF ] ⊩⟨ l ⟩ G ^ [ ! , ι lG ]
+decompΠ {F} {G} [ΠFG] [F] =
+  let ⊢Γ = wf (escape [F])
+      ⊢F = escape [F]
+      [wF] = LW.wk (T.step T.id) (⊢Γ ∙ ⊢F) [F]
+      [wΠFG] = LW.wk (T.step T.id) (⊢Γ ∙ ⊢F) [ΠFG]
+      [var0] = neuTerm  [wF] (var 0) (var (⊢Γ ∙ ⊢F) here) (~-var (var (⊢Γ ∙ ⊢F) here))
+      [Gvar0] = substSΠ₁ [wΠFG] [wF] [var0]
+  in irrelevance′ (wkSingleSubstId G) [Gvar0]
