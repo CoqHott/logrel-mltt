@@ -67,12 +67,12 @@ mutual
            → Γ ⊢     g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
            → Γ ⊢     a ∷ F ^ [ rF , ι lF ]
            → Γ ⊢ g ∘ a ^ lΠ ∷ G [ a ] ^ [ r , ι lG ]
-    ⦅_,_,_,_⦆ⱼ : ∀ {l F G t u}
-             → Γ ⊢ F ^ [ % , ι l ]
-             → Γ ∙ F ^ [ % , ι l ] ⊢ G ^ [ % , ι l ]
-             → Γ ⊢ t ∷ F ^ [ % , ι l ]
-             → Γ ⊢ u ∷ G [ t ] ^ [ % , ι l ]
-             → Γ ⊢ ⦅ G , t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι l ]
+    ⦅_,_,_,_⦆ⱼ : ∀ {F G t u}
+             → Γ ⊢ F ^ [ % , ι ⁰ ]
+             → Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ^ [ % , ι ⁰ ]
+             → Γ ⊢ t ∷ F ^ [ % , ι ⁰ ]
+             → Γ ⊢ u ∷ G [ t ] ^ [ % , ι ⁰ ]
+             → Γ ⊢ ⦅ G , t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι ⁰ ]
     fstⱼ : ∀ {F G t}
            → Γ ⊢ F ∷ SProp ^ [ ! , next ⁰ ]
            → Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ∷ SProp ^ [ ! , next ⁰ ]
@@ -95,8 +95,8 @@ mutual
            → Γ       ⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (G ^ rG ° lG ▹▹ G [ suc (var Nat.zero) ]↑ ° lG ° lG) ° lG ° lG ^ [ rG , ι lG ]
            → Γ       ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ       ⊢ natrec lG G z s n ∷ G [ n ] ^ [ rG , ι lG ]
-    Emptyrecⱼ : ∀ {A l lA rA e}
-           → Γ ⊢ A ^ [ rA , ι lA ] → Γ ⊢ e ∷ Empty l ^ [ % ,  ι l ] -> Γ ⊢ Emptyrec lA l A e ∷ A ^ [ rA , ι lA ]
+    Emptyrecⱼ : ∀ {A lA rA e}
+           → Γ ⊢ A ^ [ rA , ι lA ] → Γ ⊢ e ∷ sEmpty ^ [ % ,  ι ⁰ ] -> Γ ⊢ Emptyrec lA ⁰ A e ∷ A ^ [ rA , ι lA ]
     Idⱼ : ∀ {A l t u}
           → Γ ⊢ A ∷ U l ^ [ ! , next l ]
           → Γ ⊢ t ∷ A ^ [ ! , ι l ]
@@ -213,15 +213,15 @@ mutual
                 → Γ     ⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var Nat.zero) ]↑ ° l ° l) ° l ° l ^ [ ! , ι l ]
                 → Γ     ⊢ natrec l F z s (suc n) ≡ (s ∘ n ^ l) ∘ (natrec l F z s n) ^ l
                         ∷ F [ suc n ] ^ [ ! , ι l ]
-    Emptyrec-cong : ∀ {A A' l lEmpty e e'}
+    Emptyrec-cong : ∀ {A A' l e e'}
                 → Γ ⊢ A ≡ A' ^ [ ! , ι l ]
-                → Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
-                → Γ ⊢ e' ∷ Empty lEmpty ^ [ % , ι lEmpty ]
-                → Γ ⊢ Emptyrec l lEmpty  A e ≡ Emptyrec l lEmpty  A' e' ∷ A ^ [ ! , ι l ]
-    proof-irrelevance : ∀ {t u A l}
-                      → Γ ⊢ t ∷ A ^ [ % , l ]
-                      → Γ ⊢ u ∷ A ^ [ % , l ]
-                      → Γ ⊢ t ≡ u ∷ A ^ [ % , l ]
+                → Γ ⊢ e ∷ sEmpty ^ [ % , ι ⁰ ]
+                → Γ ⊢ e' ∷ sEmpty ^ [ % , ι ⁰ ]
+                → Γ ⊢ Emptyrec l ⁰  A e ≡ Emptyrec l ⁰  A' e' ∷ A ^ [ ! , ι l ]
+    proof-irrelevance : ∀ {t u A}
+                      → Γ ⊢ t ∷ A ^ [ % , ⁰ ]
+                      → Γ ⊢ u ∷ A ^ [ % , ⁰ ]
+                      → Γ ⊢ t ≡ u ∷ A ^ [ % , ⁰ ]
     Id-cong : ∀ {A A' l t t' u u'}
               → Γ ⊢ A ≡ A' ∷ Univ ! l ^ [ ! , next l ]
               → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
