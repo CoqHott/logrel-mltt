@@ -249,7 +249,7 @@ module cast-ΠΠ-lemmas-2
         y₁ : wk (lift ρ) (b (step id) (fst (wk1 e)) (var 0)) [ x ] PE.≡ b ρ (fst (wk ρ e)) x
         y₁ = PE.cong₃ (λ X Y Z → cast ⁰ X Y Z x) (irrelevant-subst′ ρ F₁ x) (irrelevant-subst′ ρ F x) y₀
         x₀ : Δ ⊢ (wk ρ (snd e)) ∘ x ^ ⁰ ∷ Id (U ⁰) (wk (lift ρ) (wk1d G [ b (step id) (fst (wk1 e)) (var 0) ]) [ x ]) (wk (lift ρ) G₁ [ x ]) ^ [ % , ι ⁰ ]
-        x₀ = un-univ (Twk.wk [ρ] ⊢Δ ⊢F₁) ▹ un-univ (Twk.wk (Twk.lift [ρ]) (⊢Δ ∙ (Twk.wk [ρ] ⊢Δ ⊢F₁)) ⊢IdG₁G') ▹ Twk.wkTerm [ρ] ⊢Δ ⊢snde ∘ⱼ ⊢x
+        x₀ = (λ _ → PE.refl , PE.refl) ▹ un-univ (Twk.wk [ρ] ⊢Δ ⊢F₁) ▹ un-univ (Twk.wk (Twk.lift [ρ]) (⊢Δ ∙ (Twk.wk [ρ] ⊢Δ ⊢F₁)) ⊢IdG₁G') ▹ Twk.wkTerm [ρ] ⊢Δ ⊢snde ∘ⱼ ⊢x
         x₁ = PE.cong₂ (λ X Y → X [ Y ]) (cast-subst-lemma4 ρ x G) y₁
         x₂ = PE.trans (singleSubstLift (wk (lift (lift ρ)) (wk1d G))
           (wk (lift ρ) (b (step id) (fst (wk1 e)) (var 0)))) x₁

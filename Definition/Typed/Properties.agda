@@ -31,7 +31,7 @@ wfTerm (∃ⱼ F ▹ G) = wfTerm F
 wfTerm (var ⊢Γ x₁) = ⊢Γ
 wfTerm (lamⱼ _ _ F t) with wfTerm t
 wfTerm (lamⱼ _ _ F t) | ⊢Γ ∙ F′ = ⊢Γ
-wfTerm (_ ▹ _ ▹ g ∘ⱼ a) = wfTerm a
+wfTerm (_ ▹ _ ▹ _ ▹ g ∘ⱼ a) = wfTerm a
 wfTerm (⦅ F , G , t , u ⦆ⱼ) = wfTerm t
 wfTerm (fstⱼ A B t) = wfTerm t
 wfTerm (sndⱼ A B t) = wfTerm t
@@ -172,8 +172,8 @@ redFirstTerm : ∀ {Γ t u A l } → Γ ⊢ t ⇒ u ∷ A ^ l → Γ ⊢ t ∷ A
 redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 
 redFirstTerm (conv t⇒u A≡B) = conv (redFirstTerm t⇒u) A≡B
-redFirstTerm (app-subst ⊢F ⊢G t⇒u a) = ⊢F ▹ ⊢G ▹ (redFirstTerm t⇒u) ∘ⱼ a
-redFirstTerm (β-red {lA = lA} {lB = lB} lA< lB< ⊢A ⊢B ⊢t ⊢a) = un-univ ⊢A ▹ ⊢B ▹ (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) ⊢A ⊢t) ∘ⱼ ⊢a
+redFirstTerm (app-subst ⊢F ⊢G t⇒u a) = (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢F ▹ ⊢G ▹ (redFirstTerm t⇒u) ∘ⱼ a
+redFirstTerm (β-red {lA = lA} {lB = lB} lA< lB< ⊢A ⊢B ⊢t ⊢a) = (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢A ▹ ⊢B ▹ (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) ⊢A ⊢t) ∘ⱼ ⊢a
 redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (redFirstTerm n⇒n′)
 redFirstTerm (natrec-zero F z s) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (sucⱼ n)
@@ -603,7 +603,7 @@ UnotInA[t] () x₁ (Πⱼ _ ▹ _ ▹ x₂ ▹ x₃)
 UnotInA[t] x₁ x₂ (var x₃ here) rewrite x₁ = UnotInA x₂
 UnotInA[t] () x₂ (var x₃ (there x₄))
 UnotInA[t] () x₁ (lamⱼ _ _ x₂ x₃)
-UnotInA[t] () x₁ (_ ▹ _ ▹ x₂ ∘ⱼ x₃)
+UnotInA[t] () x₁ (_ ▹ _ ▹ _ ▹ x₂ ∘ⱼ x₃)
 UnotInA[t] () x₁ (zeroⱼ x₂)
 UnotInA[t] () x₁ (sucⱼ x₂)
 UnotInA[t] () x₁ (natrecⱼ _ x₂ x₃ x₄ x₅)
@@ -925,7 +925,7 @@ appRed* : ∀ {Γ a t u A B rA lA lB l}
          → (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
            (D : Γ ⊢ t ⇒* u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l) ^ ι l)
          → Γ ⊢ t ∘ a ^ l ⇒* u ∘ a ^ l ∷ B [ a ] ^ ι lB
-appRed* ⊢F ⊢G ⊢a (id x) = id (⊢F ▹ ⊢G ▹ x ∘ⱼ ⊢a)
+appRed* ⊢F ⊢G ⊢a (id x) = id ((λ abs → ⊥-elim (!≢% abs)) ▹ ⊢F ▹ ⊢G ▹ x ∘ⱼ ⊢a)
 appRed* ⊢F ⊢G ⊢a (x ⇨ D) = app-subst ⊢F ⊢G x ⊢a ⇨ appRed* ⊢F ⊢G ⊢a D
 
 castΠRed* : ∀ {Γ F rF G A B e t}

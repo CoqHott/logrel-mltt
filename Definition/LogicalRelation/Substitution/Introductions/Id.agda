@@ -110,9 +110,9 @@ import Data.Nat as Nat
     ⊢idG : Γ ∙ F ^ [ rF , ι lF ] ⊢ Id G (wk1 t ∘ var 0 ^ lA) (wk1 u ∘ var 0 ^ lA) ^ [ % , ι ⁰ ]
     ⊢idG = let
         ⊢t∘0 = PE.subst (λ X → _ ⊢ wk1 t ∘ var 0 ^ _ ∷ X ^ [ ! , ι lG ]) (wkSingleSubstId G)
-          (un-univ ⊢wk1F ▹ un-univ ⊢wk1G ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F) ⊢t ∘ⱼ var (⊢Γ ∙ ⊢F) here)
+          ( (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢wk1F ▹ un-univ ⊢wk1G ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F) ⊢t ∘ⱼ var (⊢Γ ∙ ⊢F) here)
         ⊢u∘0 = PE.subst (λ X → _ ⊢ wk1 u ∘ var 0 ^ _ ∷ X ^ [ ! , ι lG ]) (wkSingleSubstId G)
-          (un-univ ⊢wk1F ▹ un-univ ⊢wk1G ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F) ⊢u ∘ⱼ var (⊢Γ ∙ ⊢F) here)
+          ( (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢wk1F ▹ un-univ ⊢wk1G ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F) ⊢u ∘ⱼ var (⊢Γ ∙ ⊢F) here)
       in univ (Idⱼ (un-univ ⊢G) ⊢t∘0 ⊢u∘0)
 
     ⊢funext : Γ ⊢ Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA)) ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
@@ -314,9 +314,9 @@ import Data.Nat as Nat
     ⊢wk1G′ = Twk.wk (Twk.lift (Twk.step Twk.id)) (⊢Γ ∙ ⊢F′ ∙ ⊢wk1F′) ⊢G′
 
     ⊢t′∘a = PE.subst (λ X → _ ⊢ wk1 t′ ∘ var 0 ^ lA ∷ X ^ [ ! , ι lG′ ]) (wkSingleSubstId G′)
-      (un-univ ⊢wk1F′ ▹ un-univ ⊢wk1G′ ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢t′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
+      ( (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢wk1F′ ▹ un-univ ⊢wk1G′ ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢t′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
     ⊢u′∘a = PE.subst (λ X → _ ⊢ wk1 u′ ∘ var 0 ^ lA ∷ X ^ [ ! , ι lG′ ]) (wkSingleSubstId G′)
-      (un-univ ⊢wk1F′ ▹ un-univ ⊢wk1G′ ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢u′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
+      ( (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢wk1F′ ▹ un-univ ⊢wk1G′ ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢u′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
     ⊢funext′ : Γ ⊢ Π F′ ^ rF′ ° lF′ ▹ Id G′ (wk1 t′ ∘ var 0 ^ lA) (wk1 u′ ∘ var 0 ^ lA) ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
     ⊢funext′ = univ (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ un-univ ⊢F′ ▹ Idⱼ (un-univ ⊢G′) ⊢t′∘a ⊢u′∘a)
 

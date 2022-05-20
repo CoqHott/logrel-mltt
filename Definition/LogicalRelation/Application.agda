@@ -62,7 +62,7 @@ appTermirr′ {t = t} {Γ = Γ} {l = l} [F] [G[u]] (noemb (Πirrᵣ rF′ lF F G
   let ⊢u = escapeTerm [F] [u]
       ⊢t = escapeTerm {l = l} (Πirrᵣ (Πirrᵣ rF′ lF F G D ⊢F ⊢G A≡A)) [t]
       ⊢F = escape [F]
-  in logRelIrr [G[u]] (un-univ ⊢F ▹ ⊢G' ▹ ⊢t ∘ⱼ ⊢u)
+  in logRelIrr [G[u]] ((λ _ → PE.refl , PE.refl) ▹ un-univ ⊢F ▹ ⊢G' ▹ ⊢t ∘ⱼ ⊢u)
 appTermirr′ {l = ι ¹} [F] [G[u]] (emb emb< x) [t] [u] = appTermirr′ [F] [G[u]] x [t] [u]
 appTermirr′ {l = ∞} [F] [G[u]] (emb ∞< x) [t] [u] = appTermirr′ [F] [G[u]] x [t] [u]
 
@@ -188,7 +188,7 @@ app-congTermirr′ {F′} {G′} {t = t} {t′ = t′} {Γ = Γ} {rF = rF} {l = 
       ⊢t = escapeTerm {l = l} (Πirrᵣ (Πirrᵣ rF′ lF' F G D ⊢F ⊢G A≡A)) [t]
       ⊢t′ = escapeTerm {l = l} (Πirrᵣ (Πirrᵣ rF′ lF' F G D ⊢F ⊢G A≡A)) [t′]
       ⊢G[u]≡G[u]′ = ≅-eq (escapeEq [G[u]] [Gext]) 
-  in logRelIrrEq [G[u]] (un-univ ⊢F' ▹ ⊢G' ▹ ⊢t ∘ⱼ ⊢u) let X =  un-univ ⊢F' ▹ ⊢G' ▹ ⊢t′ ∘ⱼ  ⊢u′ in conv X (sym ⊢G[u]≡G[u]′)
+  in logRelIrrEq [G[u]] ((λ _ → PE.refl , PE.refl) ▹ un-univ ⊢F' ▹ ⊢G' ▹ ⊢t ∘ⱼ ⊢u) let X =  (λ _ → PE.refl , PE.refl) ▹ un-univ ⊢F' ▹ ⊢G' ▹ ⊢t′ ∘ⱼ  ⊢u′ in conv X (sym ⊢G[u]≡G[u]′)
 app-congTermirr′ {l = ι ¹} [F] [G[u]] (emb emb< x) [t≡t′] [u] [u′] [u≡u′] = app-congTermirr′ [F] [G[u]] x [t≡t′] [u] [u′] [u≡u′]
 app-congTermirr′ {l = ∞} [F] [G[u]] (emb ∞< x) [t≡t′] [u] [u′] [u≡u′] = app-congTermirr′ [F] [G[u]] x [t≡t′] [u] [u′] [u≡u′]
 

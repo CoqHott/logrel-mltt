@@ -61,7 +61,8 @@ mutual
            → Γ     ⊢ F ^ [ rF , ι lF ]
            → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ r , ι lG ]
            → Γ     ⊢ lam F ▹ t ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ r , ι l ]
-    _▹_▹_∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
+    _▹_▹_▹_∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
+           → (r PE.≡ % → lG PE.≡ ⁰ × lΠ PE.≡ ⁰)
            → Γ     ⊢ F ∷ (Univ rF lF) ^ [ ! , next lF ]
            → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ (Univ r lG) ^ [ ! , next lG ]
            → Γ ⊢     g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ r , ι lΠ ]
