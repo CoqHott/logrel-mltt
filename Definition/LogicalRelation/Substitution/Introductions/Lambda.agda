@@ -25,7 +25,6 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 open import Tools.Empty using (⊥; ⊥-elim)
 
-
 -- Valid lambda term construction.
 lamᵛ : ∀ {F G rF lF lG lΠ t Γ l}
        (lF≤ : lF ≤ lΠ)
@@ -324,7 +323,6 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
              ⊢t′ = escapeTerm [G]₁′ (proj₁ ([t] (⊢Δ ∙ ⊢F′) [liftσ′]))
          in (lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F  ⊢t) , conv (lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F′  ⊢t′) (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ])) [σΠFG≡σ′ΠFG]))))
 
-{-
 -- Reducibility of η-equality under a valid substitution.
 η-eqEqTerm : ∀ {f g F G rF lF lG lΠ Γ Δ σ l}
              (lF≤ : lF ≤ lΠ)
@@ -388,9 +386,16 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
           (Πₜ f₁ [d] funcF f≡f [f] [f]₁)
           (Πₜ g₁ [d′] funcG g≡g [g] [g]₁)
           (λ {ρ} {Δ₁} {a} [ρ] ⊢Δ₁ [a] →
-             let [F]″ = proj₁ ([F] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]))
+             let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]
+                 [F]″ = proj₁ ([F] ⊢Δ₁ [ρσ])
+                 [liftρσ] = liftSubstS {F = F} [Γ] ⊢Δ₁ [F] [ρσ]
                  ⊢F′ = escape ([F]′ [ρ] ⊢Δ₁) 
-                 [σG]″ = ? -- escape ([G]′ ? (⊢Δ₁ ∙ ⊢F′))
+                 ⊢F″ = escape [F]″ 
+                 [G]₁ = proj₁ ([G] (⊢Δ₁ ∙ ⊢F″) [liftρσ])
+                 [G]₁′ = irrelevanceΓ′
+                                (PE.cong (λ x → _ ∙ x ^ _) (PE.sym (wk-subst F)))
+                                (PE.sym (wk-subst-lift G)) [G]₁
+                 ⊢G₁ = escape [G]₁′
                  [a]′ = irrelevanceTerm′
                           (wk-subst F) PE.refl PE.refl ([F]′ [ρ] ⊢Δ₁)
                           [F]″ [a]
@@ -400,9 +405,9 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                                         (PE.trans (substCompEq G)
                                                   (cons-wk-subst ρ σ a G)))
                  f≡g = irrelevanceEqTerm″ PE.refl PE.refl fEq gEq GEq
-                         (proj₁ ([G] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ] , [a]′)))
+                         (proj₁ ([G] ⊢Δ₁ ([ρσ] , [a]′)))
                          ([G]′ [ρ] ⊢Δ₁ [a])
-                         ([f0≡g0] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ] , [a]′))
+                         ([f0≡g0] ⊢Δ₁ ([ρσ] , [a]′))
                  [ρσΠFG] = wk [ρ] ⊢Δ₁ [σΠFG]
                  [f]′ : Δ ⊩⟨ _ ⟩ f₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , _ ] / [σΠFG]
                  [f]′ = Πₜ f₁ (idRedTerm:*: ⊢u) funcF f≡f [f] [f]₁
@@ -410,12 +415,12 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                  [g]′ : Δ ⊩⟨ _ ⟩ g₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , _ ] / [σΠFG]
                  [g]′ = Πₜ g₁ (idRedTerm:*: ⊢u₁) funcG g≡g [g] [g]₁
                  [ρg]′ = wkTerm [ρ] ⊢Δ₁ [σΠFG] [g]′
-                 [f∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρf]′ [a] (un-univ {!⊢wk1G!}) 
-                 [g∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρg]′ [a] {!!}
-                 [tu≡fu] = proj₂ (redSubst*Term (app-subst* {!!} {!!} (wkRed*Term [ρ] ⊢Δ₁ d)
+                 [f∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρf]′ [a] (un-univ ⊢G₁) 
+                 [g∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρg]′ [a] (un-univ ⊢G₁)
+                 [tu≡fu] = proj₂ (redSubst*Term (app-subst* (un-univ ⊢F′) (un-univ ⊢G₁) (wkRed*Term [ρ] ⊢Δ₁ d)
                                                             (escapeTerm ([F]′ [ρ] ⊢Δ₁) [a]))
                                                 ([G]′ [ρ] ⊢Δ₁ [a]) [f∘u])
-                 [gu≡t′u] = proj₂ (redSubst*Term (app-subst* {!!} {!!} (wkRed*Term [ρ] ⊢Δ₁ d₁)
+                 [gu≡t′u] = proj₂ (redSubst*Term (app-subst* (un-univ ⊢F′) (un-univ ⊢G₁) (wkRed*Term [ρ] ⊢Δ₁ d₁)
                                                              (escapeTerm ([F]′ [ρ] ⊢Δ₁) [a]))
                                                  ([G]′ [ρ] ⊢Δ₁ [a]) [g∘u])
              in  transEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) (symEqTerm ([G]′ [ρ] ⊢Δ₁ [a]) [tu≡fu])
@@ -438,4 +443,4 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
 η-eqᵛ {f} {g} {F} {G} lF≤ lG≤ [Γ] [F] [G] [f] [g] [f0≡g0] {Δ} {σ} ⊢Δ [σ] =
   η-eqEqTerm {f} {g} {F} {G} lF≤ lG≤ [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
                 (proj₁ ([f] ⊢Δ [σ])) (proj₁ ([g] ⊢Δ [σ]))
--}
+
