@@ -218,10 +218,10 @@ mutual
                 → Γ ⊢ e ∷ sEmpty ^ [ % , ι ⁰ ]
                 → Γ ⊢ e' ∷ sEmpty ^ [ % , ι ⁰ ]
                 → Γ ⊢ Emptyrec l ⁰  A e ≡ Emptyrec l ⁰  A' e' ∷ A ^ [ ! , ι l ]
-    proof-irrelevance : ∀ {t u A}
-                      → Γ ⊢ t ∷ A ^ [ % , ι ⁰ ]
-                      → Γ ⊢ u ∷ A ^ [ % , ι ⁰ ]
-                      → Γ ⊢ t ≡ u ∷ A ^ [ % , ι ⁰ ]
+    proof-irrelevance : ∀ {t u A l}
+                      → Γ ⊢ t ∷ A ^ [ % , l ]
+                      → Γ ⊢ u ∷ A ^ [ % , l ]
+                      → Γ ⊢ t ≡ u ∷ A ^ [ % , l ]
     Id-cong : ∀ {A A' l t t' u u'}
               → Γ ⊢ A ≡ A' ∷ Univ ! l ^ [ ! , next l ]
               → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]

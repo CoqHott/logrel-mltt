@@ -1093,3 +1093,22 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
         (S.irrelevanceTerm {A = Univ _ _} {t = wk1 G} (_∙_ {A = F} [Γ] [F]) (_∙_ {A = F} [Γ] [F])
                                                       (λ {Δ} {σ} → [wUG] {Δ} {σ}) (λ {Δ} {σ} → [wUG]′ {Δ} {σ}) [Gₜ]′) 
 
+▹▹irrᵗᵛ : ∀ {F G rF lF Γ} ([Γ] : ⊩ᵛ Γ)→
+      let l    = ∞
+          [UF] = maybeEmbᵛ {A = Univ rF _} [Γ] (Uᵛ (proj₂ (levelBounded lF)) [Γ])
+          [UΠ] = maybeEmbᵛ {A = SProp} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
+      in      
+        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
+        ([UG] : Γ ⊩ᵛ⟨ l ⟩ SProp ^ [ ! , next ⁰ ] / [Γ])
+      → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF]
+      → Γ ⊩ᵛ⟨ l ⟩ G ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / (λ {Δ} {σ} → [UG] {Δ} {σ})
+      → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / [UΠ]
+▹▹irrᵗᵛ {F} {G} {rF} {lF} [Γ] [F] [UG] [Fₜ] [Gₜ] =
+  let [UG]′ = maybeEmbᵛ {A = SProp} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
+      [Gₜ]′ = wk1ᵗᵛ {F} {G} {[ rF , ι lF ]} {rG = %} {⁰} [Γ] [F] (S.irrelevanceTerm {A = Univ _ _} {t = G} [Γ] [Γ] [UG] [UG]′ [Gₜ])
+      [wUG] = maybeEmbᵛ {A = SProp} (_∙_ {A = F} [Γ] [F]) (λ {Δ} {σ} → Uᵛ (proj₂ (levelBounded ⁰)) (_∙_ {A = F} [Γ] [F]) {Δ} {σ})
+      [wUG]′ = wk1ᵛ {Univ _ _ } {F} [Γ] [F] [UG]
+  in Πirrᵗᵛ {F} {wk1 G} [Γ] [F] (λ {Δ} {σ} → [wUG]′ {Δ} {σ}) [Fₜ]
+        (S.irrelevanceTerm {A = Univ _ _} {t = wk1 G} (_∙_ {A = F} [Γ] [F]) (_∙_ {A = F} [Γ] [F])
+                                                      (λ {Δ} {σ} → [wUG] {Δ} {σ}) (λ {Δ} {σ} → [wUG]′ {Δ} {σ}) [Gₜ]′) 
+
