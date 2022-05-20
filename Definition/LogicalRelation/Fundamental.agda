@@ -181,7 +181,7 @@ abstract
     ,   lamirrᵛ {F} {G} {rF} {lF} {t} [Γ] [F] [G]′ [t]′
   fundamentalTerm (lamⱼ {F} {r = %} {l} {rF} {lF} {G} {lG = ¹} {t} lF< lG< ⊢F ⊢t) = let e , _ = lG< PE.refl in ⊥-elim (⁰≢¹ (PE.sym e))
   fundamentalTerm (lamⱼ {F} {r = %} {l = ¹} {rF} {lF} {G} {lG} {t} lF< lG< ⊢F ⊢t) = let _ , e = lG< PE.refl in ⊥-elim (⁰≢¹ (PE.sym e))
-  fundamentalTerm (_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG} {r = !} {l} [F] DG Dt Du)
+  fundamentalTerm (_▹_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG} {r = !} {l} _ [F] DG Dt Du)
     with fundamentalTerm DG | fundamentalTerm Dt | fundamentalTerm Du 
   ... | [Γ]' , [UG] , [G] | [Γ] , [ΠFG] , [t] | [Γ]₁ , [F] , [u] =
     let [ΠFG]′ = S.irrelevance {A = Π F ^ rF ° lF ▹ G ° lG ° l} [Γ] [Γ]₁ [ΠFG]
@@ -193,7 +193,7 @@ abstract
         [G[t]] = substSΠ {F} {G} {a} [Γ]₁ [F] [ΠFG]′ [u]
         [t∘u] = appᵛ {F} {G} {rF} {lF} {lG} {l} {g} {a} [Γ]₁ [F] [G]′′ [ΠFG]′ [t]′ [u]
     in  [Γ]₁ , [G[t]] , [t∘u]
-  fundamentalTerm (_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG = ⁰} {r = %} {lΠ = ⁰} [F] DG Dt Du)
+  fundamentalTerm (_▹_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG = ⁰} {r = %} {lΠ = ⁰} _ [F] DG Dt Du)
     with fundamentalTerm DG | fundamentalTerm Dt | fundamentalTerm Du 
   ... | [Γ]' , [UG] , [G] | [Γ] , [ΠFG] , [t] | [Γ]₁ , [F] , [u] =
     let [ΠFG]′ = S.irrelevance {A = Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰} [Γ] [Γ]₁ [ΠFG]
@@ -205,8 +205,8 @@ abstract
         [G[t]] = substS {F} {G} {a} [Γ]₁ [F] [G]′′ [u]
         [t∘u] = appirrᵛ {F} {G} {rF} {lF} {g} {a} [Γ]₁ [F] [G]′′ [ΠFG]′ [t]′ [u]
     in  [Γ]₁ , [G[t]] , [t∘u]
-  fundamentalTerm (_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG = ¹} {r = %} {lΠ} [F] DG Dt Du) = {!!}
-  fundamentalTerm (_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG} {r = %} {lΠ = ¹} [F] DG Dt Du) = {!!}
+  fundamentalTerm (_▹_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG = ¹} {r = %} {lΠ} l% [F] DG Dt Du) = let e , _ = l% PE.refl in ⊥-elim (⁰≢¹ (PE.sym e))
+  fundamentalTerm (_▹_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG} {r = %} {lΠ = ¹} l% [F] DG Dt Du) = let _ , e = l% PE.refl in ⊥-elim (⁰≢¹ (PE.sym e))
   fundamentalTerm (zeroⱼ x) = valid x , ℕᵛ (valid x) , zeroᵛ {l = ∞} (valid x)
   fundamentalTerm (sucⱼ {n} t) with fundamentalTerm t
   fundamentalTerm (sucⱼ {n} t) | [Γ] , [ℕ] , [n] =
@@ -625,6 +625,7 @@ abstract
         [F]′ = S.irrelevance {A = F} [Γ]₁ ([Γ]₃ ∙ [ℕ]′) [F]
         [F[sucn]] = substS {ℕ} {F} {suc n} [Γ]₃ [ℕ]′ [F]′ [sucn]
         [Fₙ]′ = substS {ℕ} {F} {n} [Γ]₃ [ℕ]′ [F]′ [n]′
+        [F+n] = substSΠ {ℕ} {F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF} {n} [Γ]₃ [ℕ]′ [F₊] [n]′ 
         [natrecₙ] = natrecᵛ {F} { ! } {lF} {z} {s} {n} (λ abs → ⊥-elim (!≢% abs))
                             [Γ]₃ [ℕ]′ [F]′ [F₀]′ [F₊] [Fₙ]′ [z]′ [s] [n]′
         t = (s ∘ n ^ lF) ∘ (natrec lF F z s n) ^ lF
@@ -634,16 +635,15 @@ abstract
               {A = q [ natrec lF F z s n ]} {A′ = F [ suc n ]} {t = t}
               (natrecIrrelevantSubst′ F z s n) PE.refl [Γ]₃ [Γ]₃
               (substSΠ {F [ n ]} {q} {natrec lF F z s n} [Γ]₃
-                (substS {ℕ} {F} {n} [Γ]₃ [ℕ]′ [F]′ [n]′)
-                (substSΠ {ℕ} {F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF} {n}
-                         [Γ]₃ [ℕ]′ [F₊] [n]′)
+                [Fₙ]′
+                [F+n]
                 [natrecₙ])
               [F[sucn]]
-              (appᵛ {F [ n ]} {q} { ! } {lF} {lF} {lF} {s ∘ n ^ lF} {natrec lF F z s n} [Γ]₃ [Fₙ]′ {!!}
+              (appᵛ {F [ n ]} {q} { ! } {lF} {lF} {lF} {s ∘ n ^ lF} {natrec lF F z s n} [Γ]₃ [Fₙ]′ (decompΠᵛ {F = F [ n ]} {G = q} [Γ]₃ [Fₙ]′ [F+n])
                 (substSΠ {ℕ} {F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF} {n}
                          [Γ]₃ [ℕ]′ [F₊] [n]′)
                 (appᵛ {ℕ} {F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF} { ! } {⁰} {lF} {lF} {s} {n}
-                      [Γ]₃ [ℕ]′ {!!} [F₊] [s] [n]′)
+                      [Γ]₃ [ℕ]′ (decompΠᵛ {F = ℕ} {G = F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF} [Γ]₃ [ℕ]′ [F₊]) [F₊] [s] [n]′)
                 [natrecₙ])
         d , r =
           redSubstTermᵛ {F [ suc n ]} {natrec lF F z s (suc n)} {t } {∞} {_} [Γ]₃
