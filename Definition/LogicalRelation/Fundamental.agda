@@ -179,7 +179,7 @@ abstract
         [t]′ = S.irrelevanceTerm {A = G} {t = t} [Γ]₁ ([Γ] ∙ [F]) [G] [G]′ [t]
     in  [Γ] , Πirrᵛ {F} {G} [Γ] [F] [G]′
     ,   lamirrᵛ {F} {G} {rF} {lF} {t} [Γ] [F] [G]′ [t]′
-  fundamentalTerm (lamⱼ {F} {r = %} {l} {rF} {lF} {G} {lG = ¹} {t} lF< lG< ⊢F ⊢t) = let e , _ = lG< PE.refl in ⊥-elim (⁰≢¹ (PE.sym e))
+  fundamentalTerm (lamⱼ {F} {r = %} {l = ⁰} {rF} {lF} {G} {lG = ¹} {t} lF< lG< ⊢F ⊢t) = let e , _ = lG< PE.refl in ⊥-elim (⁰≢¹ (PE.sym e))
   fundamentalTerm (lamⱼ {F} {r = %} {l = ¹} {rF} {lF} {G} {lG} {t} lF< lG< ⊢F ⊢t) = let _ , e = lG< PE.refl in ⊥-elim (⁰≢¹ (PE.sym e))
   fundamentalTerm (_▹_▹_▹_∘ⱼ_ {g} {a} {F} {rF} {lF} {G} {lG} {r = !} {l} _ [F] DG Dt Du)
     with fundamentalTerm DG | fundamentalTerm Dt | fundamentalTerm Du 

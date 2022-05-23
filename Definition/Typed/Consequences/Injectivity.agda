@@ -21,15 +21,15 @@ import Tools.PropositionalEquality as PE
 
 
 -- Helper function of injectivity for specific reducible Π-types
-injectivity′ : ∀ {F G H E rF lF rH lH  rΠ lG lE Γ lΠ l}
-               ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF  ▹ G ° lG ° lΠ ^[ rΠ , lΠ ] )
-             → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG  ° lΠ ≡ Π H ^ rH ° lH  ▹ E ° lE  ° lΠ ^ [ rΠ , ι lΠ ] / Π-intr [ΠFG]
+injectivity′ : ∀ {F G H E rF lF rH lH lG lE Γ lΠ l}
+               ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF  ▹ G ° lG ° lΠ ^[ lΠ ] )
+             → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG  ° lΠ ≡ Π H ^ rH ° lH  ▹ E ° lE  ° lΠ ^ [ ! , ι lΠ ] / Π-intr [ΠFG]
              → Γ ⊢ F ≡ H ^ [ rF , ι lF ]
              × rF PE.≡ rH
              × lF PE.≡ lH
              × lG PE.≡ lE
-             × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≡ E ^ [ rΠ , ι  lG ]
-injectivity′ {F₁} {G₁} {H} {E} {lF = lF₁} {rΠ = rΠ} {Γ = Γ} 
+             × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≡ E ^ [ ! , ι  lG ]
+injectivity′ {F₁} {G₁} {H} {E} {lF = lF₁} {Γ = Γ} 
          (noemb (Πᵣ ! lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
          (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   let F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , _ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
@@ -59,11 +59,11 @@ injectivity′ {F₁} {G₁} {H} {E} {lF = lF₁} {rΠ = rΠ} {Γ = Γ}
      ( PE.trans lF≡lF₁ (PE.sym lH≡lF′) ,
      ( PE.trans lG≡lG₁ (PE.sym lE≡lG′) ,
         PE.subst (λ r → (_ ∙ _ ^ [ r , _ ] ) ⊢ _ ≡ _ ^ _) (PE.sym rF≡rF₁)
-         (PE.subst (λ l → (Γ ∙ F₁  ^ [ ! , ι lF₁ ] ) ⊢ G₁ ≡ E ^ [ rΠ , l ]) (PE.cong ι  (PE.sym lG≡lG₁))
-          (PE.subst (λ l → (Γ ∙ F₁ ^ [ ! , l ] ) ⊢ G₁ ≡ E ^  [ rΠ , ι lG ]) (PE.cong ι (PE.sym lF≡lF₁))
+         (PE.subst (λ l → (Γ ∙ F₁  ^ [ ! , ι lF₁ ] ) ⊢ G₁ ≡ E ^ [ ! , l ]) (PE.cong ι  (PE.sym lG≡lG₁))
+          (PE.subst (λ l → (Γ ∙ F₁ ^ [ ! , l ] ) ⊢ G₁ ≡ E ^  [ ! , ι lG ]) (PE.cong ι (PE.sym lF≡lF₁))
            (escapeEq [G]′ [G≡E]′))))))
 
-injectivity′ {F₁} {G₁} {H} {E} {lF = lF₁} {rΠ = rΠ} {Γ = Γ} 
+injectivity′ {F₁} {G₁} {H} {E} {lF = lF₁} {Γ = Γ} 
          (noemb (Πᵣ % lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
          (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   let F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , _ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
@@ -94,8 +94,8 @@ injectivity′ {F₁} {G₁} {H} {E} {lF = lF₁} {rΠ = rΠ} {Γ = Γ}
      ( PE.trans lF≡lF₁ (PE.sym lH≡lF′) ,
      ( PE.trans lG≡lG₁ (PE.sym lE≡lG′) ,
         PE.subst (λ r → (_ ∙ _ ^ [ r , _ ] ) ⊢ _ ≡ _ ^ _) (PE.sym rF≡rF₁)
-         (PE.subst (λ l → (Γ ∙ F₁  ^ [ % , ι lF₁ ] ) ⊢ G₁ ≡ E ^ [ rΠ , l ]) (PE.cong ι  (PE.sym lG≡lG₁))
-          (PE.subst (λ l → (Γ ∙ F₁ ^ [ % , l ] ) ⊢ G₁ ≡ E ^  [ rΠ , ι lG ]) (PE.cong ι (PE.sym lF≡lF₁))
+         (PE.subst (λ l → (Γ ∙ F₁  ^ [ % , ι lF₁ ] ) ⊢ G₁ ≡ E ^ [ ! , l ]) (PE.cong ι  (PE.sym lG≡lG₁))
+          (PE.subst (λ l → (Γ ∙ F₁ ^ [ % , l ] ) ⊢ G₁ ≡ E ^  [ ! , ι lG ]) (PE.cong ι (PE.sym lF≡lF₁))
            (escapeEq [G]′ [G≡E]′))))))
 
 injectivity′ (emb emb< x) [ΠFG≡ΠHE] = injectivity′ x [ΠFG≡ΠHE]
@@ -103,18 +103,29 @@ injectivity′ (emb ∞< x) [ΠFG≡ΠHE] = injectivity′ x [ΠFG≡ΠHE]
 
 
 -- Injectivity of Π
-injectivity : ∀ {Γ F G H E rF lF lH lG lE rH rΠ lΠ} →
-              Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ [ rΠ , ι lΠ ]
+injectivity : ∀ {Γ F G H E rF lF lH lG lE rH lΠ} →
+              Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ [ ! , ι lΠ ]
             → Γ ⊢ F ≡ H ^ [ rF , ι lF ]
             × rF PE.≡ rH
             × lF PE.≡ lH
             × lG PE.≡ lE
-            × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≡ E ^ [ rΠ , ι lG ]
+            × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≡ E ^ [ ! , ι lG ]
 injectivity ⊢ΠFG≡ΠHE =
   let [ΠFG] , _ , [ΠFG≡ΠHE] = reducibleEq ⊢ΠFG≡ΠHE
   in  injectivity′ (Π-elim [ΠFG])
                    (irrelevanceEq [ΠFG] (Π-intr (Π-elim [ΠFG])) [ΠFG≡ΠHE])
 
+{-injectivity-irr : ∀ {Γ F G H E rF lF lH rH} →
+              Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ≡ Π H ^ rH ° lH ▹ E ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+            → Γ ⊢ F ≡ H ^ [ rF , ι lF ]
+            × rF PE.≡ rH
+            × lF PE.≡ lH
+            × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≡ E ^ [ % , ι ⁰ ]
+injectivity-irr ⊢ΠFG≡ΠHE =
+  let [ΠFG] , _ , [ΠFG≡ΠHE] = reducibleEq ⊢ΠFG≡ΠHE
+  in  injectivity′ (Πirr-elim [ΠFG])
+                   (irrelevanceEq [ΠFG] (Πirr-intr (Πirr-elim [ΠFG])) [ΠFG≡ΠHE])
+-}
 
 Uinjectivity′ : ∀ {Γ r₁ r₂ l₁ l₂ lU l}
                ([U] : Γ ⊩⟨ l ⟩U Univ r₁ l₁ ^ lU)
@@ -138,14 +149,27 @@ Uinjectivity ⊢U≡U =
 
 -- injectivity of ∃
 
-∃injectivity′ : ∀ {F G H E Γ l∃ l}
-               ([∃FG] : Γ ⊩⟨ l ⟩∃ ∃ F ▹ G ^ l∃ )
-             → Γ ⊩⟨ l ⟩ ∃ F ▹ G ≡ ∃ H ▹ E ^ [ % , ι l∃ ] / ∃-intr [∃FG]
-             → Γ ⊢ F ≡ H ^ [ % , ι l∃ ]
-             × Γ ∙ F ^ [ % , ι l∃ ] ⊢ G ≡ E ^ [ % , ι l∃ ]
+{-
+
+∃injectivity′ : ∀ {F G H E Γ l}
+               ([∃FG] : Γ ⊩⟨ l ⟩∃ (∃ F ▹ G) )
+               ([F] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ U.wk ρ F ^ [ % , ι ⁰ ])
+               ([G] : ∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+                      → Δ ⊩⟨ l ⟩ a ∷ U.wk ρ F ^ [ % , ι ⁰ ] / [F] [ρ] ⊢Δ
+                      → Δ ⊩⟨ l ⟩ U.wk (lift ρ) G [ a ] ^ [ % , ι ⁰ ])
+              ([F≡F′] : ∀ {ρ Δ}
+               → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+               → Δ ⊩⟨ l ⟩ U.wk ρ F ≡ U.wk ρ H ^ [ % , ι ⁰ ] / [F] [ρ] ⊢Δ)
+              ([G≡G′] : ∀ {ρ Δ a}
+               → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+               → ([a] : Δ ⊩⟨ l ⟩ a ∷ U.wk ρ F ^ [ % , ι ⁰ ] / [F] [ρ] ⊢Δ)
+               → Δ ⊩⟨ l ⟩ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) H [ a ] ^ [ % , ι ⁰ ] / [G] [ρ] ⊢Δ [a])
+             → Γ ⊩⟨ l ⟩ ∃ F ▹ G ≡ ∃ H ▹ E ^ [ % , ι ⁰ ] / ∃-intr [∃FG]
+             → Γ ⊢ F ≡ H ^ [ % , ι ⁰ ]
+             × Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ≡ E ^ [ % , ι ⁰ ]
 ∃injectivity′ {F₁} {G₁} {H} {E} {Γ = Γ} 
-         (noemb (∃ᵣ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
-         (∃₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
+         _ [F] [G] [F≡F′] [G≡G′]
+         (∃₌ F′ G′ D′ A≡B) =
   let F≡F₁ , G≡G₁ = ∃-PE-injectivity (whnfRed* (red D) ∃ₙ)
       H≡F′ , E≡G′ = ∃-PE-injectivity (whnfRed* D′ ∃ₙ)
       ⊢Γ = wf ⊢F
@@ -166,8 +190,8 @@ Uinjectivity ⊢U≡U =
                                    (PE.trans (wkSingleSubstId _) (PE.sym E≡G′))
                                    (PE.sym F≡F₁) [G]₁ [G]′ [G≡E]₁
   in escapeEq [F]′ [F≡H]′ , escapeEq [G]′ [G≡E]′
-∃injectivity′ (emb emb< x) [∃FG≡∃HE] = ∃injectivity′ x [∃FG≡∃HE]
-∃injectivity′ (emb ∞< x) [∃FG≡∃HE] = ∃injectivity′ x [∃FG≡∃HE]
+∃injectivity′ (emb emb< x) [F] [G] [F≡F′] [G≡G′] [∃FG≡∃HE] = ∃injectivity′ x [F] [G] [F≡F′] [G≡G′] [∃FG≡∃HE]
+∃injectivity′ (emb ∞< x) [F] [G] [F≡F′] [G≡G′] [∃FG≡∃HE] = ∃injectivity′ x [F] [G] [F≡F′] [G≡G′] [∃FG≡∃HE]
 
 -- Injectivity of ∃
 ∃injectivity : ∀ {Γ F G H E l∃} →
@@ -179,3 +203,4 @@ Uinjectivity ⊢U≡U =
   in ∃injectivity′ (∃-elim [∃FG])
                    (irrelevanceEq [∃FG] (∃-intr (∃-elim [∃FG])) [∃FG≡∃HE])
 
+-}

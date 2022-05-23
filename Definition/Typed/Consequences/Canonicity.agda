@@ -51,8 +51,8 @@ noNe consistency (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠΠ%!ₙ = consistency 
 noNe consistency (castⱼ [A] [A]₁ [A]₂ [A]₃) castΠΠ!%ₙ = consistency isIdΠΠ!% [A]₂
 
 -- possible cases proven by induction 
-noNe consistency (⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe consistency  ⊢t neT
-noNe consistency (natrecⱼ x ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe consistency ⊢t₂ neT
+noNe consistency (_ ▹ _ ▹ _ ▹ ⊢t ∘ⱼ ⊢t₁) (∘ₙ neT) = noNe consistency  ⊢t neT
+noNe consistency (natrecⱼ x _ ⊢t ⊢t₁ ⊢t₂) (natrecₙ neT) = noNe consistency ⊢t₂ neT
 noNe consistency (var x₁ ()) (var x)
 noNe consistency (Idⱼ [A] [A]₁ [A]₂) (Idₙ neT) = noNe consistency [A] neT
 noNe consistency (Idⱼ [A] [A]₁ [A]₂) (Idℕₙ neT) = noNe consistency [A]₁ neT

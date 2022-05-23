@@ -124,10 +124,10 @@ mutual
                         PE.refl
                         (wkConv↑Term (lift [ρ]) (⊢Δ ∙ ⊢ρF) t<>u))
   wkConv↓Term ρ ⊢Δ (ℕ-refl x) = ℕ-refl ⊢Δ
-  wkConv↓Term ρ ⊢Δ (Empty-refl x _) = Empty-refl x ⊢Δ
+  wkConv↓Term ρ ⊢Δ (Empty-refl _) = Empty-refl ⊢Δ
   wkConv↓Term ρ ⊢Δ (Π-cong eql eqr eqlF eqlG l< l<'   x A<>B A<>B₁) =
     let ⊢ρF = wk ρ ⊢Δ x
     in  Π-cong eql eqr eqlF eqlG l< l<' ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)
-  wkConv↓Term ρ ⊢Δ (∃-cong eql x A<>B A<>B₁) =
+  wkConv↓Term ρ ⊢Δ (∃-cong x A<>B A<>B₁) =
     let ⊢ρF = wk ρ ⊢Δ x
-    in  ∃-cong eql ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)
+    in  ∃-cong ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)

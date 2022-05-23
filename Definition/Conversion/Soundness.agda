@@ -76,10 +76,10 @@ mutual
   soundnessConv↓Term : ∀ {a b A lA Γ} → Γ ⊢ a [conv↓] b ∷ A ^ lA → Γ ⊢ a ≡ b ∷ A ^ [ ! , lA ]
   soundnessConv↓Term (ne x) = soundness~↓! x
   soundnessConv↓Term (ℕ-refl ⊢Γ) = refl (ℕⱼ ⊢Γ)
-  soundnessConv↓Term (Empty-refl PE.refl ⊢Γ) = refl (Emptyⱼ ⊢Γ)
+  soundnessConv↓Term (Empty-refl ⊢Γ) = refl (Emptyⱼ ⊢Γ)
   soundnessConv↓Term (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' F c c₁) =
     Π-cong l< l<' F (soundnessConv↑Term c) (soundnessConv↑Term c₁)
-  soundnessConv↓Term (∃-cong PE.refl F c c₁) =
+  soundnessConv↓Term (∃-cong F c c₁) =
     ∃-cong F (soundnessConv↑Term c) (soundnessConv↑Term c₁)
   soundnessConv↓Term (ℕ-ins x) = soundness~↓! x
   -- soundnessConv↓Term (Empty-ins x) = soundness~↓% x
@@ -110,8 +110,8 @@ natrec-cong′ : ∀ {Γ k l h g a b F lF G}
              → Γ ⊢ natrec lF F a h k ~ natrec lF G b g l ↑ F [ k ] ^ [ ! , ι lF ]
 natrec-cong′ F=G a=b h=g k~l = ~↑! (natrec-cong F=G a=b h=g k~l)
 
-Emptyrec-cong′ : ∀ {Γ k l F lF lEmpty G}
+Emptyrec-cong′ : ∀ {Γ k l F lF G}
                → Γ ⊢ F [conv↑] G ^ [ ! , ι lF ]
-               → Γ ⊢ k ~ l ↑% Empty lEmpty ^ ι lEmpty
-               → Γ ⊢ Emptyrec lF lEmpty F k ~ Emptyrec lF lEmpty G l ↑ F ^ [ ! , ι lF ]
+               → Γ ⊢ k ~ l ↑% sEmpty ^ ι ⁰
+               → Γ ⊢ Emptyrec lF ⁰ F k ~ Emptyrec lF ⁰ G l ↑ F ^ [ ! , ι lF ]
 Emptyrec-cong′ F=G k~l = ~↑! (Emptyrec-cong F=G k~l)

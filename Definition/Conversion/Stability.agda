@@ -69,10 +69,10 @@ stabilityTerm Γ≡Δ t =
 stabilityRedTerm : ∀ {t u A Γ Δ l} → ⊢ Γ ≡ Δ → Γ ⊢ t ⇒ u ∷ A ^ l → Δ ⊢ t ⇒ u ∷ A ^ l
 stabilityRedTerm Γ≡Δ (conv d x) =
   conv (stabilityRedTerm Γ≡Δ d) (stabilityEq Γ≡Δ x)
-stabilityRedTerm Γ≡Δ (app-subst d x) =
-  app-subst (stabilityRedTerm Γ≡Δ d) (stabilityTerm Γ≡Δ x)
-stabilityRedTerm Γ≡Δ (β-red l< l<' x x₁ x₂) =
-  β-red l< l<' (stability Γ≡Δ x) (stabilityTerm (Γ≡Δ ∙ refl x) x₁)
+stabilityRedTerm Γ≡Δ (app-subst F G d x) =
+  app-subst (stabilityTerm Γ≡Δ F) (stabilityTerm (Γ≡Δ ∙ refl (univ F)) G) (stabilityRedTerm Γ≡Δ d) (stabilityTerm Γ≡Δ x)
+stabilityRedTerm Γ≡Δ (β-red l< l<' x y x₁ x₂) =
+  β-red l< l<' (stability Γ≡Δ x) (stabilityTerm (Γ≡Δ ∙ refl x) y) (stabilityTerm (Γ≡Δ ∙ refl x) x₁)
         (stabilityTerm Γ≡Δ x₂)
 stabilityRedTerm Γ≡Δ (natrec-subst x x₁ x₂ d) =
   let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
@@ -230,14 +230,14 @@ mutual
   stabilityConv↓Term Γ≡Δ (ℕ-refl x) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
     in  ℕ-refl ⊢Δ
-  stabilityConv↓Term Γ≡Δ (Empty-refl x _) =
+  stabilityConv↓Term Γ≡Δ (Empty-refl _) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-    in  Empty-refl x ⊢Δ
+    in  Empty-refl ⊢Δ
   stabilityConv↓Term Γ≡Δ (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' F A<>B A<>B₁) =
     Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' (stability Γ≡Δ F) (stabilityConv↑Term Γ≡Δ A<>B)
            (stabilityConv↑Term (Γ≡Δ ∙ refl F) A<>B₁)
-  stabilityConv↓Term Γ≡Δ (∃-cong PE.refl F A<>B A<>B₁) =
-    ∃-cong PE.refl (stability Γ≡Δ F) (stabilityConv↑Term Γ≡Δ A<>B)
+  stabilityConv↓Term Γ≡Δ (∃-cong F A<>B A<>B₁) =
+    ∃-cong (stability Γ≡Δ F) (stabilityConv↑Term Γ≡Δ A<>B)
            (stabilityConv↑Term (Γ≡Δ ∙ refl F) A<>B₁)
   stabilityConv↓Term Γ≡Δ (ℕ-ins x) =
     ℕ-ins (stability~↓! Γ≡Δ x)

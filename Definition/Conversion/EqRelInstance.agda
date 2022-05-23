@@ -86,11 +86,11 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
   in  ↑ (refl (substType ⊢F ⊢n)) (natrec-cong′ x x₁ x₂ k~l′)
 
 
-~-Emptyrec : ∀ {e e' F F′ Γ l lEmpty}
+~-Emptyrec : ∀ {e e' F F′ Γ l}
          → Γ ⊢ F [conv↑] F′ ^ [ ! , ι l ] →
-         Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ] →
-         Γ ⊢ e' ∷ Empty lEmpty ^ [ % , ι lEmpty ] →
-         Γ ⊢ Emptyrec l lEmpty F e ~ Emptyrec l lEmpty F′ e' ∷ F ^ [ ! , ι l ]
+         Γ ⊢ e ∷ sEmpty ^ [ % , ι ⁰ ] →
+         Γ ⊢ e' ∷ sEmpty ^ [ % , ι ⁰ ] →
+         Γ ⊢ Emptyrec l ⁰ F e ~ Emptyrec l ⁰ F′ e' ∷ F ^ [ ! , ι l ]
 ~-Emptyrec {e = e} {e' = e'} x ⊢e ⊢e' =
   let k~l′ = %~↑ ⊢e ⊢e'
       ⊢F , _ = syntacticEq (soundnessConv↑ x)

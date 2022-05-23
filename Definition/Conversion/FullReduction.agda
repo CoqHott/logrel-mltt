@@ -16,13 +16,13 @@ open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Typed.Consequences.Equality
-open import Definition.Typed.Consequences.RelevanceUnicity
+-- open import Definition.Typed.Consequences.RelevanceUnicity
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Properties.Escape
 open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Fundamental.Reducibility
-open import Definition.Typed.Consequences.TypeUnicity
+--open import Definition.Typed.Consequences.TypeUnicity
 
 open import Tools.Empty using (⊥; ⊥-elim)
 open import Tools.Product
@@ -53,13 +53,13 @@ mutual
                                     → NfNeutral Γ  (cast l (Π A ^ % ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° l) e t)
     castΠΠ!%ₙ : ∀ {l A B A' B' e t} → Nf Γ A → Nf (Γ ∙ A ^ [ ! , ι ⁰ ]) B → Nf Γ A' → Nf (Γ ∙ A' ^ [ % , ι ⁰ ]) B' → Nf Γ t
                                     → NfNeutral Γ  (cast l (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° l) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° l) e t)
-    Emptyrecₙ : ∀ {l lEmpty A e} → Nf Γ A → NfNeutral Γ  (Emptyrec l lEmpty A e)
+    Emptyrecₙ : ∀ {l A e} → Nf Γ A → NfNeutral Γ  (Emptyrec l ⁰ A e)
 
   data Nf (Γ : Con Term) : Term → Set where
 
     Uₙ    : ∀ {r l} → Nf Γ (Univ r l)
     Πₙ    : ∀ {A r lA B lB l} → Nf Γ A → Nf (Γ ∙ A ^ [ r , ι lA ]) B → Nf Γ (Π A ^ r ° lA ▹ B ° lB ° l)
-    ∃ₙ    : ∀ {l A B} → Γ ⊢ A ^ [ % , ι l ] → Nf Γ A → Nf (Γ ∙ A ^ [ % , ι l ]) B → Nf Γ (∃ A ▹ B)
+    ∃ₙ    : ∀ {A B} → Γ ⊢ A ^ [ % , ι ⁰ ] → Nf Γ A → Nf (Γ ∙ A ^ [ % , ι ⁰ ]) B → Nf Γ (∃ A ▹ B)
     ℕₙ    : Nf Γ ℕ
     Emptyₙ : ∀ {l} → Nf Γ (Empty l)
 
@@ -101,7 +101,7 @@ NfWhnf ⊢t (lamₙ _ X) = lamₙ
 NfWhnf ⊢t zeroₙ = zeroₙ
 NfWhnf ⊢t (sucₙ X) = sucₙ
 NfWhnf ⊢t (ne x) = ne (NfNeutralNeutral x)
-NfWhnf ⊢t (sprop ⊢t') = let !≡% , _  = type-uniq ⊢t ⊢t' in ⊥-elim (!≢% !≡%)
+NfWhnf ⊢t (sprop ⊢t') = {!!} -- let !≡% , _  = type-uniq ⊢t ⊢t' in ⊥-elim (!≢% !≡%)
 
 NfΠinversion :  ∀ {F G rF lF lG lΠ Γ} → Nf Γ (Π F ^ rF ° lF ▹ G ° lG ° lΠ ) → Nf Γ F × Nf (Γ ∙ F ^ [ rF , ι lF ]) G
 NfΠinversion (Πₙ X Y) = X , Y
@@ -110,7 +110,7 @@ NfΠinversion (sprop ⊢t) =
       %≡! , _ = typelevel-injectivity e
   in ⊥-elim (!≢% (PE.sym %≡!))
 
-NfΠA′ : ∀ {A F G rF lF lG lΠ Γ l} ([Π] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ ! , lΠ ] )
+NfΠA′ : ∀ {A F G rF lF lG lΠ Γ l} ([Π] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ lΠ ] )
     → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ A ^ [ ! ,  ι lΠ ] / (Π-intr [Π])
     → Nf Γ A
     → ∃₂ λ H E → Nf Γ H × Nf (Γ ∙ H ^ [ rF , ι lF ]) E × A PE.≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ
@@ -141,11 +141,14 @@ mutual
 
   convNfNeutral :  ∀ {Γ Δ t A r} → ⊢ Γ ≡ Δ → Γ ⊢ t ∷ A ^ r → NfNeutral Γ t → NfNeutral Δ t
   convNfNeutral Γ≡Δ ⊢t (var n) = var n
-  convNfNeutral Γ≡Δ ⊢t (∘ₙ X x) =
-    let F , rF , lF , G , lG , rG , ⊢k , ⊢u , _ , erl = inversion-app ⊢t
+  convNfNeutral {r = [ ! , l ]} Γ≡Δ ⊢t (∘ₙ X x) =
+    let F , rF , lF , G , lG , ⊢k , ⊢u , _ , erl = inversion-app ⊢t
     in ∘ₙ (convNfNeutral Γ≡Δ ⊢k X) (convNf Γ≡Δ ⊢u x)
+  convNfNeutral {r = [ % , l ]} Γ≡Δ ⊢t (∘ₙ X x) =
+    let F , rF , lF , G , lG , ⊢k , ⊢u , _ , _ , erl = inversion-app-irr ⊢t
+    in ∘ₙ (convNfNeutral Γ≡Δ ⊢k X) (convNf Γ≡Δ ⊢u x) 
   convNfNeutral Γ≡Δ ⊢t (natrecₙ x x₁ x₂ X) =
-    let _ , ⊢x , ⊢x₁ , ⊢x₂ , ⊢X , _ = inversion-natrec ⊢t
+    let _ , _ , ⊢x , ⊢x₁ , ⊢x₂ , ⊢X , _ = inversion-natrec ⊢t
     in natrecₙ (convNf (Γ≡Δ ∙ refl (univ (ℕⱼ (wfTerm ⊢t)))) (un-univ ⊢x) x) (convNf Γ≡Δ ⊢x₁ x₁)
                (convNf Γ≡Δ ⊢x₂ x₂) (convNfNeutral Γ≡Δ ⊢X X)
   convNfNeutral Γ≡Δ ⊢t (Idₙ X x x₁) =
@@ -214,20 +217,18 @@ mutual
     let _ , _ , _ , ⊢F , ⊢G , _ = inversion-Π ⊢t
     in Πₙ (convNf Γ≡Δ ⊢F X) (convNf (Γ≡Δ ∙ refl (univ ⊢F)) ⊢G X₁)
   convNf Γ≡Δ ⊢t (∃ₙ ⊢A X X₁) =
-    let l , ⊢F , ⊢G , _ , erl = inversion-∃ ⊢t
-        _ , _  , erl  = type-uniq (un-univ ⊢A) ⊢F
-        _ , elA = Uinjectivity erl
-    in ∃ₙ (stability Γ≡Δ ⊢A) (convNf Γ≡Δ ⊢F X) (convNf (Γ≡Δ ∙ refl (⊢A))
-          (PE.subst (λ l → _ ∙ _ ^ [ % , ι l ] ⊢ _ ∷ SProp l ^ [ ! , next l ]) (PE.sym elA) ⊢G) X₁)
+    let ⊢F , ⊢G , _ , erl = inversion-∃ ⊢t
+    in ∃ₙ (stability Γ≡Δ ⊢A) (convNf Γ≡Δ ⊢F X) (convNf (Γ≡Δ ∙ refl (⊢A)) ⊢G X₁)
   convNf Γ≡Δ ⊢t ℕₙ = ℕₙ
   convNf Γ≡Δ ⊢t Emptyₙ = Emptyₙ
   convNf Γ≡Δ ⊢t (lamₙ ⊢F X) =
     let rF , lF , G , rG , lG , ⊢F' , ⊢t' , _ , erl = inversion-lam ⊢t
         er , el = typelevel-injectivity erl
-        _ , _  , erl  = type-uniq (un-univ ⊢F) (un-univ ⊢F')
+        --_ , _  , erl  = type-uniq (un-univ ⊢F) (un-univ ⊢F')
+        erl  = {!!}
         erF , elF = Uinjectivity erl
-    in lamₙ (stability Γ≡Δ  ⊢F) (convNf (Γ≡Δ ∙ refl ⊢F)
-            (PE.subst₂ (λ r l → _ ∙ _ ^ [ r , ι l ] ⊢ _ ∷ G ^ [ rG , ι lG ]) (PE.sym erF) (PE.sym elF) ⊢t')  X)
+    in lamₙ (stability Γ≡Δ  ⊢F) (convNf (Γ≡Δ ∙ refl ⊢F) {!!} X)
+--            (PE.subst₂ (λ r l → _ ∙ _ ^ [ r , ι l ] ⊢ _ ∷ G ^ [ rG , ι lG ]) (PE.sym erF) (PE.sym elF) ⊢t')  X)
   convNf Γ≡Δ ⊢t zeroₙ = zeroₙ
   convNf Γ≡Δ ⊢t (sucₙ X) = sucₙ (convNf Γ≡Δ (proj₁ (inversion-suc ⊢t)) X )
   convNf Γ≡Δ ⊢t (ne x) = ne (convNfNeutral Γ≡Δ ⊢t x)
@@ -257,9 +258,9 @@ mutual
     in  natrec l C′ z′ s′ n′
      , natrecₙ nfC′ nfZ′ nfS′ nfN′
      ,  natrec-cong C≡C′ z≡z′ s≡s′ n≡n′
-  fullRedNe (Emptyrec-cong {k = k} {ll = l} {lEmpty = lEmpty} C (%~↑ ⊢e ⊢e')) =
+  fullRedNe (Emptyrec-cong {k = k} {ll = l} C (%~↑ ⊢e ⊢e')) =
     let C′ , nfC′ , C≡C′ = fullRed C
-    in  Emptyrec l lEmpty C′ k , Emptyrecₙ nfC′
+    in  Emptyrec l ⁰ C′ k , Emptyrecₙ nfC′
      ,  Emptyrec-cong C≡C′ ⊢e ⊢e'
   fullRedNe (Id-cong A t u) =
     let A′ , nfA′ , A≡A′ = fullRedNe′ A
@@ -377,13 +378,13 @@ mutual
     let B , nf , A≡B = fullRedNe′ A
     in  B , ne nf , A≡B
   fullRedTerm′ (ℕ-refl ⊢Γ) = ℕ , ℕₙ , refl (ℕⱼ ⊢Γ)
-  fullRedTerm′ (Empty-refl PE.refl ⊢Γ) = Empty _ , Emptyₙ , refl (Emptyⱼ ⊢Γ)
+  fullRedTerm′ (Empty-refl ⊢Γ) = Empty _ , Emptyₙ , refl (Emptyⱼ ⊢Γ)
   fullRedTerm′ (Π-cong {rF = rF} PE.refl PE.refl PE.refl PE.refl l< l<' ⊢F F G) =
     let F′ , nfF′ , F≡F′ = fullRedTerm F
         G′ , nfG′ , G≡G′ = fullRedTerm G
     in Π F′ ^ rF ° _ ▹ G′ ° _ ° _  , Πₙ nfF′ (convNf (reflConEq (wf ⊢F) ∙ univ F≡F′) (proj₂ (proj₂ (syntacticEqTerm G≡G′))) nfG′)
     ,  Π-cong l< l<' ⊢F F≡F′ G≡G′
-  fullRedTerm′ (∃-cong PE.refl ⊢F F G) =
+  fullRedTerm′ (∃-cong ⊢F F G) =
     let F′ , nfF′ , F≡F′ = fullRedTerm F
         G′ , nfG′ , G≡G′ = fullRedTerm G
     in ∃ F′ ▹ G′ , ∃ₙ (univ (proj₂ (proj₂ (syntacticEqTerm F≡F′)))) nfF′
@@ -411,7 +412,7 @@ mutual
         λu∘0 = (lam _ ▹ (U.wk (lift (step id)) u) ^ _) ∘ var 0 ^ l
     in  lam _ ▹ u ^ _ ,
         lamₙ ⊢F nf
-     ,  η-eq l< l<' ⊢F ⊢t (lamⱼ l< l<' ⊢F ⊢u)
+     ,  η-eq l< l<' ⊢F ⊢t (lamⱼ (λ _ → l< , l<') (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢u)
              (trans t∘0≡u (PE.subst₂ (λ x y → _ ⊢ x ≡ λu∘0 ∷ y ^ _)
                                      (wkSingleSubstId u) (wkSingleSubstId _)
                                      (sym (β-red l< l<' wk⊢F wk⊢u (var ΓF⊢ here)))))
