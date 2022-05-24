@@ -57,6 +57,11 @@ cong6 : ∀ {A B C D E F G : Set} {a a′ b b′ c c′ d d′ e e' g g'}
       → f a b c d e g ≡ f a′ b′ c′ d′ e' g'
 cong6 f refl refl refl refl refl refl = refl
 
+cong7 : ∀ {A B C D E F G H : Set} {a a′ b b′ c c′ d d′ e e' g g' h h'} 
+        (f : A → B → C → D → E → G → H → F) → a ≡ a′ → b ≡ b′ → c ≡ c′ → d ≡ d′ → e ≡ e' → g ≡ g' → h ≡ h' 
+      → f a b c d e g h ≡ f a′ b′ c′ d′ e' g' h'
+cong7 f refl refl refl refl refl refl refl = refl
+
 -- Substitution (type-cast).
 
 subst : {A : Set} {a b : A} (F : A → Set) → a ≡ b → F a → F b
