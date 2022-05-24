@@ -365,7 +365,7 @@ app:⇒*: : ∀ {Γ a t u A B rA lA lB l}
         → Γ     ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
         → Γ ∙ A ^ [ rA , ι lA ] ⊢ B ∷ (U lB) ^ [ ! , next lB ] →
         (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
-        (D : Γ ⊢ t :⇒*: u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l) ^ ι l)
+        (D : Γ ⊢ t :⇒*: u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l ^ !) ^ ι l)
         → Γ ⊢ t ∘ a ^ l :⇒*: u ∘ a ^ l ∷ B [ a ] ^ ι lB
 app:⇒*: ⊢A ⊢B ⊢a [[ ⊢t , ⊢u , D ]] = [[ (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢A ▹ ⊢B ▹ ⊢t ∘ⱼ ⊢a , (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢A ▹ ⊢B ▹ ⊢u ∘ⱼ ⊢a , appRed* ⊢A ⊢B ⊢a D ]]  
 

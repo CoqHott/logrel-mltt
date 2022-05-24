@@ -27,13 +27,13 @@ mutual
                 → x PE.≡ y
                 → Γ ⊢ var x ~ var y ↑! A ^ l
     app-cong    : ∀ {k l t v F rF lF lG G lΠ}
-                → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ι lΠ
+                → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
                 → Γ ⊢ t [genconv↑] v ∷ F ^ [ rF , ι lF ]
                 → Γ ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑! G [ t ] ^ ι lG
     natrec-cong : ∀ {k l h g a₀ b₀ F G lF}
                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] G ^ [ ! , ι lF ]
                 → Γ ⊢ a₀ [conv↑] b₀ ∷ F [ zero ] ^ ι lF
-                → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ ι lF
+                → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ ! ^ ι lF
                 → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
                 → Γ ⊢ natrec lF F a₀ h k ~ natrec lF G b₀ g l ↑! F [ k ] ^ ι lF
     Emptyrec-cong : ∀ {k l F G ll}
@@ -64,9 +64,9 @@ mutual
               → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
               → Γ ⊢ Id (U ⁰) ℕ t ~ Id (U ⁰) ℕ t' ↑! SProp ^ next ⁰
     Id-UΠ : ∀ {A rA B A' B' t t'}
-              → Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰  [conv↑] Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
+              → Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
               → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
-              → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰  ) t ~ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰  ) t' ↑! SProp ^ next ⁰
+              → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ) t ~ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) t' ↑! SProp ^ next ⁰
     cast-cong : ∀ {A A' B B' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ B [conv↑] B' ∷ U ⁰ ^ ι ¹
@@ -86,40 +86,40 @@ mutual
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
     cast-Π : ∀ {A rA P A' P' B B' t t' e e'}
-              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ∷ U ⁰ ^ next ⁰
+              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
               → Γ ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
-              → Γ ⊢ t [conv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ι ⁰
-              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ) B) ^ [ % , ι ⁰ ]
-              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ) B') ^ [ % , ι ⁰ ]
-              → Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ) B e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ) B' e' t' ↑! B ^ ι ⁰
+              → Γ ⊢ t [conv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !  ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) B) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) B') ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) B e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) B' e' t' ↑! B ^ ι ⁰
     cast-Πℕ : ∀ {A rA P A' P' t t' e e'}
-              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ t [conv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ι ⁰
-              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ) ℕ) ^ [ % , ι ⁰ ]
-              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ) ℕ) ^ [ % , ι ⁰ ]
-              → Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ) ℕ e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ) ℕ e' t' ↑! ℕ ^ ι ⁰
+              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
+              → Γ ⊢ t [conv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !  ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ℕ e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) ℕ e' t' ↑! ℕ ^ ι ⁰
     cast-ℕΠ : ∀ {A rA P A' P' t t' e e'}
-              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
+              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
-              → Γ ⊢ e ∷ (Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ )) ^ [ % , ι ⁰ ]
-              → Γ ⊢ e' ∷ (Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ )) ^ [ % , ι ⁰ ]
-              → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ) e' t' ↑! (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ) ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) e' t' ↑! (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
     cast-ΠΠ%! : ∀ {A P A' P' B Q B' Q' t t' e e'}
-              → Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  [conv↑] Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  [conv↑] Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ t [conv↑] t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ι ⁰
-              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ )) ^ [ % , ι ⁰ ]
-              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ )) ^ [ % , ι ⁰ ]
-              → Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ) e t ~
-                    cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ) e' t' ↑! (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ) ^ ι ⁰
+              → Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
+              → Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !  [conv↑] Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹
+              → Γ ⊢ t [conv↑] t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) e t ~
+                    cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ !) e' t' ↑! (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) ^ ι ⁰
     cast-ΠΠ!% : ∀ {A P A' P' B Q B' Q' t t' e e'}
-              → Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰  [conv↑] Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰  [conv↑] Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰  ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ t [conv↑] t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰  ° ⁰ ^ ι ⁰
-              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ )) ^ [ % , ι ⁰ ]
-              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ )) ^ [ % , ι ⁰ ]
-              → Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ) e t ~
-                    cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ) e' t' ↑! (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ) ^ ι ⁰
+              → Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !  [conv↑] Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹
+              → Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !  [conv↑] Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹
+              → Γ ⊢ t [conv↑] t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰  ° ⁰  ^ ! ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) e t ~
+                    cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ !) e' t' ↑! (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
 
 
   record _⊢_~_↑%_^_ (Γ : Con Term) (k l A : Term) (ll : TypeLevel) : Set where
@@ -198,7 +198,7 @@ mutual
               → Γ ⊢ F ^ [ rF , ι lF ]
               → Γ ⊢ F [conv↑] H ∷ Univ rF lF ^ next lF
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G [conv↑] E  ∷ Univ rΠ lG ^ next lG
-              → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ [conv↓] Π H ^ rH ° lH ▹ E ° lE ° lΠ ∷ Univ rΠ lΠ ^ ll
+              → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rΠ [conv↓] Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ rΠ ∷ Univ rΠ lΠ ^ ll
     ∃-cong    : ∀ {F G H E}
               → Γ ⊢ F ^ [ % , ι ⁰ ]
               → Γ ⊢ F [conv↑] H ∷ SProp ^ next ⁰
@@ -221,12 +221,12 @@ mutual
               → lF ≤ l
               → lG ≤ l
               → Γ ⊢ F ^ [ rF , ι lF ]
-              → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ ! , ι l ]
-              → Γ ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ ! , ι l ]
+              → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
+              → Γ ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
               → Function f
               → Function g
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ wk1 f ∘ var 0 ^ l [conv↑] wk1 g ∘ var 0 ^ l ∷ G ^ ι lG
-                → Γ ⊢ f [conv↓] g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ι l
+                → Γ ⊢ f [conv↓] g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ ι l
 
   _⊢_[genconv↑]_∷_^_ : (Γ : Con Term) (t u A : Term) (r : TypeInfo) → Set
   _⊢_[genconv↑]_∷_^_ Γ k l A [ ! , ll ] =  Γ ⊢ k [conv↑] l ∷ A ^ ll

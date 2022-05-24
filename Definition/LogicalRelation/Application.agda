@@ -25,8 +25,8 @@ import Data.Nat as Nat
 appTerm′ : ∀ {F G t u Γ rF lF lΠ lG l l′ l″}
           ([F] : Γ ⊩⟨ l″ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ ! , ι lG ])
-          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ lΠ ])
-          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / Π-intr [ΠFG])
+          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^[ lΠ ])
+          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / Π-intr [ΠFG])
           ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           (⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ U lG ^ [ ! , next lG ])
         → Γ ⊩⟨ l′ ⟩ t ∘ u ^ lΠ ∷ G [ u ] ^ [ ! , ι lG ] / [G[u]]
@@ -52,8 +52,8 @@ appTerm′ {l = ∞} [F] [G[u]] (emb ∞< x) [t] [u] = appTerm′ [F] [G[u]] x [
 appTermirr′ : ∀ {F G t u Γ rF lF l l′ l″}
           ([F] : Γ ⊩⟨ l″ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ % , ι ⁰ ])
-          ([ΠFG] : Γ  ⊩⟨ l ⟩Πirr Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰)
-          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / Πirr-intr [ΠFG])
+          ([ΠFG] : Γ  ⊩⟨ l ⟩Πirr Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %)
+          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / Πirr-intr [ΠFG])
           ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           (⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ SProp ^ [ ! , next ⁰ ])
         → Γ ⊩⟨ l′ ⟩ t ∘ u ^ ⁰ ∷ G [ u ] ^ [ % , ι ⁰ ] / [G[u]]
@@ -71,8 +71,8 @@ appTermirr′ {l = ∞} [F] [G[u]] (emb ∞< x) [t] [u] = appTermirr′ [F] [G[u
 appTerm : ∀ {F G t u Γ rF lF rF' lΠ lG l l′ l″} (eqr : rF PE.≡ rF') 
           ([F] : Γ ⊩⟨ l″ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ ! , ι lG ])
-          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF' ° lF ▹ G ° lG  ° lΠ ^ [ ! , ι lΠ ])
-          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF' ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [ΠFG])
+          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF' ° lF ▹ G ° lG  ° lΠ ^ ! ^ [ ! , ι lΠ ])
+          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF' ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [ΠFG])
           ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           (⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ U lG ^ [ ! , next lG ])
         → Γ ⊩⟨ l′ ⟩ t ∘ u ^ lΠ ∷ G [ u ] ^ [ ! , ι lG ] / [G[u]]
@@ -83,8 +83,8 @@ appTerm PE.refl [F] [G[u]] [ΠFG] [t] [u] ⊢G' =
 appTermirr : ∀ {F G t u Γ rF lF rF' l l′ l″} (eqr : rF PE.≡ rF') 
           ([F] : Γ ⊩⟨ l″ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ % , ι ⁰ ])
-          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF' ° lF ▹ G ° ⁰  ° ⁰ ^ [ % , ι ⁰ ])
-          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF' ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [ΠFG])
+          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF' ° lF ▹ G ° ⁰  ° ⁰ ^ % ^  [ % , ι ⁰ ])
+          ([t] : Γ ⊩⟨ l ⟩ t ∷ Π F ^ rF' ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [ΠFG])
           ([u] : Γ ⊩⟨ l″ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           (⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ SProp ^ [ ! , next ⁰ ])
         → Γ ⊩⟨ l′ ⟩ t ∘ u ^ ⁰ ∷ G [ u ] ^ [ % , ι ⁰ ] / [G[u]]
@@ -96,8 +96,8 @@ appTermirr PE.refl [F] [G[u]] [ΠFG] [t] [u] ⊢G =
 app-congTerm′ : ∀ {F G t t′ u u′ Γ rF lF lΠ lG l l′}
           ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ ! , ι lG ])
-          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ lΠ ])
-          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / Π-intr [ΠFG])
+          ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^[ lΠ ])
+          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / Π-intr [ΠFG])
           ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ^ [ rF , ι lF ] / [F])
           ([u≡u′] : Γ ⊩⟨ l′ ⟩ u ≡ u′ ∷ F ^ [ rF , ι lF ] / [F])
@@ -132,12 +132,12 @@ app-congTerm′ {F′} {G′} {t = t} {t′ = t′} {Γ = Γ} {rF = rF} {lF = lF
       [G[u≡u′]] = irrelevanceEq″ wkidG₁[u]≡G[u] wkidG₁[u′]≡G[u′] PE.refl (PE.cong ι (PE.sym lG≡lG′))
                                   ([G] id ⊢Γ [u]′) [G[u]]
                                   (G-ext id ⊢Γ [u]′ [u′]′ [u≡u′]′)
-      [f′] : Γ ⊩⟨ _ ⟩ f′ ∷ Π F′ ^ rF′ ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / [ΠFG]
+      [f′] : Γ ⊩⟨ _ ⟩ f′ ∷ Π F′ ^ rF′ ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [ΠFG]
       [f′] = Πₜ f′ (idRedTerm:*: ⊢f′) funcF′ f≡f [f] [f]₁
       [f∘u] = appTerm rF≡rF′ [F] [G[u]] [ΠFG]
                       (irrelevanceTerm″ PE.refl PE.refl PE.refl (PE.sym f≡f′) [ΠFG] [ΠFG] [f′])
                       [a] ⊢G'
-      [g′] : Γ ⊩⟨ _ ⟩ g′ ∷ Π F′ ^ rF′ ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / [ΠFG]
+      [g′] : Γ ⊩⟨ _ ⟩ g′ ∷ Π F′ ^ rF′ ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [ΠFG]
       [g′] = Πₜ g′ (idRedTerm:*: ⊢g′) funcG′ g≡g [g] [g]₁
       [g∘u′] = appTerm rF≡rF′ [F] [G[u′]] [ΠFG]
                        (irrelevanceTerm″ PE.refl PE.refl PE.refl (PE.sym g≡g′) [ΠFG] [ΠFG] [g′])
@@ -165,8 +165,8 @@ app-congTerm′ {l = ∞} [F] [G[u]] (emb ∞< x) [t≡t′] [u] [u′] [u≡u�
 app-congTermirr′ : ∀ {F G t t′ u u′ Γ rF lF l l′}
           ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ % , ι ⁰ ])
-          ([ΠFG] : Γ ⊩⟨ l ⟩Πirr Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰)
-          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / Πirr-intr [ΠFG])
+          ([ΠFG] : Γ ⊩⟨ l ⟩Πirr Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %)
+          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / Πirr-intr [ΠFG])
           ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ^ [ rF , ι lF ] / [F])
           ([Gext] : Γ ⊩⟨ l′ ⟩ G [ u ] ≡ G [ u′ ] ^ [ % , ι ⁰ ] / [G[u]])
@@ -196,8 +196,8 @@ app-congTermirr′ {l = ∞} [F] [G[u]] (emb ∞< x) [t≡t′] [u] [u′] [u≡
 app-congTerm : ∀ {F G t t′ u u′ Γ rF lF lΠ lG l l′}
           ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ ! , ι lG ])
-          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ])
-          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [ΠFG])
+          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ])
+          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [ΠFG])
           ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ^ [ rF , ι lF ] / [F])
           ([u≡u′] : Γ ⊩⟨ l′ ⟩ u ≡ u′ ∷ F ^ [ rF , ι lF ] / [F])
@@ -211,8 +211,8 @@ app-congTerm [F] [G[u]] [ΠFG] [t≡t′] =
 app-congTermirr : ∀ {F G t t′ u u′ Γ rF lF l l′ } →
           ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
           ([G[u]] : Γ ⊩⟨ l′ ⟩ G [ u ] ^ [ % , ι ⁰ ])
-          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ])
-          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [ΠFG])
+          ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ])
+          ([t≡t′] : Γ ⊩⟨ l ⟩ t ≡ t′ ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [ΠFG])
           ([u] : Γ ⊩⟨ l′ ⟩ u ∷ F ^ [ rF , ι lF ] / [F])
           ([u′] : Γ ⊩⟨ l′ ⟩ u′ ∷ F ^ [ rF , ι lF ] / [F])
           ([Gext] : Γ ⊩⟨ l′ ⟩ G [ u ] ≡ G [ u′ ] ^ [ % , ι ⁰ ] / [G[u]])

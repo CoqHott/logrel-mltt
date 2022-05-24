@@ -204,10 +204,10 @@ irrelevanceEqTermℕ PE.refl PE.refl p t≡u = t≡u
       [Unit] = UnitType ⊢Γ
       [IdA] , [IdA≡ℕ] = redSubst* nfId [Unit]
       [IdB] , [IdB≡ℕ] = redSubst* nfId' [Unit]
-      [IdA≡ℕ]′ = irrelevanceEq {A = Id ℕ t u} {B = Unit} {l = ι ⁰} {l′ = l} [IdA] ([Id]ℕ ⊢Γ [t] [u]) [IdA≡ℕ] 
-      [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = Unit} {l = ι ⁰} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ] 
-  in transEq {A = Id ℕ t u} {B = Unit} {C = Id ℕ v w} {l = l} {l′ = ι ⁰} {l″ = l} ([Id]ℕ ⊢Γ [t] [u]) [Unit] ([Id]ℕ ⊢Γ [v] [w])
-                  [IdA≡ℕ]′  (symEq {A = Id ℕ v w} {B = Unit} {l = l} {l′ = ι ⁰} ([Id]ℕ ⊢Γ [v] [w]) [Unit] [IdB≡ℕ]′) 
+      [IdA≡ℕ]′ = irrelevanceEq {A = Id ℕ t u} {B = sUnit} {l = ι ⁰} {l′ = l} [IdA] ([Id]ℕ ⊢Γ [t] [u]) [IdA≡ℕ] 
+      [IdB≡ℕ]′ = irrelevanceEq {A = Id ℕ v w} {B = sUnit} {l = ι ⁰} {l′ = l} [IdB] ([Id]ℕ ⊢Γ [v] [w]) [IdB≡ℕ] 
+  in transEq {A = Id ℕ t u} {B = sUnit} {C = Id ℕ v w} {l = l} {l′ = ι ⁰} {l″ = l} ([Id]ℕ ⊢Γ [t] [u]) [Unit] ([Id]ℕ ⊢Γ [v] [w])
+                  [IdA≡ℕ]′  (symEq {A = Id ℕ v w} {B = sUnit} {l = l} {l′ = ι ⁰} ([Id]ℕ ⊢Γ [v] [w]) [Unit] [IdB≡ℕ]′) 
 
 
 [IdExt]ℕ {Γ} {l} {t} {u} {v} {w} ⊢Γ (ℕₜ .(suc _) [[ ⊢tℕ , ⊢mℕ , dt ]] n≡n₁ (sucᵣ {t'} [t'])) (ℕₜ n [[ ⊢uℕ , ⊢nℕ , du ]] n≡n (ne (neNfₜ neKu ⊢ku k≡ku)))

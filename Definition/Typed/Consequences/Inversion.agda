@@ -27,19 +27,20 @@ inversion-ℕ (conv x x₁) with inversion-ℕ x
 ... | [C≡U] , PE.refl = trans (sym x₁) [C≡U] , PE.refl
 
 -- Inversion of Π-types.
-inversion-Π : ∀ {F rF G r Γ C lF lG lΠ}
-            → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ  ∷ C ^ r
+inversion-Π : ∀ {F rF G r rΠ Γ C lF lG lΠ}
+            → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rΠ ∷ C ^ r
             → ∃ λ rG
             → (rG PE.≡ ! → lF ≤ lΠ × lG ≤ lΠ)
               × (rG PE.≡ % → lG PE.≡ ⁰ × lΠ PE.≡ ⁰)
               × Γ ⊢ F ∷ Univ rF lF ^ [ ! , next lF ]
               × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ Univ rG lG ^ [ ! , next lG ]
               × Γ ⊢ C ≡ Univ rG lΠ ^ [ ! , next lΠ ]
+              × rG PE.≡ rΠ
               × r PE.≡ [ ! , next lΠ ]
-inversion-Π (Πⱼ_▹_▹_▹_ {rF = rF} {r = rG} l! l% x x₁) = rG , l! , l% , x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl
-inversion-Π (conv x x₁) = let rG , l< , l<' , a , b , c , r≡! = inversion-Π x
+inversion-Π (Πⱼ_▹_▹_▹_ {rF = rF} {r = rG} l! l% x x₁) = rG , l! , l% , x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl , PE.refl
+inversion-Π (conv x x₁) = let rG , l< , l<' , a , b , c , rG≡ , r≡! = inversion-Π x
                           in rG , l< , l<' , a , b
-                            , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c
+                            , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c , rG≡
                             , r≡!
 
 -- Inversion of ∃-types.
@@ -77,7 +78,7 @@ inversion-natrec : ∀ {Γ c g n A C rlC lC} → Γ ⊢ natrec lC C c g n ∷ A 
     (rC PE.≡ % → lC PE.≡ ⁰)
   × (Γ ∙ ℕ ^ [ ! , ι ⁰ ]) ⊢ C ^ [ rC , ι lC ]
   × Γ ⊢ c ∷ C [ zero ] ^ [ rC , ι lC ]
-  × Γ ⊢ g ∷ Π ℕ ^ ! ° ⁰ ▹ (C ^ rC ° lC ▹▹ C [ suc (var 0) ]↑ ° lC ° lC) ° lC ° lC ^ [ rC , ι lC ]
+  × Γ ⊢ g ∷ Π ℕ ^ ! ° ⁰ ▹ (C ^ rC ° lC ▹▹ C [ suc (var 0) ]↑ ° lC ° lC ^ rC) ° lC ° lC ^ rC ^ [ rC , ι lC ]
   × Γ ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
   × Γ ⊢ A ≡ C [ n ] ^ [ rC , ι lC ]
   × rlC PE.≡ [ rC , ι lC ]
@@ -96,7 +97,7 @@ inversion-Emptyrec (conv d x) = let r , a , b , c , e = inversion-Emptyrec d
 
 -- Inversion of application.
 inversion-app :  ∀ {Γ f a A l lΠ} → Γ ⊢ (f ∘ a ^ lΠ) ∷ A ^ [ ! , l ] →
-  ∃₂ λ F rF → ∃₂ λ lF G → ∃ λ lG → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ]
+  ∃₂ λ F rF → ∃₂ λ lF G → ∃ λ lG → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
   × Γ ⊢ a ∷ F ^ [ rF , ι lF ]
   × Γ ⊢ A ≡ G [ a ] ^ [ ! , ι lG ]
   × l PE.≡ ι lG
@@ -105,7 +106,7 @@ inversion-app (conv d x) = let a , b , c , d , e , g , h , i , j = inversion-app
                            in  a , b , c , d , e , g , h , trans (sym (PE.subst (λ lx → _ ⊢ _ ≡ _ ^ [ _ , lx ]) j x)) i , j
 
 inversion-app-irr :  ∀ {Γ f a A l lΠ} → Γ ⊢ (f ∘ a ^ lΠ) ∷ A ^ [ % , l ] →
-  ∃₂ λ F rF → ∃₂ λ lF G → ∃ λ lG → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ % , ι lΠ ]
+  ∃₂ λ F rF → ∃₂ λ lF G → ∃ λ lG → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ % ^ [ % , ι lΠ ]
   × Γ ⊢ a ∷ F ^ [ rF , ι lF ]
 --  × Γ ⊢ A ≡ G [ a ] ^ [ % , ι lG ]
   × lG PE.≡ ⁰
@@ -120,7 +121,7 @@ inversion-app-irr (conv d x) = let a , b , c , d , e , g , h , j , k , l = inver
 inversion-lam : ∀ {t F A r lΠ Γ} → Γ ⊢ lam F ▹ t ^ lΠ ∷ A ^ r →
   ∃₂ λ rF lF → ∃₂ λ G rG → ∃ λ lG → Γ ⊢ F ^ [ rF , ι lF ]
   × Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ rG , ι lG ]
-  × Γ ⊢ A ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ rG , ι lΠ ]
+  × Γ ⊢ A ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rG ^ [ rG , ι lΠ ]
   × r PE.≡ [ rG , ι lΠ ]
 inversion-lam (lamⱼ l< l<' x x₁) = _ , _ , _ , _ , _ , x , x₁ ,
                                    refl (univ (Πⱼ l< ▹ l<' ▹ (un-univ x) ▹ un-univ (syntacticTerm x₁))) , PE.refl

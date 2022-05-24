@@ -34,7 +34,7 @@ univ* (x ⇨ A⇒B) = univ x ⇨ univ* A⇒B
 app-subst* : ∀ {Γ A B t t′ a rA lA lB l}
            → Γ     ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
            → Γ ∙ A ^ [ rA , ι lA ] ⊢ B ∷ (U lB) ^ [ ! , next lB ]
-           → Γ ⊢ t ⇒* t′ ∷ Π A ^ rA ° lA ▹ B ° lB ° l ^ ι l → Γ ⊢ a ∷ A ^ [ rA , ι lA ]
+           → Γ ⊢ t ⇒* t′ ∷ Π A ^ rA ° lA ▹ B ° lB ° l ^ ! ^ ι l → Γ ⊢ a ∷ A ^ [ rA , ι lA ]
            → Γ ⊢ t ∘ a ^ l ⇒* t′ ∘ a ^ l ∷ B [ a ] ^ ι lB
 app-subst* ⊢A ⊢B (id x) a₁ = id ((λ abs → ⊥-elim (!≢% abs)) ▹ ⊢A ▹ ⊢B ▹ x ∘ⱼ a₁)
 app-subst* ⊢A ⊢B (x ⇨ t⇒t′) a₁ = app-subst ⊢A ⊢B x a₁ ⇨ app-subst* ⊢A ⊢B t⇒t′ a₁

@@ -88,7 +88,7 @@ mutual
                              ([G]₁ [ρ] ⊢Δ [a]₁) ([G′] [ρ] ⊢Δ [a′])
                              ([G≡G′]₁ [ρ] ⊢Δ [a]₁)
                              -- Γ ⊢ .C ⇒* Π F″ ^ rF ▹ G″ ^ r
-    in  Π₌ F″ G″ (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ D″) (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° lG₁ ° lΠ ^ [ r , ι lΠ ]) ΠF₁G₁≡ΠF′G′ A≡B₁)))
+    in  Π₌ F″ G″ (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ D″) (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° lG₁ ° lΠ ^ r ^ [ r , ι lΠ ]) ΠF₁G₁≡ΠF′G′ A≡B₁)))
            (λ ρ ⊢Δ → transEq′ PE.refl PE.refl (PE.sym rF₁≡rF′) (PE.sym rF₂≡rF′) (PE.cong ι (PE.sym lF₁≡lF′)) (PE.cong ι (PE.sym lF₂≡lF′))
            ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ) 
            ([F≡F′] ρ ⊢Δ) ([F′≡F″] ρ ⊢Δ))
@@ -107,7 +107,7 @@ mutual
     let ΠF₁G₁≡ΠF′G′    = whrDet* (red D₁ , Πₙ) (D′  , Πₙ)
         F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , _ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
         F₂≡F″ , rF₂≡rF′ , lF₂≡lF′ , G₂≡G″ , lG₂≡lG″  , _ = Π-PE-injectivity (whrDet* (red D₂ , Πₙ) (D″ , Πₙ))
-    in  Πirr₌ F″ G″ (PE.subst₂ _ rF₁≡rF′ lF₁≡lF′ D″) (PE.subst₂ _ rF₁≡rF′ lF₁≡lF′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° ⁰ ° lΠ ^ [ r , ι lΠ ]) ΠF₁G₁≡ΠF′G′ A≡B₁)))
+    in  Πirr₌ F″ G″ (PE.subst₂ _ rF₁≡rF′ lF₁≡lF′ D″) (PE.subst₂ _ rF₁≡rF′ lF₁≡lF′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° ⁰ ° lΠ ^ r ^ [ r , ι lΠ ]) ΠF₁G₁≡ΠF′G′ A≡B₁)))
   transEqT {Γ}  {r = r} {l = l} {l′ = l′} {l″ = l″}
            (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)
                (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁)

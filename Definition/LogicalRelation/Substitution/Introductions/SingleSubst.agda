@@ -211,7 +211,7 @@ subst↑SEq {F} {G} {G′} {t} {t′}
 
 -- Helper function for reducible substitution of Π-types with specific typing derivations.
 substSΠ₁′ : ∀ {F G t Γ rF lF lG l lΠ l′}
-           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ lΠ ] )
+           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^[ lΠ ] )
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
          → Γ ⊩⟨ l ⟩ G [ t ] ^ [ ! , ι lG ]
@@ -227,7 +227,7 @@ substSΠ₁′ (emb ∞< x) [F]₁ [t] = emb ∞< (substSΠ₁′ x [F]₁ [t])
 
 -- Reducible substitution of Π-types.
 substSΠ₁ : ∀ {F G t Γ rF lF lG lΠ l l′}
-           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ])
+           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ])
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
          → Γ ⊩⟨ l ⟩ G [ t ] ^ [ ! , ι lG ]
@@ -235,8 +235,8 @@ substSΠ₁ [ΠFG] [F] [t] = substSΠ₁′ (Π-elim [ΠFG]) [F] [t]
 
 -- Helper function for reducible substitution of Π-congurence with specific typing derivations.
 substSΠ₂′ : ∀ {F F′ G G′ t t′ Γ rF lF lG lΠ l l′ l″ l‴}
-           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ lΠ ])
-           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / Π-intr [ΠFG])
+           ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^[ lΠ ])
+           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / Π-intr [ΠFG])
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([F′] : Γ ⊩⟨ l′ ⟩ F′ ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
@@ -269,8 +269,8 @@ substSΠ₂′ (emb ∞< x) = substSΠ₂′ x
 
 -- Reducible substitution of Π-congurence.
 substSΠ₂ : ∀ {F F′ G G′ t t′ Γ rF lF lG lΠ l l′ l″ l‴}
-           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ])
-           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / [ΠFG])
+           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ])
+           ([ΠFG≡ΠF′G′] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [ΠFG])
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
            ([F′] : Γ ⊩⟨ l′ ⟩ F′ ^ [ rF , ι lF ])
            ([t] : Γ ⊩⟨ l′ ⟩ t ∷ F ^ [ rF , ι lF ] / [F])
@@ -287,7 +287,7 @@ substSΠ₂ [ΠFG] [ΠFG≡ΠF′G′] =
 substSΠ : ∀ {F G t Γ rF lF lG lΠ l}
           ([Γ] : ⊩ᵛ Γ)
           ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
-          ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ])
+          ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])
           ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
         → Γ ⊩ᵛ⟨ l ⟩ G [ t ] ^ [ ! , ι lG ] / [Γ]
 substSΠ {F} {G} {t} [Γ] [F] [ΠFG] [t] ⊢Δ [σ] =
@@ -316,9 +316,9 @@ substSΠEq : ∀ {F G F′ G′ t u Γ rF lF lG lΠ l}
             ([Γ] : ⊩ᵛ Γ)
             ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
             ([F′] : Γ ⊩ᵛ⟨ l ⟩ F′ ^ [ rF , ι lF ] / [Γ])
-            ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ])
-            ([ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ])
-            ([ΠFG≡ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠFG])
+            ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])
+            ([ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])
+            ([ΠFG≡ΠF′G′] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / [ΠFG])
             ([t]   : Γ ⊩ᵛ⟨ l ⟩ t ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
             ([u]   : Γ ⊩ᵛ⟨ l ⟩ u ∷ F′ ^ [ rF , ι lF ] / [Γ] / [F′])
             ([t≡u] : Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
@@ -364,7 +364,7 @@ substSΠEq {F} {G} {F′} {G′} {t} {u} [Γ] [F] [F′] [ΠFG] [ΠF′G′] [Π
 
 
 decompΠ : ∀ {F G Γ rF lF lG l lΠ l′}
-           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ])
+           ([ΠFG] : Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ])
            ([F] : Γ ⊩⟨ l′ ⟩ F ^ [ rF , ι lF ])
          → Γ ∙ F ^ [ rF , ι lF ] ⊩⟨ l ⟩ G ^ [ ! , ι lG ]
 decompΠ {F} {G} [ΠFG] [F] =
@@ -379,11 +379,11 @@ decompΠ {F} {G} [ΠFG] [F] =
 decompΠᵛ : ∀ {F G Γ rF lF lG l lΠ}
           ([Γ] : ⊩ᵛ Γ)
           ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
-          ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ])
+          ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])
          → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F]
 decompΠᵛ {F} {G} {Γ} {rF} {lF} {lG} {l} {lΠ} [Γ] [F] [ΠFG] =
   let [wF] = wk1ᵛ {A = F} {F = F} [Γ] [F] [F]
-      [wΠFG] =  wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG ° lΠ} {F = F} [Γ] [F] [ΠFG]
+      [wΠFG] =  wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !} {F = F} [Γ] [F] [ΠFG]
       [ΓF] = _∙_ {A = F} [Γ] [F]
       [F]' , [var0] = fundamentalVar here [ΓF]
       [Gvar0] = substSΠ {F = wk1 F} {G = wk1d G} [ΓF] [wF] [wΠFG] (S.irrelevanceTerm {A = wk1 F} [ΓF] [ΓF] [F]' [wF] [var0]) 

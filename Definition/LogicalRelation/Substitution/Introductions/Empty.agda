@@ -36,7 +36,7 @@ Emptyᵗᵛ [Γ] emb< ⊢Δ [σ] = let ⊢Empty  = Emptyⱼ ⊢Δ
                                    (Uₜ sEmpty (idRedTerm:*: ⊢Empty) Emptyₙ (≅ₜ-Emptyrefl ⊢Δ) (λ x₂ ⊢Δ' → Emptyᵣ (idRed:*: (univ (Emptyⱼ ⊢Δ')))))
                                    (≅ₜ-Emptyrefl ⊢Δ) λ [ρ] ⊢Δ' → id (univ (Emptyⱼ ⊢Δ'))
 
-Unitᵗᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ Unit ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp} [Γ] (Uᵛ emb< [Γ])
+Unitᵗᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ∞ ⟩ sUnit ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / maybeEmbᵛ {A = SProp} [Γ] (Uᵛ emb< [Γ])
 Unitᵗᵛ {Γ} [Γ] =
   let [SProp] = maybeEmbᵛ {A = SProp} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])
       [Empty] = Emptyᵛ {l = ∞} [Γ]
@@ -45,19 +45,19 @@ Unitᵗᵛ {Γ} [Γ] =
       [SProp]₁ {Δ} {σ} = maybeEmbᵛ {A = SProp} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) {Δ} {σ}
       [Empty]₁ = maybeEmbTermᵛ {A = SProp} {t = sEmpty} [Γ] (Uᵛ {rU = %} emb< [Γ]) (Emptyᵗᵛ [Γ] (proj₂ (levelBounded _)))
       [Empty]₂ = maybeEmbTermᵛ {A = SProp} {t = sEmpty} [Γ∙Empty] (λ {Δ} {σ} → Uᵛ emb< [Γ∙Empty] {Δ} {σ}) λ {Δ} {σ} → Emptyᵗᵛ [Γ∙Empty] emb< {Δ} {σ}
-  in maybeEmbTermᵛ {A = SProp} {t = Unit} [Γ] [SProp] 
+  in maybeEmbTermᵛ {A = SProp} {t = sUnit} [Γ] [SProp] 
                    (Πirrᵗᵛ {F = sEmpty} {G = sEmpty} [Γ] (Emptyᵛ [Γ]) (λ {Δ} {σ} → [SProp]₁ {Δ} {σ}) [Empty]₁ (λ {Δ} {σ} → [Empty]₂ {Δ} {σ}))
 
 
 Unit≡Unit : ∀ {Γ} (⊢Γ : ⊢ Γ)
-          → Γ ⊢ Unit ≅ Unit ∷ SProp ^ [ ! , next ⁰ ]
+          → Γ ⊢ sUnit ≅ sUnit ∷ SProp ^ [ ! , next ⁰ ]
 Unit≡Unit ⊢Γ = ≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) (univ (Emptyⱼ ⊢Γ)) (≅ₜ-Emptyrefl ⊢Γ) (≅ₜ-Emptyrefl (⊢Γ ∙ univ (Emptyⱼ ⊢Γ)))
 
-Unitᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ] / [Γ]
-Unitᵛ {Γ} [Γ] = univᵛ {A = Unit} [Γ] (≡is≤ PE.refl) (maybeEmbᵛ {A = SProp} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])) (Unitᵗᵛ [Γ])
+Unitᵛ : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ᵛ⟨ ι ⁰ ⟩ sUnit ^ [ % , ι ⁰ ] / [Γ]
+Unitᵛ {Γ} [Γ] = univᵛ {A = sUnit} [Γ] (≡is≤ PE.refl) (maybeEmbᵛ {A = SProp} [Γ] (Uᵛ {rU = %} (proj₂ (levelBounded _)) [Γ])) (Unitᵗᵛ [Γ])
 
 
-UnitType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ Unit ^ [ % , ι ⁰ ]
+UnitType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ sUnit ^ [ % , ι ⁰ ]
 UnitType {Γ} ⊢Γ = proj₁ (Unitᵛ ε {Γ} {idSubst} ⊢Γ TU.tt)
 
 EmptyType : ∀ {Γ} (⊢Γ : ⊢ Γ) → Γ ⊩⟨ ι ⁰ ⟩ sEmpty ^ [ % , ι ⁰ ]

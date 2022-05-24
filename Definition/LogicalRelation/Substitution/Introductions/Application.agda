@@ -37,8 +37,8 @@ appᵛ : ∀ {F G rF lF lG lΠ t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F])
-       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ])
-       ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠFG])
+       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])
+       ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / [ΠFG])
        ([u] : Γ ⊩ᵛ⟨ l ⟩ u ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
      → Γ ⊩ᵛ⟨ l ⟩ t ∘ u ^ lΠ ∷ G [ u ] ^ [ ! , ι lG ] / [Γ] / substSΠ {F} {G} {u} [Γ] [F] [ΠFG] [u]
 appᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {u} [Γ] [F] [G] [ΠFG] [t] [u] {σ = σ} ⊢Δ [σ] =
@@ -71,8 +71,8 @@ app-congᵛ : ∀ {F G rF lF lG lΠ t u a b Γ l}
             ([Γ] : ⊩ᵛ Γ)
             ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
             ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F])
-            ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ])
-            ([t≡u] : Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠFG])
+            ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])
+            ([t≡u] : Γ ⊩ᵛ⟨ l ⟩ t ≡ u ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !  ^ [ ! , ι lΠ ] / [Γ] / [ΠFG])
             ([a] : Γ ⊩ᵛ⟨ l ⟩ a ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
             ([b] : Γ ⊩ᵛ⟨ l ⟩ b ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
             ([a≡b] : Γ ⊩ᵛ⟨ l ⟩ a ≡ b ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
@@ -98,15 +98,15 @@ appᵛ↑ : ∀ {F F' G rF rF' lF lF' lG lΠ t u Γ l}
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([F'] : Γ ⊩ᵛ⟨ l ⟩ F' ^ [ rF' , ι lF' ] / [Γ])
        ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F]) 
-       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ])  
-       ([t] : Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ t ∷ wk1 (Π F ^ rF ° lF ▹ G ° lG ° lΠ) ^ [ ! , ι lΠ ] / [Γ] ∙ [F'] / wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG ° lΠ} {F = F'} [Γ] [F'] [ΠFG])
+       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])  
+       ([t] : Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ t ∷ wk1 (Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !) ^ [ ! , ι lΠ ] / [Γ] ∙ [F'] / wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !} {F = F'} [Γ] [F'] [ΠFG])
        ([u] : Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ u ∷ wk1 F ^ [ rF , ι lF ] / [Γ] ∙ [F'] / wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
          → Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ t ∘ u ^ lΠ ∷ G [ u ]↑ ^ [ ! , ι lG ] / [Γ] ∙ [F'] / subst↑S {F'} {G} {u} {F' = F} [Γ] [F'] [F] [G] [u]
 appᵛ↑ {F} {F'} {G} {rF} {rF'} {lF} {lF'} {lG} {lΠ} {t} {u} lF≤ lG≤ [Γ] [F] [F'] [G] [ΠFG] [t] [u] =
   let [G[u]] = subst↑S {F'} {G} {u} {F' = F} [Γ] [F'] [F] [G] [u]
       [wF] = wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F]
       [wG] = wk1dᵛ {F = F} {F' = F'} {G = G} [Γ] [F] [F'] [G]
-      [wΠFG] = wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG ° lΠ} {F = F'} [Γ] [F'] [ΠFG]
+      [wΠFG] = wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !} {F = F'} [Γ] [F'] [ΠFG]
       [app] = appᵛ {F = wk1 F} {G = wk1d G} {t = t} {u = u} (_∙_ {A = F'} [Γ] [F']) [wF] [wG] [wΠFG] [t] [u]
   in S.irrelevanceTerm′ {A = wk1d G [ u ]} {A′ =  G [ u ]↑} {t = t ∘ u ^ lΠ} (PE.sym (wk1d[]-[]↑ G u)) PE.refl (_∙_ {A = F'} [Γ] [F']) (_∙_ {A = F'} [Γ] [F'])
                         (substSΠ {wk1 F} {wk1d G} {u} (_∙_ {A = F'} [Γ] [F']) [wF] [wΠFG] [u]) [G[u]] [app]
@@ -143,8 +143,8 @@ appirrᵛ : ∀ {F G rF lF t u Γ l} →
        ([Γ] : ⊩ᵛ Γ)
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([G] :  Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F])
-       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ])
-       ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ] / [ΠFG])
+       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [Γ])
+       ([t] : Γ ⊩ᵛ⟨ l ⟩ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [Γ] / [ΠFG])
        ([u] : Γ ⊩ᵛ⟨ l ⟩ u ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
      → Γ ⊩ᵛ⟨ l ⟩ t ∘ u ^ ⁰ ∷ G [ u ] ^ [ % , ι ⁰ ] / [Γ] / substS {F} {G} {u} [Γ] [F] [G] [u]
 appirrᵛ {F} {G} {rF} {lF} {t} {u} [Γ] [F] [G] [ΠFG] [t] [u] {Δ = Δ} {σ = σ} ⊢Δ [σ] =

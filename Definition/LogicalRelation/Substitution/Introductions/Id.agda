@@ -115,10 +115,10 @@ import Data.Nat as Nat
           ( (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢wk1F ▹ un-univ ⊢wk1G ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F) ⊢u ∘ⱼ var (⊢Γ ∙ ⊢F) here)
       in univ (Idⱼ (un-univ ⊢G) ⊢t∘0 ⊢u∘0)
 
-    ⊢funext : Γ ⊢ Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA)) ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+    ⊢funext : Γ ⊢ Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA)) ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
     ⊢funext = univ (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ un-univ ⊢F ▹ un-univ ⊢idG)
 
-    Did : Γ ⊢ Id A t u ⇒* Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA)) ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+    Did : Γ ⊢ Id A t u ⇒* Π F ^ rF ° lF ▹ (Id G ((wk1 t) ∘ (var 0) ^ lA) ((wk1 u) ∘ (var 0) ^ lA)) ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
     Did =  IdRed* ⊢tA ⊢uA D ⇨* (univ (Id-Π lF≤ lG≤ (un-univ ⊢F) (un-univ ⊢G) ⊢t ⊢u) ⇨ id ⊢funext)
     
     [idG] : ∀ {ρ Δ a}
@@ -317,15 +317,15 @@ import Data.Nat as Nat
       ( (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢wk1F′ ▹ un-univ ⊢wk1G′ ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢t′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
     ⊢u′∘a = PE.subst (λ X → _ ⊢ wk1 u′ ∘ var 0 ^ lA ∷ X ^ [ ! , ι lG′ ]) (wkSingleSubstId G′)
       ( (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢wk1F′ ▹ un-univ ⊢wk1G′ ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢F′) ⊢u′ ∘ⱼ var (⊢Γ ∙ ⊢F′) here)
-    ⊢funext′ : Γ ⊢ Π F′ ^ rF′ ° lF′ ▹ Id G′ (wk1 t′ ∘ var 0 ^ lA) (wk1 u′ ∘ var 0 ^ lA) ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+    ⊢funext′ : Γ ⊢ Π F′ ^ rF′ ° lF′ ▹ Id G′ (wk1 t′ ∘ var 0 ^ lA) (wk1 u′ ∘ var 0 ^ lA) ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
     ⊢funext′ = univ (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ un-univ ⊢F′ ▹ Idⱼ (un-univ ⊢G′) ⊢t′∘a ⊢u′∘a)
 
-    Did : Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF′ ° lF′ ▹ (Id G′ ((wk1 t′) ∘ (var 0) ^ lA) ((wk1 u′) ∘ (var 0) ^ lA)) ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+    Did : Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF′ ° lF′ ▹ (Id G′ ((wk1 t′) ∘ (var 0) ^ lA) ((wk1 u′) ∘ (var 0) ^ lA)) ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
     Did = IdRed* ⊢t′A′ ⊢u′A′ D′ ⇨* ((univ (Id-Π lF≤′ lG≤′ (un-univ ⊢F′) (un-univ ⊢G′) ⊢t′ ⊢u′)) ⇨ id ⊢funext′)
 
   in Πirr₌ F′ (Id G′ ((wk1 t′) ∘ (var 0) ^ lA) ((wk1 u′) ∘ (var 0) ^ lA))
-         (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° X ▹ _ ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]) lF′≡lF
-            (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ X ° lF′ ▹ _ ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]) rF′≡rF Did))
+         (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ rF ° X ▹ _ ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]) lF′≡lF
+            (PE.subst (λ X → Γ ⊢ Id A′ t′ u′ ⇒* Π F′ ^ X ° lF′ ▹ _ ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]) rF′≡rF Did))
         (≅-univ (≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F (≅-un-univ ⊢F≡F′) (≅-un-univ ⊢idG≡idG′₀))) 
 
 [IdExtShape] {A} {B} {t} {t′} {u} {u′} {Γ} ⊢Γ (emb emb< [A]) [B] (emb⁰¹ {p = .[A]} ShapeA) [A≡B] [t] [v] [t≡v] [u] [w] [u≡w] =

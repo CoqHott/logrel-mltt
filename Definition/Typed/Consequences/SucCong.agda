@@ -16,8 +16,8 @@ open import Tools.Empty using (⊥; ⊥-elim)
 
 -- Congurence of the type of the successor case in natrec.
 sucCong : ∀ {F G lF Γ} → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ≡ G ^ [ ! , ι lF ]
-        → Γ ⊢ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF
-            ≡ Π ℕ ^ ! ° ⁰ ▹ (G ^ ! ° lF ▹▹ G [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ [ ! , ι lF ]
+        → Γ ⊢ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ !
+            ≡ Π ℕ ^ ! ° ⁰ ▹ (G ^ ! ° lF ▹▹ G [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ ! ^ [ ! , ι lF ]
 sucCong F≡G with wfEq F≡G
 sucCong {lF = lF} F≡G | ⊢Γ ∙ ⊢ℕ =
   let ⊢F , _ = syntacticEq F≡G

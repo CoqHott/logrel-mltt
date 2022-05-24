@@ -179,10 +179,10 @@ record _⊩Πirr_ (Γ : Con Term) (A : Term) : Set where
     lF : Level
     F : Term
     G : Term
-    D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+    D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
     ⊢F : Γ ⊢ F ^ [ rF , ι lF ]
     ⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ % , ι ⁰ ]
-    A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ≅ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+    A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ≅ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
           
 -- impredicative Π-type equality
 record _⊩Πirr_≡_/_ (Γ : Con Term) (A B : Term) ([A] : Γ ⊩Πirr A ) : Set where
@@ -193,20 +193,20 @@ record _⊩Πirr_≡_/_ (Γ : Con Term) (A B : Term) ([A] : Γ ⊩Πirr A ) : Se
   field
     F′     : Term
     G′     : Term
-    D′     : Γ ⊢ B ⇒* Π F′ ^ rF ° lF ▹ G′ ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
-    A≡B    : Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ≅ Π F′ ^ rF ° lF ▹ G′ ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+    D′     : Γ ⊢ B ⇒* Π F′ ^ rF ° lF ▹ G′ ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
+    A≡B    : Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ≅ Π F′ ^ rF ° lF ▹ G′ ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
 
 -- Irrelevant term of Π-type
 _⊩Πirr_∷_/_ : (Γ : Con Term) (t A : Term) ([A] : Γ ⊩Πirr A ) → Set
 Γ ⊩Πirr t ∷ A / Πirrᵣ rF lF F G D ⊢F ⊢G A≡A =
-  Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+  Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
 
 -- Irrelevant term equality of Π-type
 _⊩Πirr_≡_∷_/_ : (Γ : Con Term) (t u A : Term) ([A] : Γ ⊩Πirr A ) → Set
 Γ ⊩Πirr t ≡ u ∷ A / Πirrᵣ rF lF F G D ⊢F ⊢G A≡A =
-      (Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ])
+      (Γ ⊢ t ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ])
       ×
-      (Γ ⊢ u ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ])
+      (Γ ⊢ u ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ])
 
 
 
@@ -318,10 +318,10 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
         l≤G : lG ≤ lΠ
         F : Term
         G : Term
-        D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ]
+        D : Γ ⊢ A :⇒*: Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
         ⊢F : Γ ⊢ F ^ [ rF , ι lF ]
         ⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ ! , ι lG ]
-        A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≅ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ]
+        A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≅ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
         [F] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩¹ U.wk ρ F ^ [ rF , ι lF ]
         [G] : ∀ {ρ Δ a}
             → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
@@ -343,8 +343,8 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       field
         F′     : Term
         G′     : Term
-        D′     : Γ ⊢ B ⇒* Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ]
-        A≡B    : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≅ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ]
+        D′     : Γ ⊢ B ⇒* Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
+        A≡B    : Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≅ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
         [F≡F′] : ∀ {ρ Δ}
                → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
                → Δ ⊩¹ U.wk ρ F ≡ U.wk ρ F′ ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
@@ -356,9 +356,9 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     -- relevant Term of Π-type
     _⊩¹Π_∷_^_/_ : (Γ : Con Term) (t A : Term) (lΠ : Level) ([A] : Γ ⊩¹Π A ^[ lΠ ]) → Set
     Γ ⊩¹Π t ∷ A ^ lΠ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
-      ∃ λ f → Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ι lΠ
+      ∃ λ f → Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
             × Function f
-            × Γ ⊢ f ≅ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ]
+            × Γ ⊢ f ≅ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
             × (∀ {ρ Δ a b}
               → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
                 ([a] : Δ ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
@@ -376,11 +376,11 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
     Γ ⊩¹Π t ≡ u ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
       let [A] = Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext
       in  ∃₂ λ f g →
-          ( Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ι l′ )
-      ×   ( Γ ⊢ u :⇒*: g ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ι l′ )
+          ( Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ! ^ ι l′ )
+      ×   ( Γ ⊢ u :⇒*: g ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ! ^ ι l′ )
       ×   Function f
       ×   Function g
-      ×   Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ [ ! , ι l′ ]
+      ×   Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ! ^ [ ! , ι l′ ]
       ×   Γ ⊩¹Π t ∷ A ^ l′ / [A]
       ×   Γ ⊩¹Π u ∷ A ^ l′ / [A]
       ×   (∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)

@@ -34,10 +34,10 @@ sucᵏ (1+ n) = suc (sucᵏ n)
 
 data isFalse : Term → Set where
   isEmpty : ∀ {lEmpty} → isFalse (Empty lEmpty)
-  isIdℕΠ : ∀ {r A rA B} → isFalse (Id (Univ r ⁰) ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰))
-  isIdΠℕ : ∀ {r A rA B} → isFalse (Id (Univ r ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) ℕ)
-  isIdΠΠ%! : ∀ {r A B A' B'} → isFalse (Id (Univ r ⁰) (Π A ^ % ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° ⁰))
-  isIdΠΠ!% : ∀ {r A B A' B'} → isFalse (Id (Univ r ⁰) (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° ⁰) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° ⁰))
+  isIdℕΠ : ∀ {r A rA B r'} → isFalse (Id (Univ r ⁰) ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ r'))
+  isIdΠℕ : ∀ {r A rA B r'} → isFalse (Id (Univ r ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ r') ℕ)
+  isIdΠΠ%! : ∀ {r A B A' B' r' r''} → isFalse (Id (Univ r ⁰) (Π A ^ % ° ⁰ ▹ B ° ⁰ ° ⁰ ^ r') (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ r''))
+  isIdΠΠ!% : ∀ {r A B A' B' r' r''} → isFalse (Id (Univ r ⁰) (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° ⁰ ^ r') (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ r''))
 
 consistency = ∀ {t A l} → isFalse A → ε ⊢ t ∷ A ^ [ % , l ] → ⊥
 

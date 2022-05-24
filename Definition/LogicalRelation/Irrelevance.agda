@@ -108,9 +108,9 @@ mutual
                          (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                  (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
     let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
-        F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
+        F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ , rΠ≡rΠ₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
     in  Π₌ F′ G′ (PE.subst₃ _ rF≡rF₁ lF≡lF₁ lG≡lG₁ D′)
-        (PE.subst5 (λ x rx lx lx' lx'' → Γ ⊢ x ≅ Π F′ ^ rx ° lx ▹ G′ ° lx' ° lx'' ^ r) ΠFG≡ΠF₁G₁ rF≡rF₁ lF≡lF₁ lG≡lG₁ lΠ≡lΠ₁ A≡B)
+        (PE.subst5 (λ x rx lx lx' lx'' → Γ ⊢ x ≅ Π F′ ^ rx ° lx ▹ G′ ° lx' ° lx'' ^ ! ^ r) ΠFG≡ΠF₁G₁ rF≡rF₁ lF≡lF₁ lG≡lG₁ lΠ≡lΠ₁ A≡B)
            (λ {ρ} [ρ] ⊢Δ → irrelevanceEq′ (PE.cong (wk ρ) F≡F₁) rF≡rF₁ (PE.cong ι lF≡lF₁) ([F] [ρ] ⊢Δ)
                                           ([F]₁ [ρ] ⊢Δ)
                                           ([F≡F′] [ρ] ⊢Δ))
@@ -125,9 +125,9 @@ mutual
                          (Πirrᵣ rF₁ lF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
                  (Πirr₌ F′ G′ D′ A≡B) =
     let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
-        F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
+        F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ , _ = Π-PE-injectivity ΠFG≡ΠF₁G₁
     in  Πirr₌ F′ G′ (PE.subst₂ _ rF≡rF₁ lF≡lF₁ D′) 
-        (PE.subst5 (λ x rx lx lx' lx'' → Γ ⊢ x ≅ Π F′ ^ rx ° lx ▹ G′ ° lx' ° lx'' ^ r) ΠFG≡ΠF₁G₁ rF≡rF₁ lF≡lF₁ lG≡lG₁ lΠ≡lΠ₁ A≡B)
+        (PE.subst5 (λ x rx lx lx' lx'' → Γ ⊢ x ≅ Π F′ ^ rx ° lx ▹ G′ ° lx' ° lx'' ^ % ^ r) ΠFG≡ΠF₁G₁ rF≡rF₁ lF≡lF₁ lG≡lG₁ lΠ≡lΠ₁ A≡B)
   irrelevanceEqT {Γ} {r = r} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)
                          (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
                  (∃₌ F′ G′ D′ A≡B) =

@@ -74,7 +74,7 @@ mutual
              (Πₜ f d funcF f≡f [f] [f]₁) =
     let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
         F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , lΠ≡lΠ₁ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
-        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ≡ x ^ [ ! , ι ll ]) (PE.sym ΠF₁G₁≡ΠF′G′)
+        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ≡ x ^ [ ! , ι ll ]) (PE.sym ΠF₁G₁≡ΠF′G′)
                              (≅-eq A≡B)
     in  Πₜ f (convRed:*: d ΠFG≡ΠF₁G₁) funcF (≅-conv f≡f ΠFG≡ΠF₁G₁)
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
@@ -103,7 +103,7 @@ mutual
              (Πirr₌ F′ G′ D′ A≡B)
              d = let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
                      F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
-                     ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ≡ x ^ [ % , ι ll ]) (PE.sym ΠF₁G₁≡ΠF′G′)
+                     ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ]) (PE.sym ΠF₁G₁≡ΠF′G′)
                                           (≅-eq A≡B)
                  in conv d ΠFG≡ΠF₁G₁
   convTermT₁ {Γ = Γ} {r = [ % , ll ]} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)
@@ -149,7 +149,7 @@ mutual
              (Πₜ f d funcF f≡f [f] [f]₁) =
     let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
         F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , lΠ≡lΠ₁ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
-        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ≡ x ^ [ ! , ι ll ])
+        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ≡ x ^ [ ! , ι ll ])
                              (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
     in  Πₜ f (convRed:*: d (sym ΠFG≡ΠF₁G₁)) funcF (≅-conv f≡f (sym ΠFG≡ΠF₁G₁))
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
@@ -179,7 +179,7 @@ mutual
              (Πirr₌ F′ G′ D′ A≡B)
              d = let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
                      F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
-                     ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ≡ x ^ [ % , ι ll ])
+                     ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ])
                                           (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                  in  conv d (sym ΠFG≡ΠF₁G₁)
   convTermT₂ {Γ = Γ} {r = [ % , ll ]} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)
@@ -263,7 +263,7 @@ mutual
         [B] = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
         [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
         ΠF₁G₁≡ΠF′G′ = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
-        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ≡ x ^ [ ! , ι ll ])
+        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ≡ x ^ [ ! , ι ll ])
                              (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
     in  Πₜ₌ f g (convRed:*: d ΠFG≡ΠF₁G₁) (convRed:*: d′ ΠFG≡ΠF₁G₁)
             funcF funcG (≅-conv t≡u ΠFG≡ΠF₁G₁)
@@ -283,7 +283,7 @@ mutual
                            (Πirrᵣ rF₁ lF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
                (Πirr₌ F′ G′ D′ A≡B)
                (d , d′) = let ΠF₁G₁≡ΠF′G′ = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
-                              ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ≡ x ^ [ % , ι ll ])
+                              ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ])
                                                    (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                           in conv d ΠFG≡ΠF₁G₁ , conv d′ ΠFG≡ΠF₁G₁
   convEqTermT₁ {Γ = Γ} {r = [ % , ll ]} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)
@@ -333,7 +333,7 @@ mutual
         [B] = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
         [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
         ΠF₁G₁≡ΠF′G′ = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
-        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ≡ x ^ [ ! , ι ll ])
+        ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ≡ x ^ [ ! , ι ll ])
                              (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
     in  Πₜ₌ f g (convRed:*: d (sym ΠFG≡ΠF₁G₁)) (convRed:*: d′ (sym ΠFG≡ΠF₁G₁))
             funcF funcG (≅-conv t≡u (sym ΠFG≡ΠF₁G₁))
@@ -354,7 +354,7 @@ mutual
                (Πirr₌ F′ G′ D′ A≡B)
                (d , d′) =
                let ΠF₁G₁≡ΠF′G′ = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
-                   ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ≡ x ^ [ % , ι ll ])
+                   ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ])
                                         (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                in (conv d (sym ΠFG≡ΠF₁G₁)) , (conv d′ (sym ΠFG≡ΠF₁G₁))
   convEqTermT₂ {Γ = Γ} {r = [ % , ll ]} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)

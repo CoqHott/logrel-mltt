@@ -71,7 +71,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
      ([Γ] : ⊩ᵛ Γ)
      ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
    → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F]
-   → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ]
+   → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ]
 Πᵛ {F} {G} {Γ} {rF} {lF} {lG} {lΠ} {l} lF≤ lG≤ [Γ] [F] [G] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [F]σ {σ′} [σ′] = [F] {σ = σ′} ⊢Δ [σ′]
   
@@ -158,7 +158,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
      ([Γ] : ⊩ᵛ Γ)
      ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
    → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F]
-   → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ]
+   → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [Γ]
 Πirrᵛ {F} {G} {Γ} {rF} {lF} {l} [Γ] [F] [G] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let [F]σ {σ′} [σ′] = [F] {σ = σ′} ⊢Δ [σ′]
       [σF] = proj₁ ([F]σ [σ])
@@ -205,7 +205,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
           ([E] : Γ ∙ H ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ E ^ [ ! , ι lG ] / [Γ] ∙ [H])
           ([F≡H] : Γ ⊩ᵛ⟨ l ⟩ F ≡ H ^ [ rF , ι lF ] / [Γ] / [F])
           ([G≡E] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ≡ E ^ [ ! , ι lG ] / [Γ] ∙ [F] / [G])
-        → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
+        → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
 Π-congᵛ {F} {G} {H} {E} lF≤ lG≤ [Γ] [F] [G] [H] [E] [F≡H] [G≡E] {σ = σ} ⊢Δ [σ] =
   let [ΠFG] = Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
       [σΠFG] = proj₁ ([ΠFG] ⊢Δ [σ])
@@ -248,7 +248,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
           ([E] : Γ ∙ H ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ E ^ [ % , ι ⁰ ] / [Γ] ∙ [H])
           ([F≡H] : Γ ⊩ᵛ⟨ l ⟩ F ≡ H ^ [ rF , ι lF ] / [Γ] / [F])
           ([G≡E] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ≡ E ^ [ % , ι ⁰ ] / [Γ] ∙ [F] / [G])
-        → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ≡ Π H ^ rF ° lF ▹ E ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ] / Πirrᵛ {F} {G} [Γ] [F] [G]
+        → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ≡ Π H ^ rF ° lF ▹ E ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [Γ] / Πirrᵛ {F} {G} [Γ] [F] [G]
 Πirr-congᵛ {F} {G} {H} {E} [Γ] [F] [G] [H] [E] [F≡H] [G≡E] {σ = σ} ⊢Δ [σ] =
   let [ΠFG] = Πirrᵛ {F} {G} [Γ] [F] [G]
       [σΠFG] = proj₁ ([ΠFG] ⊢Δ [σ])
@@ -278,7 +278,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF]
       → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ∷ Univ ! lG ^ [ ! , next lG ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ})
       → ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-      → Δ ⊩⟨ l ⟩ subst σ (Π F ^ rF ° lF ▹ G ° lG ° lΠ) ∷ subst σ (Univ ! lΠ) ^ [ ! , next lΠ ] / proj₁ ([UΠ] ⊢Δ [σ])
+      → Δ ⊩⟨ l ⟩ subst σ (Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !) ∷ subst σ (Univ ! lΠ) ^ [ ! , next lΠ ] / proj₁ ([UΠ] ⊢Δ [σ])
 Πᵗᵛ₁ {F} {G} {rF} {lF} {lG} {lΠ = ¹} {Γ} lF≤ lG≤ [Γ] [F] [UG] [Fₜ] [Gₜ] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let
       l = ∞
@@ -306,7 +306,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       [G]₀ = univᵛ {G} (_∙_ {A = F} [Γ] [F]₀) lG≤
                    (λ {Δ} {σ} → [UG]′ {Δ} {σ}) (λ {Δ} {σ} → [Gₜ]′ {Δ} {σ})
       [Guniv] = univᵛ {A = G} (_∙_ {A = F} [Γ] [F]₀) lG≤ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [Gₜ]′
-  in  Uₜ (Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ) (idRedTerm:*: (Πⱼ(λ _ → lF≤ , lG≤) ▹ (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢Fₜ ▹ ⊢Gₜ))  Πₙ (≅ₜ-Π-cong (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs))  ⊢F ⊢F≡Fₜ ⊢G≡Gₜ) 
+  in  Uₜ (Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ !) (idRedTerm:*: (Πⱼ(λ _ → lF≤ , lG≤) ▹ (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢Fₜ ▹ ⊢Gₜ))  Πₙ (≅ₜ-Π-cong (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs))  ⊢F ⊢F≡Fₜ ⊢G≡Gₜ) 
          (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let
                             ⊢Fₜ' = Definition.Typed.Weakening.wkTerm [ρ] ⊢Δ₁ ⊢Fₜ
                             ⊢Gₜ' = Definition.Typed.Weakening.wkTerm
@@ -375,7 +375,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       [G]₀ = univᵛ {G} (_∙_ {A = F} [Γ] [F]₀) lG≤
                    (λ {Δ} {σ} → [UG]′ {Δ} {σ}) (λ {Δ} {σ} → [Gₜ]′ {Δ} {σ})
       [Guniv] = univᵛ {A = G} (_∙_ {A = F} [Γ] [F]₀) lG≤ (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [Gₜ]′
-  in  Uₜ (Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ) (idRedTerm:*: (Πⱼ (λ _ → lF≤ , lG≤) ▹ (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢Fₜ ▹ ⊢Gₜ))  Πₙ (≅ₜ-Π-cong (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢F≡Fₜ ⊢G≡Gₜ) 
+  in  Uₜ (Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ !) (idRedTerm:*: (Πⱼ (λ _ → lF≤ , lG≤) ▹ (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢Fₜ ▹ ⊢Gₜ))  Πₙ (≅ₜ-Π-cong (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢F≡Fₜ ⊢G≡Gₜ) 
          (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let
                             ⊢Fₜ' = Definition.Typed.Weakening.wkTerm [ρ] ⊢Δ₁ ⊢Fₜ
                             ⊢Gₜ' = Definition.Typed.Weakening.wkTerm
@@ -428,7 +428,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF]
       → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ∷ SProp ^ [ ! , next ⁰ ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ})
       → ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-      → Δ ⊩⟨ l ⟩ subst σ (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰) ∷ subst σ SProp ^ [ ! , next ⁰ ] / proj₁ ([UΠ] ⊢Δ [σ])
+      → Δ ⊩⟨ l ⟩ subst σ (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %) ∷ subst σ SProp ^ [ ! , next ⁰ ] / proj₁ ([UΠ] ⊢Δ [σ])
 Πirrᵗᵛ₁ {F} {G} {rF} {lF} {Γ} [Γ] [F] [UG] [Fₜ] [Gₜ] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let
       l = ∞
@@ -456,7 +456,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       [G]₀ = univᵛ {G} (_∙_ {A = F} [Γ] [F]₀) (≡is≤ PE.refl)
                    (λ {Δ} {σ} → [UG]′ {Δ} {σ}) (λ {Δ} {σ} → [Gₜ]′ {Δ} {σ})
       [Guniv] = univᵛ {A = G} (_∙_ {A = F} [Γ] [F]₀) (≡is≤ PE.refl) (λ {Δ} {σ} → [UG]′ {Δ} {σ}) [Gₜ]′
-  in  Uₜ (Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° ⁰ ° ⁰) (idRedTerm:*: (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ ⊢Fₜ ▹ ⊢Gₜ))  Πₙ (≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F ⊢F≡Fₜ ⊢G≡Gₜ) 
+  in  Uₜ (Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° ⁰ ° ⁰ ^ %) (idRedTerm:*: (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ ⊢Fₜ ▹ ⊢Gₜ))  Πₙ (≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F ⊢F≡Fₜ ⊢G≡Gₜ) 
          (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let
                             ⊢Fₜ' = Definition.Typed.Weakening.wkTerm [ρ] ⊢Δ₁ ⊢Fₜ
                             ⊢Gₜ' = Definition.Typed.Weakening.wkTerm
@@ -483,7 +483,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
         ([UG] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ Univ ! lG ^ [ ! , next lG ] / [Γ] ∙ [F])
       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF]
       → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ∷ Univ ! lG ^ [ ! , next lG ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ})
-      → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
+      → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
 Πᵗᵛ {F} {G} {rF} {lF} {lG} {lΠ = ¹} {Γ} lF≤ lG≤ [Γ] [F] [UG] [Fₜ] [Gₜ] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let l = ∞
       [UF] = maybeEmbᵛ {A = Univ rF _} [Γ] (Uᵛ (proj₂ (levelBounded lF)) [Γ])
@@ -539,8 +539,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
                  [ΠFG]ᵗ′
                  (≅ₜ-Π-cong (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢F≡F′ ⊢G≡G′)
                  (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ΠFG-cong]′ = [ΠFG-cong] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ])
-                                           X = irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹)))
-                                                              (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹)))
+                                           X = irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !)))
+                                                              (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !)))
                                                               PE.refl PE.refl 
                                                               (proj₁ ([ΠFG] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]))) 
                                                               (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁)
@@ -631,8 +631,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
                                                          (proj₂ (GappGen {F = F} {G = G} {σ = _} [Γ] [F]₀ [G]₀ ⊢Δ₁ [ρσ] a [ρ₂] ⊢Δ₂ [a]′)
                                                                 ([ρσ₂′] , [a]″) 
                                                                 [ρσa≡ρσ′a] )) 
-                                        in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹)))
-                                                          (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹)))
+                                        in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !)))
+                                                          (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !)))
                                                           PE.refl PE.refl 
                                                           (proj₁ ([ΠFG] ⊢Δ₁ [ρσ])) 
                                                           (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁)
@@ -692,8 +692,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
                  [ΠFG]ᵗ′
                  (≅ₜ-Π-cong (λ _ → lFΠ< , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢F≡F′ ⊢G≡G′)
                  (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ΠFG-cong]′ = [ΠFG-cong] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ])
-                                           X = irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰)))
-                                                              (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰)))
+                                           X = irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ !)))
+                                                              (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ !)))
                                                               PE.refl PE.refl 
                                                               (proj₁ ([ΠFG] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]))) 
                                                               (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁)
@@ -784,8 +784,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
                                                          (proj₂ (GappGen {F = F} {G = G} {σ = _} [Γ] [F]₀ [G]₀ ⊢Δ₁ [ρσ] a [ρ₂] ⊢Δ₂ [a]′)
                                                                 ([ρσ₂′] , [a]″) 
                                                                 [ρσa≡ρσ′a] )) 
-                                        in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰)))
-                                                          (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰)))
+                                        in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ !)))
+                                                          (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ !)))
                                                           PE.refl PE.refl 
                                                           (proj₁ ([ΠFG] ⊢Δ₁ [ρσ])) 
                                                           (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁)
@@ -801,7 +801,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
         ([UG] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ SProp ^ [ ! , next ⁰ ] / [Γ] ∙ [F])
       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF]
       → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ∷ SProp ^ [ ! , next ⁰ ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ})
-      → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / [UΠ]
+      → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / [UΠ]
 Πirrᵗᵛ {F} {G} {rF} {lF} {Γ} [Γ] [F] [UG] [Fₜ] [Gₜ] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let l = ∞
       [UF] = maybeEmbᵛ {A = Univ rF _} [Γ] (Uᵛ (proj₂ (levelBounded lF)) [Γ])
@@ -857,8 +857,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
                  [ΠFG]ᵗ′
                  (≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl)⊢F ⊢F≡F′ ⊢G≡G′)
                  (λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ΠFG-cong]′ = [ΠFG-cong] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ])
-                                           X = irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰)))
-                                                              (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰)))
+                                           X = irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %)))
+                                                              (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %)))
                                                               PE.refl PE.refl 
                                                               (proj₁ ([ΠFG] ⊢Δ₁ (wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]))) 
                                                               (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁)
@@ -903,8 +903,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
                                                    (subst (liftSubst (ρ •ₛ σ′)) G)
                                                    (id (univ (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ (un-univ ⊢σH) ▹ (un-univ ⊢σE))))
                                                    ((≅-univ (≅ₜ-Π-cong (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢σF (≅-un-univ ⊢σF≡σH) (≅-un-univ ⊢σG≡σE))))
-                                        in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰)))
-                                                          (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰)))
+                                        in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %)))
+                                                          (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %)))
                                                           PE.refl PE.refl 
                                                           (proj₁ ([ΠFG] ⊢Δ₁ [ρσ])) 
                                                           (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁)
@@ -928,7 +928,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
            ([F≡H]ₜ : Γ ⊩ᵛ⟨ l ⟩ F ≡ H ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF])
            ([G≡E]ₜ : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ≡ E ∷ Univ ! lG ^ [ ! , next lG ] / [Γ] ∙ [F]
                                   / (λ {Δ} {σ} → [UG] {Δ} {σ}))
-         → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π H ^ rF ° lF  ▹ E ° lG ° lΠ ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
+         → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ Π H ^ rF ° lF  ▹ E ° lG ° lΠ ^ ! ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
 Π-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {lG} {lΠ = ¹} {Γ}
          lF≤ lG≤ [Γ] [F] [H] [UG] [UE] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] =
   let l = ∞
@@ -948,8 +948,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
          λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]
                                   X = Π-congᵛ {F} {G} {H} {E} {Γ} {rF} {lF} {lG} {¹}
                                               lF≤ lG≤ [Γ] [F] [G] [H] [E] [F≡H] [G≡E] ⊢Δ₁ [ρσ]
-                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹)))
-                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° lG ° ¹))) PE.refl PE.refl
+                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ ! )))
+                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° lG ° ¹ ^ !))) PE.refl PE.refl
                                                 (proj₁ (Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G] ⊢Δ₁ [ρσ])) (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁) X 
 Π-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {lG} {lΠ = ⁰} {Γ}
          lF≤ lG≤ [Γ] [F] [H] [UG] [UE] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] =
@@ -972,8 +972,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
          λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]
                                   X = Π-congᵛ {F} {G} {H} {E} {Γ} {rF} {lF} {lG} {⁰}
                                               lF≤ lG≤ [Γ] [F] [G] [H] [E] [F≡H] [G≡E] ⊢Δ₁ [ρσ]
-                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰)))
-                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° lG ° ⁰))) PE.refl PE.refl
+                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ !)))
+                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° lG ° ⁰ ^ !))) PE.refl PE.refl
                                                 (proj₁ (Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G] ⊢Δ₁ [ρσ])) (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁) X 
 
 
@@ -993,7 +993,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
            ([F≡H]ₜ : Γ ⊩ᵛ⟨ l ⟩ F ≡ H ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF])
            ([G≡E]ₜ : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ≡ E ∷ SProp ^ [ ! , next ⁰ ] / [Γ] ∙ [F]
                                   / (λ {Δ} {σ} → [UG] {Δ} {σ}))
-         → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ≡ Π H ^ rF ° lF  ▹ E ° ⁰ ° ⁰ ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / [UΠ]
+         → Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ≡ Π H ^ rF ° lF  ▹ E ° ⁰ ° ⁰ ^ % ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / [UΠ]
 Πirr-congᵗᵛ {F} {G} {H} {E} {rF} {lF} {Γ}
          [Γ] [F] [H] [UG] [UE] [F]ₜ [G]ₜ [H]ₜ [E]ₜ [F≡H]ₜ [G≡E]ₜ {Δ} {σ} ⊢Δ [σ] =
   let l = ∞
@@ -1015,8 +1015,8 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
          λ {ρ} {Δ₁} [ρ] ⊢Δ₁ → let [ρσ] = wkSubstS [Γ] ⊢Δ ⊢Δ₁ [ρ] [σ]
                                   X = Πirr-congᵛ {F} {G} {H} {E} {Γ} {rF} {lF}
                                               [Γ] [F] [G] [H] [E] [F≡H] [G≡E] ⊢Δ₁ [ρσ]
-                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰)))
-                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° ⁰ ° ⁰))) PE.refl PE.refl
+                              in irrelevanceEq″ (PE.sym (wk-subst (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % )))
+                                                (PE.sym (wk-subst (Π H ^ rF ° lF ▹ E ° ⁰ ° ⁰ ^ %))) PE.refl PE.refl
                                                 (proj₁ (Πirrᵛ {F} {G} [Γ] [F] [G] ⊢Δ₁ [ρσ])) (LogRel._⊩¹U_∷_^_/_.[t] [ΠFG]ᵗ [ρ] ⊢Δ₁) X 
 
 
@@ -1028,7 +1028,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       ([Γ] : ⊩ᵛ Γ)
       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
     → Γ ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ]
-    → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ]
+    → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ]
 ▹▹ᵛ {F} {G} lF< lG< [Γ] [F] [G] =
   Πᵛ {F} {wk1 G} lF< lG< [Γ] [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
 
@@ -1036,7 +1036,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
       ([Γ] : ⊩ᵛ Γ)
       ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
     → Γ ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ]
-    → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ]
+    → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [Γ]
 ▹▹irrᵛ {F} {G} [Γ] [F] [G] =
   Πirrᵛ {F} {wk1 G} [Γ] [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
 
@@ -1051,7 +1051,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
            ([G] : Γ ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ])
            ([G′] : Γ ⊩ᵛ⟨ l ⟩ G′ ^ [ ! , ι lG ] / [Γ])
            ([G≡G′] : Γ ⊩ᵛ⟨ l ⟩ G ≡ G′ ^ [ ! , ι lG ] / [Γ] / [G])
-         → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ° lΠ ≡ F′ ^ rF ° lF ▹▹ G′ ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / ▹▹ᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
+         → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ° lΠ ^ ! ≡ F′ ^ rF ° lF ▹▹ G′ ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / ▹▹ᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
 ▹▹-congᵛ {F} {F′} {G} {G′} lF< lG< [Γ] [F] [F′] [F≡F′] [G] [G′] [G≡G′] =
   Π-congᵛ {F} {wk1 G} {F′} {wk1 G′} lF< lG< [Γ]
           [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
@@ -1066,7 +1066,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
            ([G] : Γ ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ])
            ([G′] : Γ ⊩ᵛ⟨ l ⟩ G′ ^ [ % , ι ⁰ ] / [Γ])
            ([G≡G′] : Γ ⊩ᵛ⟨ l ⟩ G ≡ G′ ^ [ % , ι ⁰ ] / [Γ] / [G])
-         → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ≡ F′ ^ rF ° lF ▹▹ G′ ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ] / ▹▹irrᵛ {F} {G} [Γ] [F] [G]
+         → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ^ % ≡ F′ ^ rF ° lF ▹▹ G′ ° ⁰ ° ⁰ ^ %  ^ [ % , ι ⁰ ] / [Γ] / ▹▹irrᵛ {F} {G} [Γ] [F] [G]
 ▹▹irr-congᵛ {F} {F′} {G} {G′} [Γ] [F] [F′] [F≡F′] [G] [G′] [G≡G′] =
   Πirr-congᵛ {F} {wk1 G} {F′} {wk1 G′} [Γ]
           [F] (wk1ᵛ {G} {F} [Γ] [F] [G])
@@ -1083,7 +1083,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
         ([UG] : Γ ⊩ᵛ⟨ l ⟩ Univ ! lG ^ [ ! , next lG ] / [Γ])
       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF]
       → Γ ⊩ᵛ⟨ l ⟩ G ∷ Univ ! lG ^ [ ! , next lG ] / [Γ] / (λ {Δ} {σ} → [UG] {Δ} {σ})
-      → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ° lΠ ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
+      → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° lG ° lΠ ^ ! ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] / [UΠ]
 ▹▹ᵗᵛ {F} {G} {rF} {lF} {lG} {lΠ} lF< lG< [Γ] [F] [UG] [Fₜ] [Gₜ] =
   let [UG]′ = maybeEmbᵛ {A = Univ ! _} [Γ] (Uᵛ (proj₂ (levelBounded lG)) [Γ])
       [Gₜ]′ = wk1ᵗᵛ {F} {G} {[ rF , ι lF ]} {rG = !} {lG} [Γ] [F] (S.irrelevanceTerm {A = Univ _ _} {t = G} [Γ] [Γ] [UG] [UG]′ [Gₜ])
@@ -1102,7 +1102,7 @@ Gapp {F} {G} {Γ} {rF} {lF} {lG} {rΠ} {l} {Δ} {σ} {ρ} {Δ₁} [Γ] [F] [G] �
         ([UG] : Γ ⊩ᵛ⟨ l ⟩ SProp ^ [ ! , next ⁰ ] / [Γ])
       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ rF lF ^ [ ! , next lF ] / [Γ] / [UF]
       → Γ ⊩ᵛ⟨ l ⟩ G ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / (λ {Δ} {σ} → [UG] {Δ} {σ})
-      → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / [UΠ]
+      → Γ ⊩ᵛ⟨ l ⟩ F ^ rF ° lF ▹▹ G ° ⁰ ° ⁰ ^ % ∷ SProp ^ [ ! , next ⁰ ] / [Γ] / [UΠ]
 ▹▹irrᵗᵛ {F} {G} {rF} {lF} [Γ] [F] [UG] [Fₜ] [Gₜ] =
   let [UG]′ = maybeEmbᵛ {A = SProp} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
       [Gₜ]′ = wk1ᵗᵛ {F} {G} {[ rF , ι lF ]} {rG = %} {⁰} [Γ] [F] (S.irrelevanceTerm {A = Univ _ _} {t = G} [Γ] [Γ] [UG] [UG]′ [Gₜ])

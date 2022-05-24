@@ -153,26 +153,26 @@ ne≡A {A} neK ne≡A whnfA =
         (irrelevanceEq [ne] (ne-intr (ne-elim neK [ne])) [ne≡A]) whnfA
 
 
-Π≡A′ : ∀ {A F G rF lF lG lΠ Γ l} ([Π] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^[ lΠ ] )
-    → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ A ^ [ ! ,  ι lΠ ] / (Π-intr [Π])
+Π≡A′ : ∀ {A F G rF lF lG lΠ Γ l} ([Π] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^[ lΠ ] )
+    → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ A ^ [ ! ,  ι lΠ ] / (Π-intr [Π])
     → Whnf A
-    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ 
+    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ ^ ! 
 Π≡A′ (noemb (Πᵣ rF′ lF′ lG′ lF≤ lG≤  F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) whnfA =
     let _ , rF≡rF′ , lF≡lF′ , _ , lG≡lG′ , _ = Π-PE-injectivity (whnfRed* (red D) Πₙ)
         X = whnfRed* D′ whnfA
     in F′ , G′ ,
-       PE.subst (λ r → _ PE.≡ Π _ ^ r ° _ ▹ _ ° _ ° _) (PE.sym rF≡rF′)
-         (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° l ▹ _ ° _ ° _) (PE.sym lF≡lF′)
-           (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° _ ▹ _ ° l ° _) (PE.sym lG≡lG′) X))
+       PE.subst (λ r → _ PE.≡ Π _ ^ r ° _ ▹ _ ° _ ° _ ^ _) (PE.sym rF≡rF′)
+         (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° l ▹ _ ° _ ° _ ^ _) (PE.sym lF≡lF′)
+           (PE.subst (λ l → _ PE.≡ Π _ ^ _ ° _ ▹ _ ° l ° _ ^ _) (PE.sym lG≡lG′) X))
 Π≡A′ (emb emb< [Π]) [Π≡A] whnfA = Π≡A′ [Π] [Π≡A] whnfA
 Π≡A′ (emb ∞< [Π]) [Π≡A] whnfA = Π≡A′ [Π] [Π≡A] whnfA
 
 -- If A is judgmentally equal to Π F ▹ G, then there exists H and E such that
 -- A is propositionally equal to Π H ▹ E.
 Π≡A : ∀ {A F G rF lF lG lΠ Γ}
-    → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ A ^ [ ! ,  ι lΠ ]
+    → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ A ^ [ ! ,  ι lΠ ]
     → Whnf A
-    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ
+    → ∃₂ λ H E → A PE.≡ Π H ^ rF ° lF ▹ E ° lG ° lΠ ^ !
 Π≡A {A} Π≡A whnfA  =
   let X = reducibleEq Π≡A
       [Π] = proj₁ X

@@ -29,6 +29,7 @@ open import Tools.Nat
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 open import Tools.Function
+open import Tools.Empty using (⊥; ⊥-elim)
 
 
 -- Algorithmic equality of neutrals with injected conversion.
@@ -43,7 +44,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
   in  ↑ (refl ⊢A) (var-refl′ x)
 
 ~-app : ∀ {f g a b F G Γ rF lF lG lΠ}
-      → Γ ⊢ f ~ g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ]
+      → Γ ⊢ f ~ g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
       → Γ ⊢ a [genconv↑] b ∷ F ^ [ rF , ι lF ]
       → Γ ⊢ f ∘ a ^ lΠ ~ g ∘ b ^ lΠ ∷ G [ a ] ^ [ ! , ι lG ]
 ~-app {rF = !} (↑ A≡B (~↑! x)) x₁ =
@@ -71,7 +72,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 ~-natrec : ∀ {z z′ s s′ n n′ F F′ Γ lF}
          → (Γ ∙ ℕ ^ [ ! , ι ⁰ ]) ⊢ F [conv↑] F′ ^ [ ! , ι lF ]  →
       Γ ⊢ z [conv↑] z′ ∷ (F [ zero ]) ^ ι lF →
-      Γ ⊢ s [conv↑] s′ ∷ (Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF) ^ ι lF →
+      Γ ⊢ s [conv↑] s′ ∷ (Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ !) ^ ι lF →
       Γ ⊢ n ~ n′ ∷ ℕ ^ [ ! , ι ⁰ ] →
       Γ ⊢ natrec lF F z s n ~ natrec lF F′ z′ s′ n′ ∷ (F [ n ]) ^ [ ! , ι lF ]
 ~-natrec {n = n} {n′ = n′} x x₁ x₂ (↑ A≡B (~↑! x₄)) =
@@ -100,7 +101,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
       Γ ⊢ A ~ A' ∷ Univ ! l ^ [ ! , next l ] →
       Γ ⊢ t [conv↑] t' ∷ A ^ ι l →
       Γ ⊢ u [conv↑] u' ∷ A ^ ι l →
-      Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp l ^ [ ! , next l ]
+      Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp ^ [ ! , next ⁰ ]
 ~-IdCong (↑ A≡B (~↑! x)) t~t' u~u' =
      let ⊢Γ = wfEqTerm (soundnessConv↑Term t~t')
          _ , ⊢B = syntacticEq A≡B
@@ -115,7 +116,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     ⊢ Γ →
     Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ] →
     Γ ⊢ u [genconv↑] u' ∷ ℕ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+    Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ∷ SProp ^ [ ! , next ⁰ ]
 ~-Idℕ ⊢Γ (↑ A≡B (~↑! x)) u~u' =
      let _ , ⊢B = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B
@@ -128,7 +129,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 ~-Idℕ0 : ∀ {u u' : Term} {Γ : Con Term} →
     ⊢ Γ →
     Γ ⊢ u ~ u' ∷ ℕ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ Id ℕ zero u ~ Id ℕ zero u' ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+    Γ ⊢ Id ℕ zero u ~ Id ℕ zero u' ∷ SProp ^ [ ! , next ⁰ ]
 ~-Idℕ0 ⊢Γ (↑ A≡B (~↑! x)) =
      let _ , ⊢B = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B
@@ -142,7 +143,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     ⊢ Γ →
     Γ ⊢ t [genconv↑] t' ∷ ℕ ^ [ ! , ι ⁰ ] →
     Γ ⊢ u ~ u' ∷ ℕ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ⁰ ^ [ ! , next ⁰ ]
+    Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ^ [ ! , next ⁰ ]
 ~-IdℕS ⊢Γ X (↑ A≡B (~↑! x)) =
      let _ , ⊢B = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B
@@ -156,7 +157,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     ⊢ Γ →
     Γ ⊢ t ~ t' ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ u [genconv↑] u' ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Id (U ⁰) t u ~ Id (U ⁰) t' u' ∷ SProp ¹ ^ [ ! , next ¹ ]
+    Γ ⊢ Id (U ⁰) t u ~ Id (U ⁰) t' u' ∷ SProp ^ [ ! , next ⁰ ]
 ~-IdU ⊢Γ (↑ A≡B (~↑! x)) X =
      let _ , ⊢B = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B
@@ -169,7 +170,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 ~-IdUℕ : ∀ {u u' : Term} {Γ : Con Term} →
     ⊢ Γ →
     Γ ⊢ u ~ u' ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Id (U ⁰) ℕ u ~ Id (U ⁰) ℕ u' ∷ SProp ¹ ^ [ ! , next ¹ ]
+    Γ ⊢ Id (U ⁰) ℕ u ~ Id (U ⁰) ℕ u' ∷ SProp ^ [ ! , next ⁰ ]
 ~-IdUℕ ⊢Γ (↑ A≡B (~↑! x)) =
      let _ , ⊢B = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B
@@ -181,10 +182,10 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 
 ~-IdUΠ : ∀ {A : Term} {rA : Relevance} {B A' B' u u' : Term}
     {Γ : Con Term} →
-    Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ [genconv↑] Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! [genconv↑] Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ u ~ u' ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰) u ~
-    Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰) u' ∷ SProp ¹ ^ [ ! , next ¹ ]
+    Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) u ~
+    Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) u' ∷ SProp ^ [ ! , next ⁰ ]
 ~-IdUΠ X (↑ A≡B (~↑! x)) =
      let ⊢Γ =  wfEqTerm (soundnessConv↑Term X)
          _ , ⊢B = syntacticEq A≡B
@@ -199,8 +200,8 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     Γ ⊢ A ~ A' ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ B [genconv↑] B' ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ t [genconv↑] t' ∷ A ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) A' B' ^ [ % , next ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) A' B' ^ [ % , ι ⁰ ] →
     Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ∷ B ^ [ ! , ι ⁰ ]
 ~-castcong (↑ A≡B (~↑! x)) X Y ⊢e ⊢e' =
      let _ , ⊢B , _ = syntacticEqTerm (soundnessConv↑Term X)
@@ -216,8 +217,8 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     ⊢ Γ →
     Γ ⊢ B ~ B' ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ t [genconv↑] t' ∷ ℕ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) ℕ B' ^ [ % , next ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) ℕ B' ^ [ % , ι ⁰ ] →
     Γ ⊢ cast ⁰ ℕ B e t ~ cast ⁰ ℕ B' e' t' ∷ B ^ [ ! , ι ⁰ ]
 ~-castℕ ⊢Γ (↑ A≡B (~↑! x)) X ⊢e ⊢e' =
      let _ , ⊢B' = syntacticEq A≡B
@@ -232,8 +233,8 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 ~-castℕℕ : ∀ {e e' t t' : Term} {Γ : Con Term} →
     ⊢ Γ →
     Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) ℕ ℕ ^ [ % , next ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ] →
     Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 ~-castℕℕ ⊢Γ (↑ A≡B (~↑! x)) ⊢e ⊢e' =
      let _ , ⊢B' = syntacticEq A≡B
@@ -247,12 +248,12 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 
 ~-castΠ : ∀ {A A' : Term} {rA : Relevance} {P P' B B' e e' t t' : Term}
     {Γ : Con Term} →
-    Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ [genconv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! [genconv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ B ~ B' ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ t [genconv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e ∷ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) B ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) B' ^ [ % , next ⁰ ] →
-    Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) B e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) B' e' t' ∷ B ^ [ ! , ι ⁰ ]
+    Γ ⊢ t [genconv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) B ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) B' ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) B e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) B' e' t' ∷ B ^ [ ! , ι ⁰ ]
 ~-castΠ X (↑ A≡B (~↑! x)) Y ⊢e ⊢e' =
      let _ , ⊢B' = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B'
@@ -267,55 +268,55 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     {Γ : Con Term} →
     Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ] →
     (Γ ∙ A ^ [ rA , ι ⁰ ]) ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ [genconv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! [genconv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ t [genconv↑] t' ∷ ℕ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e ∷ Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) ^ [ % , next ⁰ ] →
-    Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) e' t' ∷
-    Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]
-~-castℕΠ ⊢A ⊢P X Y ⊢e ⊢e' = ↑ (refl (univ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢A ▹ ⊢P))) (~↑! (cast-ℕΠ X Y ⊢e ⊢e'))
+    Γ ⊢ e ∷ Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) e' t' ∷
+    Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
+~-castℕΠ ⊢A ⊢P X Y ⊢e ⊢e' = ↑ (refl (univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ ⊢A ▹ ⊢P))) (~↑! (cast-ℕΠ X Y ⊢e ⊢e'))
 
 ~-castΠℕ : ∀ {A A' : Term} {rA : Relevance} {P P' e e' t t' : Term}
     {Γ : Con Term} →
     Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ] →
     (Γ ∙ A ^ [ rA , ι ⁰ ]) ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ [genconv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰
+    Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! [genconv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !
     ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ t [genconv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e ∷ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) ℕ ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) ℕ ^ [ % , next ⁰ ] →
-    Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) ℕ e t ~
-    cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
+    Γ ⊢ t [genconv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) ℕ ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) ℕ ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) ℕ e t ~
+    cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 ~-castΠℕ ⊢A ⊢P X Y ⊢e ⊢e' = ↑ (refl (univ (ℕⱼ (wfTerm ⊢A)))) (~↑! (cast-Πℕ X Y ⊢e ⊢e'))
 
 ~-castΠΠ%! : ∀ {A A' P P' B B' Q Q' e e' t t' : Term} {Γ : Con Term} →
     Γ ⊢ A ∷ Univ % ⁰ ^ [ ! , next ⁰ ] →
     (Γ ∙ A ^ [ % , ι ⁰ ]) ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ [genconv↑] Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! [genconv↑] Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ B ∷ Univ ! ⁰ ^ [ ! , next ⁰ ] →
     (Γ ∙ B ^ [ ! , ι ⁰ ]) ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ [genconv↑] Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ t [genconv↑] t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e  ∷ Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰) ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰) ^ [ % , next ⁰ ] →
-    Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰) e t ~
-        cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰) e' t' ∷ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]
-~-castΠΠ%! ⊢A ⊢P X ⊢B ⊢Q Y t~t' ⊢e ⊢e' = ↑ (refl (univ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢B ▹ ⊢Q)))
+    Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! [genconv↑] Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ t [genconv↑] t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e  ∷ Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~
+        cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) e' t' ∷ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
+~-castΠΠ%! ⊢A ⊢P X ⊢B ⊢Q Y t~t' ⊢e ⊢e' = ↑ (refl (univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ ⊢B ▹ ⊢Q)))
                                            (~↑! (cast-ΠΠ%! X Y t~t' ⊢e ⊢e'))
 
 ~-castΠΠ!% : ∀ {A A' P P' B B' Q Q' e e' t t' : Term} {Γ : Con Term} →
     Γ ⊢ A ∷ Univ ! ⁰ ^ [ ! , next ⁰ ] →
     (Γ ∙ A ^ [ ! , ι ⁰ ]) ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ [genconv↑] Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! [genconv↑] Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
     Γ ⊢ B ∷ Univ % ⁰ ^ [ ! , next ⁰ ] →
     (Γ ∙ B ^ [ % , ι ⁰ ]) ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ [genconv↑] Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ t [genconv↑] t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e  ∷ Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰) ^ [ % , next ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰) ^ [ % , next ⁰ ] →
-    Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰) e t ~
-        cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰) e' t' ∷ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]
-~-castΠΠ!% ⊢A ⊢P X ⊢B ⊢Q Y t~t' ⊢e ⊢e' = ↑ (refl (univ (Πⱼ ≡is≤ PE.refl ▹ ≡is≤ PE.refl ▹ ⊢B ▹ ⊢Q)))
+    Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! [genconv↑] Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ t [genconv↑] t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e  ∷ Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~
+        cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) e' t' ∷ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
+~-castΠΠ!% ⊢A ⊢P X ⊢B ⊢Q Y t~t' ⊢e ⊢e' = ↑ (refl (univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ ⊢B ▹ ⊢Q)))
                                            (~↑! (cast-ΠΠ!% X Y t~t' ⊢e ⊢e'))
 
 ~-sym : {k l A : Term} {r : TypeInfo} {Γ : Con Term} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
@@ -360,12 +361,12 @@ un-univConv {A} {B} {r} {l} ([↑] A′ B′ D D′ whnfA′ whnfB′ (univ x)) 
 
 
 Πₜ-cong : ∀ {F G H E rF rG lF lG lΠ Γ}
-        → lF ≤ lΠ
-        → lG ≤ lΠ
+        → (rG PE.≡ ! → lF ≤ lΠ × lG ≤ lΠ)
+        → (rG PE.≡ % → lG PE.≡ ⁰ × lΠ PE.≡ ⁰)
         → Γ ⊢ F ^ [ rF , ι lF ]
         → Γ ⊢ F [conv↑] H ∷ Univ rF lF ^ next lF
         → Γ ∙ F ^ [ rF , ι lF ] ⊢ G [conv↑] E ∷ Univ rG lG ^ next lG
-        → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ [conv↑] Π H ^ rF ° lF ▹ E ° lG ° lΠ ∷ Univ rG lΠ ^ next lΠ
+        → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rG [conv↑] Π H ^ rF ° lF ▹ E ° lG ° lΠ ^ rG ∷ Univ rG lΠ ^ next lΠ
 Πₜ-cong lF< lG< x x₁ x₂ = liftConvTerm (Π-cong PE.refl PE.refl PE.refl PE.refl lF< lG< x x₁ x₂)
 
 ~-irrelevance : {k l A : Term} {Γ : Con Term} {ll : TypeLevel}
@@ -417,9 +418,9 @@ eqRelInstance = eqRel _⊢_[conv↑]_^_ _⊢_[genconv↑]_∷_^_ _⊢_~_∷_^_
                       reductionConv↑ reductionConv↑Term
                       (liftConv ∘ᶠ (U-refl PE.refl)) ( liftConvTerm ∘ᶠ  (U-refl PE.refl))
                       (liftConvTerm ∘ᶠ ℕ-refl)
-                      (liftConvTerm ∘ᶠ (Empty-refl PE.refl))
+                      (liftConvTerm ∘ᶠ Empty-refl)
                       Πₜ-cong
-                      (λ x x₁ x₂ → liftConvTerm (∃-cong PE.refl x x₁ x₂))
+                      (λ x x₁ x₂ → liftConvTerm (∃-cong x x₁ x₂))
                       (liftConvTerm ∘ᶠ zero-refl)
                       (liftConvTerm ∘ᶠ suc-cong)
                       (λ l< l<' x x₁ x₂ x₃ x₄ x₅ → liftConvTerm (η-eq l< l<' x x₁ x₂ x₃ x₄ x₅))

@@ -122,7 +122,7 @@ record EqRelSet : Set₁ where
               → Γ ⊢ F ^ [ rF , ι lF ]
               → Γ ⊢ F ≅ H ∷ (Univ rF lF) ^ [ ! , next lF ]
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≅ E ∷ (Univ r lG) ^ [ ! , next lG ]
-              → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° l ≅ Π H ^ rF ° lF ▹ E ° lG ° l ∷ (Univ r l) ^ [ ! , next l ]
+              → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ r ≅ Π H ^ rF ° lF ▹ E ° lG ° l ^ r ∷ (Univ r l) ^ [ ! , next l ]
 
     -- ∃-congruence
     -- Since ∃ types are always small, no need for a type-level rule
@@ -143,19 +143,19 @@ record EqRelSet : Set₁ where
               → lF ≤ l
               → lG ≤ l
               → Γ ⊢ F ^ [ rF , ι lF ]
-              → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ ! , ι l ]
-              → Γ ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ ! , ι l ]
+              → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
+              → Γ ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
               → Function f
               → Function g
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ wk1 f ∘ var 0 ^ l ≅ wk1 g ∘ var 0 ^ l ∷ G ^ [ ! , ι lG ]
-              → Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ ! , ι l ]
+              → Γ ⊢ f ≅ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
 
     -- Variable reflexivity
     ~-var : ∀ {x A Γ r} → Γ ⊢ var x ∷ A ^ r → Γ ⊢ var x ~ var x ∷ A ^ r
 
     -- Application congurence
     ~-app : ∀ {a b f g F G rF lF lG l Γ}
-          → Γ ⊢ f ~ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ [ ! , ι l ]
+          → Γ ⊢ f ~ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
           → Γ ⊢ a ≅ b ∷ F ^ [ rF , ι lF ]
           → Γ ⊢ f ∘ a ^ l ~ g ∘ b ^ l ∷ G [ a ] ^ [ ! , ι lG ]
 
@@ -163,7 +163,7 @@ record EqRelSet : Set₁ where
     ~-natrec : ∀ {z z′ s s′ n n′ F F′ l Γ}
              → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ≅ F′ ^ [ ! , ι l ]
              → Γ     ⊢ z ≅ z′ ∷ F [ zero ] ^ [ ! , ι l ]
-             → Γ     ⊢ s ≅ s′ ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var 0) ]↑ ° l ° l ) ° l ° l ^ [ ! , ι l ]
+             → Γ     ⊢ s ≅ s′ ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var 0) ]↑ ° l ° l ^ !) ° l ° l ^ ! ^ [ ! , ι l ]
              → Γ     ⊢ n ~ n′ ∷ ℕ ^ [ ! , ι ⁰ ]
              → Γ     ⊢ natrec l F z s n ~ natrec l F′ z′ s′ n′ ∷ F [ n ] ^ [ ! , ι l ]
 
@@ -212,9 +212,9 @@ record EqRelSet : Set₁ where
 
     ~-IdUΠ : ∀ {A rA B A' B' u u' Γ} →
           let l = ⁰ in
-           Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+           Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
            → Γ ⊢ u ~ u' ∷ U l ^ [ ! , next l ]
-           → Γ ⊢ Id (U l)  (Π A ^ rA ° l ▹ B ° l ° ⁰ ) u ~ Id (U l) (Π A' ^ rA ° l ▹ B' ° l ° ⁰) u' ∷ SProp ^ [ ! , next ⁰ ]
+           → Γ ⊢ Id (U l)  (Π A ^ rA ° l ▹ B ° l ° ⁰ ^ ! ) u ~ Id (U l) (Π A' ^ rA ° l ▹ B' ° l ° ⁰ ^ !) u' ∷ SProp ^ [ ! , next ⁰ ]
 
     -- cast congruences
 
@@ -244,55 +244,55 @@ record EqRelSet : Set₁ where
 
     ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ} →
            let l = ⁰ in
-           Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+           Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
            → Γ ⊢ B ~ B' ∷ U l ^ [ ! , next l ]
-           → Γ ⊢ t ≅ t' ∷ Π A ^ rA ° l ▹ P ° l ° l ^ [ ! , ι l ]
-           → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l ° l) B) ^ [ % , ι ⁰ ]
-           → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° l ▹ P' ° l ° l) B') ^ [ % , ι ⁰ ]
-           → Γ ⊢ cast l (Π A ^ rA ° l ▹ P ° l ° l) B e t ~ cast l (Π A' ^ rA ° l ▹ P' ° l ° l) B' e' t' ∷ B ^ [ ! , ι l ]
+           → Γ ⊢ t ≅ t' ∷ Π A ^ rA ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
+           → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l ° l ^ !) B) ^ [ % , ι ⁰ ]
+           → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° l ▹ P' ° l ° l ^ !) B') ^ [ % , ι ⁰ ]
+           → Γ ⊢ cast l (Π A ^ rA ° l ▹ P ° l ° l ^ !) B e t ~ cast l (Π A' ^ rA ° l ▹ P' ° l ° l ^ !) B' e' t' ∷ B ^ [ ! , ι l ]
 
     ~-castℕΠ : ∀ {A A' rA P P' e e' t t' Γ}
              → Γ ⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ t ≅ t' ∷ ℕ ^ [ ! , ι ⁰ ]
-             → Γ ⊢ e ∷ (Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰)) ^ [ % , ι ⁰ ]
-             → Γ ⊢ e' ∷ (Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰)) ^ [ % , ι ⁰ ]
-             → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) e' t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) ^ [ ! , ι ⁰ ]
+             → Γ ⊢ e ∷ (Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !)) ^ [ % , ι ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !)) ^ [ % , ι ⁰ ]
+             → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) e' t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) ^ [ ! , ι ⁰ ]
 
     ~-castΠℕ : ∀ {A A' rA P P' e e' t t' Γ} →
              let l = ⁰ in
                Γ ⊢ A ∷ Univ rA l ^ [ ! , next l ]
              → Γ ∙ A ^ [ rA , ι l ] ⊢ P ∷ U l ^ [ ! , next l ]
-             → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) ^ [ ! , ι l ]
-             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l ° ⁰) ℕ) ^ [ % , ι ⁰ ]
-             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° l ▹ P' ° l  ° ⁰) ℕ) ^ [ % , ι ⁰ ]
-             → Γ ⊢ cast l (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰) ℕ e t ~ cast l (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰) ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ t ≅ t' ∷ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) ^ [ ! , ι l ]
+             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l ° ⁰ ^ !) ℕ) ^ [ % , ι ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° l ▹ P' ° l  ° ⁰ ^ !) ℕ) ^ [ % , ι ⁰ ]
+             → Γ ⊢ cast l (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) ℕ e t ~ cast l (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
 
     ~-castΠΠ%! : ∀ {A A' P P' B B' Q Q' e e' t t' Γ}
              → Γ ⊢ A ∷ Univ % ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ A ^ [ % , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰  ° ⁰ ≅ Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰  ° ⁰  ^ ! ≅ Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ B ∷ Univ ! ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ B ^ [ ! , ι ⁰ ] ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ≅ Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ t ≅ t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰  ° ⁰ ^ [ ! , ι ⁰ ]
-             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰)) ^ [ % , ι ⁰ ]
-             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰)) ^ [ % , ι ⁰ ]
-             → Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰) e t ~ cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰) e' t' ∷ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ≅ Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ t ≅ t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰  ° ⁰  ^ ! ^ [ ! , ι ⁰ ]
+             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !)) ^ [ % , ι ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !)) ^ [ % , ι ⁰ ]
+             → Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) e' t' ∷ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
 
     ~-castΠΠ!% : ∀ {A A' P P' B B' Q Q' e e' t t' Γ}
              → Γ ⊢ A ∷ Univ ! ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ A ^ [ ! , ι ⁰ ] ⊢ P ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ≅ Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
              → Γ ⊢ B ∷ Univ % ⁰ ^ [ ! , next ⁰ ]
              → Γ ∙ B ^ [ % , ι ⁰ ] ⊢ Q ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ≅ Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ∷ U ⁰ ^ [ ! , next ⁰ ]
-             → Γ ⊢ t ≅ t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ [ ! , ι ⁰ ]
-             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰)) ^ [ % , ι ⁰ ]
-             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰)) ^ [ % , ι ⁰ ]
-             → Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰) e t ~ cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰) e' t' ∷ Π B ^ % ° ⁰ ▹ Q ° ⁰  ° ⁰ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ≅ Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
+             → Γ ⊢ t ≅ t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
+             → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !)) ^ [ % , ι ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !)) ^ [ % , ι ⁰ ]
+             → Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) e' t' ∷ Π B ^ % ° ⁰ ▹ Q ° ⁰  ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
 
     ~-irrelevance : ∀ {n n′ A l Γ} → Γ ⊢ n ∷ A ^ [ % , l ] → Γ ⊢ n′ ∷ A ^ [ % , l ]
                   → Γ ⊢ n ~ n′ ∷ A ^ [ % , l ]

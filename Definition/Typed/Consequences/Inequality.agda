@@ -60,7 +60,7 @@ U≢Π′ : ∀ {A lA B lB Γ l l′}
      → ShapeView Γ l l′ _ _ _ _ (Uᵣ {ll = lA} [U]) (Πᵣ [Π]) → ⊥
 U≢Π′ a b ()
 
-U≢Π-red : ∀ {ll B F G rF lF lG rU lU Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° lG ° ll ^ [ ! , ι ll ]
+U≢Π-red : ∀ {ll B F G rF lF lG rU lU Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ^ [ ! , ι ll ]
             → Γ ⊢ Univ rU lU ≡ B ^ [ ! , ι ll ] → ⊥
 U≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩U A ^ ι ll)
                 (λ Γ l A → Γ ⊩′⟨ l ⟩Π A ^[ ll ]) Uᵣ Πᵣ
@@ -69,7 +69,7 @@ U≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩U A ^ ι ll)
                 U≢Π′
 
 -- U and Π F ▹ G for any F and G cannot be judgmentally equal.
-U≢Π! : ∀ {rU lU F rF lF lG G l Γ} → Γ ⊢ Univ rU lU ≡ Π F ^ rF ° lF ▹ G  ° lG ° l ^ [ ! , ι l ] → ⊥
+U≢Π! : ∀ {rU lU F rF lF lG G l Γ} → Γ ⊢ Univ rU lU ≡ Π F ^ rF ° lF ▹ G  ° lG ° l ^ ! ^ [ ! , ι l ] → ⊥
 U≢Π! U≡Π =
   let _ , ⊢Π = syntacticEq U≡Π
   in  U≢Π-red (id ⊢Π) U≡Π
@@ -83,7 +83,7 @@ U≢Π! U≡Π =
      → ShapeView Γ l l′ _ _ _ _ (∃ᵣ [∃]) (Πirrᵣ [Π]) → ⊥
 ∃≢Π′ a b ()
 
-∃≢Π-red : ∀ {B F G rF lF P Q Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+∃≢Π-red : ∀ {B F G rF lF P Q Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
             → Γ ⊢ ∃ P ▹ Q ≡ B ^ [ % , ι ⁰ ] → ⊥
 ∃≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩∃ A)
                 (λ Γ l A → Γ ⊩Πirr A) ∃ᵣ Πirrᵣ
@@ -92,7 +92,7 @@ U≢Π! U≡Π =
                 ∃≢Π′
 
 -- U and Π F ▹ G for any F and G cannot be judgmentally equal.
-∃≢Π! : ∀ {P Q F rF lF G Γ} → Γ ⊢ ∃ P ▹ Q ≡ Π F ^ rF ° lF ▹ G  ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] → ⊥
+∃≢Π! : ∀ {P Q F rF lF G Γ} → Γ ⊢ ∃ P ▹ Q ≡ Π F ^ rF ° lF ▹ G  ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] → ⊥
 ∃≢Π! ∃≡Π =
   let _ , ⊢Π = syntacticEq ∃≡Π
   in ∃≢Π-red (id ⊢Π) ∃≡Π
@@ -124,7 +124,7 @@ U≢ne! neK U≡K =
 ℕ≢Π′ a b ()
 
 
-ℕ≢Π-red : ∀ {A B F rF lF lG G Γ} → Γ ⊢ A ⇒* ℕ ^ [ ! , ι ⁰ ] → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ [ ! , ι ⁰ ] → Γ ⊢ A ≡ B ^ [ ! , ι ⁰ ] → ⊥
+ℕ≢Π-red : ∀ {A B F rF lF lG G Γ} → Γ ⊢ A ⇒* ℕ ^ [ ! , ι ⁰ ] → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ ! ^ [ ! , ι ⁰ ] → Γ ⊢ A ≡ B ^ [ ! , ι ⁰ ] → ⊥
 ℕ≢Π-red D D′ = A≢B (λ Γ l A → Γ ⊩ℕ A)
                    (λ Γ l A → Γ ⊩′⟨ l ⟩Π A ^[ ⁰ ]) ℕᵣ Πᵣ
                    (λ x → extractMaybeEmb (ℕ-elim′ D x))
@@ -132,7 +132,7 @@ U≢ne! neK U≡K =
                    ℕ≢Π′
 
 -- ℕ and Π F ▹ G for any F and G cannot be judgmentally equal.
-ℕ≢Π! : ∀ {F rF G lF lG  Γ} → Γ ⊢ ℕ ≡ Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ [ ! , ι ⁰ ]  → ⊥
+ℕ≢Π! : ∀ {F rF G lF lG  Γ} → Γ ⊢ ℕ ≡ Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ ! ^ [ ! , ι ⁰ ]  → ⊥
 ℕ≢Π! ℕ≡Π =
   let ⊢ℕ , ⊢Π = syntacticEq ℕ≡Π
   in  ℕ≢Π-red (id ⊢ℕ) (id ⊢Π) ℕ≡Π
@@ -144,7 +144,7 @@ Empty≢Π′ : ∀ {A B Γ l l′}
      → ShapeView Γ l l′ _ _ _ _ (Emptyᵣ [Empty]) (Πirrᵣ [Π]) → ⊥
 Empty≢Π′ a b ()
 
-Empty≢Π-red : ∀ {A B F rF lF G Γ} → Γ ⊢ A ⇒* sEmpty ^ [ % , ι ⁰ ] → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ]
+Empty≢Π-red : ∀ {A B F rF lF G Γ} → Γ ⊢ A ⇒* sEmpty ^ [ % , ι ⁰ ] → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
                 → Γ ⊢ A ≡ B ^ [ % , ι ⁰ ] → ⊥
 Empty≢Π-red D D′ = A≢B (λ Γ l A → Γ ⊩Empty A)
                    (λ Γ l A → Γ ⊩Πirr A) Emptyᵣ Πirrᵣ
@@ -152,7 +152,7 @@ Empty≢Π-red D D′ = A≢B (λ Γ l A → Γ ⊩Empty A)
                    (λ x → extractMaybeEmb (Πirr-elim′ D′ x))
                    Empty≢Π′
 
-Empty≢Π% : ∀ {F rF lF G Γ} → Γ ⊢ sEmpty ≡ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] → ⊥
+Empty≢Π% : ∀ {F rF lF G Γ} → Γ ⊢ sEmpty ≡ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] → ⊥
 Empty≢Π% Empty≡Π =
   let ⊢Empty , ⊢Π = syntacticEq Empty≡Π
   in  Empty≢Π-red (id ⊢Empty) (id ⊢Π) Empty≡Π
@@ -201,7 +201,7 @@ Empty≢ne% neK Empty≡K =
      → ShapeView Γ l l′ _ _ _ _ (Πᵣ [Π]) (ne [K]) → ⊥
 Π≢ne′ a b ()
 
-Π≢ne-red : ∀ {ll A B F rF lF lG G K Γ} → Γ ⊢ A ⇒* Π F ^ rF ° lF ▹ G ° lG ° ll ^ [ ! , ι ll ]
+Π≢ne-red : ∀ {ll A B F rF lF lG G K Γ} → Γ ⊢ A ⇒* Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ^ [ ! , ι ll ]
                                          → Γ ⊢ B ⇒* K ^ [ ! , ι ll ] → Neutral K
                                          → Γ ⊢ A ≡ B ^ [ ! , ι ll ] → ⊥
 Π≢ne-red {ll} {r} D D′ neK = A≢B (λ Γ l A → Γ ⊩′⟨ l ⟩Π A ^[ ll ])
@@ -211,7 +211,7 @@ Empty≢ne% neK Empty≡K =
                         Π≢ne′
 
 -- Π F ▹ G and K for any F and G and neutral K cannot be judgmentally equal.
-Π≢ne : ∀ {F rF lF lG G K l Γ} → Neutral K → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° l ≡ K ^ [ ! , ι l ] → ⊥
+Π≢ne : ∀ {F rF lF lG G K l Γ} → Neutral K → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ≡ K ^ [ ! , ι l ] → ⊥
 Π≢ne neK Π≡K =
   let ⊢Π , ⊢K = syntacticEq Π≡K
   in  Π≢ne-red (id ⊢Π) (id ⊢K) neK Π≡K

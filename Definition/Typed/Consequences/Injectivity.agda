@@ -22,8 +22,8 @@ import Tools.PropositionalEquality as PE
 
 -- Helper function of injectivity for specific reducible Π-types
 injectivity′ : ∀ {F G H E rF lF rH lH lG lE Γ lΠ l}
-               ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF  ▹ G ° lG ° lΠ ^[ lΠ ] )
-             → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG  ° lΠ ≡ Π H ^ rH ° lH  ▹ E ° lE  ° lΠ ^ [ ! , ι lΠ ] / Π-intr [ΠFG]
+               ([ΠFG] : Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF  ▹ G ° lG ° lΠ ^ ! ^[ lΠ ] )
+             → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG  ° lΠ ^ ! ≡ Π H ^ rH ° lH  ▹ E ° lE  ° lΠ ^ ! ^ [ ! , ι lΠ ] / Π-intr [ΠFG]
              → Γ ⊢ F ≡ H ^ [ rF , ι lF ]
              × rF PE.≡ rH
              × lF PE.≡ lH
@@ -104,7 +104,7 @@ injectivity′ (emb ∞< x) [ΠFG≡ΠHE] = injectivity′ x [ΠFG≡ΠHE]
 
 -- Injectivity of Π
 injectivity : ∀ {Γ F G H E rF lF lH lG lE rH lΠ} →
-              Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≡ Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ [ ! , ι lΠ ]
+              Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ≡ Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ ! ^ [ ! , ι lΠ ]
             → Γ ⊢ F ≡ H ^ [ rF , ι lF ]
             × rF PE.≡ rH
             × lF PE.≡ lH

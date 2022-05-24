@@ -385,15 +385,15 @@ wk-β↑ t = trans (wk-subst t) (sym (trans (subst-wk t)
 -- A specific equation on weakenings used for the reduction of natrec.
 
 wk-β-natrec : ∀ ρ G rG lG
-  → Π ℕ ^ ! ° ⁰ ▹ (Π wk (lift ρ) G ^ rG ° lG ▹ wk (lift (lift ρ)) (wk1 (G [ suc (var 0) ]↑)) ° lG ° lG) ° lG ° lG
-  ≡ Π ℕ ^ ! ° ⁰ ▹ (wk (lift ρ) G ^ rG ° lG ▹▹ wk (lift ρ) G [ suc (var 0) ]↑ ° lG ° lG) ° lG ° lG
+  → Π ℕ ^ ! ° ⁰ ▹ (Π wk (lift ρ) G ^ rG ° lG ▹ wk (lift (lift ρ)) (wk1 (G [ suc (var 0) ]↑)) ° lG ° lG ^ rG) ° lG ° lG ^ rG
+  ≡ Π ℕ ^ ! ° ⁰ ▹ (wk (lift ρ) G ^ rG ° lG ▹▹ wk (lift ρ) G [ suc (var 0) ]↑ ° lG ° lG ^ rG) ° lG ° lG ^ rG
 wk-β-natrec ρ G rG lG =
-  cong6 Π_^_°_▹_°_°_ refl refl refl (cong6 Π_^_°_▹_°_°_ refl refl refl
+  cong7 Π_^_°_▹_°_°_^_ refl refl refl (cong7 Π_^_°_▹_°_°_^_ refl refl refl
     (trans (wk-comp (lift (lift ρ)) (step id)
                     (subst (consSubst (wk1Subst var) (suc (var 0))) G))
        (trans (wk-subst G) (sym (trans (wk-subst (wk (lift ρ) G))
          (trans (subst-wk G)
-                (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)))))) refl refl) refl refl
+                (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)))))) refl refl refl) refl refl refl
 
 -- Composing a singleton substitution and a lifted substitution.
 -- sg u ∘ lift σ = cons id u ∘ lift σ = cons σ u
@@ -527,16 +527,16 @@ natrecSucCaseLemma {σ} (1+ x) =
 
 natrecSucCase : ∀ σ F rF lF
   → Π ℕ ^ ! ° ⁰ ▹ (Π subst (liftSubst σ) F ^ rF ° lF
-                ▹ subst (liftSubst (liftSubst σ)) (wk1 (F [ suc (var 0) ]↑)) ° lF ° lF) ° lF ° lF
-  ≡ Π ℕ ^ ! ° ⁰ ▹ (subst (liftSubst σ) F ^ rF ° lF ▹▹ subst (liftSubst σ) F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF
+                ▹ subst (liftSubst (liftSubst σ)) (wk1 (F [ suc (var 0) ]↑)) ° lF ° lF ^ rF) ° lF ° lF ^ rF 
+  ≡ Π ℕ ^ ! ° ⁰ ▹ (subst (liftSubst σ) F ^ rF ° lF ▹▹ subst (liftSubst σ) F [ suc (var 0) ]↑ ° lF ° lF ^ rF) ° lF ° lF ^ rF
 natrecSucCase σ F rF lF =
-  cong6 Π_^_°_▹_°_°_ refl refl refl
-    (cong6 Π_^_°_▹_°_°_ refl refl refl
+  cong7 Π_^_°_▹_°_°_^_ refl refl refl
+    (cong7 Π_^_°_▹_°_°_^_ refl refl refl
        (trans (trans (subst-wk (F [ suc (var 0) ]↑))
                            (substCompEq F))
                  (sym (trans (wk-subst (subst (liftSubst σ) F))
                                    (trans (substCompEq F)
-                                             (substVar-to-subst natrecSucCaseLemma F))))) refl refl) refl refl
+                                             (substVar-to-subst natrecSucCaseLemma F))))) refl refl refl) refl refl refl
 
 natrecIrrelevantSubstLemma : ∀ {l} F z s m σ (x : Nat)
   → (sgSubst (natrec l (subst (liftSubst σ) F) (subst σ z) (subst σ s) m)
@@ -747,7 +747,7 @@ subst-Univ-either a (var 0) e = inj₁ (e , refl)
 subst-Univ-either a (Univ x l) refl = inj₂ refl
 subst-Univ-either a (var (1+ x)) ()
 subst-Univ-either a (gen (Ukind x l) (x₁ ∷ y)) ()
-subst-Univ-either a (gen (Pikind x y z w) c) ()
+subst-Univ-either a (gen (Pikind x y z w _) c) ()
 subst-Univ-either a (gen Natkind c) ()
 subst-Univ-either a (gen (Lamkind _ ) c) ()
 subst-Univ-either a (gen (Appkind _) c) ()

@@ -60,12 +60,12 @@ syntacticRedTerm d | [Γ] , modelsTermEq [A] [t] [u] [t≡u] =
 
 
 -- Syntactic validity of Π-types.
-syntacticΠ : ∀ {Γ F G rF lF lG lΠ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] → Γ ⊢ F ^ [ rF , ι lF ] × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ ! , ι lG ]
+syntacticΠ : ∀ {Γ F G rF lF lG lΠ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] → Γ ⊢ F ^ [ rF , ι lF ] × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ ! , ι lG ]
 syntacticΠ ΠFG with injectivity (refl ΠFG)
 syntacticΠ ΠFG | F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = proj₁ (syntacticEq F≡F) , proj₁ (syntacticEq G≡G)
 
 {-
-syntacticΠirr : ∀ {Γ F G rF lF lG lΠ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] → Γ ⊢ F ^ [ rF , ι lF ] × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ ! , ι lG ]
+syntacticΠirr : ∀ {Γ F G rF lF lG lΠ} → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ % ^ [ ! , ι lΠ ] → Γ ⊢ F ^ [ rF , ι lF ] × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ ! , ι lG ]
 syntacticΠirr ΠFG with injectivity (refl ΠFG)
 syntacticΠirr ΠFG | F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = proj₁ (syntacticEq F≡F) , proj₁ (syntacticEq G≡G)
 -}

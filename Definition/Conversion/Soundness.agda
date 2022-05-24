@@ -97,7 +97,7 @@ mutual
 
 
 app-cong′ : ∀ {Γ k l t v F rF lF G lG lΠ}
-          → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ι lΠ
+          → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
           → Γ ⊢ t [genconv↑] v ∷ F ^ [ rF , ι lF ]
           → Γ ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑ G [ t ] ^ [ ! , ι lG ]
 app-cong′ k~l t=v = ~↑! (app-cong k~l t=v)
@@ -105,7 +105,7 @@ app-cong′ k~l t=v = ~↑! (app-cong k~l t=v)
 natrec-cong′ : ∀ {Γ k l h g a b F lF G}
              → Γ ∙ ℕ ^ [ ! , ι ⁰ ]  ⊢ F [conv↑] G ^ [ ! , ι lF ]
              → Γ ⊢ a [conv↑] b ∷ F [ zero ] ^ ι lF
-             → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF) ° lF ° lF ^ ι lF
+             → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ ! ^ ι lF
              → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
              → Γ ⊢ natrec lF F a h k ~ natrec lF G b g l ↑ F [ k ] ^ [ ! , ι lF ]
 natrec-cong′ F=G a=b h=g k~l = ~↑! (natrec-cong F=G a=b h=g k~l)

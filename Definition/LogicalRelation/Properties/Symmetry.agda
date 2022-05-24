@@ -50,7 +50,7 @@ mutual
                              (symEq′ (PE.sym rF₁≡rF′) (PE.cong ι (PE.sym lF₁≡lF′)) ([F] [ρ] ⊢Δ) ([ρF′] [ρ] ⊢Δ)
                                     ([F≡F′] [ρ] ⊢Δ))
     in  Π₌ _ _ (red (PE.subst₃ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (PE.sym lG₁≡lG′) D))
-           (PE.subst₃ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (PE.sym lG₁≡lG′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ≅ x ^ [ r , ι lΠ ]) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
+           (PE.subst₃ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (PE.sym lG₁≡lG′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ r ≅ x ^ [ r , ι lΠ ]) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
            [F₁≡F]
            (λ {ρ} [ρ] ⊢Δ [a] →
                let ρG′a≡ρG₁′a = PE.cong (λ x → wk (lift ρ) x [ _ ]) (PE.sym G₁≡G′)
@@ -66,7 +66,7 @@ mutual
     let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
         F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , lΠ≡lΠ₁ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
     in  Πirr₌ _ _ (red (PE.subst₂ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) D))
-           (PE.subst₂ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° lΠ ≅ x ^ [ r , ι lΠ ]) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
+           (PE.subst₂ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° lΠ ^ r ≅ x ^ [ r , ι lΠ ]) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
   symEqT {Γ = Γ} {r = r} (∃ᵥ (∃ᵣ F G D ⊢F ⊢G A≡A)
                      (∃ᵣ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
          (∃₌ F′ G′ D′ A≡B) =

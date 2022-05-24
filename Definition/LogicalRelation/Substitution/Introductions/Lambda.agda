@@ -33,7 +33,7 @@ lamᵛ : ∀ {F G rF lF lG lΠ t Γ l}
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F])
        ([t] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ t ∷ G ^ [ ! , ι lG ] / [Γ] ∙ [F] / [G])
-     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ^ lΠ ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
+     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ^ lΠ ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G]
 lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
@@ -41,7 +41,7 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] [G] [t] {�
       _ , Πᵣ rF′ lF lG l< l<' F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
         extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
       lamt : ∀ {Δ σ} (⊢Δ : ⊢ Δ) ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-           → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t ^ lΠ) ∷ subst σ (Π F ^ rF ° lF ▹ G ° lG ° lΠ) ^ [ ! , ι lΠ ] / proj₁ ([ΠFG] ⊢Δ [σ])
+           → Δ ⊩⟨ l ⟩ subst σ (lam F ▹ t ^ lΠ) ∷ subst σ (Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !) ^ [ ! , ι lΠ ] / proj₁ ([ΠFG] ⊢Δ [σ])
       lamt {Δ} {σ} ⊢Δ [σ] =
         let [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
             [σF] = proj₁ ([F] ⊢Δ [σ])
@@ -297,7 +297,7 @@ lamirrᵛ : ∀ {F G rF lF t Γ l}
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F])
        ([t] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ t ∷ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F] / [G])
-     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ^ ⁰ ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ [ % , ι ⁰ ] / [Γ] / Πirrᵛ {F} {G} [Γ] [F] [G]
+     → Γ ⊩ᵛ⟨ l ⟩ lam F ▹ t ^ ⁰ ∷ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] / [Γ] / Πirrᵛ {F} {G} [Γ] [F] [G]
 lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
   let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
       [ΠFG] = Πirrᵛ {F} {G} [Γ] [F] [G]
@@ -335,11 +335,11 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                           / [Γ] ∙ [F] / [G]
            → (⊢Δ   : ⊢ Δ)
              ([σ]  : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-           → Δ ⊩⟨ l ⟩ subst σ f ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ [ ! , ι lΠ ]
+           → Δ ⊩⟨ l ⟩ subst σ f ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
                / proj₁ ([ΠFG] ⊢Δ [σ])
-           → Δ ⊩⟨ l ⟩ subst σ g ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ [ ! , ι lΠ ]
+           → Δ ⊩⟨ l ⟩ subst σ g ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
                / proj₁ ([ΠFG] ⊢Δ [σ])
-           → Δ ⊩⟨ l ⟩ subst σ f ≡ subst σ g ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ [ ! , ι lΠ ]
+           → Δ ⊩⟨ l ⟩ subst σ f ≡ subst σ g ∷ Π subst σ F ^ rF ° lF ▹ subst (liftSubst σ) G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
                / proj₁ ([ΠFG] ⊢Δ [σ])
 η-eqEqTerm {f} {g} {F} {G} {rF} {lF} {lG} {lΠ} {Γ} {Δ} {σ} lF≤ lG≤ [Γ] [F] [G] [f0≡g0] ⊢Δ [σ] 
            (Πₜ f₁ [[ ⊢t , ⊢u , d ]] funcF f≡f [f] [f]₁)
@@ -409,10 +409,10 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                          ([G]′ [ρ] ⊢Δ₁ [a])
                          ([f0≡g0] ⊢Δ₁ ([ρσ] , [a]′))
                  [ρσΠFG] = wk [ρ] ⊢Δ₁ [σΠFG]
-                 [f]′ : Δ ⊩⟨ _ ⟩ f₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , _ ] / [σΠFG]
+                 [f]′ : Δ ⊩⟨ _ ⟩ f₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , _ ] / [σΠFG]
                  [f]′ = Πₜ f₁ (idRedTerm:*: ⊢u) funcF f≡f [f] [f]₁
                  [ρf]′ = wkTerm [ρ] ⊢Δ₁ [σΠFG] [f]′
-                 [g]′ : Δ ⊩⟨ _ ⟩ g₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ [ ! , _ ] / [σΠFG]
+                 [g]′ : Δ ⊩⟨ _ ⟩ g₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , _ ] / [σΠFG]
                  [g]′ = Πₜ g₁ (idRedTerm:*: ⊢u₁) funcG g≡g [g] [g]₁
                  [ρg]′ = wkTerm [ρ] ⊢Δ₁ [σΠFG] [g]′
                  [f∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρf]′ [a] (un-univ ⊢G₁) 
@@ -435,11 +435,11 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
         ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
         ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F])
       → let [ΠFG] = Πᵛ {F} {G} lF≤ lG≤ [Γ] [F] [G] in
-        Γ ⊩ᵛ⟨ l ⟩ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠFG]
-      → Γ ⊩ᵛ⟨ l ⟩ g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠFG]
+        Γ ⊩ᵛ⟨ l ⟩ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / [ΠFG]
+      → Γ ⊩ᵛ⟨ l ⟩ g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / [ΠFG]
       → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ wk1 f ∘ var 0 ^ lΠ ≡ wk1 g ∘ var 0 ^ lΠ ∷ G ^ [ ! , ι lG ]
                      / [Γ] ∙ [F] / [G]
-      → Γ ⊩ᵛ⟨ l ⟩ f ≡ g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ [ ! , ι lΠ ] / [Γ] / [ΠFG]
+      → Γ ⊩ᵛ⟨ l ⟩ f ≡ g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ] / [ΠFG]
 η-eqᵛ {f} {g} {F} {G} lF≤ lG≤ [Γ] [F] [G] [f] [g] [f0≡g0] {Δ} {σ} ⊢Δ [σ] =
   η-eqEqTerm {f} {g} {F} {G} lF≤ lG≤ [Γ] [F] [G] [f0≡g0] ⊢Δ [σ]
                 (proj₁ ([f] ⊢Δ [σ])) (proj₁ ([g] ⊢Δ [σ]))
