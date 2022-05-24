@@ -22,7 +22,6 @@ open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Fundamental.Reducibility
 open import Definition.Typed.Consequences.RelevanceUnicity
-open import Definition.Typed.Consequences.TypeUnicity
 
 open import Tools.Empty using (⊥; ⊥-elim)
 open import Tools.Product
@@ -101,7 +100,7 @@ NfWhnf ⊢t (lamₙ _ X) = lamₙ
 NfWhnf ⊢t zeroₙ = zeroₙ
 NfWhnf ⊢t (sucₙ X) = sucₙ
 NfWhnf ⊢t (ne x) = ne (NfNeutralNeutral x)
-NfWhnf ⊢t (sprop ⊢t') = let !≡% = type-uniq ⊢t ⊢t' in ⊥-elim (!≢% !≡%)
+NfWhnf ⊢t (sprop ⊢t') = let !≡% = relevance-uniq ⊢t ⊢t' in ⊥-elim (!≢% !≡%)
 
 NfΠinversion :  ∀ {F G rF lF lG lΠ Γ} → Nf Γ (Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !) → Nf Γ F × Nf (Γ ∙ F ^ [ rF , ι lF ]) G
 NfΠinversion (Πₙ X Y) = X , Y

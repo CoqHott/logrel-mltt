@@ -202,3 +202,40 @@ U≢Empty U≡Empty =
       e₁ , _ = relevance-unicity ⊢ℕ (univ (ℕⱼ (wfEq ℕ≡Empty)))
       e₂ , _ = relevance-unicity ⊢Empty (univ (Emptyⱼ (wfEq ℕ≡Empty)))
   in !≢% (PE.trans (PE.sym e₁) e₂)
+
+
+relevance-uniq : ∀ {Γ t T₁ T₂ r₁ r₂ l₁ l₂} → Γ ⊢ t ∷ T₁ ^ [ r₁ , l₁ ] → Γ ⊢ t ∷ T₂ ^ [ r₂ , l₂ ] →
+                 r₁ PE.≡ r₂
+relevance-uniq (univ 0<1 x) (univ 0<1 x') = PE.refl 
+relevance-uniq (ℕⱼ x) (ℕⱼ x₁) = PE.refl 
+relevance-uniq (Emptyⱼ x) (Emptyⱼ x₁) = PE.refl
+relevance-uniq (Πⱼ x ▹ x₁ ▹ X ▹ X₁) (Πⱼ x₂ ▹ x₃ ▹ Y ▹ Y₁) =
+          PE.refl 
+relevance-uniq (∃ⱼ X ▹ X₁) (∃ⱼ Y ▹ Y₁) = PE.refl
+relevance-uniq (var xx x) (var _ y) =
+    let T≡T , e = varTypeEq′ x y
+        er , el = typelevel-injectivity e
+    in er
+relevance-uniq (lamⱼ x x₁ x₂ X) (lamⱼ y y₁ y₂ Y) =
+  let erF , elF  = relevance-unicity x₂ y₂
+  in relevance-uniq X (PE.subst₂ (λ r l → _ ∙ _ ^ [ r , ι l ] ⊢ _ ∷ _ ^ _) (PE.sym erF) (PE.sym (ιinj elF)) Y)
+relevance-uniq (_ ▹ _ ▹ _ ▹ X ∘ⱼ X₁) (_ ▹ _ ▹ _ ▹ Y ∘ⱼ Y₁) = relevance-uniq X Y
+relevance-uniq {Γ} ⦅ x , x₁ , X , X₁ ⦆ⱼ (⦅_,_,_,_⦆ⱼ {F = F} {G = G} y y₁ Y Y₁)  = PE.refl 
+relevance-uniq (fstⱼ X X₁ X₂) (fstⱼ Y Y₁ Y₂) =
+    PE.refl 
+relevance-uniq (sndⱼ X X₁ X₂) (sndⱼ Y Y₁ Y₂) = PE.refl
+relevance-uniq (zeroⱼ x) (zeroⱼ x₁) = PE.refl 
+relevance-uniq (sucⱼ X) (sucⱼ Y) = PE.refl 
+relevance-uniq (natrecⱼ _ x X X₁ X₂) (natrecⱼ _ y Y Y₁ Y₂) = relevance-uniq X₁ Y₁
+relevance-uniq (Emptyrecⱼ x X) (Emptyrecⱼ y Y) = let er , el = relevance-unicity x y in er
+relevance-uniq (Idⱼ X X₁ X₂) (Idⱼ Y Y₁ Y₂) =
+    PE.refl 
+relevance-uniq (Idreflⱼ X) (Idreflⱼ Y) =
+    PE.refl 
+relevance-uniq (transpⱼ x x₁ X X₁ X₂ X₃) (transpⱼ x₂ x₃ Y Y₁ Y₂ Y₃) =
+    PE.refl 
+relevance-uniq (castⱼ X X₁ X₂ X₃) (castⱼ Y Y₁ Y₂ Y₃) = relevance-uniq X₃ Y₃
+relevance-uniq (castreflⱼ X X₁) (castreflⱼ Y Y₁) = PE.refl 
+relevance-uniq (conv X x) Y = relevance-uniq X Y
+relevance-uniq X (conv Y y) = relevance-uniq X Y
+  
