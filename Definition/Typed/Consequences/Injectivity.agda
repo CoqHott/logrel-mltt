@@ -15,9 +15,28 @@ open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Properties
 open import Definition.LogicalRelation.Fundamental.Reducibility
+open import Definition.LogicalRelation.Fundamental
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+
+{-
+Πirr-ext : ∀ {F G rF lF l Γ}
+               ([ΠFG] : Γ ⊩Πirr Π F ^ rF ° lF  ▹ G ° ⁰ ° ⁰ ^ %  )
+               → ∃₂ λ ([F] : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩⟨ l ⟩ U.wk ρ F ^ [ rF , ι lF ]) →
+                 λ ([G] : ∀ {ρ Δ a}
+            → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+            → Δ ⊩⟨ l ⟩ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
+            → Δ ⊩⟨ l ⟩ U.wk (lift ρ) G [ a ] ^ [ ! , ι ⁰ ]) →
+           (∀ {ρ Δ a b}
+              → ([ρ] : ρ ∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
+              → ([a] : Δ ⊩⟨ l ⟩ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
+              → ([b] : Δ ⊩⟨ l ⟩ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
+              → Δ ⊩⟨ l ⟩ a ≡ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
+              → Δ ⊩⟨ l ⟩ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ ! , ι ⁰ ] / [G] [ρ] ⊢Δ [a])
+Πirr-ext  (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A) = {!!} -- let  _ , [F] = fundamental ⊢F in  (λ x ⊢Δ → let foo = [F] ⊢Δ (fundamentalSubst ? ? x)in {!!}) , {!!} 
+-}
+
 
 
 -- Helper function of injectivity for specific reducible Π-types
