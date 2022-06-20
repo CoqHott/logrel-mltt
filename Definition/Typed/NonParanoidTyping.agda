@@ -5,6 +5,7 @@ module Definition.Typed.NonParanoidTyping where
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Properties
+open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Inversion
 open import Definition.Typed.Consequences.Syntactic
 
@@ -43,8 +44,8 @@ mutual
     Πⱼ_▹_▹_▹_ : ∀ {F rF lF G lG r l}
            → (r PE.≡ ! → lF ≤ l × lG ≤ l)
            → (r PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
-           → Γ     ⊢⊢ F ∷ (Univ rF lF) ^ [ ! , next lF ]
-           → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ G ∷ (Univ r lG) ^ [ ! , next lG ]
+           → Γ     ⊢⊢ F ^ [ rF , ι lF ]
+           → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ G ^ [ r , ι lG ]
            → Γ     ⊢⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ r ∷ (Univ r l) ^ [ ! , next l ]
     ∃ⱼ_▹_ : ∀ {F G}
             → Γ ⊢⊢ F ∷ SProp ^ [ ! , ι ¹ ]
@@ -59,8 +60,7 @@ mutual
            → (r PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
            → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ t ∷ G ^ [ r , ι lG ]
            → Γ     ⊢⊢ lam F ▹ t ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ r ^ [ r , ι l ]
-    _▹_∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
-           → (r PE.≡ % → lG PE.≡ ⁰ × lΠ PE.≡ ⁰)
+    _∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
            → Γ ⊢⊢     g ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ r ^ [ r , ι lΠ ]
            → Γ ⊢⊢     a ∷ F ^ [ rF , ι lF ]
            → Γ ⊢⊢ g ∘ a ^ lΠ ∷ G [ a ] ^ [ r , ι lG ]
@@ -81,7 +81,6 @@ mutual
            → Γ ⊢⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ ⊢⊢ suc n ∷ ℕ ^ [ ! ,  ι ⁰ ]
     natrecⱼ : ∀ {G rG lG s z n}
-           → (rG PE.≡ % → lG PE.≡ ⁰)
            → Γ ∙ ℕ ^ [ ! ,  ι ⁰ ] ⊢⊢ G ^ [ rG , ι lG ]
            → Γ       ⊢⊢ z ∷ G [ zero ] ^ [ rG , ι lG ]
            → Γ       ⊢⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (G ^ rG ° lG ▹▹ G [ suc (var Nat.zero) ]↑ ° lG ° lG ^ rG) ° lG ° lG ^ rG ^ [ rG , ι lG ]
@@ -90,7 +89,6 @@ mutual
     Emptyrecⱼ : ∀ {A lA rA e}
            → Γ ⊢⊢ A ^ [ rA , ι lA ] → Γ ⊢⊢ e ∷ sEmpty ^ [ % ,  ι ⁰ ] -> Γ ⊢⊢ Emptyrec lA ⁰ A e ∷ A ^ [ rA , ι lA ]
     Idⱼ : ∀ {A l t u}
-          → Γ ⊢⊢ A ∷ U l ^ [ ! , next l ]
           → Γ ⊢⊢ t ∷ A ^ [ ! , ι l ]
           → Γ ⊢⊢ u ∷ A ^ [ ! , ι l ]
           → Γ ⊢⊢ Id A t u ∷ SProp ^ [ ! , next ⁰ ]
@@ -98,7 +96,6 @@ mutual
               → Γ ⊢⊢ t ∷ A ^ [ ! , ι l ]
               → Γ ⊢⊢ Idrefl A t ∷ (Id A t t) ^ [ % , ι ⁰ ]
     transpⱼ : ∀ {A l P t s u e}
-              → Γ ⊢⊢ A ^ [ ! , l ]
               → Γ ∙ A ^ [ ! , l ] ⊢⊢ P ^ [ % , ι ⁰ ]
               → Γ ⊢⊢ t ∷ A ^ [ ! , l ]
               → Γ ⊢⊢ s ∷ P [ t ] ^ [ % , ι ⁰ ]
@@ -106,13 +103,10 @@ mutual
               → Γ ⊢⊢ e ∷ (Id A t u) ^ [ % , ι ⁰ ]
               → Γ ⊢⊢ transp A P t s u e ∷ P [ u ] ^ [ % , ι ⁰ ]
     castⱼ : ∀ {A B r e t}
-            → Γ ⊢⊢ A ∷ Univ r ⁰ ^ [ ! , next ⁰ ]
-            → Γ ⊢⊢ B ∷ Univ r ⁰ ^ [ ! , next ⁰ ]
             → Γ ⊢⊢ e ∷ (Id (Univ r ⁰) A B) ^ [ % , ι ⁰ ]
             → Γ ⊢⊢ t ∷ A ^ [ r , ι ⁰ ]
             → Γ ⊢⊢ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ]
     castreflⱼ : ∀ {A t}
-                 → Γ ⊢⊢ A ∷ U ⁰ ^ [ ! , next ⁰ ]
                  → Γ ⊢⊢ t ∷ A ^ [ ! , ι ⁰ ]
                  → Γ ⊢⊢ castrefl A t ∷ (Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t)) ^ [ % , ι ⁰ ]
     conv   : ∀ {t A B r}
@@ -156,8 +150,8 @@ mutual
     Π-cong      : ∀ {E F G H rF lF rG lG l}
                 → (rG PE.≡ ! → lF ≤ l × lG ≤ l)
                 → (rG PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
-                → Γ     ⊢⊢ F ≡ H       ∷ (Univ rF lF) ^ [ ! , next lF ]
-                → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ G ≡ E       ∷ (Univ rG lG) ^ [ ! , next lG ]
+                → Γ     ⊢⊢ F ≡ H ^ [ rF , ι lF ]
+                → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ G ≡ E ^ [ rG , ι lG ]
                 → Γ     ⊢⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ rG ≡ Π H ^ rF ° lF ▹ E ° lG ° l ^ rG ∷ (Univ rG l) ^ [ ! , next l ]
     ∃-cong      : ∀ {E F G H}
                 → Γ     ⊢⊢ F ≡ H       ∷ SProp ^ [ ! , next ⁰ ]
@@ -207,7 +201,7 @@ mutual
                       → Γ ⊢⊢ u ∷ A ^ [ % , l ]
                       → Γ ⊢⊢ t ≡ u ∷ A ^ [ % , l ]
     Id-cong : ∀ {A A' l t t' u u'}
-              → Γ ⊢⊢ A ≡ A' ∷ Univ ! l ^ [ ! , next l ]
+              → Γ ⊢⊢ A ≡ A' ^ [ ! , ι l ]
               → Γ ⊢⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
               → Γ ⊢⊢ u ≡ u' ∷ A ^ [ ! , ι l ]
               → Γ ⊢⊢ Id A t u ≡ Id A' t' u' ∷ SProp ^ [ ! , next ⁰ ]
@@ -229,9 +223,9 @@ mutual
                     ∷ SProp ^ [ ! , next ⁰ ]
     Id-U-ΠΠ : ∀ {A A' rA B B'}
               → Γ ⊢⊢ A ∷ (Univ rA ⁰) ^ [ ! , next ⁰ ]
-              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+              → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ^ [ ! , ι ⁰ ]
               → Γ ⊢⊢ A' ∷ (Univ rA ⁰) ^ [ ! , next ⁰ ]
-              → Γ ∙ A' ^ [ rA , ι ⁰ ] ⊢⊢ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
+              → Γ ∙ A' ^ [ rA , ι ⁰ ] ⊢⊢ B' ^ [ ! , ι ⁰ ]
               → Γ ⊢⊢ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !))
                     ≡ ∃ (Id (Univ rA ⁰) A A') ▹
                       (Π (wk1 A') ^ rA ° ⁰ ▹ Id (U ⁰)
@@ -255,23 +249,23 @@ mutual
             → Γ ⊢⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
             → Γ ⊢⊢ Id ℕ (suc t) zero ≡ sEmpty ∷ SProp ^ [ ! , next ⁰ ]
     Id-U-ℕΠ : ∀ {A rA B}
-            → Γ ⊢⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
-            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢⊢ A ^ [ rA , ι ⁰ ] 
+            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ^ [ ! , ι ⁰ ] 
             → Γ ⊢⊢ Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) ≡ sEmpty ∷ SProp ^ [ ! , next ⁰ ]
     Id-U-Πℕ : ∀ {A rA B}
-            → Γ ⊢⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
-            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢⊢ A ^ [ rA , ι ⁰ ]
+            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ^ [ ! , ι ⁰ ]
             → Γ ⊢⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) ℕ ≡ sEmpty ∷ SProp ^ [ ! , next ⁰ ]
     Id-U-ΠΠ!% : ∀ {A rA B A' rA' B' }
             → rA PE.≢ rA'
-            → Γ ⊢⊢ A ∷ Univ rA ⁰ ^ [ ! , next ⁰ ]
-            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ∷ U ⁰ ^ [ ! , next ⁰ ]
-            → Γ ⊢⊢ A' ∷ Univ rA' ⁰ ^ [ ! , next ⁰ ]
-            → Γ ∙ A' ^ [ rA' , ι ⁰ ] ⊢⊢ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
+            → Γ ⊢⊢ A ^ [ rA , ι ⁰ ] 
+            → Γ ∙ A ^ [ rA , ι ⁰ ] ⊢⊢ B ^ [ ! , ι ⁰ ]
+            → Γ ⊢⊢ A' ^ [ rA' , ι ⁰ ]
+            → Γ ∙ A' ^ [ rA' , ι ⁰ ] ⊢⊢ B' ^ [ ! , ι ⁰ ]
             → Γ ⊢⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) (Π A' ^ rA' ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) ≡ sEmpty ∷ SProp ^ [ ! , next ⁰ ]
     cast-cong : ∀ {A A' B B' e e' t t'} → let l = ⁰ in
-                  Γ ⊢⊢ A ≡ A' ∷ U l ^ [ ! , next l ]
-                → Γ ⊢⊢ B ≡ B' ∷ U l ^ [ ! , next l ]
+                  Γ ⊢⊢ A ≡ A' ^ [ ! , ι l ]
+                → Γ ⊢⊢ B ≡ B' ^ [ ! , ι l ]
                 → Γ ⊢⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
                 → Γ ⊢⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
                 → Γ ⊢⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , ι ⁰ ]
@@ -318,30 +312,30 @@ mutual
   ⊢is⊢⊢term (univ x ⊢Γ) = univ x (⊢is⊢⊢ctx ⊢Γ)
   ⊢is⊢⊢term (ℕⱼ ⊢Γ) = ℕⱼ (⊢is⊢⊢ctx ⊢Γ)
   ⊢is⊢⊢term (Emptyⱼ ⊢Γ) = Emptyⱼ (⊢is⊢⊢ctx ⊢Γ)
-  ⊢is⊢⊢term (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = Πⱼ x ▹ x₁ ▹ ⊢is⊢⊢term X ▹ ⊢is⊢⊢term X₁
+  ⊢is⊢⊢term (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = Πⱼ x ▹ x₁ ▹ univ (⊢is⊢⊢term X) ▹ univ (⊢is⊢⊢term X₁)
   ⊢is⊢⊢term (∃ⱼ X ▹ X₁) = ∃ⱼ ⊢is⊢⊢term X ▹ ⊢is⊢⊢term X₁
   ⊢is⊢⊢term (var ⊢Γ x) = var (⊢is⊢⊢ctx ⊢Γ) x
   ⊢is⊢⊢term (lamⱼ x x₁ x₂ X) = lamⱼ x x₁ (⊢is⊢⊢term X)
-  ⊢is⊢⊢term (x ▹ X ▹ X₁ ▹ X₂ ∘ⱼ X₃) = x ▹ ⊢is⊢⊢term X₂ ∘ⱼ ⊢is⊢⊢term X₃
+  ⊢is⊢⊢term (x ▹ X ▹ X₁ ▹ X₂ ∘ⱼ X₃) = ⊢is⊢⊢term X₂ ∘ⱼ ⊢is⊢⊢term X₃
   ⊢is⊢⊢term (⦅_,_,_,_⦆ⱼ x x₁ X X₁) = ⦅ ⊢is⊢⊢ x₁ , ⊢is⊢⊢term X , ⊢is⊢⊢term X₁ ⦆ⱼ
   ⊢is⊢⊢term (fstⱼ X X₁ X₂) = fstⱼ (⊢is⊢⊢term X₂)
   ⊢is⊢⊢term (sndⱼ X X₁ X₂) = sndⱼ (⊢is⊢⊢term X₂)
   ⊢is⊢⊢term (zeroⱼ x) = zeroⱼ (⊢is⊢⊢ctx x)
   ⊢is⊢⊢term (sucⱼ X) = sucⱼ (⊢is⊢⊢term X)
-  ⊢is⊢⊢term (natrecⱼ x x₁ X X₁ X₂) = natrecⱼ x (⊢is⊢⊢ x₁) (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂)
+  ⊢is⊢⊢term (natrecⱼ x x₁ X X₁ X₂) = natrecⱼ (⊢is⊢⊢ x₁) (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂)
   ⊢is⊢⊢term (Emptyrecⱼ x X) = Emptyrecⱼ (⊢is⊢⊢ x) (⊢is⊢⊢term X)
-  ⊢is⊢⊢term (Idⱼ X X₁ X₂) = Idⱼ (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂) 
+  ⊢is⊢⊢term (Idⱼ X X₁ X₂) = Idⱼ (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂) 
   ⊢is⊢⊢term (Idreflⱼ X) = Idreflⱼ (⊢is⊢⊢term X)
-  ⊢is⊢⊢term (transpⱼ x x₁ X X₁ X₂ X₃) = transpⱼ (⊢is⊢⊢ x) (⊢is⊢⊢ x₁) (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂) (⊢is⊢⊢term X₃)
-  ⊢is⊢⊢term (castⱼ X X₁ X₂ X₃) = castⱼ (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂) (⊢is⊢⊢term X₃) 
-  ⊢is⊢⊢term (castreflⱼ X X₁) = castreflⱼ (⊢is⊢⊢term X) (⊢is⊢⊢term X₁)
+  ⊢is⊢⊢term (transpⱼ x x₁ X X₁ X₂ X₃) = transpⱼ (⊢is⊢⊢ x₁) (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂) (⊢is⊢⊢term X₃)
+  ⊢is⊢⊢term (castⱼ X X₁ X₂ X₃) = castⱼ (⊢is⊢⊢term X₂) (⊢is⊢⊢term X₃) 
+  ⊢is⊢⊢term (castreflⱼ X X₁) = castreflⱼ (⊢is⊢⊢term X₁)
   ⊢is⊢⊢term (conv X x) = conv (⊢is⊢⊢term X) (⊢is⊢⊢eq x)
 
   ⊢is⊢⊢eqterm (refl x) = refl (⊢is⊢⊢term x)
   ⊢is⊢⊢eqterm (sym X) = sym (⊢is⊢⊢eqterm X)
   ⊢is⊢⊢eqterm (trans X X₁) = trans (⊢is⊢⊢eqterm X) (⊢is⊢⊢eqterm X₁)
   ⊢is⊢⊢eqterm (conv X x) = conv (⊢is⊢⊢eqterm X) (⊢is⊢⊢eq x)
-  ⊢is⊢⊢eqterm (Π-cong x x₁ x₂ X X₁) = Π-cong x x₁ (⊢is⊢⊢eqterm X) (⊢is⊢⊢eqterm X₁)
+  ⊢is⊢⊢eqterm (Π-cong x x₁ x₂ X X₁) = Π-cong x x₁ (univ (⊢is⊢⊢eqterm X)) (univ (⊢is⊢⊢eqterm X₁))
   ⊢is⊢⊢eqterm (∃-cong x X X₁) = ∃-cong (⊢is⊢⊢eqterm X) (⊢is⊢⊢eqterm X₁)
   ⊢is⊢⊢eqterm (app-cong X X₁) = app-cong (⊢is⊢⊢eqterm X) (⊢is⊢⊢eqterm X₁)
   ⊢is⊢⊢eqterm (β-red x x₁ x₂ x₃ x₄) = β-red x x₁ (⊢is⊢⊢term x₃) (⊢is⊢⊢term x₄)
@@ -352,19 +346,19 @@ mutual
   ⊢is⊢⊢eqterm (natrec-suc x x₁ x₂ x₃) = natrec-suc (⊢is⊢⊢term x) (⊢is⊢⊢term x₂) (⊢is⊢⊢term x₃)
   ⊢is⊢⊢eqterm (Emptyrec-cong x x₁ x₂) = Emptyrec-cong (⊢is⊢⊢eq x) (⊢is⊢⊢term x₁) (⊢is⊢⊢term x₂)
   ⊢is⊢⊢eqterm (proof-irrelevance x x₁) = proof-irrelevance (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
-  ⊢is⊢⊢eqterm (Id-cong X X₁ X₂) = Id-cong (⊢is⊢⊢eqterm X) (⊢is⊢⊢eqterm X₁) (⊢is⊢⊢eqterm X₂)
+  ⊢is⊢⊢eqterm (Id-cong X X₁ X₂) = Id-cong (univ (⊢is⊢⊢eqterm X)) (⊢is⊢⊢eqterm X₁) (⊢is⊢⊢eqterm X₂)
   ⊢is⊢⊢eqterm (Id-Π x x₁ x₂ x₃ x₄ x₅) = Id-Π  (⊢is⊢⊢term x₄) (⊢is⊢⊢term x₅)
   ⊢is⊢⊢eqterm (Id-ℕ-00 x) = Id-ℕ-00 (⊢is⊢⊢ctx x) 
   ⊢is⊢⊢eqterm (Id-ℕ-SS x x₁) = Id-ℕ-SS (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
-  ⊢is⊢⊢eqterm (Id-U-ΠΠ x x₁ x₂ x₃) = Id-U-ΠΠ (⊢is⊢⊢term x) (⊢is⊢⊢term x₁) (⊢is⊢⊢term x₂) (⊢is⊢⊢term x₃) 
+  ⊢is⊢⊢eqterm (Id-U-ΠΠ x x₁ x₂ x₃) = Id-U-ΠΠ (⊢is⊢⊢term x) (univ (⊢is⊢⊢term x₁)) (⊢is⊢⊢term x₂) (univ (⊢is⊢⊢term x₃))
   ⊢is⊢⊢eqterm (Id-U-ℕℕ x) = Id-U-ℕℕ (⊢is⊢⊢ctx x)
   ⊢is⊢⊢eqterm (Id-SProp x x₁) = Id-SProp (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
   ⊢is⊢⊢eqterm (Id-ℕ-0S x) = Id-ℕ-0S (⊢is⊢⊢term x)
   ⊢is⊢⊢eqterm (Id-ℕ-S0 x) = Id-ℕ-S0 (⊢is⊢⊢term x)
-  ⊢is⊢⊢eqterm (Id-U-ℕΠ x x₁) = Id-U-ℕΠ (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
-  ⊢is⊢⊢eqterm (Id-U-Πℕ x x₁) = Id-U-Πℕ (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
-  ⊢is⊢⊢eqterm (Id-U-ΠΠ!% r x x₁ x₂ x₃) = Id-U-ΠΠ!% r (⊢is⊢⊢term x) (⊢is⊢⊢term x₁) (⊢is⊢⊢term x₂) (⊢is⊢⊢term x₃) 
-  ⊢is⊢⊢eqterm (cast-cong X X₁ X₂ x x₁) = cast-cong (⊢is⊢⊢eqterm X) (⊢is⊢⊢eqterm X₁) (⊢is⊢⊢eqterm X₂) (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
+  ⊢is⊢⊢eqterm (Id-U-ℕΠ x x₁) = Id-U-ℕΠ (univ (⊢is⊢⊢term x)) (univ (⊢is⊢⊢term x₁))
+  ⊢is⊢⊢eqterm (Id-U-Πℕ x x₁) = Id-U-Πℕ (univ (⊢is⊢⊢term x)) (univ (⊢is⊢⊢term x₁))
+  ⊢is⊢⊢eqterm (Id-U-ΠΠ!% r x x₁ x₂ x₃) = Id-U-ΠΠ!% r (univ (⊢is⊢⊢term x)) (univ (⊢is⊢⊢term x₁)) (univ (⊢is⊢⊢term x₂)) (univ (⊢is⊢⊢term x₃))
+  ⊢is⊢⊢eqterm (cast-cong X X₁ X₂ x x₁) = cast-cong (univ (⊢is⊢⊢eqterm X)) (univ (⊢is⊢⊢eqterm X₁)) (⊢is⊢⊢eqterm X₂) (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
   ⊢is⊢⊢eqterm (cast-Π x x₁ x₂ x₃ x₄ x₅) = cast-Π (⊢is⊢⊢term x₄) (⊢is⊢⊢term x₅)
   ⊢is⊢⊢eqterm (cast-ℕ-0 x) = cast-ℕ-0 (⊢is⊢⊢term x)
   ⊢is⊢⊢eqterm (cast-ℕ-S x x₁) = cast-ℕ-S (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
@@ -391,16 +385,16 @@ mutual
   ⊢⊢is⊢term (univ x ⊢Γ) = univ x (⊢⊢is⊢ctx ⊢Γ)
   ⊢⊢is⊢term (ℕⱼ ⊢Γ) = ℕⱼ (⊢⊢is⊢ctx ⊢Γ)
   ⊢⊢is⊢term (Emptyⱼ ⊢Γ) = Emptyⱼ (⊢⊢is⊢ctx ⊢Γ)
-  ⊢⊢is⊢term (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = Πⱼ x ▹ x₁ ▹ ⊢⊢is⊢term X ▹ ⊢⊢is⊢term X₁
+  ⊢⊢is⊢term (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = Πⱼ x ▹ x₁ ▹ un-univ (⊢⊢is⊢ X) ▹ un-univ (⊢⊢is⊢ X₁)
   ⊢⊢is⊢term (∃ⱼ X ▹ X₁) = ∃ⱼ ⊢⊢is⊢term X ▹ ⊢⊢is⊢term X₁
   ⊢⊢is⊢term (var ⊢Γ x) = var (⊢⊢is⊢ctx ⊢Γ) x
   ⊢⊢is⊢term (lamⱼ x x₁ X) = let XX = ⊢⊢is⊢term X in lamⱼ x x₁ (let ⊢Γ , ⊢F = inversion-ctx (wfTerm XX) in ⊢F) XX
-  ⊢⊢is⊢term (x ▹ X₂ ∘ⱼ X₃) =
+  ⊢⊢is⊢term (X₂ ∘ⱼ X₃) =
     let ⊢g = ⊢⊢is⊢term X₂ 
         ⊢a = ⊢⊢is⊢term X₃
         ⊢Π = un-univ (syntacticTerm ⊢g)
-        rG , _ , _ , _ , ⊢G , _ , req , _ = inversion-Π ⊢Π
-    in x ▹ un-univ (syntacticTerm ⊢a) ▹ PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ [ ! , _ ]) req ⊢G ▹ ⊢g ∘ⱼ ⊢a
+        rG , _ , l% , _ , ⊢G , _ , req , _ = inversion-Π ⊢Π
+    in  PE.subst (λ rr → rr PE.≡ % → _ PE.≡ ⁰ × _ PE.≡ ⁰) req l% ▹ un-univ (syntacticTerm ⊢a) ▹ PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ [ ! , _ ]) req ⊢G ▹ ⊢g ∘ⱼ ⊢a
   ⊢⊢is⊢term (⦅_,_,_⦆ⱼ x X X₁) =
     let ⊢t = ⊢⊢is⊢term X
         ⊢u = ⊢⊢is⊢term X₁
@@ -415,13 +409,30 @@ mutual
     in sndⱼ ⊢A ⊢G ⊢t
   ⊢⊢is⊢term (zeroⱼ x) = zeroⱼ (⊢⊢is⊢ctx x)
   ⊢⊢is⊢term (sucⱼ X) = sucⱼ (⊢⊢is⊢term X)
-  ⊢⊢is⊢term (natrecⱼ x x₁ X X₁ X₂) = natrecⱼ x (⊢⊢is⊢ x₁) (⊢⊢is⊢term X) (⊢⊢is⊢term X₁) (⊢⊢is⊢term X₂)
+  ⊢⊢is⊢term (natrecⱼ x₁ X X₁ X₂) =
+    let ⊢s = ⊢⊢is⊢term X₁ 
+        ⊢Π = un-univ (syntacticTerm ⊢s)
+        rG , _ , l% , _ , ⊢G , _ , req , _ = inversion-Π ⊢Π
+        l% = PE.subst (λ rr → rr PE.≡ % → _ PE.≡ ⁰ × _ PE.≡ ⁰) req l%
+    in natrecⱼ (λ req → proj₁ (l% req)) (⊢⊢is⊢ x₁) (⊢⊢is⊢term X) ⊢s (⊢⊢is⊢term X₂)
   ⊢⊢is⊢term (Emptyrecⱼ x X) = Emptyrecⱼ (⊢⊢is⊢ x) (⊢⊢is⊢term X)
-  ⊢⊢is⊢term (Idⱼ X X₁ X₂) = Idⱼ (⊢⊢is⊢term X) (⊢⊢is⊢term X₁) (⊢⊢is⊢term X₂) 
+  ⊢⊢is⊢term (Idⱼ X₁ X₂) =
+    let ⊢t = (⊢⊢is⊢term X₁)
+    in Idⱼ (un-univ (syntacticTerm ⊢t)) ⊢t (⊢⊢is⊢term X₂) 
   ⊢⊢is⊢term (Idreflⱼ X) = Idreflⱼ (⊢⊢is⊢term X)
-  ⊢⊢is⊢term (transpⱼ x x₁ X X₁ X₂ X₃) = transpⱼ (⊢⊢is⊢ x) (⊢⊢is⊢ x₁) (⊢⊢is⊢term X) (⊢⊢is⊢term X₁) (⊢⊢is⊢term X₂) (⊢⊢is⊢term X₃)
-  ⊢⊢is⊢term (castⱼ X X₁ X₂ X₃) = castⱼ (⊢⊢is⊢term X) (⊢⊢is⊢term X₁) (⊢⊢is⊢term X₂) (⊢⊢is⊢term X₃) 
-  ⊢⊢is⊢term (castreflⱼ X X₁) = castreflⱼ (⊢⊢is⊢term X) (⊢⊢is⊢term X₁)
+  ⊢⊢is⊢term (transpⱼ x₁ X X₁ X₂ X₃) =
+    let ⊢t = (⊢⊢is⊢term X)
+    in transpⱼ (syntacticTerm ⊢t) (⊢⊢is⊢ x₁) ⊢t (⊢⊢is⊢term X₁) (⊢⊢is⊢term X₂) (⊢⊢is⊢term X₃)
+  ⊢⊢is⊢term (castⱼ X₂ X₃) =
+    let ⊢e = ⊢⊢is⊢term X₂
+        ⊢Id = un-univ (syntacticTerm ⊢e)
+        _ , ⊢U , ⊢A , ⊢B , _ = inversion-Id ⊢Id
+        Ueq , _ = inversion-U ⊢U
+        _ , leq = Uinjectivity Ueq
+    in castⱼ (PE.subst (λ l → _ ⊢ _ ∷ _ ^ [ ! , ι l ]) leq ⊢A) (PE.subst (λ l → _ ⊢ _ ∷ _ ^ [ ! , ι l ]) leq ⊢B) ⊢e (⊢⊢is⊢term X₃) 
+  ⊢⊢is⊢term (castreflⱼ X₁) =
+    let ⊢t = (⊢⊢is⊢term X₁)
+    in castreflⱼ (un-univ (syntacticTerm ⊢t)) ⊢t
   ⊢⊢is⊢term (conv X x) = conv (⊢⊢is⊢term X) (⊢⊢is⊢eq x)
 
   ⊢⊢is⊢eqterm (refl x) = refl (⊢⊢is⊢term x)
@@ -429,9 +440,9 @@ mutual
   ⊢⊢is⊢eqterm (trans X X₁) = trans (⊢⊢is⊢eqterm X) (⊢⊢is⊢eqterm X₁)
   ⊢⊢is⊢eqterm (conv X x) = conv (⊢⊢is⊢eqterm X) (⊢⊢is⊢eq x)
   ⊢⊢is⊢eqterm (Π-cong x x₁ X X₁) =
-    let ⊢FH = ⊢⊢is⊢eqterm X
-        _ , ⊢F , _ = syntacticEqTerm ⊢FH
-    in Π-cong x x₁ (univ ⊢F) ⊢FH (⊢⊢is⊢eqterm X₁)
+    let ⊢FH = ⊢⊢is⊢eq X
+        ⊢F , _ = syntacticEq ⊢FH
+    in Π-cong x x₁ ⊢F (un-univ≡ ⊢FH) (un-univ≡ (⊢⊢is⊢eq X₁))
   ⊢⊢is⊢eqterm (∃-cong X X₁) =
     let ⊢FH = ⊢⊢is⊢eqterm X
         _ , ⊢F , _ = syntacticEqTerm ⊢FH
@@ -461,7 +472,7 @@ mutual
     in natrec-suc (⊢⊢is⊢term x) (univ ⊢F) (⊢⊢is⊢term x₂) ⊢s
   ⊢⊢is⊢eqterm (Emptyrec-cong x x₁ x₂) = Emptyrec-cong (⊢⊢is⊢eq x) (⊢⊢is⊢term x₁) (⊢⊢is⊢term x₂)
   ⊢⊢is⊢eqterm (proof-irrelevance x x₁) = proof-irrelevance (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
-  ⊢⊢is⊢eqterm (Id-cong X X₁ X₂) = Id-cong (⊢⊢is⊢eqterm X) (⊢⊢is⊢eqterm X₁) (⊢⊢is⊢eqterm X₂)
+  ⊢⊢is⊢eqterm (Id-cong X X₁ X₂) = Id-cong (un-univ≡ (⊢⊢is⊢eq X)) (⊢⊢is⊢eqterm X₁) (⊢⊢is⊢eqterm X₂)
   ⊢⊢is⊢eqterm (Id-Π x₄ x₅) =
     let ⊢t = ⊢⊢is⊢term x₄
         ⊢Π = un-univ (syntacticTerm ⊢t)
@@ -469,15 +480,15 @@ mutual
     in Id-Π (proj₁ (l! req)) (proj₂ (l! req)) ⊢F (PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ [ ! , _ ]) req ⊢G) ⊢t (⊢⊢is⊢term x₅)
   ⊢⊢is⊢eqterm (Id-ℕ-00 x) = Id-ℕ-00 (⊢⊢is⊢ctx x) 
   ⊢⊢is⊢eqterm (Id-ℕ-SS x x₁) = Id-ℕ-SS (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
-  ⊢⊢is⊢eqterm (Id-U-ΠΠ x x₁ x₂ x₃) = Id-U-ΠΠ (⊢⊢is⊢term x) (⊢⊢is⊢term x₁) (⊢⊢is⊢term x₂) (⊢⊢is⊢term x₃) 
+  ⊢⊢is⊢eqterm (Id-U-ΠΠ x x₁ x₂ x₃) = Id-U-ΠΠ (⊢⊢is⊢term x) (un-univ (⊢⊢is⊢ x₁)) (⊢⊢is⊢term x₂) (un-univ (⊢⊢is⊢ x₃))
   ⊢⊢is⊢eqterm (Id-U-ℕℕ x) = Id-U-ℕℕ (⊢⊢is⊢ctx x)
   ⊢⊢is⊢eqterm (Id-SProp x x₁) = Id-SProp (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
   ⊢⊢is⊢eqterm (Id-ℕ-0S x) = Id-ℕ-0S (⊢⊢is⊢term x)
   ⊢⊢is⊢eqterm (Id-ℕ-S0 x) = Id-ℕ-S0 (⊢⊢is⊢term x)
-  ⊢⊢is⊢eqterm (Id-U-ℕΠ x x₁) = Id-U-ℕΠ (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
-  ⊢⊢is⊢eqterm (Id-U-Πℕ x x₁) = Id-U-Πℕ (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
-  ⊢⊢is⊢eqterm (Id-U-ΠΠ!% r x x₁ x₂ x₃) = Id-U-ΠΠ!% r (⊢⊢is⊢term x) (⊢⊢is⊢term x₁) (⊢⊢is⊢term x₂) (⊢⊢is⊢term x₃) 
-  ⊢⊢is⊢eqterm (cast-cong X X₁ X₂ x x₁) = cast-cong (⊢⊢is⊢eqterm X) (⊢⊢is⊢eqterm X₁) (⊢⊢is⊢eqterm X₂) (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
+  ⊢⊢is⊢eqterm (Id-U-ℕΠ x x₁) = Id-U-ℕΠ (un-univ (⊢⊢is⊢ x)) (un-univ (⊢⊢is⊢ x₁))
+  ⊢⊢is⊢eqterm (Id-U-Πℕ x x₁) = Id-U-Πℕ (un-univ (⊢⊢is⊢ x)) (un-univ (⊢⊢is⊢ x₁))
+  ⊢⊢is⊢eqterm (Id-U-ΠΠ!% r x x₁ x₂ x₃) = Id-U-ΠΠ!% r (un-univ (⊢⊢is⊢ x)) (un-univ (⊢⊢is⊢ x₁)) (un-univ (⊢⊢is⊢ x₂)) (un-univ (⊢⊢is⊢ x₃)) 
+  ⊢⊢is⊢eqterm (cast-cong X X₁ X₂ x x₁) = cast-cong (un-univ≡ (⊢⊢is⊢eq X)) (un-univ≡ (⊢⊢is⊢eq X₁)) (⊢⊢is⊢eqterm X₂) (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
   ⊢⊢is⊢eqterm (cast-Π x₄ x₅) =
     let ⊢e = ⊢⊢is⊢term x₄
         ⊢Id = un-univ (syntacticTerm ⊢e)
