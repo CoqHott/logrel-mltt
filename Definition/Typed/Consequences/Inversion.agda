@@ -47,19 +47,6 @@ inversion-Π (conv x x₁) = let rG , l< , l<' , a , b , c , rG≡ , r≡! = inv
                             , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c , rG≡
                             , r≡!
 
-{-
-inversion-Π' : ∀ {F rF G r rΠ Γ C lF lG lΠ}
-            → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rΠ ∷ C ^ r
-            → (rΠ PE.≡ ! → lF ≤ lΠ × lG ≤ lΠ)
-              × (rΠ PE.≡ % → lG PE.≡ ⁰ × lΠ PE.≡ ⁰)
-              × Γ ⊢ F ∷ Univ rF lF ^ [ ! , next lF ]
-              × Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ Univ rΠ lG ^ [ ! , next lG ]
-              × Γ ⊢ C ≡ Univ rΠ lΠ ^ [ ! , next lΠ ]
-              × r PE.≡ [ ! , next lΠ ]
-
-inversion-Π' X = let rG , a , b , c , d , e , rGeq , f = inversion-Π X in {!!}
--}
-
 -- Inversion of ∃-types.
 inversion-∃ : ∀ {F G Γ C  r}
             → Γ ⊢ ∃ F ▹ G ∷ C ^ r

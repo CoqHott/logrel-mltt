@@ -148,7 +148,6 @@ doΠNorm ⊢A = doΠNorm′ (reducible ⊢A)
 ΠNorm-noredTerm : ∀ {Γ A B T l} → Γ ⊢ A ⇒Π B ∷ T ^ l → ΠNorm A → ⊥
 ΠNorm-noredTerm (regular x) w = whnfRedTerm x (ΠNorm-whnf w)
 ΠNorm-noredTerm (deepΠ x) (Πₙ w) = ΠNorm-noredTerm x w
---ΠNorm-noredTerm (deepΠ x) Πirrₙ = {!!}
 ΠNorm-noredTerm (deepΠ x) (ne ())
 
 ΠNorm-nored : ∀ {Γ A B r} → Γ ⊢ A ⇒Π B ^ r → ΠNorm A → ⊥
