@@ -148,6 +148,9 @@ relevance-unicity ⊢A₁ ⊢A₂ | B , nB , ⊢B , rB | C , nC , ⊢C , rC =
   let e = detΠNorm* nB nC rB rC
   in relevance-unicity′ nC (PE.subst _ e ⊢B) ⊢C
 
+relevance-unicity-gen : ∀ {Γ A r₁ r₂} → Γ ⊢ A ^ r₁ → Γ ⊢ A ^ r₂ → r₁ PE.≡ r₂
+relevance-unicity-gen {r₁ = [ r , l ]} {[ r₁ , l₁ ]} X Y = let er , el = relevance-unicity X Y in  PE.cong₂ [_,_] er el
+
 -- inequalities at any relevance
 U≢ℕ : ∀ {r r′ l l′ Γ} → Γ ⊢ Univ r l ≡ ℕ ^ [ r′ , l′ ] → ⊥
 U≢ℕ U≡ℕ = Ineq.U≢ℕ! (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ [ rx , _ ]) 
