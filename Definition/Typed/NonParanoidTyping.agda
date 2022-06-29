@@ -12,7 +12,6 @@ open import Definition.Typed.Consequences.RelevanceUnicity
 
 open import Tools.Nat using (Nat)
 open import Tools.Product
-open import Tools.List using (List;[])
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
@@ -312,11 +311,24 @@ mutual
 ∈-∈∈ here = here
 ∈-∈∈ (there X) = there (∈-∈∈ X)
 
-zip : {A : Set} → SimpleCon A → List TypeInfo → Con A
-zip ε _ = ε
-zip (Γ ∙ A) [] = ε
-zip (Γ ∙ A) (r List.∷ rs) = zip Γ rs ∙ A ^ r
+infixr 30 _∷∷_
 
+data TypeInfos : SimpleCon Term → Set where
+  [] : TypeInfos ε
+  _∷∷_ : ∀ {Γ A} → TypeInfo → TypeInfos Γ → TypeInfos (Γ ∙ A)
+
+zip : (Γ : SimpleCon Term) → TypeInfos Γ → Con Term
+zip .ε [] = ε
+zip (._∙_ Γ A) (r ∷∷ rs) = zip Γ rs ∙ A ^ r
+
+find : ∀ {Γ x A} → TypeInfos Γ → (In : x ∷ A ∈∈ Γ) → TypeInfo
+find [] ()
+find (r ∷∷ rs) here = r
+find (r ∷∷ rs) (there Y) = find rs Y
+
+∈∈-∈ : ∀ {Γ x A} → (rs :  TypeInfos Γ) (In : x ∷ A ∈∈ Γ) → x ∷ A ^ find rs In ∈ zip Γ rs
+∈∈-∈ (x ∷∷ rs) here = here
+∈∈-∈ (x ∷∷ rs) (there X) = there (∈∈-∈ rs X)
 
 -- Escape context extraction
 
@@ -476,10 +488,10 @@ mutual
   ⊢⊢is⊢ctx ε = [] , ε
   ⊢⊢is⊢ctx (⊢Γ ∙ x) = let rs , X = ⊢⊢is⊢ctx ⊢Γ
                           r , x' = ⊢⊢is⊢ x
-                      in r List.∷ rs , X ∙ PE.subst (λ rr → zip _ rr ⊢ _ ^ _) (⊢⊢is⊢ctx-irr (wff x) ⊢Γ) x' 
+                      in r ∷∷ rs , X ∙ PE.subst (λ rr → zip _ rr ⊢ _ ^ _) (⊢⊢is⊢ctx-irr (wff x) ⊢Γ) x' 
 
   ⊢⊢is⊢ctx-irr ε ε = PE.refl
-  ⊢⊢is⊢ctx-irr (X ∙ x) (Y ∙ y) = PE.cong₂ List._∷_ (⊢⊢is⊢-irr x y) (⊢⊢is⊢ctx-irr X Y)
+  ⊢⊢is⊢ctx-irr (X ∙ x) (Y ∙ y) = PE.cong₂ _∷∷_ (⊢⊢is⊢-irr x y) (⊢⊢is⊢ctx-irr X Y)
 
   ⊢⊢is⊢ (Uⱼ x) = let _ , ⊢Γ = ⊢⊢is⊢ctx x in [ ! , ∞ ] , Uⱼ ⊢Γ
   ⊢⊢is⊢ {Γ} {A} (univ {A} {rr} {ll} x) =
@@ -555,7 +567,7 @@ mutual
                                   er' = relevance-unicity-gen ⊢U'' ⊢U'''
                               in _ , ∃ⱼ PE.subst (λ R → zip Γ (proj₁ (⊢⊢is⊢ctx (wffTerm X))) ⊢ _ ∷ SProp ^ R) er ⊢X ▹
                                         PE.subst₂ (λ rs rr → zip _ rs ⊢ _ ∷ SProp ^ rr) (⊢⊢is⊢ctx-irr (wffTerm X₁) (wffTerm X ∙ univ X)) er' ⊢X'
-  ⊢⊢is⊢term (var ⊢Γ x) = {!!} -- var (⊢⊢is⊢ctx ⊢Γ) x
+  ⊢⊢is⊢term (var ⊢⊢Γ x) = let rs , ⊢Γ = ⊢⊢is⊢ctx ⊢⊢Γ in find rs x , var ⊢Γ (∈∈-∈ rs x)
   ⊢⊢is⊢term (lamⱼ x x₁ X) = {!!} -- let XX = ⊢⊢is⊢term X in lamⱼ x x₁ (let ⊢Γ , ⊢F = inversion-ctx (wfTerm XX) in ⊢F) XX
   ⊢⊢is⊢term (X₂ ∘ⱼ X₃) = 
     let rg , ⊢g = ⊢⊢is⊢term X₂ 
