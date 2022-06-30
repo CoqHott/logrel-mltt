@@ -166,16 +166,18 @@ abstract
 
   fundamentalTerm (var ⊢Γ x∷A) = valid ⊢Γ , fundamentalVar x∷A (valid ⊢Γ)
   fundamentalTerm (lamⱼ {F} {r = !} {l} {rF} {lF} {G} {lG} {t} l! l% ⊢F ⊢t)
-    with fundamental ⊢F | fundamentalTerm ⊢t  | l! PE.refl
-  ... | [Γ] , [F] | [Γ]₁ , [G] , [t] | lF< , lG< =
-    let [G]′ = S.irrelevance {A = G} [Γ]₁ ([Γ] ∙ [F]) [G]
+    with fundamentalTerm ⊢F | fundamentalTerm ⊢t  | l! PE.refl
+  ... | [Γ] , [U] , [F]' | [Γ]₁ , [G] , [t] | lF< , lG< =
+    let [F] = maybeEmbᵛ {A = F} [Γ] (univᵛ {F} [Γ] (≡is≤ PE.refl) [U] [F]')
+        [G]′ = S.irrelevance {A = G} [Γ]₁ ([Γ] ∙ [F]) [G]
         [t]′ = S.irrelevanceTerm {A = G} {t = t} [Γ]₁ ([Γ] ∙ [F]) [G] [G]′ [t]
     in  [Γ] , Πᵛ {F} {G} lF< lG< [Γ] [F] [G]′
     ,   lamᵛ {F} {G} {rF} {lF} {lG} {l} {t} lF< lG< [Γ] [F] [G]′ [t]′
   fundamentalTerm (lamⱼ {F} {r = %} {l = ⁰} {rF} {lF} {G} {lG = ⁰} {t} lF< lG< ⊢F ⊢t)
-    with fundamental ⊢F | fundamentalTerm ⊢t
-  ... | [Γ] , [F] | [Γ]₁ , [G] , [t] =
-    let [G]′ = S.irrelevance {A = G} [Γ]₁ ([Γ] ∙ [F]) [G]
+    with fundamentalTerm ⊢F | fundamentalTerm ⊢t
+  ... | [Γ] , [U] , [F]' | [Γ]₁ , [G] , [t] =
+    let [F] = maybeEmbᵛ {A = F} [Γ] (univᵛ {F} [Γ] (≡is≤ PE.refl) [U] [F]')
+        [G]′ = S.irrelevance {A = G} [Γ]₁ ([Γ] ∙ [F]) [G]
         [t]′ = S.irrelevanceTerm {A = G} {t = t} [Γ]₁ ([Γ] ∙ [F]) [G] [G]′ [t]
     in  [Γ] , Πirrᵛ {F} {G} [Γ] [F] [G]′
     ,   lamirrᵛ {F} {G} {rF} {lF} {t} [Γ] [F] [G]′ [t]′
@@ -226,12 +228,13 @@ abstract
         [s]′ = S.irrelevanceTerm {A = sType} {t = s} [Γ]₂ [Γ]′ [G₊] [G₊]′ [s]
     in  [Γ]′ , [Gₙ]′
     ,   natrecᵛ {G} {rG} {lG} {z} {s} {n} rGlG [Γ]′ [ℕ] [G]′ [G₀]′ [G₊]′ [Gₙ]′ [z]′ [s]′ [n]
-  fundamentalTerm (⦅_,_,_,_⦆ⱼ {F} {G} {t} {u} ⊢F ⊢G ⊢t ⊢u) with fundamental ⊢F | fundamental ⊢G | fundamentalTerm ⊢t | fundamentalTerm ⊢u
-  ... | [ΓF] , [F]' | [ΓG] , [G] | [Γ] , [F] , [t]ₜ | [Γ]₁ , [G[t]] , [u]ₜ =
-     let  [F]′ = S.irrelevance {A = F} [Γ] [Γ]₁ [F]
-          [G]′ = S.irrelevance {A = G} [ΓG] ([Γ]₁ ∙ [F]′) [G]
-          [t]ₜ′ = S.irrelevanceTerm {A = F} {t = t} [Γ] [Γ]₁ [F] [F]′ [t]ₜ
-          [u]ₜ′ = S.irrelevanceTerm {A = G [ t ]} {t = u} [Γ]₁ [Γ]₁ [G[t]] (substS {F} {G} {t} [Γ]₁ [F]′ [G]′ [t]ₜ′) [u]ₜ
+  fundamentalTerm (⦅_,_,_,_⦆ⱼ {F} {G} {t} {u} ⊢F ⊢G ⊢t ⊢u) with fundamentalTerm ⊢F | fundamentalTerm ⊢G | fundamentalTerm ⊢t | fundamentalTerm ⊢u
+  ... | [ΓF] , [UF] , [F]' | [ΓG] , [UG] , [G]' | [Γ] , [F] , [t]ₜ | [Γ]₁ , [G[t]] , [u]ₜ =
+     let [G] = maybeEmbᵛ {A = G} [ΓG] (univᵛ {G} [ΓG] (≡is≤ PE.refl) [UG] [G]')
+         [F]′ = S.irrelevance {A = F} [Γ] [Γ]₁ [F]
+         [G]′ = S.irrelevance {A = G} [ΓG] ([Γ]₁ ∙ [F]′) [G]
+         [t]ₜ′ = S.irrelevanceTerm {A = F} {t = t} [Γ] [Γ]₁ [F] [F]′ [t]ₜ
+         [u]ₜ′ = S.irrelevanceTerm {A = G [ t ]} {t = u} [Γ]₁ [Γ]₁ [G[t]] (substS {F} {G} {t} [Γ]₁ [F]′ [G]′ [t]ₜ′) [u]ₜ
      in  [Γ]₁ , ∃ᵛ {F} {G} [Γ]₁ [F]′ [G]′ , ⦅⦆ᵛ {F = F} {G = G} {t = t} {u = u} [Γ]₁ [F]′ [G]′ [t]ₜ′ [u]ₜ′
   fundamentalTerm (fstⱼ {F} {G} {tu} ⊢F ⊢G ⊢tu)
     with fundamentalTerm ⊢F | fundamentalTerm ⊢G | fundamentalTerm ⊢tu
@@ -308,7 +311,7 @@ abstract
     in  [Γ] , [Id] , castreflᵛ {Γ} {A} {t} [Γ] [UA]′ [A]ₜ′ [A] [t]ₜ
 
   fundamentalTerm (Emptyrecⱼ {A} {lA} {rA} {n} ⊢A ⊢n)
-    with fundamental ⊢A | fundamentalTerm ⊢n
+    with fundamental (univ ⊢A) | fundamentalTerm ⊢n
   ... | [Γ] , [A] | [Γ]′ , [Empty] , [n] =
     let [A]′ = S.irrelevance {A = A} [Γ] [Γ]′ [A]
     in [Γ]′ , [A]′ , Emptyrecᵛ {A} {rA} {lA} {n} [Γ]′ [Empty] [A]′ [n]

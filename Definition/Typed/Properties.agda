@@ -173,7 +173,7 @@ redFirst : ∀ {Γ A B r} → Γ ⊢ A ⇒ B ^ r → Γ ⊢ A ^ r
 
 redFirstTerm (conv t⇒u A≡B) = conv (redFirstTerm t⇒u) A≡B
 redFirstTerm (app-subst ⊢F ⊢G t⇒u a) = (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢F ▹ ⊢G ▹ (redFirstTerm t⇒u) ∘ⱼ a
-redFirstTerm (β-red {lA = lA} {lB = lB} lA< lB< ⊢A ⊢B ⊢t ⊢a) = (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢A ▹ ⊢B ▹ (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) ⊢A ⊢t) ∘ⱼ ⊢a
+redFirstTerm (β-red {lA = lA} {lB = lB} lA< lB< ⊢A ⊢B ⊢t ⊢a) = (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢A ▹ ⊢B ▹ (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢A) ⊢t) ∘ⱼ ⊢a
 redFirstTerm (natrec-subst F z s n⇒n′) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (redFirstTerm n⇒n′)
 redFirstTerm (natrec-zero F z s) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (zeroⱼ (wfTerm z))
 redFirstTerm (natrec-suc n F z s) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (sucⱼ n)

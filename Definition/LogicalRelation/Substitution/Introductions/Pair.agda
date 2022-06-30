@@ -51,7 +51,7 @@ import Tools.PropositionalEquality as PE
       [σu]′ = irrelevanceTerm′ (singleSubstLift G t) PE.refl PE.refl [σG[t]] [σG[t]]′ [σu]
       ⊢u = escapeTerm [σG[t]]′ [σu]′
       ⦅t,u⦆ⱼ = ⦅_,_,_,_⦆ⱼ {F = subst σ F} {G = subst (liftSubst σ) G} {t = subst σ t} {u = subst σ u}
-                      ⊢F ⊢G ⊢t ⊢u
+                      (un-univ ⊢F) (un-univ ⊢G) ⊢t ⊢u
   in ⦅t,u⦆ⱼ , λ {σ′} [σ′] [σ≡σ′] →
             ⦅t,u⦆ⱼ ,
             let ⊢Γ = wfTerm ⊢t
@@ -68,7 +68,7 @@ import Tools.PropositionalEquality as PE
                 [σ′u]′ = irrelevanceTerm′ (singleSubstLift G t) PE.refl PE.refl [σ′G[t]] [σ′G[t]]′ [σ′u]
                 ⊢u′ = escapeTerm [σ′G[t]]′ [σ′u]′ 
                 pair' =  ⦅_,_,_,_⦆ⱼ {F = subst σ′ F} {G = subst (liftSubst σ′) G} {t = subst σ′ t}
-                                  {u = subst σ′ u} ⊢F′ ⊢G′ ⊢t′ ⊢u′
+                                  {u = subst σ′ u} (un-univ ⊢F′) (un-univ ⊢G′) ⊢t′ ⊢u′
                 [σ′≡σ]  = symS [Γ] ⊢Δ [σ] [σ′] [σ≡σ′]
                 [σF′≡σF] = proj₂ ([F] ⊢Δ [σ′]) [σ] [σ′≡σ]
                 σF′≡σF = escapeEq [σF′] [σF′≡σF]

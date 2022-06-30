@@ -58,7 +58,7 @@ mutual
     lamⱼ    : ∀ {F r l rF lF G lG t}
            → (r PE.≡ ! → lF ≤ l × lG ≤ l)
            → (r PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
-           → Γ     ⊢ F ^ [ rF , ι lF ]
+           → Γ     ⊢ F ∷ Univ rF lF ^ [ ! , next lF ]
            → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ r , ι lG ]
            → Γ     ⊢ lam F ▹ t ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ r ^ [ r , ι l ]
     _▹_▹_▹_∘ⱼ_    : ∀ {g a F rF lF G lG r lΠ}
@@ -69,8 +69,8 @@ mutual
            → Γ ⊢     a ∷ F ^ [ rF , ι lF ]
            → Γ ⊢ g ∘ a ^ lΠ ∷ G [ a ] ^ [ r , ι lG ]
     ⦅_,_,_,_⦆ⱼ : ∀ {F G t u}
-             → Γ ⊢ F ^ [ % , ι ⁰ ]
-             → Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ^ [ % , ι ⁰ ]
+             → Γ ⊢ F ∷ SProp ^ [ ! , next ⁰ ]
+             → Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ∷ SProp ^ [ ! , next ⁰ ]
              → Γ ⊢ t ∷ F ^ [ % , ι ⁰ ]
              → Γ ⊢ u ∷ G [ t ] ^ [ % , ι ⁰ ]
              → Γ ⊢ ⦅ G , t , u ⦆ ∷ ∃ F ▹ G ^ [ % , ι ⁰ ]
@@ -97,7 +97,7 @@ mutual
            → Γ       ⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ       ⊢ natrec lG G z s n ∷ G [ n ] ^ [ rG , ι lG ]
     Emptyrecⱼ : ∀ {A lA rA e}
-           → Γ ⊢ A ^ [ rA , ι lA ] → Γ ⊢ e ∷ sEmpty ^ [ % ,  ι ⁰ ] -> Γ ⊢ Emptyrec lA ⁰ A e ∷ A ^ [ rA , ι lA ]
+           → Γ ⊢ A ∷ Univ rA lA ^ [ ! , next lA ] → Γ ⊢ e ∷ sEmpty ^ [ % ,  ι ⁰ ] -> Γ ⊢ Emptyrec lA ⁰ A e ∷ A ^ [ rA , ι lA ]
     Idⱼ : ∀ {A l t u}
           → Γ ⊢ A ∷ U l ^ [ ! , next l ]
           → Γ ⊢ t ∷ A ^ [ ! , ι l ]

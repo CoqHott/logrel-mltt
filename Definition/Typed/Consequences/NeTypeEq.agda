@@ -48,7 +48,7 @@ neTypeEq (∘ₙ neT) (_ ▹ _ ▹ _ ▹ t∷A ∘ⱼ t∷A₁) (_ ▹ _ ▹ _ �
 neTypeEq (natrecₙ neT) (natrecⱼ _ x t∷A t∷A₁ t∷A₂) (natrecⱼ _ x₁ t∷B t∷B₁ t∷B₂) =
   PE.refl , refl (substType x₁ t∷B₂)
 neTypeEq Emptyrecₙ (Emptyrecⱼ x t∷A) (Emptyrecⱼ x₁ t∷B) =
-  PE.refl , refl x₁
+  PE.refl , refl (univ x₁)
 neTypeEq (Idₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
   let e , q = neTypeEq X Y Z
       el = next-inj e

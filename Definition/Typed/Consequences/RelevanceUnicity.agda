@@ -220,7 +220,7 @@ relevance-uniq (var xx x) (var _ y) =
         er , el = typelevel-injectivity e
     in er
 relevance-uniq (lamⱼ x x₁ x₂ X) (lamⱼ y y₁ y₂ Y) =
-  let erF , elF  = relevance-unicity x₂ y₂
+  let erF , elF  = relevance-unicity (univ x₂) (univ y₂)
   in relevance-uniq X (PE.subst₂ (λ r l → _ ∙ _ ^ [ r , ι l ] ⊢ _ ∷ _ ^ _) (PE.sym erF) (PE.sym (ιinj elF)) Y)
 relevance-uniq (_ ▹ _ ▹ _ ▹ X ∘ⱼ X₁) (_ ▹ _ ▹ _ ▹ Y ∘ⱼ Y₁) = relevance-uniq X Y
 relevance-uniq {Γ} ⦅ x , x₁ , X , X₁ ⦆ⱼ (⦅_,_,_,_⦆ⱼ {F = F} {G = G} y y₁ Y Y₁)  = PE.refl 
@@ -230,7 +230,7 @@ relevance-uniq (sndⱼ X X₁ X₂) (sndⱼ Y Y₁ Y₂) = PE.refl
 relevance-uniq (zeroⱼ x) (zeroⱼ x₁) = PE.refl 
 relevance-uniq (sucⱼ X) (sucⱼ Y) = PE.refl 
 relevance-uniq (natrecⱼ _ x X X₁ X₂) (natrecⱼ _ y Y Y₁ Y₂) = relevance-uniq X₁ Y₁
-relevance-uniq (Emptyrecⱼ x X) (Emptyrecⱼ y Y) = let er , el = relevance-unicity x y in er
+relevance-uniq (Emptyrecⱼ x X) (Emptyrecⱼ y Y) = let er , el = relevance-unicity (univ x) (univ y) in er
 relevance-uniq (Idⱼ X X₁ X₂) (Idⱼ Y Y₁ Y₂) =
     PE.refl 
 relevance-uniq (Idreflⱼ X) (Idreflⱼ Y) =
@@ -242,3 +242,24 @@ relevance-uniq (castreflⱼ X X₁) (castreflⱼ Y Y₁) = PE.refl
 relevance-uniq (conv X x) Y = relevance-uniq X Y
 relevance-uniq X (conv Y y) = relevance-uniq X Y
   
+
+inversion-Π' : ∀ {F rF G r rΠ Γ lF lG lΠ}
+            → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rΠ ^ r
+            → r PE.≡ [ rΠ , ι lΠ ]
+inversion-Π' (univ x) = let rG , l! , l% , ⊢F , ⊢G , _ , req , _ = inversion-Π x
+                            ⊢Π = Πⱼ l! ▹ l% ▹ ⊢F ▹ ⊢G
+                        in relevance-unicity-gen (univ x) (univ (PE.subst (λ rr → _ ⊢ Π _ ^ _ ° _ ▹ _ ° _ ° _ ^ rr ∷  Univ rr _ ^ _) req ⊢Π)) 
+
+inversion-∃' : ∀ {F G Γ r}
+            → Γ ⊢ ∃ F ▹ G ^ r
+            → r PE.≡ [ % , ι ⁰ ]
+inversion-∃' (univ x) = let ⊢F , ⊢G , req , _ = inversion-∃ x
+                            er , el = Uinjectivity req
+                        in PE.cong₂ [_,_] er (PE.cong ι el) 
+
+inversion-Id' : ∀ {A t u Γ r}
+            → Γ ⊢ Id A t u ^ r
+            → r PE.≡ [ % , ι ⁰ ]
+inversion-Id' (univ x) = let _ , _ , _ , _ , req , _ = inversion-Id x
+                             er , el = Uinjectivity req
+                         in PE.cong₂ [_,_] er (PE.cong ι el) 

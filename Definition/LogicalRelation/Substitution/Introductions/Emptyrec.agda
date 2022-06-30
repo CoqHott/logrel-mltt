@@ -47,7 +47,7 @@ EmptyrecTerm {F} {rF = !} {lF} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
       ⊢F≡F = escapeEq [σF] (reflEq [σF])
-  in neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F d)
+  in neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ (un-univ ⊢F) d)
                   (~-Emptyrec ⊢F≡F d d)
 EmptyrecTerm {F} {rF = %} {lF} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
            (Emptyₜ (ne d)) =
@@ -56,7 +56,7 @@ EmptyrecTerm {F} {rF = %} {lF} {n} {Γ} {Δ} {σ} {l} [Γ] [F] ⊢Δ [σ]
       [σF] = proj₁ ([F] ⊢Δ [σ])
       ⊢F = escape [σF]
       ⊢F≡F = escapeEq [σF] (reflEq [σF])
-  in logRelIrr [σF] (Emptyrecⱼ ⊢F d)
+  in logRelIrr [σF] (Emptyrecⱼ (un-univ ⊢F) d)
 
 
 -- Reducibility of natural recursion congurence under a valid substitution equality.
@@ -96,14 +96,14 @@ Emptyrec-congTerm {F} {F′} {rF = !} {lF} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
       [σF≡σ′F] = proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′]
       [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
       [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
-      EmptyrecN = neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ ⊢F ⊢n′)
+      EmptyrecN = neuTerm [σF] (Emptyrecₙ) (Emptyrecⱼ (un-univ ⊢F) ⊢n′)
                            (~-Emptyrec ⊢F≡F ⊢n′ ⊢n′)
-      EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ) (Emptyrecⱼ ⊢F′ ⊢m′)
+      EmptyrecM = neuTerm [σ′F′] (Emptyrecₙ) (Emptyrecⱼ (un-univ ⊢F′) ⊢m′)
                            (~-Emptyrec ⊢F′≡F′ ⊢m′ ⊢m′)
       EmptyrecN≡M =
           neuEqTerm [σF] Emptyrecₙ Emptyrecₙ
-                     (Emptyrecⱼ ⊢F ⊢n′)
-                     (conv (Emptyrecⱼ ⊢F′ ⊢m′)
+                     (Emptyrecⱼ (un-univ ⊢F) ⊢n′)
+                     (conv (Emptyrecⱼ (un-univ ⊢F′) ⊢m′)
                             (sym (≅-eq (escapeEq [σF]
                               (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
                      (~-Emptyrec ⊢F≡F′ ⊢n′ ⊢m′)
@@ -130,7 +130,7 @@ Emptyrec-congTerm {F} {F′} {rF = %} {lF} {n} {m} {Γ} {Δ} {σ} {σ′} {l}
       [σF≡σ′F] = proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′]
       [σ′F≡σ′F′] = [F≡F′] ⊢Δ [σ′]
       [σF≡σ′F′] = transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′]
-  in logRelIrrEq [σF] (Emptyrecⱼ ⊢F ⊢n′) (conv (Emptyrecⱼ ⊢F′ ⊢m′)
+  in logRelIrrEq [σF] (Emptyrecⱼ (un-univ ⊢F) ⊢n′) (conv (Emptyrecⱼ (un-univ ⊢F′) ⊢m′)
                             (sym (≅-eq (escapeEq [σF]
                               (transEq [σF] [σ′F] [σ′F′] [σF≡σ′F] [σ′F≡σ′F′])))))
 

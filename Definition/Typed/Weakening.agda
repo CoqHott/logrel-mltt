@@ -69,14 +69,14 @@ mutual
   wkTerm ρ ⊢Δ (∃ⱼ F ▹ G) = let ρF = wkTerm ρ ⊢Δ F
                           in  ∃ⱼ ρF ▹ (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G)
   wkTerm ρ ⊢Δ (var ⊢Γ x) = var ⊢Δ (wkIndex ρ ⊢Δ x)
-  wkTerm ρ ⊢Δ (lamⱼ <l <l' F t) = let ρF = wk ρ ⊢Δ F
-                                  in lamⱼ <l <l' ρF (wkTerm (lift ρ) (⊢Δ ∙ ρF) t)
+  wkTerm ρ ⊢Δ (lamⱼ <l <l' F t) = let ρF = wkTerm ρ ⊢Δ F
+                                  in lamⱼ <l <l' ρF (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) t)
   wkTerm ρ ⊢Δ (_▹_▹_▹_∘ⱼ_ {F = F} {G = G} r% ⊢F ⊢G g a) = let ρF = wkTerm ρ ⊢Δ ⊢F
                                                      in  PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
                                                          (PE.sym (wk-β G))
                                                          (r% ▹ wkTerm ρ ⊢Δ ⊢F ▹ wkTerm (lift ρ) (⊢Δ ∙ univ ρF) ⊢G ▹ wkTerm ρ ⊢Δ g ∘ⱼ wkTerm ρ ⊢Δ a)
   wkTerm ρ ⊢Δ (⦅_,_,_,_⦆ⱼ {G = GG} F G t u )
-    = let ρF = wk ρ ⊢Δ F in ⦅ wk ρ ⊢Δ F , wk (lift ρ) (⊢Δ ∙ ρF) G , wkTerm ρ ⊢Δ t ,  PE.subst (λ X → _ ⊢ _ ∷ X ^ [ % , _ ]) (wk-β GG) (wkTerm ρ ⊢Δ u) ⦆ⱼ
+    = let ρF = wkTerm ρ ⊢Δ F in ⦅ ρF , wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G , wkTerm ρ ⊢Δ t ,  PE.subst (λ X → _ ⊢ _ ∷ X ^ [ % , _ ]) (wk-β GG) (wkTerm ρ ⊢Δ u) ⦆ⱼ
   wkTerm ρ ⊢Δ (fstⱼ F G t) = let ρF = wkTerm ρ ⊢Δ F in
     let ρG = (wkTerm (lift ρ) (⊢Δ ∙ univ ρF) G) in
     fstⱼ ρF ρG (wkTerm ρ ⊢Δ t)
@@ -95,7 +95,7 @@ mutual
                                 (wkTerm [ρ] ⊢Δ ⊢s))
                       (wkTerm [ρ] ⊢Δ ⊢n))
   wkTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (Emptyrecⱼ {A = A} {e = e} ⊢A ⊢e) =
-    (Emptyrecⱼ (wk [ρ] ⊢Δ ⊢A) (wkTerm [ρ] ⊢Δ ⊢e))
+    (Emptyrecⱼ (wkTerm [ρ] ⊢Δ ⊢A) (wkTerm [ρ] ⊢Δ ⊢e))
   wkTerm ρ ⊢Δ (Idⱼ A t u) = Idⱼ (wkTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ u)
   wkTerm ρ ⊢Δ (Idreflⱼ t) = Idreflⱼ (wkTerm ρ ⊢Δ t)
   wkTerm ρ ⊢Δ (transpⱼ {P = P} A Pⱼ t s u e) =

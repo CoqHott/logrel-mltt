@@ -23,7 +23,6 @@ inversion-U (univ 0<1 x) = refl (Ugenⱼ x) , PE.refl , PE.refl
 inversion-U (conv x x₁) with inversion-U x
 ... | [C≡U] , PE.refl , PE.refl  = trans (sym x₁) [C≡U] , PE.refl , PE.refl
 
-
 -- Inversion of natural number type.
 inversion-ℕ : ∀ {Γ C r} → Γ ⊢ ℕ ∷ C ^ r → Γ ⊢ C ≡ U ⁰ ^ r × r PE.≡ [ ! , next ⁰ ]
 inversion-ℕ (ℕⱼ x) = refl (Ugenⱼ x) , PE.refl
@@ -95,7 +94,7 @@ inversion-Emptyrec : ∀ {Γ e A C rlC lEmpty lC} → Γ ⊢ Emptyrec lC lEmpty 
   × Γ ⊢ e ∷ Empty lEmpty ^ [ % , ι lEmpty ]
   × Γ ⊢ A ≡ C ^ [ rC , ι lC ]
   × rlC PE.≡ [ rC , ι lC ]
-inversion-Emptyrec (Emptyrecⱼ [C] [e]) = _ , [C] , [e] , refl [C] , PE.refl
+inversion-Emptyrec (Emptyrecⱼ [C] [e]) = _ , univ [C] , [e] , refl (univ [C]) , PE.refl
 inversion-Emptyrec (conv d x) = let r , a , b , c , e = inversion-Emptyrec d
                                 in r , a , b , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) e x)) c , e
 
@@ -127,8 +126,8 @@ inversion-lam : ∀ {t F A r lΠ Γ} → Γ ⊢ lam F ▹ t ^ lΠ ∷ A ^ r →
   × Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ rG , ι lG ]
   × Γ ⊢ A ≡ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rG ^ [ rG , ι lΠ ]
   × r PE.≡ [ rG , ι lΠ ]
-inversion-lam (lamⱼ l< l<' x x₁) = _ , _ , _ , _ , _ , x , x₁ ,
-                                   refl (univ (Πⱼ l< ▹ l<' ▹ (un-univ x) ▹ un-univ (syntacticTerm x₁))) , PE.refl
+inversion-lam (lamⱼ l< l<' x x₁) = _ , _ , _ , _ , _ , univ x , x₁ ,
+                                   refl (univ (Πⱼ l< ▹ l<' ▹ x ▹ un-univ (syntacticTerm x₁))) , PE.refl
 inversion-lam (conv x x₁) = let a , b , c , d , e , f , g , h , i = inversion-lam x
                             in  a , b , c , d , e , f , g , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) i x₁)) h , i
 

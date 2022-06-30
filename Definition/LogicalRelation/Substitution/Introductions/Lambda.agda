@@ -64,9 +64,9 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] [G] [t] {�
             _ , Πᵣ rF′ _ _ _ _ F′ G′ D′ ⊢F′ ⊢G′ A≡A′ [F]′ [G]′ G-ext =
               extractMaybeEmb (Π-elim (proj₁ ([ΠFG] ⊢Δ [σ])))
         in  Πₜ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t) ^ _)
-               (idRedTerm:*: (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢t))
+               (idRedTerm:*: (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F) ⊢t))
                lamₙ
-               (≅-η-eq lF≤ lG≤ ⊢F (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢t) (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢t) lamₙ lamₙ
+               (≅-η-eq lF≤ lG≤ ⊢F (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F) ⊢t) (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F) ⊢t) lamₙ lamₙ
                        (escapeTermEq [σG]
                          (reflEqTerm [σG]
                            (proj₁ (redSubstTerm β-red′ [σG] wk1t[0])))))
@@ -267,13 +267,13 @@ lamᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {Γ} {l} lF≤ lG≤ [Γ] [F] [G] [t] {�
                                              [σ′t[a]≡σ′lamt∘a])
          in  Πₜ₌ (lam (subst (repeat liftSubst σ 0) F) ▹ (subst (liftSubst σ) t) ^ _)
                  (lam (subst (repeat liftSubst σ′ 0) F) ▹ (subst (liftSubst σ′) t) ^ _)
-                 (idRedTerm:*: (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢t))
-                 (idRedTerm:*: (conv (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F′ ⊢t′)
+                 (idRedTerm:*: (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F) ⊢t))
+                 (idRedTerm:*: (conv (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F′) ⊢t′)
                                      (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                                               [σΠFG≡σ′ΠFG])))))
                  lamₙ lamₙ
-                 (≅-η-eq lF≤ lG≤ ⊢F (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F ⊢t)
-                      (conv (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) ⊢F′ ⊢t′)
+                 (≅-η-eq lF≤ lG≤ ⊢F (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F) ⊢t)
+                      (conv (lamⱼ (λ _ → lF≤ , lG≤) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F′) ⊢t′)
                             (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ]))
                                               [σΠFG≡σ′ΠFG]))))
                       lamₙ lamₙ
@@ -311,7 +311,7 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
       ⊢G = escape [σG]
       [σt] = proj₁ ([t] (⊢Δ ∙ ⊢F) [liftσ])
       ⊢t = escapeTerm [σG] [σt]
-  in lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F  ⊢t , (λ {σ′} [σ′] [σ≡σ′] →
+  in lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) (un-univ ⊢F)  ⊢t , (λ {σ′} [σ′] [σ≡σ′] →
          let [liftσ′] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ′]
              _ , Πirrᵣ rF″ lF″ F″ G″ D″ ⊢F″ ⊢G″ A≡A″ =
                extractMaybeEmb (Πirr-elim (proj₁ ([ΠFG] ⊢Δ [σ′])))
@@ -321,7 +321,7 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
              [σΠFG≡σ′ΠFG] = proj₂ ([ΠFG] ⊢Δ [σ]) [σ′] [σ≡σ′]
              ⊢t = escapeTerm [G]₁ (proj₁ ([t] (⊢Δ ∙ ⊢F) [liftσ]))
              ⊢t′ = escapeTerm [G]₁′ (proj₁ ([t] (⊢Δ ∙ ⊢F′) [liftσ′]))
-         in (lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F  ⊢t) , conv (lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) ⊢F′  ⊢t′) (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ])) [σΠFG≡σ′ΠFG]))))
+         in (lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) (un-univ ⊢F) ⊢t) , conv (lamⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) (λ _ → PE.refl , PE.refl) (un-univ ⊢F′) ⊢t′) (sym (≅-eq (escapeEq (proj₁ ([ΠFG] ⊢Δ [σ])) [σΠFG≡σ′ΠFG]))))
 
 -- Reducibility of η-equality under a valid substitution.
 η-eqEqTerm : ∀ {f g F G rF lF lG lΠ Γ Δ σ l}

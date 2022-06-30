@@ -301,7 +301,7 @@ module cast-ΠΠ-lemmas-2
 
     ⊢g0 = PE.subst (λ X → Δ₁ ⊢ g (step id) (var 0) ∷ X ^ [ ! , ι ⁰ ]) (wkSingleSubstId G₁) (escapeTerm ([G₁] [ρ₁] ⊢Δ₁ [0]) ([g] [ρ₁] ⊢Δ₁ [0]))
     ⊢λg : Γ ⊢ lam F₁ ▹ g (step id) (var 0) ^ ⁰ ∷ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
-    ⊢λg = lamⱼ (λ _ → ≡is≤ PE.refl , ≡is≤ PE.refl) (λ abs → ⊥-elim (!≢% abs)) ⊢F₁ ⊢g0
+    ⊢λg = lamⱼ (λ _ → ≡is≤ PE.refl , ≡is≤ PE.refl) (λ abs → ⊥-elim (!≢% abs)) (un-univ ⊢F₁) ⊢g0
 
     Dg : Γ ⊢ cast ⁰ A B e t :⇒*: (lam F₁ ▹ g (step id) (var 0) ^ ⁰) ∷ Π F₁ ^ rF ° ⁰ ▹ G₁ ° ⁰ ° ⁰ ^ ! ^ ι ⁰
     Dg =
