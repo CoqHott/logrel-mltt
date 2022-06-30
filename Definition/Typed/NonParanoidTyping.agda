@@ -527,8 +527,6 @@ mutual
                              er = relevance-unicity-gen ⊢B' (PE.subst (λ rr → zip _ rr ⊢ _ ^ _) (PE.sym ers) ⊢B)
                          in rs , r , trans ⊢X (PE.subst₂ (λ rs rr → zip _ rs ⊢ _ ≡ _ ^ rr) ers er ⊢X₁)
 
-  ⊢⊢is⊢eqterm = {!!} 
-
   ⊢⊢is⊢term (univ x ⊢⊢Γ) = let rs , ⊢Γ = ⊢⊢is⊢ctx ⊢⊢Γ in rs , _ , univ x ⊢Γ
   ⊢⊢is⊢term (ℕⱼ ⊢⊢Γ) = let rs , ⊢Γ = ⊢⊢is⊢ctx ⊢⊢Γ in  rs , _ , ℕⱼ ⊢Γ
   ⊢⊢is⊢term (Emptyⱼ ⊢⊢Γ) = let rs , ⊢Γ = ⊢⊢is⊢ctx ⊢⊢Γ in  rs , _ , Emptyⱼ ⊢Γ
@@ -758,8 +756,14 @@ mutual
                              er = relevance-unicity-gen (PE.subst (λ rr → zip _ rr ⊢ _ ^ _) ers ⊢A') ⊢A
                          in rs , rt , conv ⊢t (PE.subst₂ (λ rs rr → zip _ rs ⊢ _ ≡ _ ^ rr) ers er ⊢A≡A)
 
+
+  ⊢⊢is⊢eqterm (refl ⊢⊢t) with  ⊢⊢is⊢term ⊢⊢t
+  ... | rs , [ ! , l ] , ⊢t = rs , _ , refl ⊢t
+  ... | rs , [ % , l ] , ⊢t = rs , _ , proof-irrelevance ⊢t ⊢t
+
+  ⊢⊢is⊢eqterm = {!!} 
+
 {-
-  ⊢⊢is⊢eqterm (refl x) = refl (⊢⊢is⊢term x)
   ⊢⊢is⊢eqterm (sym X) = sym (⊢⊢is⊢eqterm X)
   ⊢⊢is⊢eqterm (trans X X₁) = trans (⊢⊢is⊢eqterm X) (⊢⊢is⊢eqterm X₁)
   ⊢⊢is⊢eqterm (conv X x) = conv (⊢⊢is⊢eqterm X) (⊢⊢is⊢eq x)
