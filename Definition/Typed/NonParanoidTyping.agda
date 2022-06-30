@@ -15,7 +15,7 @@ open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
 infixl 30 _∙_
-infix 30 Πⱼ_▹_▹_▹_
+infix 30 Πⱼ_▹_▹_
 
 mutual
   -- Well-formed context
@@ -41,14 +41,12 @@ mutual
          → Γ ⊢⊢ (Univ r l) ∷ (Univ ! l') ^ [ ! , next l' ]
     ℕⱼ      : ⊢⊢ Γ → Γ ⊢⊢ ℕ ∷ U ⁰ ^ [ ! , ι ¹ ]
     Emptyⱼ : ⊢⊢ Γ → Γ ⊢⊢ sEmpty ∷ SProp ^ [ ! , ι ¹ ]
-    Πⱼ_▹_▹_▹_ : ∀ {F rF lF G lG r l}
+    Πⱼ_▹_▹_ : ∀ {F rF lF G lG r l}
            → (r PE.≡ ! → lF ≤ l × lG ≤ l)
            → (r PE.≡ % → lG PE.≡ ⁰ × l PE.≡ ⁰)
-           → Γ     ⊢⊢ F ^ [ rF , ι lF ]
            → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ G ^ [ r , ι lG ]
            → Γ     ⊢⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ r ∷ (Univ r l) ^ [ ! , next l ]
-    ∃ⱼ_▹_ : ∀ {F G}
-            → Γ ⊢⊢ F ∷ SProp ^ [ ! , ι ¹ ]
+    ∃ⱼ_ : ∀ {F G}
             → Γ ∙ F ^ [ % , ι ⁰ ] ⊢⊢ G ∷ SProp ^ [ ! , ι ¹ ]
             → Γ ⊢⊢ ∃ F ▹ G ∷ SProp ^ [ ! , ι ¹ ]
     var    : ∀ {A rl x}
@@ -81,7 +79,6 @@ mutual
            → Γ ⊢⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
            → Γ ⊢⊢ suc n ∷ ℕ ^ [ ! ,  ι ⁰ ]
     natrecⱼ : ∀ {G rG lG s z n}
-           → Γ ∙ ℕ ^ [ ! ,  ι ⁰ ] ⊢⊢ G ^ [ rG , ι lG ]
            → Γ       ⊢⊢ z ∷ G [ zero ] ^ [ rG , ι lG ]
            → Γ       ⊢⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (G ^ rG ° lG ▹▹ G [ suc (var Nat.zero) ]↑ ° lG ° lG ^ rG) ° lG ° lG ^ rG ^ [ rG , ι lG ]
            → Γ       ⊢⊢ n ∷ ℕ ^ [ ! ,  ι ⁰ ]
@@ -312,8 +309,8 @@ mutual
   ⊢is⊢⊢term (univ x ⊢Γ) = univ x (⊢is⊢⊢ctx ⊢Γ)
   ⊢is⊢⊢term (ℕⱼ ⊢Γ) = ℕⱼ (⊢is⊢⊢ctx ⊢Γ)
   ⊢is⊢⊢term (Emptyⱼ ⊢Γ) = Emptyⱼ (⊢is⊢⊢ctx ⊢Γ)
-  ⊢is⊢⊢term (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = Πⱼ x ▹ x₁ ▹ univ (⊢is⊢⊢term X) ▹ univ (⊢is⊢⊢term X₁)
-  ⊢is⊢⊢term (∃ⱼ X ▹ X₁) = ∃ⱼ ⊢is⊢⊢term X ▹ ⊢is⊢⊢term X₁
+  ⊢is⊢⊢term (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = Πⱼ x ▹ x₁ ▹ univ (⊢is⊢⊢term X₁)
+  ⊢is⊢⊢term (∃ⱼ X ▹ X₁) = ∃ⱼ ⊢is⊢⊢term X₁
   ⊢is⊢⊢term (var ⊢Γ x) = var (⊢is⊢⊢ctx ⊢Γ) x
   ⊢is⊢⊢term (lamⱼ x x₁ x₂ X) = lamⱼ x x₁ (⊢is⊢⊢term X)
   ⊢is⊢⊢term (x ▹ X ▹ X₁ ▹ X₂ ∘ⱼ X₃) = ⊢is⊢⊢term X₂ ∘ⱼ ⊢is⊢⊢term X₃
@@ -322,7 +319,7 @@ mutual
   ⊢is⊢⊢term (sndⱼ X X₁ X₂) = sndⱼ (⊢is⊢⊢term X₂)
   ⊢is⊢⊢term (zeroⱼ x) = zeroⱼ (⊢is⊢⊢ctx x)
   ⊢is⊢⊢term (sucⱼ X) = sucⱼ (⊢is⊢⊢term X)
-  ⊢is⊢⊢term (natrecⱼ x x₁ X X₁ X₂) = natrecⱼ (⊢is⊢⊢ x₁) (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂)
+  ⊢is⊢⊢term (natrecⱼ x x₁ X X₁ X₂) = natrecⱼ (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂)
   ⊢is⊢⊢term (Emptyrecⱼ x X) = Emptyrecⱼ (⊢is⊢⊢ x) (⊢is⊢⊢term X)
   ⊢is⊢⊢term (Idⱼ X X₁ X₂) = Idⱼ (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂) 
   ⊢is⊢⊢term (Idreflⱼ X) = Idreflⱼ (⊢is⊢⊢term X)
@@ -385,8 +382,14 @@ mutual
   ⊢⊢is⊢term (univ x ⊢Γ) = univ x (⊢⊢is⊢ctx ⊢Γ)
   ⊢⊢is⊢term (ℕⱼ ⊢Γ) = ℕⱼ (⊢⊢is⊢ctx ⊢Γ)
   ⊢⊢is⊢term (Emptyⱼ ⊢Γ) = Emptyⱼ (⊢⊢is⊢ctx ⊢Γ)
-  ⊢⊢is⊢term (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = Πⱼ x ▹ x₁ ▹ un-univ (⊢⊢is⊢ X) ▹ un-univ (⊢⊢is⊢ X₁)
-  ⊢⊢is⊢term (∃ⱼ X ▹ X₁) = ∃ⱼ ⊢⊢is⊢term X ▹ ⊢⊢is⊢term X₁
+  ⊢⊢is⊢term (Πⱼ x ▹ x₁ ▹ X₁) =
+    let ⊢G = ⊢⊢is⊢ X₁
+        ⊢Γ , ⊢F = inversion-ctx (wf ⊢G)
+    in Πⱼ x ▹ x₁ ▹ un-univ ⊢F ▹ un-univ ⊢G
+  ⊢⊢is⊢term (∃ⱼ X₁) =
+    let ⊢G = ⊢⊢is⊢term X₁
+        ⊢Γ , ⊢F = inversion-ctx (wfTerm ⊢G)
+    in ∃ⱼ (un-univ ⊢F) ▹ ⊢G
   ⊢⊢is⊢term (var ⊢Γ x) = var (⊢⊢is⊢ctx ⊢Γ) x
   ⊢⊢is⊢term (lamⱼ x x₁ X) = let XX = ⊢⊢is⊢term X in lamⱼ x x₁ (let ⊢Γ , ⊢F = inversion-ctx (wfTerm XX) in ⊢F) XX
   ⊢⊢is⊢term (X₂ ∘ⱼ X₃) =
@@ -409,12 +412,13 @@ mutual
     in sndⱼ ⊢A ⊢G ⊢t
   ⊢⊢is⊢term (zeroⱼ x) = zeroⱼ (⊢⊢is⊢ctx x)
   ⊢⊢is⊢term (sucⱼ X) = sucⱼ (⊢⊢is⊢term X)
-  ⊢⊢is⊢term (natrecⱼ x₁ X X₁ X₂) =
+  ⊢⊢is⊢term (natrecⱼ X X₁ X₂) =
     let ⊢s = ⊢⊢is⊢term X₁ 
         ⊢Π = un-univ (syntacticTerm ⊢s)
-        rG , _ , l% , _ , ⊢G , _ , req , _ = inversion-Π ⊢Π
+        rG , _ , l% , _ , ⊢GG , _ , req , _ = inversion-Π ⊢Π
+        rG , _ , l% , ⊢G , _ , _ , req , _ = inversion-Π ⊢GG
         l% = PE.subst (λ rr → rr PE.≡ % → _ PE.≡ ⁰ × _ PE.≡ ⁰) req l%
-    in natrecⱼ (λ req → proj₁ (l% req)) (⊢⊢is⊢ x₁) (⊢⊢is⊢term X) ⊢s (⊢⊢is⊢term X₂)
+    in natrecⱼ (λ req → proj₁ (l% req)) (univ ⊢G) (⊢⊢is⊢term X) ⊢s (⊢⊢is⊢term X₂)
   ⊢⊢is⊢term (Emptyrecⱼ x X) = Emptyrecⱼ (⊢⊢is⊢ x) (⊢⊢is⊢term X)
   ⊢⊢is⊢term (Idⱼ X₁ X₂) =
     let ⊢t = (⊢⊢is⊢term X₁)
