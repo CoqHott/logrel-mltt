@@ -33,7 +33,7 @@ eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       (λ ⊢Γ → Id-cong (refl (univ 0<1 ⊢Γ)))
                       (λ ⊢Γ → Id-cong (refl (univ 0<1 ⊢Γ)) (refl (ℕⱼ ⊢Γ)))
                       (λ ⊢A B → Id-cong (refl (univ 0<1 (wfEq (univ ⊢A)))) ⊢A B) 
-                      cast-cong
+                      cast-cong cast-refl (λ ⊢e ⊢t ne → cast-refl (refl (ℕⱼ (wfTerm ⊢t))) ⊢e (refl ⊢t))
                       (λ ⊢Γ → cast-cong (refl (ℕⱼ ⊢Γ)))
                       (λ ⊢Γ → cast-cong (refl (ℕⱼ ⊢Γ)) (refl (ℕⱼ ⊢Γ)))
                       cast-cong

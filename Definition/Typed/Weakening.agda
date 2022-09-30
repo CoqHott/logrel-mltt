@@ -109,8 +109,6 @@ mutual
       (transpⱼ ρA ρP ρt ρs ρu ρe)
   wkTerm ρ ⊢Δ (castⱼ A B e t) =
     castⱼ (wkTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
-  wkTerm ρ ⊢Δ (castreflⱼ A t) =
-    castreflⱼ (wkTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ t)
   wkTerm ρ ⊢Δ (conv t A≡B) = conv (wkTerm ρ ⊢Δ t) (wkEq ρ ⊢Δ A≡B)
 
   wkEq : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
@@ -261,6 +259,7 @@ mutual
         ρA' = wkTerm ρ ⊢Δ A'
         ρB' = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA')) B'
     in Id-U-ΠΠ!% eq ρA ρB ρA' ρB'
+  wkEqTerm ρ ⊢Δ (cast-refl A e t) = cast-refl (wkEqTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ e) (wkEqTerm ρ ⊢Δ t)
   wkEqTerm ρ ⊢Δ (cast-cong A B t e e') = cast-cong (wkEqTerm ρ ⊢Δ A) (wkEqTerm ρ ⊢Δ B) (wkEqTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ e')
   wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) = let l = ⁰ in let lA = ⁰ in let lB = ⁰ in
     let ρA = wkTerm [ρ] ⊢Δ Aⱼ in
@@ -407,6 +406,7 @@ mutual
         ρB' = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA')) B'
     in Id-U-ΠΠ!% eq ρA ρB ρA' ρB'
   wkRedTerm ρ ⊢Δ  (cast-subst A B e t) = cast-subst (wkRedTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ  B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
+  wkRedTerm {Γ} {Δ} {A} {l} {t'} {u} {ρ₁} ρ ⊢Δ  (cast-ne-subst K neK B e t) = cast-ne-subst (wkTerm ρ ⊢Δ K) (wkNeutral ρ₁ neK) (wkRedTerm ρ ⊢Δ  B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkRedTerm ρ ⊢Δ  (cast-ℕ-subst B e t) = cast-ℕ-subst (wkRedTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkRedTerm ρ ⊢Δ  (cast-Π-subst A P B e t) = let ρA = wkTerm ρ ⊢Δ A in cast-Π-subst ρA (wkTerm (lift ρ) (⊢Δ ∙ (univ ρA)) P) (wkRedTerm ρ ⊢Δ B) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) = let l = ⁰ in let lA = ⁰ in let lB = ⁰ in

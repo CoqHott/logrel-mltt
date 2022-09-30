@@ -120,10 +120,6 @@ mutual
             → Γ ⊢ e ∷ (Id (Univ r ⁰) A B) ^ [ % , ι ⁰ ]
             → Γ ⊢ t ∷ A ^ [ r , ι ⁰ ]
             → Γ ⊢ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ]
-    castreflⱼ : ∀ {A t}
-                 → Γ ⊢ A ∷ U ⁰ ^ [ ! , next ⁰ ]
-                 → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
-                 → Γ ⊢ castrefl A t ∷ (Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t)) ^ [ % , ι ⁰ ]
     conv   : ∀ {t A B r}
            → Γ ⊢ t ∷ A ^ r
            → Γ ⊢ A ≡ B ^ r
@@ -290,6 +286,11 @@ mutual
             → Γ ⊢ A' ∷ Univ rA' ⁰ ^ [ ! , next ⁰ ]
             → Γ ∙ A' ^ [ rA' , ι ⁰ ] ⊢ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
             → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) (Π A' ^ rA' ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) ≡ sEmpty ∷ SProp ^ [ ! , next ⁰ ]
+    cast-refl : ∀ {A B e t t'} → let l = ⁰ in
+                  Γ ⊢ A ≡ B ∷ U l ^ [ ! , next l ]
+                → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
+                → Γ ⊢ t ≡ t' ∷ A ^ [ ! , ι l ]
+                → Γ ⊢ cast l A B e t ≡ t' ∷ B ^ [ ! , ι l ]
     cast-cong : ∀ {A A' B B' e e' t t'} → let l = ⁰ in
                   Γ ⊢ A ≡ A' ∷ U l ^ [ ! , next l ]
                 → Γ ⊢ B ≡ B' ∷ U l ^ [ ! , next l ]
@@ -456,6 +457,13 @@ mutual
                   → Γ ⊢ e ∷ Id (U l) A B ^ [ % , ι ⁰ ]
                   → Γ ⊢ t ∷ A ^ [ ! , ι l ]
                   → Γ ⊢ cast l A B e t ⇒ cast l A' B e t ∷ B ^ ι l
+    cast-ne-subst : ∀ {K B B' e t} → let l = ⁰ in
+                    Γ ⊢ K ∷ U l ^ [ ! , next l ]
+                  → Neutral K
+                  → Γ ⊢ B ⇒ B' ∷ U l ^ next l
+                  → Γ ⊢ e ∷ Id (U l) K B ^ [ % , ι ⁰ ]
+                  → Γ ⊢ t ∷ K ^ [ ! , ι l ]
+                  → Γ ⊢ cast l K B e t ⇒ cast l K B' e t ∷ B ^ ι l
     cast-ℕ-subst : ∀ {B B' e t}
                   → Γ ⊢ B ⇒ B' ∷ U ⁰ ^ next ⁰
                   → Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ [ % , ι ⁰ ]

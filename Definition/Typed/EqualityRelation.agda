@@ -221,11 +221,50 @@ record EqRelSet : Set₁ where
     ~-cast : ∀ {A A' B B' e e' t t' Γ} →
            let l = ⁰ in
              Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
-           → Γ ⊢ B ≅ B' ∷ U l ^ [ ! , next l ]
+           → Γ ⊢ B ~ B' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
            → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
            → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , ι ⁰ ]
            → Γ ⊢ cast l A B e t ~ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]
+
+    ~-castneℕ : ∀ {A A' e e' t t' Γ} →
+           let l = ⁰ in
+             Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
+           → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
+           → Γ ⊢ e ∷ (Id (U ⁰) A ℕ) ^ [ % , ι ⁰ ]
+           → Γ ⊢ e' ∷ (Id (U ⁰) A' ℕ) ^ [ % , ι ⁰ ]
+           → Γ ⊢ cast l A ℕ e t ~ cast l A' ℕ e' t' ∷ ℕ ^ [ ! , ι l ]
+
+    ~-castneΠ : ∀ {A A' P P' B B' rB e e' t t' Γ} →
+           let l = ⁰ in
+           Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
+           → Γ ⊢ Π B ^ rB ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π B' ^ rB ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
+           → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
+           → Γ ⊢ e ∷ (Id (U ⁰) A (Π B ^ rB ° l ▹ P ° l ° l ^ !)) ^ [ % , ι ⁰ ]
+           → Γ ⊢ e' ∷ (Id (U ⁰) A' (Π B' ^ rB ° l ▹ P' ° l ° l ^ !)) ^ [ % , ι ⁰ ]
+           → Γ ⊢ cast l A (Π B ^ rB ° l ▹ P ° l ° l ^ !) e t ~ cast l A' (Π B' ^ rB ° l ▹ P' ° l ° l ^ !) e' t' ∷ Π B ^ rB ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
+
+    ~-cast-refl : ∀ {A B e t t' Γ} →
+           let l = ⁰ in
+             Γ ⊢ A ~ B ∷ U l ^ [ ! , next l ]
+           → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
+           → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
+           → Γ ⊢ cast l A B e t ~ t' ∷ B ^ [ ! , ι l ]
+
+    ~-castℕ-refl : ∀ {e t Γ} →
+           let l = ⁰ in
+             Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+           → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+           → Neutral t
+           → Γ ⊢ cast l ℕ ℕ e t ~ t ∷ ℕ ^ [ ! , ι l ]
+
+    ~-castΠ-refl : ∀ {A A' rA P P' e t Γ} →
+           let l = ⁰ in
+             Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
+           → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l ° l ^ !) (Π A' ^ rA ° l ▹ P' ° l ° l ^ !)) ^ [ % , ι ⁰ ]
+           → Γ ⊢ t ∷ Π A ^ rA ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
+           → Neutral t
+           → Γ ⊢ cast l (Π A ^ rA ° l ▹ P ° l ° l ^ !) (Π A' ^ rA ° l ▹ P' ° l ° l ^ !) e t ~ t ∷ Π A ^ rA ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
 
     ~-castℕ : ∀ {B B' e e' t t' Γ}
             → ⊢ Γ
