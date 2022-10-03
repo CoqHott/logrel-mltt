@@ -78,17 +78,6 @@ import Data.Nat as Nat
                                                                   (conv:⇒*: (CastRed*Termℕℕ ⊢eℕℕ d) (sym (subset* DB)))))
                    (conv:⇒*: d (sym (subset* DB))) (~-conv (~-castℕ-refl ⊢eℕℕ ⊢k neK) (sym (subset* DB))) 
 
-{-
-[castrefl]Π : ∀ {A B t e Γ}
-             (⊢Γ : ⊢ Γ)
-             ([A] : Γ ⊩¹Π A ^[ ⁰ ])
-             ([B] : Γ ⊩¹Π B ^[ ⁰ ]) 
-             ([A≡B] : Γ ⊩⟨ ι ⁰ ⟩ A ≡ B ^ [ ! , ι ⁰ ] / Πᵣ [A])
-             ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / Πᵣ [A])
-             (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ])
-             → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ ! , ι ⁰ ] / ℕᵣ [B]
-[castrefl]Π ⊢Γ [A] [B] [A≡B] [t] ⊢e = ?
--}
 
 [castrefl]Ne : ∀ {A B Γ}
          (⊢Γ : ⊢ Γ)
@@ -126,8 +115,18 @@ import Data.Nat as Nat
          → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ r , ι ⁰ ] / [B]
 [castreflShape] ⊢Γ .(ℕᵣ ℕA) .(ℕᵣ ℕB) [A≡B] (ℕᵥ ℕA ℕB) [t] ⊢e = [castrefl]ℕ ⊢Γ ℕA ℕB [A≡B] (escapeTerm {l = ι ⁰} (ℕᵣ ℕA) [t]) [t] ⊢e 
 [castreflShape] {r = !} ⊢Γ .(ne neA) .(ne neB) [A≡B] (ne neA neB) [t] ⊢e = [castrefl]Ne ⊢Γ neA neB [A≡B] [t] ⊢e
-[castreflShape] ⊢Γ .(Πᵣ ΠA) .(Πᵣ ΠB) [A≡B] (Πᵥ ΠA ΠB) (Πₜ .(lam _ ▹ _ ^ _) ⊢f lamₙ f≅f fext fextsubst) ⊢e = {!!}
-[castreflShape] ⊢Γ .(Πᵣ ΠA) .(Πᵣ ΠB) [A≡B] (Πᵥ ΠA ΠB) (Πₜ f ⊢f (ne x) f≅f fext fextsubst) ⊢e = {!!}
+[castreflShape] {A} {B} {t} {e} {Γ} {r}  ⊢Γ .(Πᵣ′ rF ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                   .(Πᵣ′ rF₁ ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁) [A≡B]
+                   (Πᵥ (Πᵣ rF ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+                       (Πᵣ rF₁ ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)) [t] ⊢e = 
+  let eval = lam F₁ ▹
+                         (let a = cast ⁰ (wk1 F₁) (wk1 F) (Idsym (Univ rF ⁰) (wk1 F) (wk1 F₁) (fst (wk1 e))) (var 0) in
+                         cast ⁰ (G [ a ]↑) G₁ ((snd (wk1 e)) ∘ (var 0) ^ ⁰) ((wk1 t) ∘ a ^ ⁰)) ^ ⁰
+      [[ ⊢B , ⊢Π₁ , DΠ₁ ]] = D₁                         
+      [ΠFG] = Πᵣ′ rF₁ ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ ([[ ⊢Π₁ , ⊢Π₁ , id ⊢Π₁ ]]) ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
+      [A] , t≡eval = redSubst*Term (cast-Π {!!} {!!} {!!} {!!} {!!} {!!} ⇨ id {!!}) [ΠFG] {!!}
+  in transEqTerm {u = eval} (Πᵣ′ rF₁ ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
+                 {!!} {!!}
 [castreflShape] {r = %} ⊢Γ [A] [B] [A≡B] _ [t] ⊢e =
   let ⊢A = escape {l = ι ⁰} [A] 
       ⊢B = escape {l = ι ⁰} [B] 
