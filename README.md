@@ -1,19 +1,18 @@
-# A Logical Relation for Setoid Type Theory in Agda #
+# A Logical Relation for Impredicative Observational Equality in Agda #
 
 This is a formalized proof of the decidability of conversion for an
-extension of Martin Löf type theory with an equality satisfying UIP,
-function extensionality, and propositional extensionality.
+extension of the calculus of inductive constructions (CIC)
+with an equality satisfying UIP, function extensionality, and propositional extensionality. 
 
-The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/setoid-universes-hierarchy/html/README.html).
+The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/impredicativity-SProp-POPL/html/README.html).
 
-The companion paper can be found [here](https://hal.inria.fr/hal-03367052)
+### Impredicative Observational Equality ###
 
-### Setoid Type Theory ###
-
-The type theory under scrutiny is a simplified version of TT<sup>obs</sup>, as described in the companion
+The type theory under scrutiny is a simplified version of CC<sup>obs</sup>, as described in the companion
 paper.
 It features:
-- A hierarchy of universes for proof-relevant types, and one for proof-irrelevant types,
+- A hierarchy of universes for proof-relevant types
+- An impredicative universe of proof-irrelevant types,
 - dependent products, with domain and codomain in any universe,
 - dependent pairs with proof-irrelevant domain and codomain ("existential types"),
 - proof-irrelevant identity types and type casting along equalities in the universes,
@@ -25,17 +24,22 @@ However, it is subject to the following restrictions:
 - no quotient types.
 
 The interested reader is invited to consult either the companion paper or the formalized definitions
-for a more detailed account of TT<sup>obs</sup>.
+for a more detailed account of CC<sup>obs</sup>.
 
 ### Structure of the proof ###
 
 The raw, untyped syntax is defined inductively, followed by an inductive definition of the typing
-derivations of TT<sup>obs</sup>.
-
+derivations of CC<sup>obs</sup>.
+ 
 The proof then relies on Agda's implementation of induction-recursion to define a logical relation
 that characterizes the computational behaviour of the typing judgments. Some basic properties of
 this logical relation are then established, in order to prove the *fundamental lemma*, which states
 that any derivable judgement satisfies the logical relation.
+
+The main change in the definition compare to the original version of
+Abel et al. and TT<sup>obs</sup> is the fact that the logical relation
+for type in the impredicative universe is defined upfront, because it
+does not have to collect any additional information at the top of typing.
 
 Once the fundamental lemma has been proven, it entails several fundamental properties of the type
 theory, such as the termination of the weak-head reduction strategy, the canonicity of the integers,
@@ -45,6 +49,10 @@ This first part lays the foundation necessary to the definition of an algorithmi
 on types and terms. We can prove that this algorithmic equality is decidable, and, using the
 fundamental lemma, that it coincides with the judgmental equality. It follows that the judgmental
 equality of terms and types is decidable.
+
+Note that because there is no computation in the impredicative logical
+layer, canonicity follows from consistency, which has to be proven
+externally using a model. 
 
 A more detailed, but still high-level overview of the proof is provided in the companion paper.
 
