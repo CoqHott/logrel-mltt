@@ -58,26 +58,3 @@ Idreflᵛ {Γ} {A} {l} {t} [Γ] [A] [t]  =
   let [Id] = Idᵛ {A = A} {t = t} {u = t } [Γ] [A] [t] [t]
   in validityIrr {A = Id A t t} {t = Idrefl A t} [Γ] [Id] λ ⊢Δ [σ] → Idreflⱼ (escapeTerm (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])))
 
-castreflᵛ : ∀{Γ A t}
-  → ([Γ] : ⊩ᵛ Γ)
-  → ([UA] : Γ ⊩ᵛ⟨ ∞ ⟩ U ⁰ ^ [ ! , next ⁰ ] / [Γ])
-  → ([A]ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ U ⁰ ^ [ ! , next ⁰ ] / [Γ] / [UA] )
-  → ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ^ [ ! , ι ⁰ ] / [Γ])
-  → ([t]ₜ : Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / [Γ] / [A])
-  → let [Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t) ^ [ % , ι ⁰ ] / [Γ]
-        [Id] = Idᵛ {A = A} {t = t} {u = cast ⁰ A A (Idrefl (U ⁰) A) t} [Γ] [A] [t]ₜ
-                   (castᵗᵛ {A = A} {B = A} {t = t} {e = Idrefl (U ⁰) A} [Γ] [UA] [A]ₜ [A]ₜ [A] [A] [t]ₜ
-                           (Idᵛ {A = U _} {t = A} {u = A} [Γ] [UA] [A]ₜ [A]ₜ)
-                           (Idreflᵛ {A = U _} {t = A} [Γ] [UA] [A]ₜ))
-    in Γ ⊩ᵛ⟨ ∞ ⟩ castrefl A t ∷ Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t) ^ [ % , ι ⁰ ] / [Γ] / [Id]
-
-
-castreflᵛ {Γ} {A} {t} [Γ] [UA] [A]ₜ [A] [t]ₜ =
-  let [Id] : Γ ⊩ᵛ⟨ ∞ ⟩ Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t) ^ [ % , ι ⁰ ] / [Γ]
-      [Id] = Idᵛ {A = A} {t = t} {u = cast ⁰ A A (Idrefl (U ⁰) A) t} [Γ] [A] [t]ₜ
-                 (castᵗᵛ {A = A} {B = A} {t = t} {e = Idrefl (U ⁰) A} [Γ] [UA] [A]ₜ [A]ₜ [A] [A] [t]ₜ
-                 (Idᵛ {A = U _} {t = A} {u = A} [Γ] [UA] [A]ₜ [A]ₜ)
-                 (Idreflᵛ {A = U _} {t = A} [Γ] [UA] [A]ₜ))
-  in  validityIrr {A = Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t)} {t = castrefl A t}
-                  [Γ] [Id] λ ⊢Δ [σ] → castreflⱼ (escapeTerm (proj₁ ([UA] ⊢Δ [σ])) (proj₁ ([A]ₜ ⊢Δ [σ]))) (escapeTerm (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t]ₜ ⊢Δ [σ])))
-

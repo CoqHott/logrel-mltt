@@ -296,17 +296,6 @@ abstract
         [e]ₜ′  = S.irrelevanceTerm {A = Id (Univ r _) A B} {t = e} [Γe] [Γ]₁ [Id] [Id]′ [e]ₜ
      in [Γ]₁ , [B] , castᵗᵛ {A} {B} {r} {t} {e} [Γ]₁ [UA]′ [A]ₜ′ [B]ₜ′ [At] [B] [t]ₜ [Id]′ [e]ₜ′
 
-  fundamentalTerm {Γ} (castreflⱼ {A} {t} ⊢A ⊢t)
-    with fundamentalTerm ⊢A | fundamentalTerm ⊢t
-  ... | [ΓA] , [UA] , [A]ₜ | [Γ] , [A] , [t]ₜ =
-    let [UA]′ = S.irrelevance {A = Univ _ _} [ΓA] [Γ] [UA] 
-        [A]ₜ′  = S.irrelevanceTerm {A = Univ _ _} {t = A} [ΓA] [Γ] [UA] [UA]′ [A]ₜ
-        [Id] = Idᵛ {A = A} {t = t} {u = cast ⁰ A A (Idrefl (U ⁰) A) t} [Γ] [A] [t]ₜ
-                   (castᵗᵛ {A = A} {B = A} {t = t} {e = Idrefl (U ⁰) A} [Γ] [UA]′ [A]ₜ′ [A]ₜ′ [A] [A] [t]ₜ
-                           (Idᵛ {A = U _} {t = A} {u = A} [Γ] [UA]′ [A]ₜ′ [A]ₜ′)
-                           (Idreflᵛ {A = U _} {t = A} [Γ] [UA]′ [A]ₜ′))
-    in  [Γ] , [Id] , castreflᵛ {Γ} {A} {t} [Γ] [UA]′ [A]ₜ′ [A] [t]ₜ
-
   fundamentalTerm (Emptyrecⱼ {A} {lA} {rA} {n} ⊢A ⊢n)
     with fundamental ⊢A | fundamentalTerm ⊢n
   ... | [Γ] , [A] | [Γ]′ , [Empty] , [n] =
