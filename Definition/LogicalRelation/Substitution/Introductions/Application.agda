@@ -45,7 +45,7 @@ appᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {u} [Γ] [F] [G] [ΠFG] [t] [u] {σ = σ
   let [G[u]] = substSΠ {F} {G} {u} [Γ] [F] [ΠFG] [u]
       [σF] = proj₁ ([F] ⊢Δ [σ])
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
-      [σG] = proj₁ ([G] (⊢Δ ∙ escape [σF]) [liftσ])
+      [σG] = proj₁ ([G] {σ = liftSubst σ} (⊢Δ ∙ escape [σF]) [liftσ])
       [σΠFG] = proj₁ ([ΠFG] ⊢Δ [σ])
       [σt] = proj₁ ([t] ⊢Δ [σ])
       [σu] = proj₁ ([u] ⊢Δ [σ])
@@ -53,7 +53,7 @@ appᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {u} [Γ] [F] [G] [ΠFG] [t] [u] {σ = σ
       [σG[u]]′ = irrelevance′ (singleSubstLift G u) [σG[u]]
   in  irrelevanceTerm′ (PE.sym (singleSubstLift G u)) PE.refl PE.refl
                        [σG[u]]′ [σG[u]]
-                       (appTerm PE.refl [σF] [σG[u]]′ [σΠFG] [σt] [σu] (un-univ (escape [σG])))
+                       (appTerm PE.refl [σF] [σG[u]]′ [σΠFG] [σt] [σu])
   ,   (λ [σ′] [σ≡σ′] →
          let [σu′] = convTerm₂ [σF] (proj₁ ([F] ⊢Δ [σ′]))
                                (proj₂ ([F] ⊢Δ [σ]) [σ′] [σ≡σ′])
@@ -63,7 +63,7 @@ appᵛ {F} {G} {rF} {lF} {lG} {lΠ} {t} {u} [Γ] [F] [G] [ΠFG] [t] [u] {σ = σ
                                 (app-congTerm [σF] [σG[u]]′ [σΠFG]
                                               (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
                                               [σu] [σu′]
-                                              (proj₂ ([u] ⊢Δ [σ]) [σ′] [σ≡σ′]) (un-univ (escape [σG]))))
+                                              (proj₂ ([u] ⊢Δ [σ]) [σ′] [σ≡σ′])))
 
 
 -- Application congurence of valid terms.
@@ -78,10 +78,10 @@ app-congᵛ : ∀ {F G rF lF lG lΠ t u a b Γ l}
             ([a≡b] : Γ ⊩ᵛ⟨ l ⟩ a ≡ b ∷ F ^ [ rF , ι lF ] / [Γ] / [F])
           → Γ ⊩ᵛ⟨ l ⟩ t ∘ a ^ lΠ ≡ u ∘ b ^ lΠ ∷ G [ a ] ^ [ ! , ι lG ] / [Γ]
               / substSΠ {F} {G} {a} [Γ] [F] [ΠFG] [a]
-app-congᵛ {F} {G} {rF} {lF} {lG} {a = a} [Γ] [F] [G] [ΠFG] [t≡u] [a] [b] [a≡b] ⊢Δ [σ] =
+app-congᵛ {F} {G} {rF} {lF} {lG} {a = a} [Γ] [F] [G] [ΠFG] [t≡u] [a] [b] [a≡b] {σ = σ} ⊢Δ [σ] =
   let [σF] = proj₁ ([F] ⊢Δ [σ])
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
-      [σG] = proj₁ ([G] (⊢Δ ∙ escape [σF]) [liftσ])
+      [σG] = proj₁ ([G] {σ = liftSubst σ} (⊢Δ ∙ escape [σF]) [liftσ])
       [G[a]]  = proj₁ (substSΠ {F} {G} {a} [Γ] [F] [ΠFG] [a] ⊢Δ [σ])
       [G[a]]′ = irrelevance′ (singleSubstLift G a) [G[a]]
       [σΠFG] = proj₁ ([ΠFG] ⊢Δ [σ])
@@ -89,7 +89,7 @@ app-congᵛ {F} {G} {rF} {lF} {lG} {a = a} [Γ] [F] [G] [ΠFG] [t≡u] [a] [b] [
       [σb] = proj₁ ([b] ⊢Δ [σ])
   in  irrelevanceEqTerm′ (PE.sym (singleSubstLift G a)) PE.refl PE.refl [G[a]]′ [G[a]]
                          (app-congTerm [σF] [G[a]]′ [σΠFG] ([t≡u] ⊢Δ [σ])
-                                       [σa] [σb] ([a≡b] ⊢Δ [σ]) (un-univ (escape [σG])))
+                                       [σa] [σb] ([a≡b] ⊢Δ [σ]))
 
 appᵛ↑ : ∀ {F F' G rF rF' lF lF' lG lΠ t u Γ l}
        (lF≤ : lF ≤ lΠ)

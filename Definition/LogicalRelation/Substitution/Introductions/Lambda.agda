@@ -352,7 +352,7 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
       _ , Πᵣ rF′ lF′ lG′ _ _ F′ G′ D′ ⊢F ⊢G A≡A [F]′ [G]′ G-ext = extractMaybeEmb (Π-elim [σΠFG])
       [σF] = proj₁ ([F] ⊢Δ [σ])
       [wk1F] = wk (step id) (⊢Δ ∙ ⊢F) [σF]
-      [σG] = proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ])
+      [σG] = proj₁ ([G] {σ = liftSubst σ} (⊢Δ ∙ ⊢F) [liftσ])
       ⊢G = escape [σG]
       ⊢wk1G = T.wk (lift (step id)) (⊢Δ ∙ ⊢F ∙ (escape [wk1F])) ⊢G
       var0′ = var (⊢Δ ∙ ⊢F) here
@@ -374,10 +374,10 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
       g≡g₁′ = proj₂ (redSubst*Term d₁ [σΠFG] (Πₜ g₁ (idRedTerm:*: ⊢u₁) funcG g≡g [g] [g]₁))
       eq′  = irrelevanceEqTerm′ (cons0wkLift1-id σ G) PE.refl PE.refl [σG]′ [σG]
                                 (app-congTerm [wk1F] [σG]′ (wk (step id) (⊢Δ ∙ ⊢F) [σΠFG])
-                                              (wkEqTerm (step id) (⊢Δ ∙ ⊢F) [σΠFG] f≡f₁′) var0 var0 var0≡0 (un-univ ⊢wk1G))
+                                              (wkEqTerm (step id) (⊢Δ ∙ ⊢F) [σΠFG] f≡f₁′) var0 var0 var0≡0)
       eq₁′ = irrelevanceEqTerm′ (cons0wkLift1-id σ G) PE.refl PE.refl [σG]′ [σG]
                                 (app-congTerm [wk1F] [σG]′ (wk (step id) (⊢Δ ∙ ⊢F) [σΠFG])
-                                              (wkEqTerm (step id) (⊢Δ ∙ ⊢F) [σΠFG] g≡g₁′) var0 var0 var0≡0 (un-univ ⊢wk1G))
+                                              (wkEqTerm (step id) (⊢Δ ∙ ⊢F) [σΠFG] g≡g₁′) var0 var0 var0≡0)
       eq   = escapeTermEq [σG] eq′
       eq₁  = escapeTermEq [σG] eq₁′
   in  Πₜ₌ f₁ g₁ [d] [d′] funcF funcG
@@ -415,8 +415,8 @@ lamirrᵛ {F} {G} {rF} {lF} {t} {Γ} {l} [Γ] [F] [G] [t] {Δ = Δ} {σ = σ} �
                  [g]′ : Δ ⊩⟨ _ ⟩ g₁ ∷ Π F′ ^ rF ° lF ▹ G′ ° lG ° lΠ ^ ! ^ [ ! , _ ] / [σΠFG]
                  [g]′ = Πₜ g₁ (idRedTerm:*: ⊢u₁) funcG g≡g [g] [g]₁
                  [ρg]′ = wkTerm [ρ] ⊢Δ₁ [σΠFG] [g]′
-                 [f∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρf]′ [a] (un-univ ⊢G₁) 
-                 [g∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρg]′ [a] (un-univ ⊢G₁)
+                 [f∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρf]′ [a]
+                 [g∘u] = appTerm PE.refl ([F]′ [ρ] ⊢Δ₁) ([G]′ [ρ] ⊢Δ₁ [a]) [ρσΠFG] [ρg]′ [a]
                  [tu≡fu] = proj₂ (redSubst*Term (app-subst* (un-univ ⊢F′) (un-univ ⊢G₁) (wkRed*Term [ρ] ⊢Δ₁ d)
                                                             (escapeTerm ([F]′ [ρ] ⊢Δ₁) [a]))
                                                 ([G]′ [ρ] ⊢Δ₁ [a]) [f∘u])
