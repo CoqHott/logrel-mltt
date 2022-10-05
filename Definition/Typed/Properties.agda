@@ -78,7 +78,7 @@ mutual
   wfEqTerm (Id-U-ℕΠ A B) = wfTerm A
   wfEqTerm (Id-U-Πℕ A B) = wfTerm A
   wfEqTerm (Id-U-ΠΠ!% eq A B A' B') = wfTerm A
-  wfEqTerm (cast-refl A e t) = wfEqTerm t
+  wfEqTerm (cast-refl A e t) = wfTerm t
   wfEqTerm (cast-cong A B t _ _) = wfEqTerm t
   wfEqTerm (cast-Π A B A' B' e f) = wfTerm f
   wfEqTerm (cast-ℕ-0 e) = wfTerm e

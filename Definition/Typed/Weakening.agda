@@ -259,7 +259,7 @@ mutual
         ρA' = wkTerm ρ ⊢Δ A'
         ρB' = wkTerm (lift ρ) (⊢Δ ∙ (univ ρA')) B'
     in Id-U-ΠΠ!% eq ρA ρB ρA' ρB'
-  wkEqTerm ρ ⊢Δ (cast-refl A e t) = cast-refl (wkEqTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ e) (wkEqTerm ρ ⊢Δ t)
+  wkEqTerm ρ ⊢Δ (cast-refl A e t) = cast-refl (wkEqTerm ρ ⊢Δ A) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ t)
   wkEqTerm ρ ⊢Δ (cast-cong A B t e e') = cast-cong (wkEqTerm ρ ⊢Δ A) (wkEqTerm ρ ⊢Δ B) (wkEqTerm ρ ⊢Δ t) (wkTerm ρ ⊢Δ e) (wkTerm ρ ⊢Δ e')
   wkEqTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) = let l = ⁰ in let lA = ⁰ in let lB = ⁰ in
     let ρA = wkTerm [ρ] ⊢Δ Aⱼ in

@@ -258,14 +258,6 @@ record EqRelSet : Set₁ where
            → Neutral t
            → Γ ⊢ cast l ℕ ℕ e t ~ t ∷ ℕ ^ [ ! , ι l ]
 
-    ~-castΠ-refl : ∀ {A A' rA P P' e t Γ} →
-           let l = ⁰ in
-             Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
-           → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° l ▹ P ° l ° l ^ !) (Π A' ^ rA ° l ▹ P' ° l ° l ^ !)) ^ [ % , ι ⁰ ]
-           → Γ ⊢ t ∷ Π A ^ rA ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
-           → Neutral t
-           → Γ ⊢ cast l (Π A ^ rA ° l ▹ P ° l ° l ^ !) (Π A' ^ rA ° l ▹ P' ° l ° l ^ !) e t ~ t ∷ Π A ^ rA ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
-
     ~-castℕ : ∀ {B B' e e' t t' Γ}
             → ⊢ Γ
             → Γ ⊢ B ~ B' ∷ U ⁰ ^ [ ! , next ⁰ ]
