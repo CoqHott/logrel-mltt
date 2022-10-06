@@ -92,16 +92,18 @@ import Data.Nat as Nat
       [[ ⊢A , ⊢K , DK ]] = D
       [A≡B] = ne₌ M D′ neM K≡M
       ⊢A≡K = subset* DK
-      [[ ⊢B , _ , DM ]] = D′
+      [[ ⊢B , ⊢M , DM ]] = D′
       ⊢B≡M = subset* DM
       [[ ⊢tk , _ , dk ]] = d
       [t] = neₜ k d (neNfₜ neK₁ ⊢k k≡k)
       ⊢t = escapeTerm {l = ι ⁰} {A = A} (ne [A]) [t]
       ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A))) (un-univ≡ ⊢A≡K) (un-univ≡ ⊢B≡M))) 
-  in neuEqTerm:⇒*: {l = ι ⁰} (ne [B]) (castₙ neK neM) neK₁
-                   (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne [A]) [t]) (un-univ:⇒*: D)) (CastRedR*Term ⊢K neK (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))(un-univ≡ (subset* DK)) (refl (un-univ ⊢B))))) ⊢tk (un-univ:⇒*: D′))) 
+  in neuEqTerm:⇒*: {l = ι ⁰} (ne [B]) (castₙ neK neM neK₁) neK₁
+                   (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne [A]) [t]) (un-univ:⇒*: D))
+                   (transTerm:⇒:* (CastRedR*Term ⊢K neK (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))(un-univ≡ (subset* DK)) (refl (un-univ ⊢B))))) ⊢tk (un-univ:⇒*: D′))
+                                  (conv:⇒*: (CastRedTerm*Term ⊢K neK ⊢M neM ⊢e' d) (sym ⊢B≡M))))
                    (conv:⇒*: d (trans (sym ⊢A≡K) (≅-eq (escapeEq {l = ι ⁰} (ne [A]) [A≡B])))) 
-                   (~-conv (~-cast-refl K≡M ⊢e' (≅ₜ-red (id ⊢K) dk (id ⊢k) (ne neK) (ne neK₁) (ne neK₁) (~-to-≅ₜ k≡k))) (sym ⊢B≡M) ) 
+                   (~-conv (~-cast-refl K≡M ⊢e' ⊢k neK₁) (sym ⊢B≡M) ) 
 
 
 [castreflShape] : ∀ {A B t e Γ r}

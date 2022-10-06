@@ -97,18 +97,23 @@ import Data.Nat as Nat
   in neuTerm:⇒*: {l = ι ⁰} {t = cast ⁰ A B e t} (ℕᵣ D') (castnℕₙ neK)
                  (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]) (un-univ:⇒*: D)) (CastRedR*Term ⊢K neK ⊢e'' (conv ⊢t ⊢A≡K) (un-univ:⇒*: D')))
                  cast~cast
-[cast]Ne {A} {B} ⊢Γ (ne K D neK K≡K) (ne′ K' D' neK' K≡K') {t} {e} [t] ⊢e = 
+                 
+[cast]Ne {A} {B} ⊢Γ (ne K D neK K≡K) (ne′ K' D' neK' K≡K') {t} {e} (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) ⊢e =
   let [[ ⊢A , ⊢K , DK ]] = D
       ⊢A≡K = subset* DK
       [[ ⊢B , ⊢K' , DK' ]] = D'
       ⊢B≡K' = subset* DK'
       ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A≡K) (un-univ≡ ⊢B≡K'))) 
-      ⊢e'' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A≡K) (refl (un-univ ⊢B)))) 
-      cast~cast = ~-conv (~-cast K≡K K≡K' (≅-conv (escapeTermEq {l = ι ⁰} {A = A} (ne′ K D neK K≡K) (reflEqTerm {l = ι ⁰} (ne′ K D neK K≡K) [t])) ⊢A≡K) ⊢e' ⊢e') (sym ⊢B≡K')
+      ⊢e'' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A≡K) (refl (un-univ ⊢B))))
+      [t] = neₜ k d (neNfₜ neK₁ ⊢k k≡k)
+      cast~cast = ~-cast K≡K K≡K' (~-to-≅ₜ k≡k) ⊢e' ⊢e' 
       ⊢t = escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]
-  in neuTerm:⇒*: {l = ι ⁰} {t = cast ⁰ A B e t} (ne′ K' D' neK' K≡K') (castₙ neK neK')
-                 (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]) (un-univ:⇒*: D)) (CastRedR*Term ⊢K neK ⊢e'' (conv ⊢t ⊢A≡K) (un-univ:⇒*: D')))
-                 cast~cast
+  in neuTerm:⇒*: {l = ι ⁰} {t = cast ⁰ A B e t} (ne′ K' D' neK' K≡K') (castₙ neK neK' neK₁)
+                 (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]) (un-univ:⇒*: D))
+                 (transTerm:⇒:* (CastRedR*Term ⊢K neK ⊢e'' (conv ⊢t ⊢A≡K) (un-univ:⇒*: D'))
+                                (conv:⇒*: (CastRedTerm*Term ⊢K neK ⊢K' neK' ⊢e' d) (sym ⊢B≡K'))))
+                 (~-conv cast~cast (sym ⊢B≡K'))
+
 [cast]Ne {A} {B} ⊢Γ (ne K D neK K≡K) (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D' ⊢F ⊢G A≡A [F] [G] G-ext) {t} {e} [t] ⊢e =
   let [[ ⊢A , ⊢K , DK ]] = D
       ⊢A≡K = subset* DK
@@ -121,7 +126,6 @@ import Data.Nat as Nat
   in neuTerm:⇒*: {t = cast ⁰ A B e t} (Πᵣ′ rF _ _ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D' ⊢F ⊢G A≡A [F] [G] G-ext) (castnΠₙ neK)
                  (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]) (un-univ:⇒*: D)) (CastRedR*Term ⊢K neK ⊢e'' (conv ⊢t ⊢A≡K) (un-univ:⇒*: D')))
                  cast~cast
-
 
 [castext]Ne : ∀ {A A′ B B′ Γ}
          (⊢Γ : ⊢ Γ)
@@ -161,9 +165,9 @@ import Data.Nat as Nat
                    (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]) (un-univ:⇒*: D)) (CastRedR*Term ⊢K neK ⊢eKB (conv ⊢t ⊢A≡K) (un-univ:⇒*: ℕA)))
                    (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢B′ ⊢e′ (escapeTerm {l = ι ⁰} (ne [A′]) [t′]) (un-univ:⇒*: D′′)) (CastRedR*Term ⊢M neM ⊢e′' (conv ⊢t′ ⊢A'≡M) (un-univ:⇒*: ℕB))) (sym (≅-eq (escapeEq {l = ι ⁰} (ℕᵣ ℕA) [B≡B′]))))
                    (~-conv (~-castneℕ K≡M (≅-conv t≅t′ ⊢A≡K) ⊢eKK₁ ⊢eMℕ) (sym ⊢B≡ℕ))
-[castext]Ne {A} {A′} {B} {B′} ⊢Γ (ne K D neK K≡K) (ne K′ D′ neK′ K′≡K′) (ne₌ M D′′ neM K≡M) .(ne′ K₁ D₁ neK₁ K≡K₁) .(ne′ K₂ D₂ neK₂ K≡K₂) (ne (ne K₁ D₁ neK₁ K≡K₁) (ne K₂ D₂ neK₂ K≡K₂)) (ne₌ M₁ D′₁ neM₁ K≡M₁) [t] [t′] [t≡t′] ⊢e ⊢e′ =
-  let [A] = ne K D neK K≡K
-      [A′] = ne K′ D′ neK′ K′≡K′
+
+[castext]Ne {A} {A′} {B} {B′} ⊢Γ (ne K D neK K≡K) (ne K′ D′ neK′ K′≡K′) (ne₌ M D′′ neM K≡M) .(ne′ K₁ D₁ neK₁ K≡K₁) .(ne′ K₂ D₂ neK₂ K≡K₂) (ne (ne K₁ D₁ neK₁ K≡K₁) (ne K₂ D₂ neK₂ K≡K₂)) (ne₌ M₁ D′₁ neM₁ K≡M₁) (neₜ k₁ [[ ⊢t , ⊢u , d₁ ]] (neNfₜ neK₃ ⊢k k≡k)) (neₜ k₂ [[ ⊢t′ , ⊢u′ , d₂ ]] (neNfₜ neK₄ ⊢k₁ k≡k₁)) (neₜ₌ k m d d′ (neNfₜ₌ neK₅ neM₂ k≡m)) ⊢e ⊢e′ =
+  let [A′] = ne K′ D′ neK′ K′≡K′
       [B] = ne K₁ D₁ neK₁ K≡K₁
       [[ ⊢A , ⊢K , DK ]] = D
       [[ ⊢A′ , ⊢K′ , DK′ ]] = D′
@@ -176,17 +180,30 @@ import Data.Nat as Nat
       ⊢B'≡M' = subset* DM'
       ⊢B≡K₁ = subset* DK₁
       ⊢B≡K₂ = subset* DK₂
-      ⊢t = escapeTerm {l = ι ⁰} {A = A} (ne [A]) [t]
-      ⊢t′ = escapeTerm {l = ι ⁰} {A = A′} (ne [A′]) [t′]
-      t≅t′ = escapeTermEq {l = ι ⁰} {A = A} (ne [A]) [t≡t′]
+      ⊢A≡K′ = subset* DK′
+      ⊢K′≡M = trans (sym ⊢A≡K′) ⊢A'≡M
+      [t] = neₜ k₁ [[ ⊢t , ⊢u , d₁ ]] (neNfₜ neK₃ ⊢k k≡k)
+      [t′] = neₜ k₂ [[ ⊢t′ , ⊢u′ , d₂ ]] (neNfₜ neK₄ ⊢k₁ k≡k₁)
       ⊢eKB = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A≡K) (refl (un-univ ⊢B)))) 
       ⊢eKK₁ = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A≡K) (un-univ≡ ⊢B≡K₁))) 
       ⊢e′' = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A'≡M) (refl (un-univ ⊢B′)))) 
-      ⊢eMM₁ = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A'≡M) (un-univ≡ ⊢B'≡M'))) 
-  in neuEqTerm:⇒*: {l = ι ⁰} (ne [B]) (castₙ neK neK₁) (castₙ neM neM₁)
-                   (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]) (un-univ:⇒*: D)) (CastRedR*Term ⊢K neK ⊢eKB (conv ⊢t ⊢A≡K) (un-univ:⇒*: D₁)))
-                   (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢B′ ⊢e′ (escapeTerm {l = ι ⁰} (ne [A′]) [t′]) (un-univ:⇒*: D′′)) (CastRedR*Term ⊢M neM ⊢e′' (conv ⊢t′ ⊢A'≡M) (un-univ:⇒*: D′₁))) (sym (≅-eq (escapeEq {l = ι ⁰} (ne [B]) (ne₌ M₁ D′₁ neM₁ K≡M₁)))))
-                   (~-conv (~-cast K≡M K≡M₁ (≅-conv t≅t′ ⊢A≡K) ⊢eKK₁ ⊢eMM₁) (sym ⊢B≡K₁))
+      ⊢eMM₁ = conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢B))) (un-univ≡ ⊢A'≡M) (un-univ≡ ⊢B'≡M')))
+      PEk₁≡k = whrDet*Term (d₁ , ne neK₃) ( redₜ d , ne neK₅)
+      k₁≡k = PE.subst (λ X → _ ⊢ k₁ ~ X ∷ K ^ [ ! , ι ⁰ ]) PEk₁≡k k≡k
+      PEm≡k₂ = whrDet*Term (d₂ , ne neK₄) ( redₜ d′ , ne neM₂)
+      m≡k₂ = PE.subst (λ X → _ ⊢ X ~ k₂ ∷ K′ ^ [ ! , ι ⁰ ]) PEm≡k₂ k≡k₁
+      k₁≡k₂ = ~-trans (~-trans k₁≡k k≡m) (~-conv m≡k₂ (trans ⊢K′≡M (sym (≅-eq (~-to-≅ K≡M))))) 
+  in neuEqTerm:⇒*: {l = ι ⁰} (ne [B]) (castₙ neK neK₁ neK₃) (castₙ neM neM₁ neK₄)
+                   (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne′ K D neK K≡K) [t]) (un-univ:⇒*: D))
+                   (transTerm:⇒:* (CastRedR*Term ⊢K neK ⊢eKB (conv ⊢t (univ (≅ₜ-eq (~-to-≅ₜ K≡K)))) (un-univ:⇒*: D₁))
+                                  (conv:⇒*: (CastRedTerm*Term ⊢K neK ⊢K₁ neK₁ ⊢eKK₁ [[ ⊢t , ⊢u , d₁ ]]) (sym ⊢B≡K₁))))
+                   (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢B′ ⊢e′ (escapeTerm {l = ι ⁰} (ne [A′]) [t′]) (un-univ:⇒*: D′′))
+                             (transTerm:⇒:* (CastRedR*Term ⊢M neM ⊢e′' (conv ⊢t′ ⊢K′≡M) (un-univ:⇒*: D′₁))
+                                            (conv:⇒*: (CastRedTerm*Term ⊢M neM ⊢M' neM₁ ⊢eMM₁ (conv:⇒*: [[  ⊢t′ , ⊢u′ , d₂ ]] ⊢K′≡M)) (sym ⊢B'≡M'))))
+                             (sym (≅-eq (escapeEq {l = ι ⁰} (ne [B]) (ne₌ M₁ D′₁ neM₁ K≡M₁)))))
+                   (~-conv (~-cast K≡M K≡M₁ (~-to-≅ₜ k₁≡k₂) ⊢eKK₁ ⊢eMM₁) (sym ⊢B≡K₁)) 
+
+
 [castext]Ne {A} {A′} {B} {B′} {Γ} ⊢Γ (ne K D neK K≡K) (ne K′ D′ neK′ K′≡K′) (ne₌ M D′′ neM K≡M) .(Πᵣ′ ! _ _ _ _ F G D₁ ⊢F ⊢G A≡A [F] [G] G-ext) .(Πᵣ′ ! _ _ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ D₂ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
             (Πᵥ (Πᵣ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D₁ ⊢F ⊢G A≡A [F] [G] G-ext) (Πᵣ ! .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ D₂ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
             (Π₌ F′ G′ D′₁ A≡B [F≡F′] [G≡G′]) [t] [t′] [t≡t′] ⊢e ⊢e′ = 
@@ -255,7 +272,6 @@ import Data.Nat as Nat
       Π≡Π = whrDet* (DΠ₂ , Whnf.Πₙ) (D′₁ , Whnf.Πₙ)
       _ , rF≡rF′ , _  = Π-PE-injectivity Π≡Π
   in ⊥-elim (!≢% (PE.sym rF≡rF′))
-
 
 [cast]ℕ : ∀ {A B Γ}
          (⊢Γ : ⊢ Γ)

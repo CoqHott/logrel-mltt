@@ -508,6 +508,17 @@ mutual
                    ⇒ cast ⁰ ℕ ℕ e u
                    ∷ ℕ ^ ι ⁰
 
+    cast-ne-cong : ∀ {K L e t u} → 
+                 Γ ⊢ K ∷ U ⁰ ^ [ ! , next ⁰ ]
+               → Neutral K
+               → Γ ⊢ L ∷ U ⁰ ^ [ ! , next ⁰ ]
+               → Neutral L
+               → Γ ⊢ e ∷ Id (U ⁰) K L ^ [ % , ι ⁰ ]
+               → Γ ⊢ t ⇒ u ∷ K ^ ι ⁰
+               → Γ ⊢ cast ⁰ K L e t
+                   ⇒ cast ⁰ K L e u
+                   ∷ L ^ ι ⁰
+
   -- Type reduction
   data _⊢_⇒_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
     univ : ∀ {A B r l}

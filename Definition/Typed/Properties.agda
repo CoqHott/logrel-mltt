@@ -19,7 +19,6 @@ import Data.Nat as Nat
 un-univ : ∀ {A r Γ l} → Γ ⊢ A ^ [ r , ι l ] → Γ ⊢ A ∷ Univ r l ^ [ ! , next l ]
 un-univ (univ x) = x
 
-
 -- Escape context extraction
 
 wfTerm : ∀ {Γ A t r} → Γ ⊢ t ∷ A ^ r → ⊢ Γ
@@ -136,6 +135,8 @@ subsetTerm (cast-ℕ-S e n) = cast-ℕ-S e n
 subsetTerm (cast-ℕ-cong e n) = let ⊢Γ = wfTerm e
                                    ⊢ℕ = ℕⱼ ⊢Γ
                                in cast-cong (refl ⊢ℕ) (refl ⊢ℕ) (subsetTerm n) e e
+subsetTerm (cast-ne-cong A neA B neB e t) = let ⊢Γ = wfTerm A
+                                  in cast-cong (refl A) (refl B) (subsetTerm t) e e
 
 subset (univ A⇒B) = univ (subsetTerm A⇒B)
 
@@ -205,6 +206,7 @@ redFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ (λ x → ≡is≤ PE.refl
 redFirstTerm (cast-ℕ-0 e) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (zeroⱼ (wfTerm e))
 redFirstTerm (cast-ℕ-S e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (sucⱼ n)
 redFirstTerm (cast-ℕ-cong e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (redFirstTerm n)
+redFirstTerm (cast-ne-cong K neK L neL e n) = castⱼ K L e (redFirstTerm n)
 
 redFirst (univ A⇒B) = univ (redFirstTerm A⇒B)
 
@@ -271,8 +273,8 @@ neRedTerm (Id-ℕ-S0 x) (Idₙ ())
 neRedTerm (Id-U-ℕΠ A B) (Idₙ ())
 neRedTerm (Id-U-Πℕ A B) (Idₙ ())
 neRedTerm (Id-U-ΠΠ!% eq A B A' B') (Idₙ ())
-neRedTerm (cast-subst tr B e x) (castₙ tn un) = neRedTerm tr tn
-neRedTerm (cast-ne-subst A neA tr e x) (castₙ tn un) = neRedTerm tr un
+neRedTerm (cast-subst tr B e x) (castₙ tn un _) = neRedTerm tr tn
+neRedTerm (cast-ne-subst A neA tr e x) (castₙ tn un _) = neRedTerm tr un
 neRedTerm (cast-ne-subst A neA tr e x) (castnΠₙ tn) = whnfRedTerm tr Πₙ
 neRedTerm (cast-ne-subst A neA tr e x) (castnℕₙ tn) = whnfRedTerm tr ℕₙ
 neRedTerm (cast-Π-subst A B tr e x) (castΠₙ tn) = neRedTerm tr tn
@@ -287,21 +289,22 @@ neRedTerm (cast-subst tr x x₁ x₂) (castΠℕₙ) = whnfRedTerm tr Πₙ
 neRedTerm (cast-ℕ-subst tr x x₁) (castℕₙ tn) = neRedTerm tr tn
 neRedTerm (cast-ℕ-subst tr x x₁) (castℕℕₙ tn) = whnfRedTerm tr ℕₙ
 neRedTerm (cast-ℕ-subst tr x x₁) (castℕΠₙ) = whnfRedTerm tr Πₙ
-neRedTerm (cast-Π A B A' B' e f) (castₙ () _)
+neRedTerm (cast-Π A B A' B' e f) (castₙ () _ _)
 neRedTerm (cast-Π A B A' B' e f) (castΠₙ ())
-neRedTerm (cast-ℕ-0 x) (castₙ () _)
+neRedTerm (cast-ℕ-0 x) (castₙ () _ _)
 neRedTerm (cast-ℕ-0 x) (castℕₙ ())
 neRedTerm (cast-ℕ-0 x) (castℕℕₙ ())
-neRedTerm (cast-ℕ-S x x₁) (castₙ () _)
+neRedTerm (cast-ℕ-S x x₁) (castₙ () _ _)
 neRedTerm (cast-ℕ-S x x₁) (castℕₙ ())
 neRedTerm (cast-ℕ-S x x₁) (castℕℕₙ ())
-neRedTerm (cast-ℕ-cong x x₁) (castₙ () _)
+neRedTerm (cast-ℕ-cong x x₁) (castₙ () _ _)
 neRedTerm (cast-ℕ-cong x x₁) (castℕₙ ())
 neRedTerm (cast-ℕ-cong x x₁) (castℕℕₙ t) = neRedTerm x₁ t
 neRedTerm (cast-subst d x x₁ x₂) castΠΠ%!ₙ = whnfRedTerm d Πₙ
 neRedTerm (cast-subst d x x₁ x₂) castΠΠ!%ₙ = whnfRedTerm d Πₙ
 neRedTerm (cast-Π-subst x x₁ d x₂ x₃) castΠΠ%!ₙ = whnfRedTerm d Πₙ
 neRedTerm (cast-Π-subst x x₁ d x₂ x₃) castΠΠ!%ₙ = whnfRedTerm d Πₙ
+neRedTerm (cast-ne-cong K neK L neL e tr) (castₙ X X₁ X₂) = neRedTerm tr X₂
 
 neRed (univ x) N = neRedTerm x N
 
@@ -347,7 +350,7 @@ whnfRedTerm (Id-ℕ-S0 x) (ne (Idₙ ()))
 whnfRedTerm (Id-U-ℕΠ A B) (ne (Idₙ ()))
 whnfRedTerm (Id-U-Πℕ A B) (ne (Idₙ ()))
 whnfRedTerm (Id-U-ΠΠ!% eq A B A' B') (ne (Idₙ ()))
-whnfRedTerm (cast-subst d x x₁ x₂) (ne (castₙ x₃ y)) = neRedTerm d x₃
+whnfRedTerm (cast-subst d x x₁ x₂) (ne (castₙ x₃ y _)) = neRedTerm d x₃
 whnfRedTerm (cast-subst d x x₁ x₂) (ne (castnℕₙ x₃)) = neRedTerm d x₃
 whnfRedTerm (cast-subst d x x₁ x₂) (ne (castnΠₙ x₃)) = neRedTerm d x₃
 whnfRedTerm (cast-subst d x x₁ x₂) (ne (castℕₙ x₃)) = whnfRedTerm d ℕₙ
@@ -355,7 +358,7 @@ whnfRedTerm (cast-subst d x x₁ x₂) (ne (castΠₙ x₃)) = whnfRedTerm d Π�
 whnfRedTerm (cast-subst d x x₁ x₂) (ne (castℕℕₙ x₃)) = whnfRedTerm d ℕₙ
 whnfRedTerm (cast-subst d x x₁ x₂) (ne castℕΠₙ) = whnfRedTerm d ℕₙ
 whnfRedTerm (cast-subst d x x₁ x₂) (ne castΠℕₙ) = whnfRedTerm d Πₙ
-whnfRedTerm (cast-ne-subst x nex d x₁ x₂) (ne (castₙ x₃ y)) = neRedTerm d y 
+whnfRedTerm (cast-ne-subst x nex d x₁ x₂) (ne (castₙ x₃ y _)) = neRedTerm d y 
 whnfRedTerm (cast-ne-subst x nex d x₁ x₂) (ne (castnℕₙ x₃)) = whnfRedTerm d ℕₙ
 whnfRedTerm (cast-ne-subst x nex d x₁ x₂) (ne (castnΠₙ x₃)) =  whnfRedTerm d Πₙ
 whnfRedTerm (cast-ne-subst x () d x₁ x₂) (ne (castℕₙ x₃)) 
@@ -368,21 +371,22 @@ whnfRedTerm (cast-ℕ-subst d x x₁) (ne (castℕℕₙ x₂)) = whnfRedTerm d 
 whnfRedTerm (cast-ℕ-subst d x x₁) (ne castℕΠₙ) = whnfRedTerm d Πₙ
 whnfRedTerm (cast-Π-subst x x₁ d x₂ x₃) (ne (castΠₙ x₄)) = neRedTerm d x₄
 whnfRedTerm (cast-Π-subst x x₁ d x₂ x₃) (ne castΠℕₙ) = whnfRedTerm d ℕₙ
-whnfRedTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (ne (castₙ () _))
+whnfRedTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (ne (castₙ () _ _))
 whnfRedTerm (cast-Π x x₁ x₂ x₃ x₄ x₅) (ne (castΠₙ ()))
-whnfRedTerm (cast-ℕ-0 x) (ne (castₙ () _))
+whnfRedTerm (cast-ℕ-0 x) (ne (castₙ () _ _))
 whnfRedTerm (cast-ℕ-0 x) (ne (castℕₙ ()))
 whnfRedTerm (cast-ℕ-0 x) (ne (castℕℕₙ ()))
-whnfRedTerm (cast-ℕ-S x x₁) (ne (castₙ () _))
+whnfRedTerm (cast-ℕ-S x x₁) (ne (castₙ () _ _))
 whnfRedTerm (cast-ℕ-S x x₁) (ne (castℕₙ ()))
 whnfRedTerm (cast-ℕ-S x x₁) (ne (castℕℕₙ ()))
-whnfRedTerm (cast-ℕ-cong x x₁) (ne (castₙ () _))
+whnfRedTerm (cast-ℕ-cong x x₁) (ne (castₙ () _ _))
 whnfRedTerm (cast-ℕ-cong x x₁) (ne (castℕₙ ()))
 whnfRedTerm (cast-ℕ-cong x x₁) (ne (castℕℕₙ t)) = neRedTerm x₁ t
 whnfRedTerm (cast-subst d x x₁ x₂) (ne castΠΠ%!ₙ) = whnfRedTerm d Πₙ
 whnfRedTerm (cast-subst d x x₁ x₂) (ne castΠΠ!%ₙ) = whnfRedTerm d Πₙ
 whnfRedTerm (cast-Π-subst x x₁ d x₂ x₃) (ne castΠΠ%!ₙ) = whnfRedTerm d Πₙ
 whnfRedTerm (cast-Π-subst x x₁ d x₂ x₃) (ne castΠΠ!%ₙ) = whnfRedTerm d Πₙ
+whnfRedTerm (cast-ne-cong K neK L neL e tr) (ne (castₙ x x₁ x₂)) = neRedTerm tr x₂
 
 whnfRed (univ x) w = whnfRedTerm x w
 
@@ -417,6 +421,7 @@ whrDetTerm-aux1 PE.refl (cast-subst d' x x₁ x₂) = ⊥-elim (whnfRedTerm d' �
 whrDetTerm-aux1 PE.refl (cast-ne-subst x nex d' x₁ x₂) = ⊥-elim (whnfRedTerm d' Πₙ) 
 whrDetTerm-aux1 PE.refl (cast-Π-subst x x₁ d' x₂ x₃) = ⊥-elim (whnfRedTerm d' Πₙ)
 whrDetTerm-aux1 PE.refl (cast-Π x x₁ x₂ x₃ x₄ x₅) = PE.refl
+whrDetTerm-aux1 PE.refl (cast-ne-cong K () L neL e tr)
 
 whrDetTerm-aux2 : ∀{Γ t u F lF A rA B A' rA' B'}
   → (rA≡rA' : rA PE.≡ rA')
@@ -575,6 +580,11 @@ whrDetTerm (cast-ℕ-0 x) (cast-ℕ-cong x₁ d′) = ⊥-elim (whnfRedTerm d′
 whrDetTerm (cast-ℕ-S x x₁) (cast-ℕ-cong x₂ d′) = ⊥-elim (whnfRedTerm d′ sucₙ)
 whrDetTerm (cast-ℕ-cong x d) (cast-ℕ-0 x₁) = ⊥-elim (whnfRedTerm d zeroₙ)
 whrDetTerm (cast-ℕ-cong x d) (cast-ℕ-S x₁ x₂) = ⊥-elim (whnfRedTerm d sucₙ)
+whrDetTerm (cast-ne-cong K neK L neL x d) (cast-subst X x₁ x₂ x₃) = ⊥-elim (neRedTerm X neK) 
+whrDetTerm (cast-ne-cong K neK L neL x d) (cast-ne-subst x₁ x₂ X x₃ x₄) = ⊥-elim (neRedTerm X neL) 
+whrDetTerm (cast-ne-cong K neK L neL x d) (cast-ne-cong x₁ x₂ x₃ x₄ x₅ X) rewrite whrDetTerm d X = PE.refl
+whrDetTerm (cast-subst X x x₁ x₂) (cast-ne-cong K neK L neL e tr) = ⊥-elim (neRedTerm X neK)
+whrDetTerm (cast-ne-subst x x₁ X x₂ x₃) (cast-ne-cong K neK L neL e tr) = ⊥-elim (neRedTerm X neL) 
 
 {-# CATCHALL #-}
 whrDetTerm d (conv d′ x₁) = whrDetTerm d d′
@@ -759,6 +769,7 @@ IdRed* : ∀ {Γ A B t u l}
 IdRed* ⊢t ⊢u (id ⊢A) = id (univ (Idⱼ (un-univ ⊢A) ⊢t ⊢u))
 IdRed* ⊢t ⊢u (d ⇨ D) = univ (Id-subst (un-univ⇒ d) ⊢t ⊢u) ⇨ IdRed* (conv ⊢t (subset d)) (conv ⊢u (subset d)) D
 
+
 CastRed*Term′ : ∀ {Γ A B X e t}
          (⊢X : Γ ⊢ X ^ [ ! , ι ⁰ ])
          (⊢e : Γ ⊢ e ∷ Id (U ⁰) A X ^ [ % , ι ⁰ ])
@@ -805,6 +816,28 @@ CastRedR*Term {Γ} {A} {B} (univ ⊢X) neX ⊢e ⊢t [[ ⊢A , ⊢B , D ]] =
   [[ castⱼ ⊢X ⊢A ⊢e ⊢t , conv (castⱼ ⊢X ⊢B (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢t))) (refl ⊢X) (subset*Term D)) )) ⊢t) (sym (univ (subset*Term D))) ,
      CastRedR*Term′ (univ ⊢X) neX ⊢e ⊢t (univ* D) ]]
 
+CastRedTerm*Term′ : ∀ {Γ X Y e t u}
+         (⊢X : Γ ⊢ X ^ [ ! , ι ⁰ ])
+         (neX : Neutral X)
+         (⊢Y : Γ ⊢ Y ^ [ ! , ι ⁰ ])
+         (neY : Neutral Y)
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) X Y ^ [ % , ι ⁰ ])
+         (D : Γ ⊢ t ⇒* u ∷ X ^ ι ⁰)
+       → Γ ⊢ cast ⁰ X Y e t ⇒* cast ⁰ X Y e u ∷ Y ^ ι ⁰
+CastRedTerm*Term′ (univ ⊢X) neX (univ ⊢Y) neY ⊢e (id ⊢t) = id (castⱼ ⊢X ⊢Y ⊢e ⊢t)
+CastRedTerm*Term′ (univ ⊢X) neX (univ ⊢Y) neY ⊢e (d ⇨ D) = cast-ne-cong ⊢X neX ⊢Y neY ⊢e d ⇨ CastRedTerm*Term′ (univ ⊢X) neX (univ ⊢Y) neY ⊢e D
+
+CastRedTerm*Term : ∀ {Γ X Y t u e}
+         (⊢X : Γ ⊢ X ^ [ ! , ι ⁰ ])
+         (neX : Neutral X)
+         (⊢Y : Γ ⊢ Y ^ [ ! , ι ⁰ ])
+         (neY : Neutral Y)
+         (⊢e : Γ ⊢ e ∷ Id (U ⁰) X Y ^ [ % , ι ⁰ ])
+         (D : Γ ⊢ t :⇒*: u ∷ X ^ ι ⁰)
+       → Γ ⊢ cast ⁰ X Y e t :⇒*: cast ⁰ X Y e u ∷ Y ^ ι ⁰
+CastRedTerm*Term {Γ} {A} {B} (univ ⊢X) neX (univ ⊢Y) neY ⊢e [[ ⊢t , ⊢u , D ]] =
+  [[ castⱼ ⊢X ⊢Y ⊢e ⊢t , castⱼ ⊢X ⊢Y ⊢e ⊢u ,
+     CastRedTerm*Term′ (univ ⊢X) neX (univ ⊢Y) neY ⊢e D ]]
 
 CastRed*Termℕ′ : ∀ {Γ A B e t}
          (⊢e : Γ ⊢ e ∷ Id (U ⁰) ℕ A ^ [ % , ι ⁰ ])

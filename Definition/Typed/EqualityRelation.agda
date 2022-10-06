@@ -244,12 +244,13 @@ record EqRelSet : Set₁ where
            → Γ ⊢ e' ∷ (Id (U ⁰) A' (Π B' ^ rB ° l ▹ P' ° l ° l ^ !)) ^ [ % , ι ⁰ ]
            → Γ ⊢ cast l A (Π B ^ rB ° l ▹ P ° l ° l ^ !) e t ~ cast l A' (Π B' ^ rB ° l ▹ P' ° l ° l ^ !) e' t' ∷ Π B ^ rB ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
 
-    ~-cast-refl : ∀ {A B e t t' Γ} →
+    ~-cast-refl : ∀ {A B e t Γ} →
            let l = ⁰ in
              Γ ⊢ A ~ B ∷ U l ^ [ ! , next l ]
            → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
-           → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
-           → Γ ⊢ cast l A B e t ~ t' ∷ B ^ [ ! , ι l ]
+           → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+           → Neutral t
+           → Γ ⊢ cast l A B e t ~ t ∷ B ^ [ ! , ι l ]
 
     ~-castℕ-refl : ∀ {e t Γ} →
            let l = ⁰ in
