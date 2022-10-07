@@ -36,6 +36,7 @@ mutual
          → Δ ⊢ u ~ v ↑! B ^ l'
          → Γ ⊢ t ~ v ↑! A ^ l
          × Γ ⊢ A ≡ B ^ [ ! , l ]
+{-
   trans~↑! el Γ≡Δ (var-refl x₁ x≡y) (var-refl x₂ x≡y₁) =
     var-refl x₁ (PE.trans x≡y x≡y₁)
     , proj₂ (neTypeEq (var _) x₁
@@ -129,15 +130,16 @@ mutual
         u~u = transConv↑Term Γ≡Δ U≡U x x₁
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
     in Id-UΠ u~u t~t , refl (Ugenⱼ ⊢Γ)
-  trans~↑! el Γ≡Δ (cast-cong X x x₁ x₂ x₃) (cast-cong Y x₄ x₅ x₆ x₇) =
+  trans~↑! el Γ≡Δ (cast-cong X x ⊢t ⊢t' x₁ x₂ x₃) (cast-cong Y x₄ ⊢u ⊢u' x₅ x₆ x₇) =
     let XY , [U] = trans~↓! PE.refl Γ≡Δ X Y
         X≡Y = univ (soundness~↓! XY)
         Y≡Y = univ (soundness~↓! Y)
-        t~t = transConv↑Term Γ≡Δ [U] x x₄
-        u~u = transConv↑Term Γ≡Δ X≡Y x₁ (convConvTerm x₅ Y≡Y)
-        A₁≡B = trans (soundnessConv↑Term t~t) (sym (soundnessConv↑Term (stabilityConv↑Term (symConEq Γ≡Δ) x₄)))
+        t~t , _ = trans~↓! PE.refl Γ≡Δ x x₄
+        _ , _ , neA = ne~↓! Y
+        u~u = transConv↓Term Γ≡Δ X≡Y PE.refl x₁ (convConv↓Term (reflConEq (wfTerm ⊢u)) Y≡Y (ne neA) x₅)
+        A₁≡B = trans (soundness~↓! t~t) (sym (soundness~↓! (stability~↓! (symConEq Γ≡Δ) x₄)))
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
-    in cast-cong XY t~t u~u x₂ (stabilityTerm (symConEq Γ≡Δ) x₇) , univ A₁≡B
+    in cast-cong XY t~t ⊢t (stabilityTerm (symConEq Γ≡Δ) ⊢u') u~u x₂ (stabilityTerm (symConEq Γ≡Δ) x₇) , univ A₁≡B 
   trans~↑! el Γ≡Δ (cast-ℕ X x x₁ x₂) (cast-ℕ Y x₃ x₄ x₅) =
     let XY , [U] = trans~↓! PE.refl Γ≡Δ X Y
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
@@ -181,7 +183,38 @@ mutual
         u~u = transConv↑Term Γ≡Δ (univ (soundnessConv↑Term x)) x₂ x₇
     in cast-ΠΠ!% A~A B~B u~u x₃ (stabilityTerm (symConEq Γ≡Δ) x₉) ,
        trans (univ (soundnessConv↑Term B~B)) (sym (univ (soundnessConv↑Term (stabilityConv↑Term (symConEq Γ≡Δ) x₆))))
+-}
+  trans~↑! el Γ≡Δ (var-refl x x₁) (cast-refl' x₂ x₃ x₄ x₅) = {!!}
 
+  trans~↑! el Γ≡Δ X Y = {!!}
+
+{-
+  trans~↑! el Γ≡Δ (var-refl x x₁) (castℕ-refl' x₂ x₃ x₄) = {!!}
+  trans~↑! el Γ≡Δ (app-cong x x₁) Y = {!!}
+  trans~↑! el Γ≡Δ (natrec-cong x x₁ x₂ x₃) Y = {!!}
+  trans~↑! el Γ≡Δ (Emptyrec-cong x x₁) Y = {!!}
+  trans~↑! el Γ≡Δ (Id-cong x x₁ x₂) Y = {!!}
+  trans~↑! el Γ≡Δ (Id-ℕ x x₁) Y = {!!}
+  trans~↑! el Γ≡Δ (Id-ℕ0 x) Y = {!!}
+  trans~↑! el Γ≡Δ (Id-ℕS x x₁) Y = {!!}
+  trans~↑! el Γ≡Δ (Id-U x x₁) Y = {!!}
+  trans~↑! el Γ≡Δ (Id-Uℕ x) Y = {!!}
+  trans~↑! el Γ≡Δ (Id-UΠ x x₁) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-cong x x₁ x₂ x₃ x₄ x₅ x₆) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-refl x x₁ x₂ x₃) Y = {!!}
+  trans~↑! el Γ≡Δ (castℕ-refl x x₁ x₂) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-refl' x x₁ x₂ x₃) Y = {!!}
+  trans~↑! el Γ≡Δ (castℕ-refl' x x₁ x₂) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-neℕ x x₁ x₂ x₃) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-ℕ x x₁ x₂ x₃) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-ℕℕ x x₁ x₂) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-neΠ x x₁ x₂ x₃ x₄) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-Π x x₁ x₂ x₃ x₄) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) Y = {!!}
+  trans~↑! el Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) Y = {!!}
+-}
 
   trans~↑% : ∀ {t u v A Γ Δ  l}
          → ⊢ Γ ≡ Δ
@@ -229,12 +262,14 @@ mutual
             → Γ ⊢ A [conv↓] B ^ r
             → Δ ⊢ B [conv↓] C ^ r
             → Γ ⊢ A [conv↓] C ^ r
+  transConv↓ = {!!}
+{-
   transConv↓ Γ≡Δ (U-refl e x) (U-refl e₁ x₁) = U-refl (PE.trans e e₁) x
   transConv↓ Γ≡Δ (univ x) (univ y) =
     let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
         X = transConv↓Term Γ≡Δ (refl (Ugenⱼ ⊢Γ )) PE.refl x y
     in univ X
-
+-}
   -- Transitivity of algorithmic equality of terms.
   transConv↑Term : ∀ {t u v A B Γ Δ l}
                 → ⊢ Γ ≡ Δ
@@ -242,6 +277,8 @@ mutual
                 → Γ ⊢ t [conv↑] u ∷ A ^ l
                 → Δ ⊢ u [conv↑] v ∷ B ^ l
                 → Γ ⊢ t [conv↑] v ∷ A ^ l
+  transConv↑Term = {!!}
+{-
   transConv↑Term Γ≡Δ A≡B ([↑]ₜ B₁ t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u)
                  ([↑]ₜ B₂ t″ u″ D₁ d₁ d″ whnfB₁ whnft″ whnfu″ t<>u₁) =
     let B₁≡B₂ = trans (sym (subset* D))
@@ -255,6 +292,7 @@ mutual
                                        (whrDet*Term (d₁ , whnft″)
                                                 (d₁′ , whnfu′))
                                        t<>u₁))
+-}
 
   -- Transitivity of algorithmic equality of terms in WHNF.
   transConv↓Term : ∀ {t u v A B Γ Δ l l'}
@@ -264,8 +302,8 @@ mutual
                 → Γ ⊢ t [conv↓] u ∷ A ^ l
                 → Δ ⊢ u [conv↓] v ∷ B ^ l'
                 → Γ ⊢ t [conv↓] v ∷ A ^ l
-
-  transConv↓Term {Δ = Δ} Γ≡Δ A≡B el (ne x) (ne x₁) = ne (proj₁ (trans~↓! PE.refl Γ≡Δ x (PE.subst (λ lx → Δ ⊢ _ ~ _ ↓! Univ _ _ ^ lx) (PE.sym el) x₁)))
+  transConv↓Term = {!!}
+{-  transConv↓Term {Δ = Δ} Γ≡Δ A≡B el (ne x) (ne x₁) = ne (proj₁ (trans~↓! PE.refl Γ≡Δ x (PE.subst (λ lx → Δ ⊢ _ ~ _ ↓! Univ _ _ ^ lx) (PE.sym el) x₁)))
   transConv↓Term Γ≡Δ A≡B el (ℕ-ins x) (ℕ-ins x₁) =
     ℕ-ins (proj₁ (trans~↓! PE.refl Γ≡Δ x x₁))
   transConv↓Term {Δ = Δ} Γ≡Δ A≡B el (ne-ins t u x x₁) (ne-ins {k} {l} {M} {N} t′ u′ x₂ x₃) =
@@ -337,6 +375,7 @@ mutual
   transConv↓Term Γ≡Δ A≡B el (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (ne-ins x₈ x₉ x₁₀ x₁₁) = ⊥-elim (WF.Π≢ne x₁₀ A≡B)
   transConv↓Term Γ≡Δ A≡B PE.refl (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (zero-refl x₈) = ⊥-elim (WF.ℕ≢Π! (sym A≡B))
   transConv↓Term Γ≡Δ A≡B PE.refl (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (suc-cong x₈) = ⊥-elim (WF.ℕ≢Π! (sym A≡B))
+-}
 
 -- Transitivity of algorithmic equality of types of the same context.
 transConv : ∀ {A B C r Γ}

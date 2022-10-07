@@ -115,6 +115,8 @@ stabilityRedTerm Γ≡Δ (cast-Π x x₁ x₂ x₃ x₄ x₅) =
 stabilityRedTerm Γ≡Δ (cast-ℕ-0 x) = cast-ℕ-0 (stabilityTerm Γ≡Δ x)
 stabilityRedTerm Γ≡Δ (cast-ℕ-S x x₁) = cast-ℕ-S (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
 stabilityRedTerm Γ≡Δ (cast-ℕ-cong x X) = cast-ℕ-cong (stabilityTerm Γ≡Δ x) (stabilityRedTerm Γ≡Δ X)
+stabilityRedTerm Γ≡Δ (cast-ne-subst x₁ x₂ x₃ x₄ x₅) = cast-ne-subst (stabilityTerm Γ≡Δ x₁) x₂ (stabilityRedTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₄) (stabilityTerm Γ≡Δ x₅)
+stabilityRedTerm Γ≡Δ (cast-ne-cong x₁ x₂ x₃ x₄ x₅ x₆) = cast-ne-cong (stabilityTerm Γ≡Δ x₁) x₂ (stabilityTerm Γ≡Δ x₃) x₄ (stabilityTerm Γ≡Δ x₅) (stabilityRedTerm Γ≡Δ x₆)
 
 -- Stability of type reductions.
 stabilityRed : ∀ {A B r Γ Δ} → ⊢ Γ ≡ Δ → Γ ⊢ A ⇒ B ^ r → Δ ⊢ A ⇒ B ^ r
@@ -159,7 +161,8 @@ mutual
   stability~↑! Γ≡Δ (Id-U X x) = Id-U (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x)
   stability~↑! Γ≡Δ (Id-Uℕ X) = Id-Uℕ (stability~↓! Γ≡Δ X)
   stability~↑! Γ≡Δ (Id-UΠ x X) = Id-UΠ (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ X)
-  stability~↑! Γ≡Δ (cast-cong X x x₁ x₂ x₃) = cast-cong (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
+  stability~↑! Γ≡Δ (cast-cong X x ⊢t ⊢t' x₁ x₂ x₃) = cast-cong (stability~↓! Γ≡Δ X) (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ ⊢t) (stabilityTerm Γ≡Δ ⊢t')
+                                                               (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-ℕ X x x₁ x₂) = cast-ℕ (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂)
   stability~↑! Γ≡Δ (cast-ℕℕ X x x₁) = cast-ℕℕ (stability~↓! Γ≡Δ X) (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
   stability~↑! Γ≡Δ (cast-Π x X x₁ x₂ x₃) = cast-Π (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
@@ -167,7 +170,15 @@ mutual
   stability~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) = cast-ℕΠ (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = cast-ΠΠ%! (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₄)
   stability~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = cast-ΠΠ!% (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₄)
-
+  stability~↑! Γ≡Δ (cast-refl x ⊢t ⊢t' x₁ x₂) = cast-refl (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ ⊢t) (stabilityTerm Γ≡Δ ⊢t')
+                                                          (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂)
+  stability~↑! Γ≡Δ (castℕ-refl x x₁) = castℕ-refl (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) 
+  stability~↑! Γ≡Δ (cast-refl' x ⊢t ⊢t' x₁ x₂) = cast-refl' (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ ⊢t) (stabilityTerm Γ≡Δ ⊢t')
+                                                            (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) 
+  stability~↑! Γ≡Δ (castℕ-refl' x x₁) = castℕ-refl' (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) 
+  stability~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) = cast-neℕ (stability~↓! Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
+  stability~↑! Γ≡Δ (cast-neΠ x x₁ x₂ x₃ x₄) = cast-neΠ (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ x₁) (stabilityConv↑Term Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₄)
+  
   stability~↑% : ∀ {k l A Γ Δ lA}
               → ⊢ Γ ≡ Δ
               → Γ ⊢ k ~ l ↑% A ^ lA

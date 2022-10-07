@@ -222,7 +222,7 @@ record EqRelSet : Set₁ where
            let l = ⁰ in
              Γ ⊢ A ~ A' ∷ U l ^ [ ! , next l ]
            → Γ ⊢ B ~ B' ∷ U l ^ [ ! , next l ]
-           → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
+           → Γ ⊢ t ~ t' ∷ A ^ [ ! , ι l ]
            → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
            → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , ι ⁰ ]
            → Γ ⊢ cast l A B e t ~ cast l A' B' e' t' ∷ B ^ [ ! , ι l ]

@@ -5,9 +5,12 @@ module Definition.Typed.Consequences.Inversion where
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Properties
+open import Definition.Typed.EqRelInstance
 
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.Substitution
+open import Definition.LogicalRelation
+open import Definition.LogicalRelation.Fundamental.Reducibility
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -22,6 +25,27 @@ inversion-U : ∀ {Γ C rU lU r} → Γ ⊢ Univ rU lU ∷ C ^ r → Γ ⊢ C �
 inversion-U (univ 0<1 x) = refl (Ugenⱼ x) , PE.refl , PE.refl
 inversion-U (conv x x₁) with inversion-U x
 ... | [C≡U] , PE.refl , PE.refl  = trans (sym x₁) [C≡U] , PE.refl , PE.refl
+
+-- Inversion of contexts
+
+inversion-ne' : ∀ {Γ t A ll l} → Neutral A
+                  → ([A] : Γ ⊩⟨ l ⟩ A ^ [ ! , ll ])
+                  → Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ll ] / [A]
+                  → Whnf t → Neutral t
+inversion-ne' neA (Uᵣ (Uᵣ r l′ l< eq d)) [t] whnft with whnfRed* (red d) (ne neA) 
+inversion-ne' () (Uᵣ (Uᵣ r l′ l< eq d)) [t] whnft | PE.refl 
+inversion-ne' neA (ℕᵣ d) [t] whnft with whnfRed* (red d) (ne neA) 
+inversion-ne' () (ℕᵣ d) [t] whnft | PE.refl
+inversion-ne' neA (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) whnft =
+  let eq = whnfRed*Term (redₜ d) whnft
+  in PE.subst Neutral (PE.sym eq) neK₁  
+inversion-ne' neA (Πᵣ′ rF lF lG l≤F l≤G F G D ⊢F ⊢G A≡A [F] [G] G-ext) [t] whnft with whnfRed* (red D) (ne neA) 
+inversion-ne' () (Πᵣ′ rF lF lG l≤F l≤G F G D ⊢F ⊢G A≡A [F] [G] G-ext) [t] whnft | PE.refl
+inversion-ne' neA (emb emb< [A]) [t] whnft = inversion-ne' neA [A] [t] whnft
+inversion-ne' neA (emb ∞< [A]) [t] whnft = inversion-ne' neA [A] [t] whnft
+
+inversion-ne : ∀ {Γ t A l} → Neutral A → Whnf t → Γ ⊢ t ∷ A ^ [ ! , l ] → Neutral t
+inversion-ne neA whnft ⊢t =  let [A] , [t] = reducibleTerm ⊢t in inversion-ne' neA [A] [t] whnft
 
 
 -- Inversion of natural number type.

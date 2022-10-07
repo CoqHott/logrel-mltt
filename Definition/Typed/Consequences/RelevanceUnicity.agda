@@ -235,7 +235,6 @@ relevance-uniq (Idreflⱼ X) (Idreflⱼ Y) =
 relevance-uniq (transpⱼ x x₁ X X₁ X₂ X₃) (transpⱼ x₂ x₃ Y Y₁ Y₂ Y₃) =
     PE.refl 
 relevance-uniq (castⱼ X X₁ X₂ X₃) (castⱼ Y Y₁ Y₂ Y₃) = relevance-uniq X₃ Y₃
-relevance-uniq (castreflⱼ X X₁) (castreflⱼ Y Y₁) = PE.refl 
 relevance-uniq (conv X x) Y = relevance-uniq X Y
 relevance-uniq X (conv Y y) = relevance-uniq X Y
   

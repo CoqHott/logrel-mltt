@@ -69,11 +69,41 @@ mutual
               → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ) t ~ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) t' ↑! SProp ^ next ⁰
     cast-cong : ∀ {A A' B B' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
-              → Γ ⊢ B [conv↑] B' ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ t [conv↑] t' ∷ A ^ ι ⁰
+              → Γ ⊢ B ~ B' ↓! U ⁰ ^ ι ¹
+              → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
+              → Γ ⊢ t' ∷ A' ^ [ ! , ι ⁰ ]
+              → Γ ⊢ t [conv↓] t' ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ↑! B ^ ι ⁰
+    cast-refl : ∀ {A B t u e}
+              → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
+              → Γ ⊢ u ∷ B ^ [ ! , ι ⁰ ]
+              → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ A B e t ~ u ↑! B ^ ι ⁰
+    castℕ-refl : ∀ {t u e}
+              → Γ ⊢ t ~ u ↓! ℕ ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ u ↑! ℕ ^ ι ⁰
+    cast-refl' : ∀ {A B t u e}
+              → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
+              → Γ ⊢ u ∷ B ^ [ ! , ι ⁰ ]
+              → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
+              → Γ ⊢ t ~ cast ⁰ A B e u ↑! B ^ ι ⁰
+    castℕ-refl' : ∀ {t u e}
+              → Γ ⊢ t ~ u ↓! ℕ ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ t ~ cast ⁰ ℕ ℕ e u ↑! ℕ ^ ι ⁰
+    cast-neℕ : ∀ {A A' t t' e e'}
+              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ t [conv↑] t' ∷ A ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) A ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) A' ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ A ℕ e t ~ cast ⁰ A' ℕ e' t' ↑! ℕ ^ ι ⁰
     cast-ℕ : ∀ {A A' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
@@ -85,6 +115,13 @@ mutual
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
+    cast-neΠ : ∀ {A rA P A' P' B B' t t' e e'}
+              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
+              → Γ ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ t [conv↑] t' ∷ B  ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) B (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) B' (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ B (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) e t ~ cast ⁰ B' (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) e' t' ↑! (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
     cast-Π : ∀ {A rA P A' P' B B' t t' e e'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
               → Γ ⊢ B ~ B' ↓! U ⁰ ^ next ⁰

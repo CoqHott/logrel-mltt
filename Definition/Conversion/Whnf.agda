@@ -5,6 +5,7 @@ module Definition.Conversion.Whnf where
 open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Conversion
+open import Definition.Typed.Consequences.Inversion
 
 open import Tools.Product
 
@@ -27,7 +28,11 @@ mutual
   ne~↑! (Id-U X x) = let _ , nt , nu = ne~↓! X in IdUₙ nt , IdUₙ nu
   ne~↑! (Id-Uℕ X) = let _ , nt , nu = ne~↓! X in IdUℕₙ nt , IdUℕₙ nu
   ne~↑! (Id-UΠ x X) = let _ , nt , nu = ne~↓! X in IdUΠₙ nt , IdUΠₙ nu
-  ne~↑! (cast-cong X x x₁ x₂ x₃) = let _ , nt , nu = ne~↓! X in castₙ nt , castₙ nu
+  ne~↑! (cast-cong X x ⊢t ⊢t' x₁ x₂ x₃) =
+    let _ , nX , nX' = ne~↓! X
+        _ , nx , nx' = ne~↓! x
+        _ , nt , nt' = whnfConv↓Term x₁
+    in castₙ nX nx (inversion-ne nX nt ⊢t) , castₙ nX' nx' (inversion-ne nX' nt' ⊢t')
   ne~↑! (cast-ℕ X x x₁ x₂) = let _ , nt , nu = ne~↓! X in castℕₙ nt , castℕₙ nu
   ne~↑! (cast-ℕℕ X x x₁) = let _ , nt , nu = ne~↓! X in castℕℕₙ nt , castℕℕₙ nu
   ne~↑! (cast-Π x X x₁ x₂ x₃) = let _ , nt , nu = ne~↓! X in castΠₙ nt , castΠₙ nu
@@ -35,6 +40,18 @@ mutual
   ne~↑! (cast-ℕΠ x x₁ x₂ x₃) = castℕΠₙ , castℕΠₙ
   ne~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = castΠΠ%!ₙ , castΠΠ%!ₙ
   ne~↑! (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = castΠΠ!%ₙ , castΠΠ!%ₙ
+  ne~↑! (cast-refl x x₁ x₂) =
+    let _ , nA , nB = ne~↓! x
+        _ , nt , nu = ne~↓! x₁
+     in castₙ nA nB nt , nu
+  ne~↑! (castℕ-refl x x₁) = let _ , nt , nu = ne~↓! x in castℕℕₙ nt , nu
+  ne~↑! (cast-refl' x x₁ x₂) =
+    let _ , nA , nB = ne~↓! x
+        _ , nt , nu = ne~↓! x₁
+    in nt , castₙ nA nB nu
+  ne~↑! (castℕ-refl' x x₁) = let _ , nt , nu = ne~↓! x in nt , castℕℕₙ nu
+  ne~↑! (cast-neℕ x x₁ x₂ x₃) = let _ , nA , nB = ne~↓! x in castnℕₙ nA , castnℕₙ nB
+  ne~↑! (cast-neΠ x x₁ x₂ x₃ x₄) = let _ , nA , nB = ne~↓! x₁ in castnΠₙ nA , castnΠₙ nB
 
   ne~↓! : ∀ {t u A Γ l}
         → Γ ⊢ t ~ u ↓! A ^ l
@@ -42,29 +59,28 @@ mutual
   ne~↓! ([~] A D whnfB k~l) = whnfB , ne~↑! k~l
 
 -- Extraction of WHNF from algorithmic equality of terms in WHNF.
-whnfConv↓Term : ∀ {t u A Γ l}
-              → Γ ⊢ t [conv↓] u ∷ A ^ l
-              → Whnf A × Whnf t × Whnf u
-whnfConv↓Term (ℕ-ins x) = let _ , neT , neU = ne~↓! x
-                          in ℕₙ , ne neT , ne neU
--- whnfConv↓Term (Empty-ins x) = let _ , neT , neU = ne~↓% x
---                           in Emptyₙ , ne neT , ne neU
-whnfConv↓Term (ne x) = let wA , nt , nu = ne~↓! x in wA , ne nt , ne nu
-whnfConv↓Term (ne-ins t u x x₁) =
-  let _ , neT , neU = ne~↓! x₁
-  in ne x , ne neT , ne neU
-whnfConv↓Term (ℕ-refl x) = Uₙ , ℕₙ , ℕₙ
-whnfConv↓Term (Empty-refl x) = Uₙ , Emptyₙ , Emptyₙ
-whnfConv↓Term (Π-cong _ _ _ _ _ _ x x₁ x₂) = Uₙ , Πₙ , Πₙ
-whnfConv↓Term (∃-cong x x₁ x₂) = Uₙ , ∃ₙ , ∃ₙ
-whnfConv↓Term (U-refl _ _) = Uₙ , Uₙ , Uₙ
-whnfConv↓Term (zero-refl x) = ℕₙ , zeroₙ , zeroₙ
-whnfConv↓Term (suc-cong x) = ℕₙ , sucₙ , sucₙ
-whnfConv↓Term (η-eq _ _ x x₁ x₂ y y₁ x₃) = Πₙ , functionWhnf y , functionWhnf y₁
-
--- Extraction of WHNF from algorithmic equality of types in WHNF.
-whnfConv↓ : ∀ {A B rA Γ}
-          → Γ ⊢ A [conv↓] B ^ rA
-          → Whnf A × Whnf B
-whnfConv↓ (U-refl _ _) = Uₙ , Uₙ
-whnfConv↓ (univ x₂) = let _ , A , B = whnfConv↓Term x₂ in A , B
+  whnfConv↓Term : ∀ {t u A Γ l}
+                → Γ ⊢ t [conv↓] u ∷ A ^ l
+                → Whnf A × Whnf t × Whnf u
+  whnfConv↓Term (ℕ-ins x) = let _ , neT , neU = ne~↓! x
+                            in ℕₙ , ne neT , ne neU
+  whnfConv↓Term (ne x) = let wA , nt , nu = ne~↓! x in wA , ne nt , ne nu
+  whnfConv↓Term (ne-ins t u x x₁) =
+    let _ , neT , neU = ne~↓! x₁
+    in ne x , ne neT , ne neU
+  whnfConv↓Term (ℕ-refl x) = Uₙ , ℕₙ , ℕₙ
+  whnfConv↓Term (Empty-refl x) = Uₙ , Emptyₙ , Emptyₙ
+  whnfConv↓Term (Π-cong _ _ _ _ _ _ x x₁ x₂) = Uₙ , Πₙ , Πₙ
+  whnfConv↓Term (∃-cong x x₁ x₂) = Uₙ , ∃ₙ , ∃ₙ
+  whnfConv↓Term (U-refl _ _) = Uₙ , Uₙ , Uₙ
+  whnfConv↓Term (zero-refl x) = ℕₙ , zeroₙ , zeroₙ
+  whnfConv↓Term (suc-cong x) = ℕₙ , sucₙ , sucₙ
+  whnfConv↓Term (η-eq _ _ x x₁ x₂ y y₁ x₃) = Πₙ , functionWhnf y , functionWhnf y₁
+  
+  -- Extraction of WHNF from algorithmic equality of types in WHNF.
+  whnfConv↓ : ∀ {A B rA Γ}
+            → Γ ⊢ A [conv↓] B ^ rA
+            → Whnf A × Whnf B
+  whnfConv↓ (U-refl _ _) = Uₙ , Uₙ
+  whnfConv↓ (univ x₂) = let _ , A , B = whnfConv↓Term x₂ in A , B
+  
