@@ -40,15 +40,15 @@ mutual
   ne~↑! (cast-ℕΠ x x₁ x₂ x₃) = castℕΠₙ , castℕΠₙ
   ne~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = castΠΠ%!ₙ , castΠΠ%!ₙ
   ne~↑! (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = castΠΠ!%ₙ , castΠΠ!%ₙ
-  ne~↑! (cast-refl x x₁ x₂) =
+  ne~↑! (cast-refl x ⊢t ⊢t' x₁ x₂) =
     let _ , nA , nB = ne~↓! x
-        _ , nt , nu = ne~↓! x₁
-     in castₙ nA nB nt , nu
+        _ , nt , nt' = whnfConv↓Term x₁
+     in castₙ nA nB (inversion-ne nA nt ⊢t) , inversion-ne nA nt' ⊢t'
   ne~↑! (castℕ-refl x x₁) = let _ , nt , nu = ne~↓! x in castℕℕₙ nt , nu
-  ne~↑! (cast-refl' x x₁ x₂) =
+  ne~↑! (cast-refl' x ⊢t ⊢t' x₁ x₂) =
     let _ , nA , nB = ne~↓! x
-        _ , nt , nu = ne~↓! x₁
-    in nt , castₙ nA nB nu
+        _ , nt , nt' = whnfConv↓Term x₁
+    in inversion-ne nA nt ⊢t , castₙ nA nB (inversion-ne nA nt' ⊢t')
   ne~↑! (castℕ-refl' x x₁) = let _ , nt , nu = ne~↓! x in nt , castℕℕₙ nu
   ne~↑! (cast-neℕ x x₁ x₂ x₃) = let _ , nA , nB = ne~↓! x in castnℕₙ nA , castnℕₙ nB
   ne~↑! (cast-neΠ x x₁ x₂ x₃ x₄) = let _ , nA , nB = ne~↓! x₁ in castnΠₙ nA , castnΠₙ nB

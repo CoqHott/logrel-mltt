@@ -79,7 +79,7 @@ mutual
     cast-refl : ∀ {A B t u e}
               → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
-              → Γ ⊢ u ∷ B ^ [ ! , ι ⁰ ]
+              → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ A B e t ~ u ↑! B ^ ι ⁰
@@ -90,10 +90,10 @@ mutual
     cast-refl' : ∀ {A B t u e}
               → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
-              → Γ ⊢ u ∷ B ^ [ ! , ι ⁰ ]
+              → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
-              → Γ ⊢ t ~ cast ⁰ A B e u ↑! B ^ ι ⁰
+              → Γ ⊢ t ~ cast ⁰ A B e u ↑! A ^ ι ⁰
     castℕ-refl' : ∀ {t u e}
               → Γ ⊢ t ~ u ↓! ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
