@@ -164,7 +164,7 @@ mutual
         ⊢A , ⊢A' = syntacticEq (univ A≡A)
         t'~t = symConv↓Term Γ≡Δ x₁
         ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-    in _ , sym (univ A≡A) , cast-refl' (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ (conv ⊢t' (univ (sym A≡A)))) (stabilityTerm Γ≡Δ (conv ⊢t (univ A≡A)))
+    in _ , sym (univ A≡A) , cast-refl' (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ ⊢t') (stabilityTerm Γ≡Δ ⊢t)
                                 (convConv↓Term (reflConEq ⊢Δ) (refl (stability Γ≡Δ ⊢A) ) (ne neA) t'~t ) (stabilityTerm Γ≡Δ x₂) 
   sym~↑! Γ≡Δ (castℕ-refl x x₁) =
     let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
@@ -177,7 +177,7 @@ mutual
         ⊢A , ⊢A' = syntacticEq (univ A≡A)
         t'~t = symConv↓Term Γ≡Δ x₁
         ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-    in _ , univ A≡A , cast-refl (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ (conv ⊢t' (univ (sym A≡A)))) (stabilityTerm Γ≡Δ (conv ⊢t (univ A≡A)))
+    in _ , univ A≡A , cast-refl (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ ⊢t') (stabilityTerm Γ≡Δ ⊢t)
                                 (convConv↓Term (reflConEq ⊢Δ) (refl (stability Γ≡Δ ⊢A) ) (ne neA) t'~t ) (stabilityTerm Γ≡Δ x₂)  
   sym~↑! Γ≡Δ (castℕ-refl' x x₁) =
     let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
