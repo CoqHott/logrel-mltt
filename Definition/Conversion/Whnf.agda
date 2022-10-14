@@ -1,4 +1,4 @@
-{-# OPTIONS --safe #-}
+{-# OPTIONS --sized-types #-}
 
 module Definition.Conversion.Whnf where
 
@@ -12,8 +12,8 @@ open import Tools.Product
 
 mutual
   -- Extraction of neutrality from algorithmic equality of neutrals.
-  ne~↑! : ∀ {t u A Γ l}
-       → Γ ⊢ t ~ u ↑! A ^ l
+  ne~↑! : ∀ {size t u A Γ l}
+       → Γ # size ⊢ t ~ u ↑! A ^ l
        → Neutral t × Neutral u
   ne~↑! (var-refl x₁ x≡y) = var _ , var _
   ne~↑! (app-cong x x₁) = let _ , q , w = ne~↓! x
@@ -53,8 +53,8 @@ mutual
   ne~↑! (cast-neℕ x x₁ x₂ x₃) = let _ , nA , nB = ne~↓! x in castnℕₙ nA , castnℕₙ nB
   ne~↑! (cast-neΠ x x₁ x₂ x₃ x₄) = let _ , nA , nB = ne~↓! x₁ in castnΠₙ nA , castnΠₙ nB
 
-  ne~↓! : ∀ {t u A Γ l}
-        → Γ ⊢ t ~ u ↓! A ^ l
+  ne~↓! : ∀ {size t u A Γ l}
+        → Γ # size ⊢ t ~ u ↓! A ^ l
         → Whnf A × Neutral t × Neutral u
   ne~↓! ([~] A D whnfB k~l) = whnfB , ne~↑! k~l
 

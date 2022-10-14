@@ -1,4 +1,4 @@
-{-# OPTIONS --safe #-}
+{-# OPTIONS --sized-types #-}
 
 module Definition.Conversion.Conversion where
 

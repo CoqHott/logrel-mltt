@@ -1,4 +1,4 @@
-{-# OPTIONS --safe #-}
+{-# OPTIONS --sized-types #-}
 
 module Definition.Conversion.Stability where
 
@@ -135,10 +135,10 @@ stabilityRed*Term Γ≡Δ (x ⇨ d) = stabilityRedTerm Γ≡Δ x ⇨ stabilityRe
 
 mutual
   -- Stability of algorithmic equality of neutrals.
-  stability~↑! : ∀ {k l A Γ Δ lA}
+  stability~↑! : ∀ {size k l A Γ Δ lA}
               → ⊢ Γ ≡ Δ
-              → Γ ⊢ k ~ l ↑! A ^ lA
-              → Δ ⊢ k ~ l ↑! A ^ lA
+              → Γ # size ⊢ k ~ l ↑! A ^ lA
+              → Δ # size ⊢ k ~ l ↑! A ^ lA
   stability~↑! Γ≡Δ (var-refl x x≡y) =
     var-refl (stabilityTerm Γ≡Δ x) x≡y
   stability~↑! Γ≡Δ (app-cong {rF = ! } k~l x) =
@@ -185,18 +185,18 @@ mutual
               → Δ ⊢ k ~ l ↑% A ^ lA
   stability~↑% Γ≡Δ (%~↑ ⊢k ⊢l) = %~↑ (stabilityTerm Γ≡Δ ⊢k) (stabilityTerm Γ≡Δ ⊢l)
 
-  stability~↑ : ∀ {k l A rA lA Γ Δ}
+  stability~↑ : ∀ {size k l A rA lA Γ Δ}
               → ⊢ Γ ≡ Δ
-              → Γ ⊢ k ~ l ↑ A ^ [ rA , lA ]
-              → Δ ⊢ k ~ l ↑ A ^ [ rA , lA ]
+              → Γ # size ⊢ k ~ l ↑ A ^ [ rA , lA ]
+              → Δ # size ⊢ k ~ l ↑ A ^ [ rA , lA ]
   stability~↑ Γ≡Δ (~↑! x) = ~↑! (stability~↑! Γ≡Δ x)
   stability~↑ Γ≡Δ (~↑% x) = ~↑% (stability~↑% Γ≡Δ x)
 
   -- Stability of algorithmic equality of neutrals of types in WHNF.
-  stability~↓! : ∀ {k l A lA Γ Δ}
+  stability~↓! : ∀ {size k l A lA Γ Δ}
               → ⊢ Γ ≡ Δ
-              → Γ ⊢ k ~ l ↓! A ^ lA
-              → Δ ⊢ k ~ l ↓! A ^ lA
+              → Γ # size ⊢ k ~ l ↓! A ^ lA
+              → Δ # size ⊢ k ~ l ↓! A ^ lA
   stability~↓! Γ≡Δ ([~] A D whnfA k~l) =
     [~] A (stabilityRed* Γ≡Δ D) whnfA (stability~↑! Γ≡Δ k~l)
 
