@@ -1,6 +1,6 @@
 -- Algorithmic equality.
 
-{-# OPTIONS --sized-types #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Conversion where
 
@@ -10,10 +10,9 @@ open import Definition.Typed
 open import Tools.Nat
 open import Tools.Product
 import Tools.PropositionalEquality as PE
-open import Agda.Builtin.Size
 
 
-infix 10 _#_⊢_~_↑_^_
+infix 10 _⊢_~_↑_^_
 infix 10 _⊢_[conv↑]_^_
 infix 10 _⊢_[conv↓]_^_
 infix 10 _⊢_[conv↑]_∷_^_
@@ -22,142 +21,141 @@ infix 10 _⊢_[genconv↑]_∷_^_
 
 mutual
   -- Neutral equality.
-  data _#_⊢_~_↑!_^_  (Γ : Con Term) : (size : Size) (k l A : Term) → TypeLevel → Set where
-    var-refl    : ∀ {size x y A l}
+  data _⊢_~_↑!_^_ (Γ : Con Term) : (k l A : Term) → TypeLevel → Set where
+    var-refl    : ∀ {x y A l}
                 → Γ ⊢ var x ∷ A ^ [ ! , l ]
                 → x PE.≡ y
-                → Γ # size ⊢ var x ~ var y ↑! A ^ l
-    app-cong    : ∀ {size k l t v F rF lF lG G lΠ}
-                → Γ # size ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
+                → Γ ⊢ var x ~ var y ↑! A ^ l
+    app-cong    : ∀ {k l t v F rF lF lG G lΠ}
+                → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
                 → Γ ⊢ t [genconv↑] v ∷ F ^ [ rF , ι lF ]
-                → Γ # ↑ size ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑! G [ t ] ^ ι lG
-    natrec-cong : ∀ {size k l h g a₀ b₀ F G lF}
+                → Γ ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑! G [ t ] ^ ι lG
+    natrec-cong : ∀ {k l h g a₀ b₀ F G lF}
                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] G ^ [ ! , ι lF ]
                 → Γ ⊢ a₀ [conv↑] b₀ ∷ F [ zero ] ^ ι lF
                 → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ ! ^ ι lF
-                → Γ # size ⊢ k ~ l ↓! ℕ ^ ι ⁰
-                → Γ # ↑ size ⊢ natrec lF F a₀ h k ~ natrec lF G b₀ g l ↑! F [ k ] ^ ι lF
-    Emptyrec-cong : ∀ {size k l F G ll}
+                → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
+                → Γ ⊢ natrec lF F a₀ h k ~ natrec lF G b₀ g l ↑! F [ k ] ^ ι lF
+    Emptyrec-cong : ∀ {k l F G ll}
                   → Γ ⊢ F [conv↑] G ^ [ ! , ι ll ]
                   → Γ ⊢ k ~ l ↑% sEmpty ^ ι ⁰
-                  → Γ # size ⊢ Emptyrec ll ⁰ F k ~ Emptyrec ll ⁰ G l ↑! F ^ ι ll
-    Id-cong : ∀ {size l A A' t t' u u'}
-              → Γ # size ⊢ A ~ A' ↓! U l ^ next l
+                  → Γ ⊢ Emptyrec ll ⁰ F k ~ Emptyrec ll ⁰ G l ↑! F ^ ι ll
+    Id-cong : ∀ {l A A' t t' u u'}
+              → Γ ⊢ A ~ A' ↓! U l ^ next l
               → Γ ⊢ t [conv↑] t' ∷ A ^ ι l
               → Γ ⊢ u [conv↑] u' ∷ A ^ ι l
-              → Γ # ↑ size ⊢ Id A t u ~ Id A' t' u' ↑! SProp ^ next ⁰
-    Id-ℕ : ∀ {size t t' u u'}
-              → Γ # size ⊢ t ~ t' ↓! ℕ ^ ι ⁰
+              → Γ ⊢ Id A t u ~ Id A' t' u' ↑! SProp ^ next ⁰
+    Id-ℕ : ∀ {t t' u u'}
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
               → Γ ⊢ u [conv↑] u' ∷ ℕ ^ ι ⁰
-              → Γ # ↑ size ⊢ Id ℕ t u ~ Id ℕ t' u' ↑! SProp ^ next ⁰
-    Id-ℕ0 : ∀ {size t t'}
-              → Γ # size ⊢ t ~ t' ↓! ℕ ^ ι ⁰
-              → Γ # ↑ size ⊢ Id ℕ zero t ~ Id ℕ zero t' ↑! SProp ^ next ⁰
-    Id-ℕS : ∀ {size t t' u u'}
+              → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ↑! SProp ^ next ⁰
+    Id-ℕ0 : ∀ {t t'}
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
+              → Γ ⊢ Id ℕ zero t ~ Id ℕ zero t' ↑! SProp ^ next ⁰
+    Id-ℕS : ∀ {t t' u u'}
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
-              → Γ # size ⊢ u ~ u' ↓! ℕ ^ ι ⁰
-              → Γ # ↑ size ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ↑! SProp ^ next ⁰
-    Id-U : ∀ {size t t' u u'}
-              → Γ # size ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
+              → Γ ⊢ u ~ u' ↓! ℕ ^ ι ⁰
+              → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ↑! SProp ^ next ⁰
+    Id-U : ∀ {t t' u u'}
+              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
               → Γ ⊢ u [conv↑] u' ∷ U ⁰ ^ ι ¹
-              → Γ # ↑ size ⊢ Id (U ⁰) t u ~ Id (U ⁰) t' u' ↑! SProp ^ next ⁰
-    Id-Uℕ : ∀ {size t t'}
-              → Γ # size ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
-              → Γ # ↑ size ⊢ Id (U ⁰) ℕ t ~ Id (U ⁰) ℕ t' ↑! SProp ^ next ⁰
-    Id-UΠ : ∀ {size A rA B A' B' t t'}
+              → Γ ⊢ Id (U ⁰) t u ~ Id (U ⁰) t' u' ↑! SProp ^ next ⁰
+    Id-Uℕ : ∀ {t t'}
+              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
+              → Γ ⊢ Id (U ⁰) ℕ t ~ Id (U ⁰) ℕ t' ↑! SProp ^ next ⁰
+    Id-UΠ : ∀ {A rA B A' B' t t'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
-              → Γ # size ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
-              → Γ # ↑ size ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ) t ~
-                           Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) t' ↑! SProp ^ next ⁰
-    cast-cong : ∀ {size size'  A A' B B' t t' e e'}
-              → Γ # size ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
-              → Γ # size' ⊢ B ~ B' ↓! U ⁰ ^ ι ¹
+              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
+              → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ) t ~ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) t' ↑! SProp ^ next ⁰
+    cast-cong : ∀ {A A' B B' t t' e e'}
+              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ B ~ B' ↓! U ⁰ ^ ι ¹
               → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t' ∷ A' ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] t' ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , ι ⁰ ]
-              → Γ # ↑ (size ⊔ˢ size') ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ↑! B ^ ι ⁰
-    cast-refl : ∀ {size A B t u e}
-              → Γ # size ⊢ A ~ B ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ↑! B ^ ι ⁰
+    cast-refl : ∀ {A B t u e}
+              → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ cast ⁰ A B e t ~ u ↑! B ^ ι ⁰
-    castℕ-refl : ∀ {size t u e}
-              → Γ # size ⊢ t ~ u ↓! ℕ ^ ι ⁰
+              → Γ ⊢ cast ⁰ A B e t ~ u ↑! B ^ ι ⁰
+    castℕ-refl : ∀ {t u e}
+              → Γ ⊢ t ~ u ↓! ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ cast ⁰ ℕ ℕ e t ~ u ↑! ℕ ^ ι ⁰
-    cast-refl' : ∀ {size A B t u e}
-              → Γ # size ⊢ A ~ B ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ u ↑! ℕ ^ ι ⁰
+    cast-refl' : ∀ {A B t u e}
+              → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ t ~ cast ⁰ A B e u ↑! A ^ ι ⁰
-    castℕ-refl' : ∀ {size t u e}
-              → Γ # size ⊢ t ~ u ↓! ℕ ^ ι ⁰
+              → Γ ⊢ t ~ cast ⁰ A B e u ↑! A ^ ι ⁰
+    castℕ-refl' : ∀ {t u e}
+              → Γ ⊢ t ~ u ↓! ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ t ~ cast ⁰ ℕ ℕ e u ↑! ℕ ^ ι ⁰
-    cast-neℕ : ∀ {size A A' t t' e e'}
-              → Γ # size ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ t ~ cast ⁰ ℕ ℕ e u ↑! ℕ ^ ι ⁰
+    cast-neℕ : ∀ {A A' t t' e e'}
+              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) A' ℕ) ^ [ % , ι ⁰ ]
-              → Γ # size ⊢ cast ⁰ A ℕ e t ~ cast ⁰ A' ℕ e' t' ↑! ℕ ^ ι ⁰
-    cast-ℕ : ∀ {size A A' t t' e e'}
-              → Γ # size ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ cast ⁰ A ℕ e t ~ cast ⁰ A' ℕ e' t' ↑! ℕ ^ ι ⁰
+    cast-ℕ : ∀ {A A' t t' e e'}
+              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ A) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ A') ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ A' e' t' ↑! A ^ ι ⁰
-    cast-ℕℕ : ∀ {size t t' e e'}
-              → Γ # size ⊢ t ~ t' ↓! ℕ ^ ι ⁰
+              → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ A' e' t' ↑! A ^ ι ⁰
+    cast-ℕℕ : ∀ {t t' e e'}
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
-    cast-neΠ : ∀ {size A rA P A' P' B B' t t' e e'}
+              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
+    cast-neΠ : ∀ {A rA P A' P' B B' t t' e e'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
-              → Γ # size ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ B  ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) B (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) B' (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ cast ⁰ B (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) e t ~ cast ⁰ B' (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) e' t' ↑! (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
-    cast-Π : ∀ {size A rA P A' P' B B' t t' e e'}
+              → Γ ⊢ cast ⁰ B (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) e t ~ cast ⁰ B' (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) e' t' ↑! (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
+    cast-Π : ∀ {A rA P A' P' B B' t t' e e'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
-              → Γ # size ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !  ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) B) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) B') ^ [ % , ι ⁰ ]
-              → Γ # ↑ size ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) B e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) B' e' t' ↑! B ^ ι ⁰
-    cast-Πℕ : ∀ {size A rA P A' P' t t' e e'}
+              → Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) B e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) B' e' t' ↑! B ^ ι ⁰
+    cast-Πℕ : ∀ {A rA P A' P' t t' e e'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
               → Γ ⊢ t [conv↑] t' ∷ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !  ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) ℕ) ^ [ % , ι ⁰ ]
-              → Γ # size ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ℕ e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) ℕ e' t' ↑! ℕ ^ ι ⁰
-    cast-ℕΠ : ∀ {size A rA P A' P' t t' e e'}
+              → Γ ⊢ cast ⁰ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ℕ e t ~ cast ⁰ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) ℕ e' t' ↑! ℕ ^ ι ⁰
+    cast-ℕΠ : ∀ {A rA P A' P' t t' e e'}
               → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
-              → Γ # size ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) e' t' ↑! (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
-    cast-ΠΠ%! : ∀ {size A P A' P' B Q B' Q' t t' e e'}
+              → Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ) e' t' ↑! (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
+    cast-ΠΠ%! : ∀ {A P A' P' B Q B' Q' t t' e e'}
               → Γ ⊢ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
               → Γ ⊢ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !  [conv↑] Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹
               → Γ ⊢ t [conv↑] t' ∷ Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
-              → Γ # size ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) e t ~
+              → Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰  ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) e t ~
                     cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ !) e' t' ↑! (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) ^ ι ⁰
-    cast-ΠΠ!% : ∀ {size A P A' P' B Q B' Q' t t' e e'}
+    cast-ΠΠ!% : ∀ {A P A' P' B Q B' Q' t t' e e'}
               → Γ ⊢ Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !  [conv↑] Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹
               → Γ ⊢ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !  [conv↑] Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹
               → Γ ⊢ t [conv↑] t' ∷ Π A ^ ! ° ⁰ ▹ P ° ⁰  ° ⁰  ^ ! ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
-              → Γ # size ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) e t ~
+              → Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰  ^ !) e t ~
                     cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰  ^ !) e' t' ↑! (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ) ^ ι ⁰
 
 
@@ -168,19 +166,19 @@ mutual
       ⊢k : Γ ⊢ k ∷ A ^ [ % , ll ]
       ⊢l : Γ ⊢ l ∷ A ^ [ % , ll ]
 
-  data _#_⊢_~_↑_^_ (Γ : Con Term) : (size : Size) (k l A : Term) → TypeInfo → Set where
-    ~↑! : ∀ {size k l A ll} → Γ # size ⊢ k ~ l ↑! A ^ ll → Γ # size ⊢ k ~ l ↑ A ^ [ ! , ll ]
-    ~↑% : ∀ {size k l A ll} → Γ ⊢ k ~ l ↑% A ^ ll → Γ # size ⊢ k ~ l ↑ A ^ [ % , ll ]
+  data _⊢_~_↑_^_ (Γ : Con Term) : (k l A : Term) → TypeInfo → Set where
+    ~↑! : ∀ {k l A ll} → Γ ⊢ k ~ l ↑! A ^ ll → Γ ⊢ k ~ l ↑ A ^ [ ! , ll ]
+    ~↑% : ∀ {k l A ll} → Γ ⊢ k ~ l ↑% A ^ ll → Γ ⊢ k ~ l ↑ A ^ [ % , ll ]
 
   -- Neutral equality with types in WHNF.
-  record _#_⊢_~_↓!_^_ (Γ : Con Term) (size : Size) (k l B : Term) (ll : TypeLevel) : Set where
+  record _⊢_~_↓!_^_ (Γ : Con Term) (k l B : Term) (ll : TypeLevel) : Set where
     inductive
     constructor [~]
     field
       A     : Term
       D     : Γ ⊢ A ⇒* B ^ [ ! , ll ]
       whnfB : Whnf B
-      k~l   : Γ # size ⊢ k ~ l ↑! A ^ ll
+      k~l   : Γ ⊢ k ~ l ↑! A ^ ll
 
   -- Type equality.
   record _⊢_[conv↑]_^_ (Γ : Con Term) (A B : Term) (rA : TypeInfo) : Set where
@@ -222,8 +220,8 @@ mutual
     U-refl    : ∀ {r r' }
               → r PE.≡ r' -- needed for K issues
               → ⊢ Γ → Γ ⊢ Univ r ⁰ [conv↓] Univ r' ⁰ ∷ U ¹ ^ next ¹
-    ne        : ∀ {size r K L lU l}
-                → Γ # size ⊢ K ~ L ↓! Univ r lU ^ l
+    ne        : ∀ {r K L lU l}
+                → Γ ⊢ K ~ L ↓! Univ r lU ^ l
                 → Γ ⊢ K [conv↓] L ∷ Univ r lU ^ l
     ℕ-refl    : ⊢ Γ → Γ ⊢ ℕ [conv↓] ℕ ∷ U ⁰ ^ next ⁰
     Empty-refl : ⊢ Γ → Γ ⊢ sEmpty [conv↓] sEmpty ∷ SProp ^ next ⁰
@@ -243,14 +241,14 @@ mutual
               → Γ ⊢ F [conv↑] H ∷ SProp ^ next ⁰
               → Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G [conv↑] E  ∷ SProp ^ next ⁰
               → Γ ⊢ ∃ F ▹ G [conv↓] ∃ H ▹ E ∷ SProp ^ next ⁰
-    ℕ-ins     : ∀ {size k l}
-              → Γ # size ⊢ k ~ l ↓! ℕ ^ ι ⁰
+    ℕ-ins     : ∀ {k l}
+              → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
               → Γ ⊢ k [conv↓] l ∷ ℕ ^ ι ⁰
-    ne-ins    : ∀ {size k l M N ll}
+    ne-ins    : ∀ {k l M N ll}
               → Γ ⊢ k ∷ N ^ [ ! , ι ll ]
               → Γ ⊢ l ∷ N ^ [ ! , ι ll ]
               → Neutral N
-              → Γ # size ⊢ k ~ l ↓! M ^ ι ll
+              → Γ ⊢ k ~ l ↓! M ^ ι ll
               → Γ ⊢ k [conv↓] l ∷ N ^ ι ll
     zero-refl : ⊢ Γ → Γ ⊢ zero [conv↓] zero ∷ ℕ ^ ι ⁰
     suc-cong  : ∀ {m n}
@@ -272,8 +270,8 @@ mutual
   _⊢_[genconv↑]_∷_^_ Γ k l A [ % , ll ] =  Γ ⊢ k ~ l ↑% A ^  ll
 
 
-var-refl′ : ∀ {Γ size x A rA ll}
+var-refl′ : ∀ {Γ x A rA ll}
           → Γ ⊢ var x ∷ A ^ [ rA , ll ]
-          → Γ # size ⊢ var x ~ var x ↑ A ^ [ rA , ll ]
+          → Γ ⊢ var x ~ var x ↑ A ^ [ rA , ll ]
 var-refl′ {rA = !} ⊢x = ~↑! (var-refl ⊢x PE.refl)
 var-refl′ {rA = %} ⊢x = ~↑% (%~↑ ⊢x ⊢x)

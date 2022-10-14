@@ -1,4 +1,4 @@
-{-# OPTIONS --sized-types #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Conversion.Soundness where
 
@@ -9,7 +9,6 @@ open import Definition.Conversion
 open import Definition.Conversion.Whnf
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.NeTypeEq
-open import Agda.Builtin.Size
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -17,7 +16,7 @@ import Tools.PropositionalEquality as PE
 
 mutual
   -- Algorithmic equality of neutrals is well-formed.
-  soundness~↑! : ∀ {size k l A lA Γ} → Γ # size ⊢ k ~ l ↑! A ^ lA → Γ ⊢ k ≡ l ∷ A ^ [ ! , lA ]
+  soundness~↑! : ∀ {k l A lA Γ} → Γ ⊢ k ~ l ↑! A ^ lA → Γ ⊢ k ≡ l ∷ A ^ [ ! , lA ]
   soundness~↑! (var-refl x x≡y) = PE.subst (λ y → _ ⊢ _ ≡ var y ∷ _ ^ _) x≡y (refl x)
   soundness~↑! (app-cong {rF = !} k~l x₁) = app-cong (soundness~↓! k~l) (soundnessConv↑Term x₁)
   soundness~↑! (app-cong {rF = %} k~l x₁) = app-cong (soundness~↓! k~l) (let _ , _ , y = soundness~↑% x₁ in y)
@@ -68,12 +67,12 @@ mutual
   soundness~↑% : ∀ {k l A lA Γ} → Γ ⊢ k ~ l ↑% A ^ lA  →  Γ ⊢ k ∷ A ^ [ % , lA ] × Γ ⊢ l ∷ A ^ [ % , lA ] × Γ ⊢ k ≡ l ∷ A ^ [ % , lA ]
   soundness~↑% (%~↑ ⊢k ⊢l) =  ⊢k , ⊢l , proof-irrelevance ⊢k ⊢l
 
-  soundness~↑ : ∀ {size k l A rA lA Γ} → Γ # size ⊢ k ~ l ↑ A ^ [ rA , lA ] → Γ ⊢ k ≡ l ∷ A ^ [ rA , lA ]
+  soundness~↑ : ∀ {k l A rA lA Γ} → Γ ⊢ k ~ l ↑ A ^ [ rA , lA ] → Γ ⊢ k ≡ l ∷ A ^ [ rA , lA ]
   soundness~↑ (~↑! x) = soundness~↑! x
   soundness~↑ (~↑% x) = let _ , _ , y = soundness~↑% x in y
 
   -- Algorithmic equality of neutrals in WHNF is well-formed.
-  soundness~↓! : ∀ {size k l A lA Γ} → Γ # size ⊢ k ~ l ↓! A ^ lA → Γ ⊢ k ≡ l ∷ A ^ [ ! , lA ]
+  soundness~↓! : ∀ {k l A lA Γ} → Γ ⊢ k ~ l ↓! A ^ lA → Γ ⊢ k ≡ l ∷ A ^ [ ! , lA ]
   soundness~↓! ([~] A₁ D whnfA k~l) = conv (soundness~↑! k~l) (subset* D)
 
   -- Algorithmic equality of types is well-formed.
@@ -118,22 +117,22 @@ mutual
 
 
 
-app-cong′ : ∀ {size Γ k l t v F rF lF G lG lΠ}
-          → Γ # size ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
+app-cong′ : ∀ {Γ k l t v F rF lF G lG lΠ}
+          → Γ ⊢ k ~ l ↓! Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
           → Γ ⊢ t [genconv↑] v ∷ F ^ [ rF , ι lF ]
-          → Γ # ↑ size ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑ G [ t ] ^ [ ! , ι lG ]
+          → Γ ⊢ k ∘ t ^ lΠ ~ l ∘ v ^ lΠ ↑ G [ t ] ^ [ ! , ι lG ]
 app-cong′ k~l t=v = ~↑! (app-cong k~l t=v)
 
-natrec-cong′ : ∀ {size Γ k l h g a b F lF G}
+natrec-cong′ : ∀ {Γ k l h g a b F lF G}
              → Γ ∙ ℕ ^ [ ! , ι ⁰ ]  ⊢ F [conv↑] G ^ [ ! , ι lF ]
              → Γ ⊢ a [conv↑] b ∷ F [ zero ] ^ ι lF
              → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ ! ^ ι lF
-             → Γ # size ⊢ k ~ l ↓! ℕ ^ ι ⁰
-             → Γ # ↑ size ⊢ natrec lF F a h k ~ natrec lF G b g l ↑ F [ k ] ^ [ ! , ι lF ]
+             → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
+             → Γ ⊢ natrec lF F a h k ~ natrec lF G b g l ↑ F [ k ] ^ [ ! , ι lF ]
 natrec-cong′ F=G a=b h=g k~l = ~↑! (natrec-cong F=G a=b h=g k~l)
 
-Emptyrec-cong′ : ∀ {size Γ k l F lF G}
+Emptyrec-cong′ : ∀ {Γ k l F lF G}
                → Γ ⊢ F [conv↑] G ^ [ ! , ι lF ]
                → Γ ⊢ k ~ l ↑% sEmpty ^ ι ⁰
-               → Γ # size ⊢ Emptyrec lF ⁰ F k ~ Emptyrec lF ⁰ G l ↑ F ^ [ ! , ι lF ]
+               → Γ ⊢ Emptyrec lF ⁰ F k ~ Emptyrec lF ⁰ G l ↑ F ^ [ ! , ι lF ]
 Emptyrec-cong′ F=G k~l = ~↑! (Emptyrec-cong F=G k~l)
