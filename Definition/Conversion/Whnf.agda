@@ -30,7 +30,7 @@ mutual
   ne~↑! (Id-UΠ x X) = let _ , nt , nu = ne~↓! X in IdUΠₙ nt , IdUΠₙ nu
   ne~↑! (cast-cong X x ⊢t ⊢t' x₁ x₂ x₃) =
     let _ , nX , nX' = ne~↓! X
-        _ , nx , nx' = ne~↓! x
+        _ , nx' , nx = ne~↓! x
         _ , nt , nt' = whnfConv↓Term x₁
     in castₙ nX nx (inversion-ne nX nt ⊢t) , castₙ nX' nx' (inversion-ne nX' nt' ⊢t')
   ne~↑! (cast-ℕ X x x₁ x₂) = let _ , nt , nu = ne~↓! X in castℕₙ nt , castℕₙ nu
@@ -46,7 +46,7 @@ mutual
      in castₙ nA nB (inversion-ne nA nt ⊢t) , inversion-ne nA nt' ⊢t'
   ne~↑! (castℕ-refl x x₁) = let _ , nt , nu = ne~↓! x in castℕℕₙ nt , nu
   ne~↑! (cast-refl' x ⊢t ⊢t' x₁ x₂) =
-    let _ , nA , nB = ne~↓! x
+    let _ , nB , nA = ne~↓! x
         _ , nt , nt' = whnfConv↓Term x₁
     in inversion-ne nA nt ⊢t , castₙ nA nB (inversion-ne nA nt' ⊢t')
   ne~↑! (castℕ-refl' x x₁) = let _ , nt , nu = ne~↓! x in nt , castℕℕₙ nu

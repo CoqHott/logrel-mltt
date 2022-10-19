@@ -69,7 +69,7 @@ mutual
               → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ) t ~ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) t' ↑! SProp ^ next ⁰
     cast-cong : ∀ {A A' B B' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
-              → Γ ⊢ B ~ B' ↓! U ⁰ ^ ι ¹
+              → Γ ⊢ B' ~ B ↓! U ⁰ ^ ι ¹
               → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t' ∷ A' ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] t' ∷ A ^ ι ⁰
@@ -88,7 +88,7 @@ mutual
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ ℕ ℕ e t ~ u ↑! ℕ ^ ι ⁰
     cast-refl' : ∀ {A B t u e}
-              → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ B ~ A ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰

@@ -15,6 +15,8 @@ open import Agda.Builtin.Nat using (Nat) public
 pattern 1+ n = suc n
 
 infix 4 _≟_
+infixl 5 _+_
+infix 7 _<<_ _<=_
 
 -- Predecessor, cutting off at 0.
 
@@ -31,3 +33,29 @@ suc m ≟ suc .m | yes refl = yes refl
 suc m ≟ suc n  | no prf   = no (λ x → prf (subst (λ y → m ≡ pred y) x refl))
 zero  ≟ suc n  = no λ()
 suc m ≟ zero   = no λ()
+
+_+_ : (m n : Nat) → Nat
+0 + n = n
+suc m + n = suc (m + n)
+
+
+data _<=_ : Nat → Nat → Set where
+  le0 : ∀ {n : Nat} → 0 <= n
+  leS : ∀ {n m : Nat} → n <= m → 1+ n <= 1+ m
+
+le-suc :  ∀ {n m : Nat} → n <= m → n <= 1+ m
+le-suc le0 = le0
+le-suc (leS e) = leS (le-suc e)
+
+le-refl :  (n : Nat) → n <= n
+le-refl 0 = le0
+le-refl (1+ n) = leS (le-refl n)
+
+_<<_ :  Nat → Nat → Set
+n << m = 1+ n <= m
+
+<<inv-suc :  ∀ {n m : Nat} → 1+ n << 1+ m → n << m
+<<inv-suc (leS e) = e
+
+<<rem-suc :  ∀ {n m : Nat} → 1+ n << m → n << m
+<<rem-suc (leS e) = le-suc e

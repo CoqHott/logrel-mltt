@@ -41,18 +41,26 @@ mutual
                 → Whnf B
                 → Γ ⊢ t [conv↓] u ∷ A ^ l
                 → Δ ⊢ t [conv↓] u ∷ B ^ l
-  convConv↓Term Γ≡Δ A≡B whnfB (ℕ-ins x) rewrite ℕ≡A A≡B whnfB =
-    ℕ-ins (stability~↓! Γ≡Δ x)
-  convConv↓Term Γ≡Δ A≡B whnfB (ne x) rewrite U≡A-whnf A≡B whnfB = ne (stability~↓! Γ≡Δ x)
+  convConv↓Term Γ≡Δ A≡B whnfB (ℕ-ins x) =
+    let eqN = ℕ≡A A≡B whnfB 
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqN) 
+                (ℕ-ins (stability~↓! Γ≡Δ x))
+  convConv↓Term Γ≡Δ A≡B whnfB (ne x) =
+    let eqU = U≡A-whnf A≡B whnfB
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqU) (ne (stability~↓! Γ≡Δ x))
   convConv↓Term Γ≡Δ A≡B whnfB (ne-ins t u x x₁) with ne≡A x A≡B whnfB
   convConv↓Term Γ≡Δ A≡B whnfB (ne-ins t u x x₁) | B , neB , PE.refl =
     ne-ins (stabilityTerm Γ≡Δ (conv t A≡B)) (stabilityTerm Γ≡Δ (conv u A≡B))
            neB (stability~↓! Γ≡Δ x₁)
-  convConv↓Term Γ≡Δ A≡B whnfB (zero-refl x) rewrite ℕ≡A A≡B whnfB =
-    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-    in  zero-refl ⊢Δ
-  convConv↓Term Γ≡Δ A≡B whnfB (suc-cong x) rewrite ℕ≡A A≡B whnfB =
-    suc-cong (stabilityConv↑Term Γ≡Δ x)
+  convConv↓Term Γ≡Δ A≡B whnfB (zero-refl x) =
+    let eqN = ℕ≡A A≡B whnfB 
+        _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqN) 
+       (zero-refl ⊢Δ)
+  convConv↓Term Γ≡Δ A≡B whnfB (suc-cong x) =
+    let eqN = ℕ≡A A≡B whnfB 
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqN) 
+                (suc-cong (stabilityConv↑Term Γ≡Δ x))
   convConv↓Term Γ≡Δ A≡B whnfB (η-eq l< l<' x x₁ x₂ y y₁ x₃) with Π≡A A≡B whnfB
   convConv↓Term Γ≡Δ A≡B whnfB (η-eq l< l<' x x₁ x₂ y y₁ x₃) | F′ , G′ , PE.refl =
     let F≡F′ , rF≡rF′ , _ , _ , G≡G′ = injectivity A≡B
@@ -61,16 +69,26 @@ mutual
              (stability Γ≡Δ ⊢F′) (stabilityTerm Γ≡Δ (conv x₁ A≡B))
              (stabilityTerm Γ≡Δ (conv x₂ A≡B)) y y₁
              (convConv↑Term (Γ≡Δ ∙ F≡F′) G≡G′ x₃)
-  convConv↓Term Γ≡Δ A≡B whnfB (U-refl x x₁) rewrite U≡A-whnf A≡B whnfB =
-    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in U-refl x ⊢Δ
-  convConv↓Term Γ≡Δ A≡B whnfB (ℕ-refl x) rewrite U≡A-whnf A≡B whnfB =
-    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in ℕ-refl ⊢Δ
-  convConv↓Term Γ≡Δ A≡B whnfB (Empty-refl _) rewrite U≡A-whnf A≡B whnfB =
-    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Empty-refl ⊢Δ
-  convConv↓Term Γ≡Δ A≡B whnfB (Π-cong lΠ rF lF lG l< l<' x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
-    Π-cong lΠ rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂)
-  convConv↓Term Γ≡Δ A≡B whnfB (∃-cong x x₁ x₂) rewrite U≡A-whnf A≡B whnfB =
-    ∃-cong (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂)
+  convConv↓Term Γ≡Δ A≡B whnfB (U-refl x x₁) =
+    let eqU = U≡A-whnf A≡B whnfB
+        _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ ∞) (PE.sym eqU) (U-refl  x ⊢Δ)
+  convConv↓Term Γ≡Δ A≡B whnfB (ℕ-refl x) =
+    let eqU = U≡A-whnf A≡B whnfB
+        _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqU) (ℕ-refl ⊢Δ)
+  convConv↓Term Γ≡Δ A≡B whnfB (Empty-refl _) =
+    let eqU = U≡A-whnf A≡B whnfB
+        _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqU) (Empty-refl ⊢Δ)
+  convConv↓Term Γ≡Δ A≡B whnfB (Π-cong lΠ rF lF lG l< l<' x x₁ x₂) =
+    let eqU = U≡A-whnf A≡B whnfB
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqU)
+                (Π-cong lΠ rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂))
+  convConv↓Term Γ≡Δ A≡B whnfB (∃-cong x x₁ x₂) =
+    let eqU = U≡A-whnf A≡B whnfB
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqU)
+                (∃-cong (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂))
 
 -- Conversion of algorithmic equality with the same context.
 convConvTerm : ∀ {t u A B Γ l}
