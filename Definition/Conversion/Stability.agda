@@ -214,9 +214,9 @@ mutual
                  → ⊢ Γ ≡ Δ
                  → Γ ⊢ A [conv↓] B ^ r
                  → Δ ⊢ A [conv↓] B ^ r
-  stabilityConv↓ Γ≡Δ (U-refl PE.refl x) =
+  stabilityConv↓ Γ≡Δ (U-refl e x) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-    in  U-refl PE.refl ⊢Δ
+    in  U-refl e ⊢Δ
   stabilityConv↓ Γ≡Δ (univ x) = univ (stabilityConv↓Term Γ≡Δ x)
 
   -- Stability of algorithmic equality of terms.
@@ -234,9 +234,8 @@ mutual
                      → ⊢ Γ ≡ Δ
                      → Γ ⊢ t [conv↓] u ∷ A ^ lA
                      → Δ ⊢ t [conv↓] u ∷ A ^ lA
-  stabilityConv↓Term Γ≡Δ (U-refl PE.refl x) =
-    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-    in  U-refl PE.refl ⊢Δ
+  stabilityConv↓Term Γ≡Δ (U-refl e x) =
+    let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in U-refl e ⊢Δ
   stabilityConv↓Term Γ≡Δ (ne x) = ne (stability~↓! Γ≡Δ x)
   stabilityConv↓Term Γ≡Δ (ℕ-refl x) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
@@ -252,8 +251,6 @@ mutual
            (stabilityConv↑Term (Γ≡Δ ∙ refl F) A<>B₁)
   stabilityConv↓Term Γ≡Δ (ℕ-ins x) =
     ℕ-ins (stability~↓! Γ≡Δ x)
-  -- stabilityConv↓Term Γ≡Δ (Empty-ins x) =
-  --   Empty-ins (stability~↓% Γ≡Δ x)
   stabilityConv↓Term Γ≡Δ (ne-ins t u neN x) =
     ne-ins (stabilityTerm Γ≡Δ t) (stabilityTerm Γ≡Δ u) neN (stability~↓! Γ≡Δ x)
   stabilityConv↓Term Γ≡Δ (zero-refl x) =
