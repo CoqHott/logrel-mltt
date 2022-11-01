@@ -256,9 +256,9 @@ mutual
   convNf Γ≡Δ ⊢t (sprop x) = sprop (stabilityTerm Γ≡Δ x)
 
 
-
+{-
 mutual
-  fullRedNe : ∀ {t A l Γ} → Γ ⊢ t ~ t ↑! A ^ l → ∃ λ u → NfNeutral Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
+  fullRedNe : ∀ {t t' A l Γ} → Γ ⊢ t ~ t' ↑! A ^ l → ∃ λ u → NfNeutral Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
   fullRedNe (var-refl x _) = var _ , var _ , refl x
   fullRedNe (app-cong {rF = !} {lΠ = lΠ} t u) =
     let t′ , nfT′ , t≡t′ = fullRedNe′ t
@@ -270,7 +270,7 @@ mutual
     let t′ , nfT′ , t≡t′ = fullRedNe′ t
     in  (t′ ∘ a ^ lΠ) ,
         ∘ₙ nfT′ (sprop ⊢a) ,
-        app-cong t≡t′ (proof-irrelevance ⊢a ⊢a')
+        app-cong t≡t′ (proof-irrelevance ⊢a ?) --⊢a')
   fullRedNe (natrec-cong {lF = l} C z s n) =
     let C′ , nfC′ , C≡C′ = fullRed C
         z′ , nfZ′ , z≡z′ = fullRedTerm z
@@ -282,7 +282,7 @@ mutual
   fullRedNe (Emptyrec-cong {k = k} {ll = l} C (%~↑ ⊢e ⊢e')) =
     let C′ , nfC′ , C≡C′ = fullRed C
     in  Emptyrec l ⁰ C′ k , Emptyrecₙ nfC′
-     ,  Emptyrec-cong C≡C′ ⊢e ⊢e'
+     ,  Emptyrec-cong C≡C′ ⊢e ? --⊢e'
   fullRedNe (Id-cong A t u) =
     let A′ , nfA′ , A≡A′ = fullRedNe′ A
         t′ , nfT′ , t≡t′ = fullRedTerm t
@@ -321,7 +321,7 @@ mutual
         _ , nX , nX' = ne~↓! x
         nt = inversion-ne nX nft ⊢t
     in cast ⁰ A′ B′ e t′ , castₙ nfA′ nfB′ (NfNeutralNfNeutral nt nX nft′ t≡t′) ,
-       cast-cong A≡A′ B≡B′ t≡t′ ⊢e (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e)) ) A≡A′ B≡B′)))
+       ? -- cast-cong A≡A′ B≡B′ t≡t′ ⊢e (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e)) ) A≡A′ B≡B′)))
   fullRedNe (cast-ℕ {e = e} {e' = e'} x x₁ ⊢e ⊢e') =
     let A′ , nfA′ , A≡A′ = fullRedNe′ x
         t′ , nft′ , t≡t′ = fullRedTerm x₁
@@ -385,13 +385,20 @@ mutual
         nfCast = castneΠₙ NfH NfE nfA′ nft′ 
     in cast ⁰ A′ Π′ e t′ , PE.subst (λ B →  NfNeutral _ (cast ⁰ _ B _ _)) (PE.sym Π≡HE) nfCast ,
       cast-cong A≡A′ Π≡Π′ t≡t′ ⊢e (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e)) ) A≡A′ Π≡Π′)))
+  fullRedNe (cast-refl x x₁ x₂ x₃ x₄) = {!!}
+    -- let A′ , nfA′ , A≡A′ = fullRedNe′ x
+    --     t′ , nft′ , t≡t′ = fullRedTerm x₂
+    -- in {!cast ⁰ A′ A′ e t′ , ?!}
+  fullRedNe (castℕ-refl x x₁) = {!!}
+  fullRedNe (cast-refl' x x₁ x₂ x₃ x₄) = {!!}
+  fullRedNe (castℕ-refl' x x₁) = {!!} 
 
-  fullRedNe′ : ∀ {t A rA Γ} → Γ ⊢ t ~ t ↓! A ^ rA → ∃ λ u → NfNeutral Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , rA ]
+  fullRedNe′ : ∀ {t t' A rA Γ} → Γ ⊢ t ~ t' ↓! A ^ rA → ∃ λ u → NfNeutral Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , rA ]
   fullRedNe′ ([~] A D whnfB k~l) =
     let u , nf , t≡u = fullRedNe k~l
     in u , nf , conv t≡u (subset* D)
 
-  fullRed : ∀ {A rA Γ} → Γ ⊢ A [conv↑] A ^ rA → ∃ λ B → Nf Γ B × Γ ⊢ A ≡ B ^ rA
+  fullRed : ∀ {A A' rA Γ} → Γ ⊢ A [conv↑] A' ^ rA → ∃ λ B → Nf Γ B × Γ ⊢ A ≡ B ^ rA
   fullRed ([↑] A′ B′ D D′ whnfA′ whnfB′ A′<>B′)
     rewrite whrDet* (D , whnfA′) (D′ , whnfB′) =
     let B″ , nf , B′≡B″ = fullRed′ A′<>B′
@@ -403,13 +410,13 @@ mutual
     let u , Nfu , u≡u = fullRedTerm′ x
     in u , Nfu , univ u≡u
 
-  fullRedTerm : ∀ {t A l Γ} → Γ ⊢ t [conv↑] t ∷ A ^ l → ∃ λ u → Nf Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
+  fullRedTerm : ∀ {t t' A l Γ} → Γ ⊢ t [conv↑] t' ∷ A ^ l → ∃ λ u → Nf Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
   fullRedTerm ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u)
     rewrite whrDet*Term (d , whnft′) (d′ , whnfu′) =
     let u″ , nf , u′≡u″ = fullRedTerm′ t<>u
     in  u″ , nf , conv (trans (subset*Term d′) u′≡u″) (sym (subset* D))
 
-  fullRedTerm′ : ∀ {t A l Γ} → Γ ⊢ t [conv↓] t ∷ A ^ l → ∃ λ u → Nf Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
+  fullRedTerm′ : ∀ {t t' A l Γ} → Γ ⊢ t [conv↓] t' ∷ A ^ l → ∃ λ u → Nf Γ u × Γ ⊢ t ≡ u ∷ A ^ [ ! , l ]
   fullRedTerm′ (U-refl {r = r} _ ⊢Γ) = Univ r ⁰ , Uₙ , refl (univ 0<1 ⊢Γ)
   fullRedTerm′ (ne A) =
     let B , nf , A≡B = fullRedNe′ A
@@ -454,3 +461,4 @@ mutual
              (trans t∘0≡u (PE.subst₂ (λ x y → _ ⊢ x ≡ λu∘0 ∷ y ^ _)
                                      (wkSingleSubstId u) (wkSingleSubstId _)
                                      (sym (β-red l< l<' wk⊢F wk⊢u (var ΓF⊢ here)))))
+-}
