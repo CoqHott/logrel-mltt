@@ -61,14 +61,16 @@ mutual
     let eqN = ℕ≡A A≡B whnfB 
     in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqN) 
                 (suc-cong (stabilityConv↑Term Γ≡Δ x))
-  convConv↓Term Γ≡Δ A≡B whnfB (η-eq l< l<' x x₁ x₂ y y₁ x₃) with Π≡A A≡B whnfB
-  convConv↓Term Γ≡Δ A≡B whnfB (η-eq l< l<' x x₁ x₂ y y₁ x₃) | F′ , G′ , PE.refl =
-    let F≡F′ , rF≡rF′ , _ , _ , G≡G′ = injectivity A≡B
+  convConv↓Term Γ≡Δ A≡B whnfB (η-eq l< l<' x x₁ x₂ y y₁ x₃) =
+    let F′ , G′ , eqΠ = Π≡A A≡B whnfB
+        A≡B' = PE.subst (λ X → _ ⊢ _ ≡ X ^ _) eqΠ A≡B
+        F≡F′ , rF≡rF′ , _ , _ , G≡G′ = injectivity A≡B'
         ⊢F , ⊢F′ = syntacticEq F≡F′
-    in  η-eq l< l<'
-             (stability Γ≡Δ ⊢F′) (stabilityTerm Γ≡Δ (conv x₁ A≡B))
-             (stabilityTerm Γ≡Δ (conv x₂ A≡B)) y y₁
-             (convConv↑Term (Γ≡Δ ∙ F≡F′) G≡G′ x₃)
+        convΠ = η-eq l< l<'
+                   (stability Γ≡Δ ⊢F′) (stabilityTerm Γ≡Δ (conv x₁ A≡B'))
+                   (stabilityTerm Γ≡Δ (conv x₂ A≡B')) y y₁
+                   (convConv↑Term (Γ≡Δ ∙ F≡F′) G≡G′ x₃)
+    in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqΠ) convΠ 
   convConv↓Term Γ≡Δ A≡B whnfB (U-refl x x₁) =
     let eqU = U≡A-whnf A≡B whnfB
         _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
@@ -100,12 +102,10 @@ convConvTerm t<>u A≡B = convConv↑Term (reflConEq (wfEq A≡B)) A≡B t<>u
 
 
 conv~↑% : ∀ {t u A B Γ l}
-              -- → ⊢ Γ ≡ Δ
               → Γ ⊢ t ~ u ↑% A ^ l
               → Γ ⊢ A ≡ B ^ [ % , l ]
               → Γ ⊢ t ~ u ↑% B ^ l
 conv~↑% (%~↑ ⊢k ⊢l) e = %~↑ (conv ⊢k e) (conv ⊢l e)
---(stabilityTerm ⊢Γ≡Δ (conv ⊢k e)) (stabilityTerm ⊢Γ≡Δ (conv ⊢l e))
 
 convConvTerm%! : ∀ {t u A B Γ r l}
               → Γ ⊢ t [genconv↑] u ∷ A ^ [ r , l ]
