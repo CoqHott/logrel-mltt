@@ -55,10 +55,10 @@ mutual
     cast-ΠΠ%! (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) (wkConv↑Term [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃) (wkTerm [ρ] ⊢Δ x₄)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) =
     cast-ΠΠ!% (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁) (wkConv↑Term [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃) (wkTerm [ρ] ⊢Δ x₄)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-refl x x₁ x₂ x₃) = cast-refl (wk~↓! [ρ] ⊢Δ x)  (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkNeutral ρ x₃)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (castℕ-refl x x₁ x₂) = castℕ-refl  (wkTerm [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁) (wkNeutral ρ x₂)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-refl' x x₁ x₂ x₃) = cast-refl' (wk~↓! [ρ] ⊢Δ x)  (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkNeutral ρ x₃)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (castℕ-refl' x x₁ x₂) = castℕ-refl'  (wkTerm [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁) (wkNeutral ρ x₂)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-refl x x₁ x₂ x₃ x₄) = cast-refl (wk~↓! [ρ] ⊢Δ x)  (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkConv↓Term [ρ] ⊢Δ x₃) (wkTerm [ρ] ⊢Δ x₄)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (castℕ-refl x x₁) = castℕ-refl (wk~↓! [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-refl' x x₁ x₂ x₃ x₄) = cast-refl' (wk~↓! [ρ] ⊢Δ x)  (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkConv↓Term [ρ] ⊢Δ x₃) (wkTerm [ρ] ⊢Δ x₄)
+  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (castℕ-refl' x x₁) = castℕ-refl' (wk~↓! [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-neℕ x x₁ x₂ x₃) = cast-neℕ (wk~↓! [ρ] ⊢Δ x)  (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-neΠ X x x₁ x₂ x₃) = cast-neΠ (wkConv↑Term [ρ] ⊢Δ X) (wk~↓! [ρ] ⊢Δ x)  (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
 
