@@ -38,11 +38,11 @@ mutual
   size~↑! (cast-ℕ x x₁ x₂ x₃) = 1 + size~↓! x + sizeConv↑Term x₁
   size~↑! (cast-ℕℕ x x₁ x₂) = 1 + size~↓! x
   size~↑! (cast-neΠ x x₁ x₂ x₃ x₄) = 1 + size~↓! x₁ + sizeConv↑Term x₂
-  size~↑! (cast-Π x x₁ x₂ x₃ x₄) = 1 + size~↓! x₁ + sizeConv↑Term x₂
-  size~↑! (cast-Πℕ x x₁ x₂ x₃) = 1 + sizeConv↑Term x₁
-  size~↑! (cast-ℕΠ x x₁ x₂ x₃) = 1 + sizeConv↑Term x₁
-  size~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = 1 + sizeConv↑Term x₂
-  size~↑! (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = 1 + sizeConv↑Term x₂
+  size~↑! (cast-Π x x₁ x₂ x₃ x₄) = 1 + sizeConv↑Term x + size~↓! x₁ + sizeConv↑Term x₂
+  size~↑! (cast-Πℕ x x₁ x₂ x₃) = 1 + sizeConv↑Term x + sizeConv↑Term x₁
+  size~↑! (cast-ℕΠ x x₁ x₂ x₃) = 1 + sizeConv↑Term x + sizeConv↑Term x₁
+  size~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = 1 + sizeConv↑Term x + sizeConv↑Term x₁ + sizeConv↑Term x₂
+  size~↑! (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = 1 + sizeConv↑Term x + sizeConv↑Term x₁ + sizeConv↑Term x₂
   
   size~↑ : ∀ {t u A Γ l} → Γ ⊢ t ~ u ↑ A ^ l → Nat
   size~↑ (~↑! x) = size~↑! x
