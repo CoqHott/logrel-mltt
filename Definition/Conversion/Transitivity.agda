@@ -17,6 +17,7 @@ open import Definition.Conversion.ConversionProp
 open import Definition.Conversion.StabilityProp
 open import Definition.Conversion.Inversion
 open import Definition.Conversion.Whnf
+open import Definition.Conversion.TransitivityHelper
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.Reduction
 open import Definition.Typed.Consequences.Injectivity
@@ -35,174 +36,6 @@ open import Tools.Sum using (_⊎_ ; inj₁ ; inj₂)
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
-
-<=inv-suc :  ∀ {n m : Nat} → 1+ n <= 1+ m → n <= m
-<=inv-suc (leS e) = e
-
-+-0 : ∀ {a : Nat} → a + 0 PE.≡ a
-+-0 {0} = PE.refl
-+-0 {1+ a} = PE.cong 1+ +-0
-
-+-suc : ∀ {a b : Nat} → a + (1+ b) PE.≡ 1+ (a + b)
-+-suc {0} {b} = PE.refl
-+-suc {1+ a} {b} = PE.cong 1+ +-suc 
-
-+-sym : ∀ (a b : Nat) → a + b PE.≡ b + a
-+-sym 0 b = PE.sym +-0 
-+-sym (1+ a) b = PE.trans (PE.cong 1+ (+-sym a b)) (PE.sym +-suc)
-
-+-assoc : ∀ (a b c : Nat) → a + b + c PE.≡ a + (b + c)
-+-assoc 0 b c = PE.refl
-+-assoc (1+ a) b c = PE.cong 1+ (+-assoc a b c)
-
-<=-trans :  ∀ {a b c : Nat} → a <= b → b <= c → a <= c
-<=-trans le0 e = le0
-<=-trans (leS e) (leS e') = leS (<=-trans e e')
-
-<=+k :  ∀ {a b c : Nat} → a <= b → a <= (c + b)
-<=+k {c = Nat.zero} e = e
-<=+k {c = 1+ c} e = <=-trans (<=+k e) (le-suc (le-refl _))
-
-<<-trans :  ∀ {a b c : Nat} → a <= b → b << c → a << c
-<<-trans e e' = <=-trans (leS e) e'
-
-≡-to-<= :  ∀ {a b : Nat} → a PE.≡ b → a <= b
-≡-to-<= PE.refl = le-refl _
-
-<=-cong-+ : ∀ {a a' b b' : Nat} → a <= a' → b <= b' → (a + b) <= (a' + b')
-<=-cong-+ le0 e' = <=+k e'
-<=-cong-+ (leS e) e' = leS (<=-cong-+ e e')
-
-<=-cong-+3 : ∀ {a a' b b' c c' : Nat} → a <= a' → b <= b' → c <= c' → (a + b + c) <= (a' + b' + c')
-<=-cong-+3 ea eb ec = <=-cong-+ (<=-cong-+ ea eb) ec
-
-<=-cong-+4 : ∀ {a a' b b' c c' d d' : Nat} → a <= a' → b <= b' → c <= c' → d <= d' → (a + b + c + d) <= (a' + b' + c' + d')
-<=-cong-+4 ea eb ec ed = <=-cong-+ (<=-cong-+ (<=-cong-+ ea eb) ec) ed
-
-<<cong-right :  ∀ {a b c d : Nat} → (c + d) <= (a + c + (b + d))
-<<cong-right {a} {b} {c} {d} = <=-trans (<=-cong-+ (<=+k (le-refl c)) (le-refl d))
-                                            (<=-cong-+ (le-refl (a + c)) (<=+k (le-refl d)))
-
-<<bind-suc :  ∀ {n a b : Nat} → (b <= a) → 1+ a << n → 1+ b << n
-<<bind-suc eba e = <<-trans (leS eba) e
-
-<=-switch-bc : ∀ {a b c d : Nat} → (a + b + (c + d)) <= (a + c + (b + d))
-<=-switch-bc {a} {b} {c} {d} =
-  ≡-to-<= (PE.trans (PE.trans (PE.sym (+-assoc (a + b) c d))
-                    (PE.cong (λ X →  X + d) (PE.trans (+-assoc a b c)
-                    (PE.trans (PE.cong (_+_ a) (+-sym b c)) (PE.sym (+-assoc a c b))))))
-                    (+-assoc (a + c) b d))
-
-<=-help-2-2 :  ∀ {a b c : Nat} → (2 + (b + (2 + a + c))) <= (a + (2 + (b + (2 + c))))
-<=-help-2-2 = {!!}
-
-<=-help-2-2' :  ∀ {a b c : Nat} → (2 + (b + (2 + (a + c)))) <= (2 + (b + (2 + a) + c))
-<=-help-2-2' = {!!}
-
-<=-help-1-2 :  ∀ {a b : Nat} → (1+ (a + b)) <= (a + (2 + b))
-<=-help-1-2 = {!!}
-
-<=-help-2-1 :  ∀ {a b : Nat} → (a + b) <= ((2 + a) + (1+ b))
-<=-help-2-1 = {!!}
-
-<=-help-2 :  ∀ {a b : Nat} → (2 + (a + b)) <= (a + (2 + b))
-<=-help-2 = {!!}
-
-<=-help-22-rem :  ∀ {a b c d : Nat} → (b + d) <= (a + (2 + b) + (c + (2 + d)))
-<=-help-22-rem = {!!}
-
-<=-help-ab :  ∀ {a b c d : Nat} → 1+ (a + b) <= (a + (1+ c) + (b + d)) 
-<=-help-ab = {!!}
-
-<=-help-ab1 :  ∀ {a b : Nat} → 1+ (a + b) <= (a + 1 + (b + 1)) 
-<=-help-ab1 = {!!}
-
-<=-help-abc :  ∀ {a b c : Nat} → 1+ (a + c) <= (a + 1+ (b + (2 + c))) 
-<=-help-abc = {!!}
-
-<=-help-abc' :  ∀ {a b c : Nat} → 1+ (a + c) <= (1+ b + (2 + a) + c)
-<=-help-abc' = {!!}
-
-<=-help-ab1' :  ∀ {a b : Nat} → (a + b) <= (a + 1+ b) 
-<=-help-ab1' = {!!}
-
-<=-help-ab' :  ∀ {a b c d : Nat} → (a + b) <= (a + c + 1+ (b + d)) 
-<=-help-ab' = {!!}
-
-<=-help-ab'' :  ∀ {a b c d : Nat} → (b + d) <= (a + b + 1+ (c + d)) 
-<=-help-ab'' = {!!}
-
-<=-help-3-ab :  ∀ {a b b' c d : Nat} → (a + b) <= (a + c + 1+ (b + b' + d)) 
-<=-help-3-ab = {!!}
-
-<=-help-3-ab' :  ∀ {a b b' c d : Nat} → (b' + (1+ a)) <= (a + c + 1+ (b + (1+ b') + d))
-<=-help-3-ab' = {!!}
-
-<=-help-3-abb' :  ∀ {a b b' c d : Nat} → (b' + a + b) <= (a + c + 1+ (b + b' + d)) 
-<=-help-3-abb' = {!!}
-
-<=-help-3-ab'c :  ∀ {a b b' c c' d : Nat} → (b' + c) <= (a + c + c' + 1+ (b + (1+ b') + d))
-<=-help-3-ab'c = {!!}
-
-<=-help-3-abcde :  ∀ {a b c d e : Nat} → (a + b + c + (d + e)) <= (b + d + 1+ (c + a + e)) 
-<=-help-3-abcde = {!!}
-
-<=-help-3-abcde' :  ∀ {a b c d e : Nat} → (a + d + b + (c + e)) <= (a + b + c + 1+ (d + e)) 
-<=-help-3-abcde' = {!!}
-
-<=-help-abcd-b :  ∀ {a b c d : Nat} → (a + c + d) <= (a + b + (c + d))
-<=-help-abcd-b = {!!}
-
-<=-help-3-abcd :  ∀ {a b c d : Nat} → (a + b + (c + d)) <= (a + c + 1+ (b + d)) 
-<=-help-3-abcd = {!!}
-
-<=-help-nat-cong-ab :  ∀ {a b b' b'' b''' c' c'' c''' : Nat} → (a + b) <= (a + b' + b'' + b''' + 1+ (b + c' + c'' + c'''))
-<=-help-nat-cong-ab = {!!}
-
-<=-help-nat-congb'c' :  ∀ {a b b' b'' b''' c' c'' c''' : Nat} → (b' + c') <= (a + b' + b'' + b''' + 1+ (b + c' + c'' + c'''))
-<=-help-nat-congb'c' = {!!}
-
-<=-help-nat-congb''c'' :  ∀ {a b b' b'' b''' c' c'' c''' : Nat} → (b'' + c'') <= (a + b' + b'' + b''' + 1+ (b + c' + c'' + c'''))
-<=-help-nat-congb''c'' = {!!}
-
-<=-help-nat-congb'''c''' :  ∀ {a b b' b'' b''' c' c'' c''' : Nat} → (b''' + c''') <= (a + b' + b'' + b''' + 1+ (b + c' + c'' + c'''))
-<=-help-nat-congb'''c''' = {!!}
-
-<=-help-nat-cong :  ∀ {a b b' b'' b''' c' c'' c''' : Nat} → (a + b + (b' + c') + (b'' + c'') + (b''' + c''')) <= (a + b' + b'' + b''' + 1+ (b + c' + c'' + c'''))
-<=-help-nat-cong = {!!}
-
-<=-help-id-cong :  ∀ {a b b' b'' c' c''  : Nat} → (a + b) <= (a + b' + b'' + 1+ (b + c' + c''))
-<=-help-id-cong = {!!}
-
-<=-help-id-cong' :  ∀ {a b b' b'' c' c''  : Nat} → (a + b + (b' + c') + (b'' + c'') ) <= (a + b' + b'' + 1+ (b + c' + c''))
-<=-help-id-cong' = {!!}
-
-<=-help-id-cong'' :  ∀ {a b b' b'' c' c''  : Nat} → (a + b + (c' + b') + (b'' + c'') ) <= (a + b' + b'' + 1+ (b + c' + c''))
-<=-help-id-cong'' = {!!}
-
-<=-help-b''c'' :  ∀ {a b b' b'' c' c''  : Nat} → (b'' + c'') <= (a + b' + b'' + 1+ (b + c' + c''))
-<=-help-b''c'' = {!!}
-
-<=-help-b'c' :  ∀ {a b b' b'' c' c''  : Nat} → (b' + c') <= (a + b' + b'' + 1+ (b + c' + c''))
-<=-help-b'c' = {!!}
-
-<=-help-id-cong-c'' :  ∀ {a b b' b'' c' : Nat} → (a + b) <= (a + b' + b'' + 1+ (b + c'))
-<=-help-id-cong-c'' = {!!}
-
-<=-help-abb'-c'' :  ∀ {a b b' b'' c' : Nat} → (a + b + b') <= (a + b' + b'' + 1+ (b + c'))
-<=-help-abb'-c'' = {!!}
-
-sizeSubst₃-gen :  ∀ {A B C a b c a' b' c'}
-              → (P : A → B → C → Set)
-              → (size : ∀ {a b c} → P a b c → Nat)
-              → (t : P a b c)
-              → (ea : a PE.≡ a')
-              → (eb : b PE.≡ b')
-              → (ec : c PE.≡ c')
-              → size (PE.subst₃ P ea eb ec t) PE.≡ size t
-sizeSubst₃-gen _ _ _ PE.refl PE.refl PE.refl = PE.refl              
-
-
 mutual
 
   -- Transitivity of algorithmic equality of neutrals.
@@ -213,6 +46,8 @@ mutual
          → (e' : Δ ⊢ u ~ v ↑! B ^ l')
          → (size~↑! e + size~↑! e') << n
          → ∃₂ λ C (e'' : Γ ⊢ t ~ v ↑! C ^ l) → Γ ⊢ A ≡ C ^ [ ! , l ] × Γ ⊢ C ≡ B ^ [ ! , l ] × size~↑! e'' <= (size~↑! e + size~↑! e')
+
+--  trans~↑! = {!!}
 
   trans~↑! {n = 0} el Γ≡Δ X Y ()
 
@@ -336,11 +171,10 @@ mutual
     in _ , Id-cong XY' t~t u~u , refl (Ugenⱼ ⊢Γ) , refl (Ugenⱼ ⊢Γ) ,
       leS (<=-trans (<=-cong-+3 sizeXY' sizet~t sizeu~u) 
           (<=-help-id-cong' {a = size~↓! X}))
-
   trans~↑! {n = 1+ n} {Γ = Γ} el Γ≡Δ (Id-ℕ {t = t} X x) (Id-ℕ {t' = t'} Y x₁) (leS e) =
-    let X , wX , t~t , ℕ≡X , X≡ℕ , sizet~t = trans~↓! {n = n} PE.refl Γ≡Δ X Y (<<bind-suc (<=-help-ab' {b = size~↓! Y}) e)
+    let K , wX , t~t , ℕ≡X , X≡ℕ , sizet~t = trans~↓! {n = n} PE.refl Γ≡Δ X Y (<<bind-suc (<=-help-ab' {b = size~↓! Y}) e)
         u~u , sizeu~u = transConv↑Term {n = n} PE.refl Γ≡Δ (trans ℕ≡X X≡ℕ) x x₁
-                         (<<-trans (<=-help-ab'' {c = 1+ (size~↓! Y)}) e)
+                         (<<-trans (<=-help-ab'' {a = size~↓! X} {c = size~↓! Y}) e ) 
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
         eqℕ = ℕ≡A ℕ≡X wX
         t~t' =  PE.subst (λ X →  Γ ⊢ t ~ t' ↓! X ^ ι ⁰) eqℕ t~t
@@ -348,7 +182,6 @@ mutual
     in _ , Id-ℕ t~t' u~u , refl (Ugenⱼ ⊢Γ) , refl (Ugenⱼ ⊢Γ) ,
        leS (<=-trans (<=-cong-+ sizet~t' sizeu~u)
            (leS (<=-help-3-abcd {b = size~↓! Y} {c = sizeConv↑Term x})))
-
   trans~↑! {n = 1+ n} {Γ = Γ} el Γ≡Δ (Id-ℕ0 {t = t} X) (Id-ℕ0 {t' = t'} Y) (leS e) =
     let X , wX , t~t , ℕ≡X , X≡ℕ , sizet~t = trans~↓! {n = n} PE.refl Γ≡Δ X Y (<<bind-suc <=-help-ab1' e)
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
@@ -360,7 +193,7 @@ mutual
 
   trans~↑! {n = 1+ n} {Γ = Γ} el Γ≡Δ (Id-ℕS {u = u} x X) (Id-ℕS {u' = u'} x₁ Y) (leS e) =
     let _ , wX , t~t , ℕ≡X , X≡ℕ , sizet~t = trans~↓! {n = n} PE.refl Γ≡Δ X Y
-               (<<-trans (<=-help-ab'' {c = 1+ (sizeConv↑Term x₁)}) e)
+               (<<-trans (<=-help-ab'' {a = sizeConv↑Term x} {c = sizeConv↑Term x₁}) e) 
         u~u , sizeu~u = transConv↑Term {n = n} PE.refl Γ≡Δ (trans ℕ≡X X≡ℕ) x x₁
                          (<<bind-suc (<=-help-ab' {b = sizeConv↑Term x₁}) e)
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
@@ -375,7 +208,7 @@ mutual
     let K , wK , XY , [U] , [U]' , sizeXY = trans~↓! {n = n} el Γ≡Δ X Y (<<bind-suc (<=-help-ab' {b = size~↓! Y}) e)
         eqU = U≡A-whnf [U] wK
         XY' = PE.subst (λ X →  Γ ⊢ t ~ t' ↓! X ^ ι ¹) eqU XY
-        u~u , sizeu~u = transConv↑Term {n = n} PE.refl Γ≡Δ (trans [U] [U]') x x₁ (<<-trans (<=-help-ab'' {c = 1+ (size~↓! Y)}) e)
+        u~u , sizeu~u = transConv↑Term {n = n} PE.refl Γ≡Δ (trans [U] [U]') x x₁ (<<-trans (<=-help-ab'' {a = size~↓! X} {c = size~↓! Y}) e) 
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
         sizeXY' = <=-trans (≡-to-<= (sizeSubst-gen (λ X →  Γ ⊢ t ~ t' ↓! X ^ ι ¹) size~↓! XY eqU)) sizeXY
     in _ , Id-U XY' u~u , refl (Ugenⱼ ⊢Γ) , refl (Ugenⱼ ⊢Γ) ,
@@ -390,7 +223,7 @@ mutual
     in _ , Id-Uℕ XY' , refl (Ugenⱼ ⊢Γ)  , refl (Ugenⱼ ⊢Γ) , leS (<=-trans sizeXY' (leS <=-help-ab1'))
 
   trans~↑! {n = 1+ n} {Γ = Γ} el Γ≡Δ (Id-UΠ {t = t} x X) (Id-UΠ {t' = t'} x₁ Y) (leS e) =
-    let K , wK , XY , [U] , [U]' , sizeXY = trans~↓! {n = n} el Γ≡Δ X Y (<<-trans (<=-help-ab'' {c = 1+ (sizeConv↑Term x₁)}) e)
+    let K , wK , XY , [U] , [U]' , sizeXY = trans~↓! {n = n} el Γ≡Δ X Y (<<-trans (<=-help-ab'' {a = sizeConv↑Term x} {c = sizeConv↑Term x₁}) e) 
         eqU = U≡A-whnf [U] wK
         XY' = PE.subst (λ X →  Γ ⊢ t ~ t' ↓! X ^ ι ¹) eqU XY
         u~u , sizeu~u = transConv↑Term {n = n} PE.refl Γ≡Δ (trans [U] [U]') x x₁ (<<bind-suc (<=-help-ab' {b = sizeConv↑Term x₁}) e)
@@ -703,7 +536,6 @@ mutual
   trans~↑! el Γ≡Δ (Id-ℕS x₂ x₃) (Id-ℕ x x₅)  with ne~↓! x
   trans~↑! el Γ≡Δ (Id-ℕS x₂ x₃) (Id-ℕ x x₅) | _ , () , _
 
--- trans~↑! {n = 1+ n} el Γ≡Δ X Y = {!!}
 
   trans~↑% : ∀ {t u v A Γ Δ  l}
          → ⊢ Γ ≡ Δ
@@ -810,7 +642,6 @@ mutual
                 → (sizeConv↓Term e + sizeConv↓Term e') << n
                 → ∃ λ (e'' : Γ ⊢ t [conv↓] v ∷ A ^ l) → sizeConv↓Term e'' <= (sizeConv↓Term e + sizeConv↓Term e')
 
-{-
   transConv↓Term {n = 0} _ _ _ _ _ () 
 
   transConv↓Term {1+ n} {t} {u} {v} {A} {B} {Γ} {Δ} {l} Γ≡Δ A≡B el (ne x) (ne x₁) (leS e) =
@@ -875,7 +706,7 @@ mutual
                                      (<<-trans (leS (<=-help-ab' {b = sizeConv↑Term x₁₄})) e)
         G~G , sizeG = transConv↑Term {n = n} PE.refl (Γ≡Δ ∙ univ (soundnessConv↑Term x₆))
                               (refl (Ugenⱼ (⊢Γ ∙ x₅))) x₇ x₁₅
-                              (<<-trans (<=-help-ab'' {c = 1+ (1+ (sizeConv↓Term (_⊢_[conv↑]_∷_^_.t<>u x₁₄)))}) e)
+                              (<<-trans (<=-help-ab'' {a = sizeConv↑Term x₆} {c = sizeConv↑Term x₁₄}) e) 
     in Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' x₅
               F~F
               G~G ,
@@ -886,7 +717,7 @@ mutual
         F~F , sizeF = transConv↑Term {n = n} PE.refl Γ≡Δ (refl (Ugenⱼ ⊢Γ )) x₆ x₁₄
                                      (<<-trans (leS (<=-help-ab' {b = sizeConv↑Term x₁₄})) e)
         G~G , sizeG = transConv↑Term {n = n} PE.refl (Γ≡Δ ∙ univ (soundnessConv↑Term x₆)) (refl (Ugenⱼ (⊢Γ ∙ x₅))) x₇ x₁₅
-                                     (<<-trans (<=-help-ab'' {c = 1+ (1+ (sizeConv↓Term (_⊢_[conv↑]_∷_^_.t<>u x₁₄)))}) e)
+                                     (<<-trans (<=-help-ab'' {a = sizeConv↑Term x₆} {c = sizeConv↑Term x₁₄}) e)
     in ∃-cong x₅ F~F G~G ,
        leS (<=-trans (<=-cong-+ sizeF sizeG) (leS (<=-help-3-abcd {b = sizeConv↑Term x₁₄} {c = sizeConv↑Term x₇}))) 
   transConv↓Term Γ≡Δ A≡B PE.refl (ℕ-refl x) (η-eq x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) = ⊥-elim (WF.U≢Π! A≡B)
@@ -982,8 +813,8 @@ mutual
   transConv↓Term Γ≡Δ A≡B el (suc-cong x) (ne-ins x₁ x₂ x₃ x₄) | _ , () , _
   transConv↓Term Γ≡Δ A≡B el (U-refl x x₁) (ne x₂) with ne~↓! x₂
   transConv↓Term Γ≡Δ A≡B el (U-refl x x₁) (ne x₂) | _ , () , _
--}
-  transConv↓Term = {!!}
+
+--  transConv↓Term = {!!}
 
 
 -- Transitivity of algorithmic equality of types of the same context.
@@ -1014,3 +845,4 @@ trans~↑!Term t<>u u<>v =
   let _ , _ , t≡u = soundness~↑% t<>u
       Γ≡Γ = reflConEq (wfEqTerm t≡u)
   in  trans~↑% Γ≡Γ t<>u u<>v
+  
