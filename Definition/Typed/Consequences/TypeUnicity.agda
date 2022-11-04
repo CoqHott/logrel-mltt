@@ -1,4 +1,5 @@
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module Definition.Typed.Consequences.TypeUnicity where
 
