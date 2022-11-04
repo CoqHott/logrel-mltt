@@ -244,20 +244,20 @@ record EqRelSet : Set₁ where
            → Γ ⊢ e' ∷ (Id (U ⁰) A' (Π B' ^ rB ° l ▹ P' ° l ° l ^ !)) ^ [ % , ι ⁰ ]
            → Γ ⊢ cast l A (Π B ^ rB ° l ▹ P ° l ° l ^ !) e t ~ cast l A' (Π B' ^ rB ° l ▹ P' ° l ° l ^ !) e' t' ∷ Π B ^ rB ° l ▹ P ° l ° l ^ ! ^ [ ! , ι l ]
 
-    ~-cast-refl : ∀ {A B e t Γ} →
+    ~-cast-refl : ∀ {A B e t u Γ} →
            let l = ⁰ in
              Γ ⊢ A ~ B ∷ U l ^ [ ! , next l ]
-           → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
+           → Γ ⊢ t ~ u ∷ A ^ [ ! , ι l ]
            → Γ ⊢ t ∷ A ^ [ ! , ι l ]
-           → Neutral t
-           → Γ ⊢ cast l A B e t ~ t ∷ B ^ [ ! , ι l ]
+           → Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ]
+           → Γ ⊢ cast l A B e t ~ u ∷ B ^ [ ! , ι l ]
 
-    ~-castℕ-refl : ∀ {e t Γ} →
+    ~-castℕ-refl : ∀ {e t u Γ} →
            let l = ⁰ in
-             Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-           → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
-           → Neutral t
-           → Γ ⊢ cast l ℕ ℕ e t ~ t ∷ ℕ ^ [ ! , ι l ]
+             Γ ⊢ t ~ u ∷ ℕ ^ [ ! , ι l ]
+           → Γ ⊢ t ∷ ℕ ^ [ ! , ι l ]
+           → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+           → Γ ⊢ cast l ℕ ℕ e t ~ u ∷ ℕ ^ [ ! , ι l ]
 
     ~-castℕ : ∀ {B B' e e' t t' Γ}
             → ⊢ Γ

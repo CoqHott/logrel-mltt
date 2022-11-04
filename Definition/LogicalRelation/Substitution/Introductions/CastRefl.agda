@@ -76,7 +76,7 @@ import Data.Nat as Nat
                                                    (transTerm:⇒:* (CastRed*Termℕ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))(un-univ≡ (subset* DA))
                                                                   (refl (un-univ ⊢B))))) (conv ⊢t (subset* DA)) [[ ⊢B , ⊢ℕB , DB ]])
                                                                   (conv:⇒*: (CastRed*Termℕℕ ⊢eℕℕ d) (sym (subset* DB)))))
-                   (conv:⇒*: d (sym (subset* DB))) (~-conv (~-castℕ-refl ⊢eℕℕ ⊢k neK) (sym (subset* DB))) 
+                   (conv:⇒*: d (sym (subset* DB))) (~-conv (~-castℕ-refl k≡k ⊢k ⊢eℕℕ ) (sym (subset* DB))) 
 
 
 [castrefl]Ne : ∀ {A B Γ}
@@ -103,7 +103,7 @@ import Data.Nat as Nat
                    (transTerm:⇒:* (CastRedR*Term ⊢K neK (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))(un-univ≡ (subset* DK)) (refl (un-univ ⊢B))))) ⊢tk (un-univ:⇒*: D′))
                                   (conv:⇒*: (CastRedTerm*Term ⊢K neK ⊢M neM ⊢e' d) (sym ⊢B≡M))))
                    (conv:⇒*: d (trans (sym ⊢A≡K) (≅-eq (escapeEq {l = ι ⁰} (ne [A]) [A≡B])))) 
-                   (~-conv (~-cast-refl K≡M ⊢e' ⊢k neK₁) (sym ⊢B≡M) ) 
+                   (~-conv (~-cast-refl K≡M k≡k ⊢k ⊢e') (sym ⊢B≡M) ) 
 
 
 [castreflShape] : ∀ {A B t e Γ r}
