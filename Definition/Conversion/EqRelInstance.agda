@@ -1,4 +1,5 @@
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module Definition.Conversion.EqRelInstance where
 
@@ -25,6 +26,8 @@ open import Definition.Typed.Consequences.Equality
 open import Definition.Typed.Consequences.Reduction
 open import Definition.Conversion.Symmetry
 
+open import Definition.Conversion.HelperDecidable
+
 open import Tools.Nat
 open import Tools.Product
 import Tools.PropositionalEquality as PE
@@ -32,6 +35,29 @@ open import Tools.Function
 open import Tools.Empty using (⊥; ⊥-elim)
 
 
+
+trans~↓!-simpl : ∀ {t u v A B Γ l}
+              → Γ ⊢ t ~ u ↓! A ^ l
+              → Γ ⊢ u ~ v ↓! B ^ l
+              → ∃ λ C → Whnf C ×  Γ ⊢ t ~ v ↓! C ^ l × Γ ⊢ A ≡ C ^ [ ! , l ]
+trans~↓!-simpl t<>u u<>v =
+  let t≡u = soundness~↓! t<>u
+      Γ≡Γ = reflConEq (wfEqTerm t≡u)
+      ⊢A , _ , _ = syntacticEqTerm t≡u
+      a , b , c , d , _  = trans~↓! PE.refl Γ≡Γ t<>u u<>v (le-refl _)
+  in a , b , c , d
+
+trans~↑!-simpl : ∀ {t u v A B Γ l}
+              → Γ ⊢ t ~ u ↑! A ^ l
+              → Γ ⊢ u ~ v ↑! B ^ l
+              → ∃ λ C → Γ ⊢ t ~ v ↑! C ^ l × Γ ⊢ A ≡ C ^ [ ! , l ]
+trans~↑!-simpl t<>u u<>v =
+  let t≡u = soundness~↑! t<>u
+      Γ≡Γ = reflConEq (wfEqTerm t≡u)
+      ⊢A , _ , _ = syntacticEqTerm t≡u
+      a , b , c , _  = trans~↑! PE.refl Γ≡Γ t<>u u<>v (le-refl _)
+  in a , b , c
+  
 -- Algorithmic equality of neutrals with injected conversion.
 data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
   ↑ : ∀ {B} → Γ ⊢ A ≡ B ^ r → Γ ⊢ k ~ l ↑ B ^ r → Γ ⊢ k ~ l ∷ A ^ r
@@ -198,20 +224,100 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
 
 ~-castcong : ∀ {A A' B B' e e' t t' : Term} {Γ : Con Term} →
     Γ ⊢ A ~ A' ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ B [genconv↑] B' ∷ U ⁰ ^ [ ! , next ⁰ ] →
-    Γ ⊢ t [genconv↑] t' ∷ A ^ [ ! , ι ⁰ ] →
+    Γ ⊢ B ~ B' ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ t ~ t' ∷ A ^ [ ! , ι ⁰ ] → 
     Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ] →
     Γ ⊢ e' ∷ Id (U ⁰) A' B' ^ [ % , ι ⁰ ] →
     Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ∷ B ^ [ ! , ι ⁰ ]
-~-castcong (↑ A≡B (~↑! x)) X Y ⊢e ⊢e' =
-     let _ , ⊢B , _ = syntacticEqTerm (soundnessConv↑Term X)
-         _ , ⊢B' = syntacticEq A≡B
+~-castcong (↑ A≡B (~↑! x)) (↑ A≡B' (~↑! x')) (↑ T≡U (~↑! t<>u)) ⊢e ⊢e' =
+     let _ , ⊢B' = syntacticEq A≡B
+         X , eqX , x'' = sym~↑! (reflConEq (wf ⊢B')) x'
+         ⊢BU , _ , ⊢B   = syntacticEqTerm (soundness~↑! x'')
+         B′ , whnfB′ , D = whNorm ⊢B'
+         U≡B′ = trans A≡B (subset* (red D))
+         B≡U = U≡A-whnf U≡B′ whnfB′
+         A≡B'' = trans A≡B' eqX
+         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
+                      ([~] _ (red D) whnfB′ x)
+         BU′ , whnfBU′ , D' = whNorm ⊢BU
+         U≡B' = trans A≡B'' (subset* (red D'))
+         B≡U' = U≡A-whnf U≡B' whnfBU′
+         u~u = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U'
+                        ([~] _ (red D') whnfBU′ x'')
+         ⊢Bt , ⊢t , ⊢u = syntacticEqTerm (soundness~↑! t<>u)
+         neA , _ = ne~↑! x
+         Bt , whnfBt , Dt = whNorm ⊢Bt
+     in ↑ (refl (univ (conv ⊢B (sym A≡B''))))
+          (~↑! (cast-cong t~t′ u~u
+                          (ne-ins (conv ⊢t (sym T≡U)) (conv ⊢u (sym T≡U)) neA ([~] _ (red Dt) whnfBt t<>u)) ⊢e ⊢e'))
+
+~-castneℕ : ∀ {A A' e e' t t' : Term} {Γ : Con Term} →
+    Γ ⊢ A ~ A' ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ t [genconv↑] t' ∷ A ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) A ℕ ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) A' ℕ ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ A ℕ e t ~ cast ⁰ A' ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
+~-castneℕ (↑ A≡B (~↑! x)) t<>u ⊢e ⊢e' = 
+     let _ , ⊢B' = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B'
          U≡B′ = trans A≡B (subset* (red D))
          B≡U = U≡A-whnf U≡B′ whnfB′
          t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
                       ([~] _ (red D) whnfB′ x)
-     in ↑ (refl (univ ⊢B)) (~↑! (cast-cong t~t′ X Y ⊢e ⊢e'))
+     in ↑ (refl (univ (ℕⱼ (wf ⊢B')))) (~↑! (cast-neℕ t~t′ t<>u ⊢e ⊢e'))
+
+~-castneΠ : ∀ {A A' P P' B B' : Term} {rB : Relevance} {e e' t t' : Term}
+    {Γ : Con Term} →
+    Γ ⊢ A ~ A' ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ Π B ^ rB ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! [genconv↑] Π B' ^ rB ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ t [genconv↑] t' ∷ A ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) A (Π B ^ rB ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
+    Γ ⊢ e' ∷ Id (U ⁰) A' (Π B' ^ rB ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) ^
+    [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ A (Π B ^ rB ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) e t ~
+    cast ⁰ A' (Π B' ^ rB ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) e' t' ∷
+    Π B ^ rB ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
+~-castneΠ (↑ A≡B (~↑! x)) Π<>Π t<>u ⊢e ⊢e' = 
+     let _ , ⊢B' = syntacticEq A≡B
+         B′ , whnfB′ , D = whNorm ⊢B'
+         U≡B′ = trans A≡B (subset* (red D))
+         B≡U = U≡A-whnf U≡B′ whnfB′
+         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
+                      ([~] _ (red D) whnfB′ x)
+         _ , ⊢Π , _ = syntacticEqTerm (soundnessConv↑Term Π<>Π)
+     in ↑ (refl (univ ⊢Π))
+          (~↑! (cast-neΠ Π<>Π t~t′ t<>u ⊢e ⊢e'))
+
+~-cast-refl : ∀ {A B e t u : Term} {Γ : Con Term} →
+    Γ ⊢ A ~ B ∷ U ⁰ ^ [ ! , next ⁰ ] →
+    Γ ⊢ t ~ u ∷ A ^ [ ! , ι ⁰ ] →
+    Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ A B e t ~ u ∷ B ^ [ ! , ι ⁰ ]
+~-cast-refl (↑ A≡B (~↑! x)) (↑ T≡U (~↑! t<>u)) ⊢t ⊢e =
+     let _ , ⊢B' = syntacticEq A≡B
+         B′ , whnfB′ , D = whNorm ⊢B'
+         U≡B′ = trans A≡B (subset* (red D))
+         B≡U = U≡A-whnf U≡B′ whnfB′
+         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
+                      ([~] _ (red D) whnfB′ x)
+         _ , _ , ⊢B   = syntacticEqTerm (soundness~↑! x)
+         ⊢Bt , ⊢t , ⊢u = syntacticEqTerm (soundness~↑! t<>u)
+         neA , _ = ne~↑! x
+         Bt , whnfBt , Dt = whNorm ⊢Bt
+     in ↑ (refl (univ (conv ⊢B (sym A≡B))))
+          (~↑! (cast-refl t~t′ (ne-ins (conv ⊢t (sym T≡U)) (conv ⊢u (sym T≡U)) neA ([~] _ (red Dt) whnfBt t<>u)) ⊢e))
+
+~-castℕ-refl : ∀ {e t u : Term} {Γ : Con Term} →
+    Γ ⊢ t ~ u ∷ ℕ ^ [ ! , ι ⁰ ] →
+    Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ] →
+    Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ] →
+    Γ ⊢ cast ⁰ ℕ ℕ e t ~ u ∷ ℕ ^ [ ! , ι ⁰ ]
+~-castℕ-refl (↑ T≡U (~↑! t<>u)) ⊢t ⊢e =
+     let ⊢Bt , ⊢t , ⊢u = syntacticEqTerm (soundness~↑! t<>u)
+         Bt , whnfBt , Dt = whNorm ⊢Bt
+     in ↑ (refl (univ (ℕⱼ (wfTerm ⊢t))))
+          (~↑! (castℕ-refl (~atℕ (conv ⊢t (sym T≡U)) (_ , _ , [~] _ (red Dt) whnfBt t<>u)) ⊢e)) 
 
 ~-castℕ : ∀ {B B' e e' t t' : Term} {Γ : Con Term} →
     ⊢ Γ →
@@ -330,8 +436,8 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
         → Γ ⊢ k ~ m ∷ A ^ r
 ~-trans (↑ x (~↑! x₁)) (↑ x₂ (~↑! x₃)) =
   let ⊢Γ = wfEq x
-      k~m , _ = trans~↑! PE.refl (reflConEq ⊢Γ) x₁ x₃
-  in  ↑ x (~↑! k~m)
+      C , k~m , eAC = trans~↑!-simpl x₁ x₃
+  in  ↑ (trans x eAC) (~↑! k~m)
 ~-trans (↑ x (~↑% x₁)) (↑ x₂ (~↑% x₃)) =
   let ⊢Γ = wfEq x
       k~m = trans~↑% (reflConEq ⊢Γ) x₁ (conv~↑% x₃ (trans (sym x₂) x))
@@ -426,5 +532,6 @@ eqRelInstance = eqRel _⊢_[conv↑]_^_ _⊢_[genconv↑]_∷_^_ _⊢_~_∷_^_
                       (λ l< l<' x x₁ x₂ x₃ x₄ x₅ → liftConvTerm (η-eq l< l<' x x₁ x₂ x₃ x₄ x₅))
                       ~-var ~-app ~-natrec ~-Emptyrec
                       ~-IdCong ~-Idℕ ~-Idℕ0 ~-IdℕS ~-IdU ~-IdUℕ ~-IdUΠ
-                      ~-castcong ~-castℕ ~-castℕℕ ~-castΠ ~-castℕΠ ~-castΠℕ ~-castΠΠ%! ~-castΠΠ!%
+                      ~-castcong ~-castneℕ ~-castneΠ ~-cast-refl ~-castℕ-refl
+                      ~-castℕ ~-castℕℕ ~-castΠ ~-castℕΠ ~-castΠℕ ~-castΠΠ%! ~-castΠΠ!%
                       ~-irrelevance
