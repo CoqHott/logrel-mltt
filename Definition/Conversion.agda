@@ -70,16 +70,16 @@ mutual
     cast-cong : ∀ {A A' B B' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ B' ~ B ↓! U ⁰ ^ ι ¹
-              → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
-              → Γ ⊢ t' ∷ A' ^ [ ! , ι ⁰ ]
+              -- → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
+              -- → Γ ⊢ t' ∷ A' ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] t' ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) A' B') ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ↑! B ^ ι ⁰
     cast-refl : ∀ {A B t u e}
               → Γ ⊢ A ~ B ↓! U ⁰ ^ next ⁰
-              → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
-              → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
+              -- → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
+              -- → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ A B e t ~ u ↑! B ^ ι ⁰
@@ -89,8 +89,8 @@ mutual
               → Γ ⊢ cast ⁰ ℕ ℕ e t ~ u ↑! ℕ ^ ι ⁰
     cast-refl' : ∀ {A B t u e}
               → Γ ⊢ B ~ A ↓! U ⁰ ^ next ⁰
-              → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
-              → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
+              -- → Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ]
+              -- → Γ ⊢ u ∷ A ^ [ ! , ι ⁰ ]
               → Γ ⊢ t [conv↓] u ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
               → Γ ⊢ t ~ cast ⁰ A B e u ↑! A ^ ι ⁰

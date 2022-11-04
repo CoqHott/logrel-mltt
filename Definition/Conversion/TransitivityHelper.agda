@@ -68,7 +68,7 @@ import Tools.PropositionalEquality as PE
                     (+-assoc (a + c) b d))
 
 <=-help-2-2 :  ∀ {a b c : Nat} → (2 + (b + (2 + a + c))) <= (a + (2 + (b + (2 + c))))
-<=-help-2-2 = {!!}
+<=-help-2-2 = ≡-to-<= (PE.trans (+-sym 2 _) {!!}) 
 
 <=-help-2-2' :  ∀ {a b c : Nat} → (2 + (b + (2 + (a + c)))) <= (2 + (b + (2 + a) + c))
 <=-help-2-2' = {!!}

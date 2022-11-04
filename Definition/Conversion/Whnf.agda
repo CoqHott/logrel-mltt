@@ -28,11 +28,11 @@ mutual
   ne~↑! (Id-U X x) = let _ , nt , nu = ne~↓! X in IdUₙ nt , IdUₙ nu
   ne~↑! (Id-Uℕ X) = let _ , nt , nu = ne~↓! X in IdUℕₙ nt , IdUℕₙ nu
   ne~↑! (Id-UΠ x X) = let _ , nt , nu = ne~↓! X in IdUΠₙ nt , IdUΠₙ nu
-  ne~↑! (cast-cong X x ⊢t ⊢t' x₁ x₂ x₃) =
+  ne~↑! (cast-cong X x x₁ x₂ x₃) =
     let _ , nX , nX' = ne~↓! X
         _ , nx' , nx = ne~↓! x
-        _ , nt , nt' = whnfConv↓Term x₁
-    in castₙ nX nx (inversion-ne nX nt ⊢t) , castₙ nX' nx' (inversion-ne nX' nt' ⊢t')
+        nt , nt' = whnfConv↓TermNe nX x₁
+    in castₙ nX nx nt , castₙ nX' nx' nt'
   ne~↑! (cast-ℕ X x x₁ x₂) = let _ , nt , nu = ne~↓! X in castℕₙ nt , castℕₙ nu
   ne~↑! (cast-ℕℕ X x x₁) = let _ , nt , nu = ne~↓! X in castℕℕₙ nt , castℕℕₙ nu
   ne~↑! (cast-Π x X x₁ x₂ x₃) = let _ , nt , nu = ne~↓! X in castΠₙ nt , castΠₙ nu
@@ -40,15 +40,15 @@ mutual
   ne~↑! (cast-ℕΠ x x₁ x₂ x₃) = castℕΠₙ , castℕΠₙ
   ne~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = castΠΠ%!ₙ , castΠΠ%!ₙ
   ne~↑! (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = castΠΠ!%ₙ , castΠΠ!%ₙ
-  ne~↑! (cast-refl x ⊢t ⊢t' x₁ x₂) =
+  ne~↑! (cast-refl x x₁ x₂) =
     let _ , nA , nB = ne~↓! x
-        _ , nt , nt' = whnfConv↓Term x₁
-     in castₙ nA nB (inversion-ne nA nt ⊢t) , inversion-ne nA nt' ⊢t'
+        nt , nt' = whnfConv↓TermNe nA x₁
+     in castₙ nA nB nt , nt'
   ne~↑! (castℕ-refl x x₁) = let _ , nt , nu = ne~↓! x in castℕℕₙ nt , nu
-  ne~↑! (cast-refl' x ⊢t ⊢t' x₁ x₂) =
+  ne~↑! (cast-refl' x x₁ x₂) =
     let _ , nB , nA = ne~↓! x
-        _ , nt , nt' = whnfConv↓Term x₁
-    in inversion-ne nA nt ⊢t , castₙ nA nB (inversion-ne nA nt' ⊢t')
+        nt , nt' = whnfConv↓TermNe nA x₁
+    in nt , castₙ nA nB nt'
   ne~↑! (castℕ-refl' x x₁) = let _ , nt , nu = ne~↓! x in nt , castℕℕₙ nu
   ne~↑! (cast-neℕ x x₁ x₂ x₃) = let _ , nA , nB = ne~↓! x in castnℕₙ nA , castnℕₙ nB
   ne~↑! (cast-neΠ x x₁ x₂ x₃ x₄) = let _ , nA , nB = ne~↓! x₁ in castnΠₙ nA , castnΠₙ nB
@@ -84,3 +84,13 @@ mutual
   whnfConv↓ (U-refl _ _) = Uₙ , Uₙ
   whnfConv↓ (univ x₂) = let _ , A , B = whnfConv↓Term x₂ in A , B
   
+
+-- Extraction of Neutrals from algorithmic equality of terms in WHNF, when the type is neutral.
+  whnfConv↓TermNe : ∀ {t u A Γ l}
+                → Neutral A
+                → Γ ⊢ t [conv↓] u ∷ A ^ l
+                → Neutral t × Neutral u
+  whnfConv↓TermNe neA (ne-ins x x₁ x₂ x₃) =
+    let _ , neT , neU = ne~↓! x₃
+    in neT , neU
+

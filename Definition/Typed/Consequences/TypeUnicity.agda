@@ -8,13 +8,13 @@ open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.Typed.Weakening
 open import Definition.Typed.Consequences.Equality
-import Definition.Typed.Consequences.Inequality as Ineq
+-- import Definition.Typed.Consequences.Inequality as Ineq
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.RelevanceUnicity
 open import Definition.Typed.Consequences.Substitution
-open import Definition.Conversion.Stability
+-- open import Definition.Conversion.Stability
 open import Definition.Typed.Consequences.InjectivitySProp
 
 open import Tools.Product

@@ -26,6 +26,10 @@ inversion-U (univ 0<1 x) = refl (Ugenⱼ x) , PE.refl , PE.refl
 inversion-U (conv x x₁) with inversion-U x
 ... | [C≡U] , PE.refl , PE.refl  = trans (sym x₁) [C≡U] , PE.refl , PE.refl
 
+typeinfo-PE-injectivity : ∀ {r r' l l'} → [ r , l ] PE.≡ [ r' , l' ] → r PE.≡ r' × l PE.≡ l'
+typeinfo-PE-injectivity PE.refl = PE.refl , PE.refl
+
+
 -- Inversion of contexts
 
 inversion-ne' : ∀ {Γ t A ll l} → Neutral A

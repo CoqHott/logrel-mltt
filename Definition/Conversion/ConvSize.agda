@@ -29,10 +29,10 @@ mutual
   size~↑! (Id-U x x₁) = 1 + size~↓! x + sizeConv↑Term x₁
   size~↑! (Id-Uℕ x) = 1 + size~↓! x 
   size~↑! (Id-UΠ x x₁) = 1 + sizeConv↑Term x + size~↓! x₁
-  size~↑! (cast-cong x x₁ x₂ x₃ x₄ x₅ x₆) = 1 + size~↓! x + size~↓! x₁ + sizeConv↓Term x₄
-  size~↑! (cast-refl x x₁ x₂ x₃ x₄) = 1 + size~↓! x + sizeConv↓Term x₃
+  size~↑! (cast-cong x x₁ x₄ x₅ x₆) = 1 + size~↓! x + size~↓! x₁ + sizeConv↓Term x₄
+  size~↑! (cast-refl x x₃ x₄) = 1 + size~↓! x + sizeConv↓Term x₃
   size~↑! (castℕ-refl x x₁) = 1 + size~↓! x 
-  size~↑! (cast-refl' x x₁ x₂ x₃ x₄) = 1 + size~↓! x + sizeConv↓Term x₃
+  size~↑! (cast-refl' x x₃ x₄) = 1 + size~↓! x + sizeConv↓Term x₃
   size~↑! (castℕ-refl' x x₁) = 1 + size~↓! x 
   size~↑! (cast-neℕ x x₁ x₂ x₃) = 1 + size~↓! x + sizeConv↑Term x₁
   size~↑! (cast-ℕ x x₁ x₂ x₃) = 1 + size~↓! x + sizeConv↑Term x₁

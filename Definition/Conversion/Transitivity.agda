@@ -47,8 +47,6 @@ mutual
          → (size~↑! e + size~↑! e') << n
          → ∃₂ λ C (e'' : Γ ⊢ t ~ v ↑! C ^ l) → Γ ⊢ A ≡ C ^ [ ! , l ] × Γ ⊢ C ≡ B ^ [ ! , l ] × size~↑! e'' <= (size~↑! e + size~↑! e')
 
---  trans~↑! = {!!}
-
   trans~↑! {n = 0} el Γ≡Δ X Y ()
 
   trans~↑! {n = 1+ n} el Γ≡Δ (var-refl x₁ x≡y) (var-refl x₂ x≡y₁) e =
@@ -232,7 +230,7 @@ mutual
     in _ , Id-UΠ u~u XY' , refl (Ugenⱼ ⊢Γ) , refl (Ugenⱼ ⊢Γ) ,
        leS (<=-trans (<=-cong-+ sizeu~u sizeXY') (leS (<=-help-3-abcd {b = sizeConv↑Term x₁} {c = size~↓! X} )))
 
-  trans~↑! {n = 1+ n} {A = AA} {Γ = Γ} {Δ = Δ} el Γ≡Δ (cast-cong {A = A} X x ⊢t ⊢t' x₁ x₂ x₃) (cast-cong {A' = A'} {B' = B'} Y x₄ ⊢u ⊢u' x₅ x₆ x₇) (leS e) =
+  trans~↑! {n = 1+ n} {A = AA} {Γ = Γ} {Δ = Δ} el Γ≡Δ (cast-cong {A = A} X x x₁ x₂ x₃) (cast-cong {A' = A'} {B' = B'} Y x₄ x₅ x₆ x₇) (leS e) =
     let K , wK , XY , [U] , _ , sizeXY = trans~↓! {n = n} PE.refl Γ≡Δ X Y (<<bind-suc (<=-help-id-cong {b = size~↓! Y}) e)
         eqU = U≡A-whnf [U] wK
         XY' = PE.subst (λ X →  Γ ⊢ A ~ A' ↓! X ^ ι ¹) eqU XY
@@ -249,7 +247,7 @@ mutual
         sizet~t' = <=-trans (≡-to-<= (PE.trans (sizeSubst-gen (λ X → Γ ⊢ _ ~ _ ↓! X ^ ι ¹) size~↓!
                                                (stability~↓! (symConEq Γ≡Δ) t~t) eqU') (stabilitySize~↓! (symConEq Γ≡Δ) t~t)))
                             sizet~t
-    in _ , cast-cong XY' t~t' ⊢t (stabilityTerm (symConEq Γ≡Δ) ⊢u') u~u x₂ (stabilityTerm (symConEq Γ≡Δ) x₇) ,
+    in _ , cast-cong XY' t~t' u~u x₂ (stabilityTerm (symConEq Γ≡Δ) x₇) ,
        refl (univ (proj₁ (proj₂ (syntacticEqTerm A₁≡B)))) , univ A₁≡B ,
        leS (<=-trans (<=-cong-+3 sizeXY' sizet~t' sizeu~u)
                      (<=-help-id-cong'' {a =  size~↓! X}))
@@ -332,42 +330,35 @@ mutual
        leS (<=-trans (<=-cong-+3 sizeA~A sizeB~B sizeu~u)
                      (<=-help-id-cong' {a = sizeConv↑Term x}))
 
-  trans~↑! {n = 1+ n} PE.refl Γ≡Δ t~u (cast-refl' A~B ⊢u ⊢v (ne-ins x' x₁' x₂' ([~] K D whK u~v)) x₄) (leS e) =
+  trans~↑! {n = 1+ n} PE.refl Γ≡Δ t~u (cast-refl' A~B (ne-ins x' x₁' x₂' ([~] K D whK u~v)) x₄) (leS e) =
     let net , neu = ne~↑! t~u
         t≡u = soundness~↑! t~u
         _ , neB , neA = ne~↓! A~B
-        ⊢A , ⊢t , ⊢u' = syntacticEqTerm t≡u
-        _ , A≡B = neTypeEq neu ⊢u' (stabilityTerm (symConEq Γ≡Δ) ⊢u)
+        ⊢A , ⊢t , ⊢u = syntacticEqTerm t≡u
+        _ , A≡B = neTypeEq neu ⊢u (stabilityTerm (symConEq Γ≡Δ) x')
         _ , ⊢B = syntacticEq A≡B
         C , t~v' , A≡C , C≡B  , sizet~v' = trans~↑! {n = n} PE.refl Γ≡Δ t~u u~v (<=-trans (<=-help-abc {b = size~↓! A~B}) e)
         _ , ⊢C = syntacticEq A≡C
         XC , wXC , DXC = whNorm ⊢C
-        t[conv↑]v = ne-ins (conv ⊢t A≡B) (stabilityTerm (symConEq Γ≡Δ) ⊢v) neA ([~] _ (red DXC) wXC t~v')
-   in _ , cast-refl' (stability~↓! (symConEq Γ≡Δ) A~B)
-                     (conv ⊢t A≡B) 
-                     (stabilityTerm (symConEq Γ≡Δ) ⊢v)
-                     t[conv↑]v
-                     (stabilityTerm (symConEq Γ≡Δ) x₄) ,
+        t[conv↑]v = ne-ins (conv ⊢t A≡B) (stabilityTerm (symConEq Γ≡Δ) x₁') neA ([~] _ (red DXC) wXC t~v')
+   in _ , cast-refl' (stability~↓! (symConEq Γ≡Δ) A~B) t[conv↑]v (stabilityTerm (symConEq Γ≡Δ) x₄) ,
       A≡B , refl ⊢B ,
       <=-trans (<=-cong-+ (leS (≡-to-<= (stabilitySize~↓! (symConEq Γ≡Δ) A~B))) (leS (leS sizet~v')))
                <=-help-2-2 
 
-  trans~↑! {n = 1+ n} PE.refl Γ≡Δ (cast-refl A~B ⊢t ⊢u (ne-ins x' x₁' x₂' ([~] K D whK t~u)) x₄) u~v (leS e) =
+  trans~↑! {n = 1+ n} PE.refl Γ≡Δ (cast-refl A~B (ne-ins x' x₁' x₂' ([~] K D whK t~u)) x₄) u~v (leS e) =
     let neu , nev = ne~↑! u~v
         u≡v = soundness~↑! u~v
         _ , neA , neB = ne~↓! A~B
-        ⊢B , ⊢u' , ⊢v = syntacticEqTerm u≡v
-        _ , A≡B = neTypeEq neu ⊢u (stabilityTerm (symConEq Γ≡Δ) ⊢u')
+        ⊢B , ⊢u , ⊢v = syntacticEqTerm u≡v
+        _ , A≡B = neTypeEq neu x₁' (stabilityTerm (symConEq Γ≡Δ) ⊢u)
         A≡B' = univ (soundness~↓! A~B)
         _ , ⊢A' = syntacticEq A≡B'
         C , t~v' , A≡C , C≡B  , sizet~v' = trans~↑! {n = n} PE.refl Γ≡Δ t~u u~v (<=-trans (<=-help-abc' {b = size~↓! A~B}) e)
         _ , ⊢C = syntacticEq A≡C
         XC , wXC , DXC = whNorm ⊢C
-        t[conv↑]v = ne-ins ⊢t (conv (stabilityTerm (symConEq Γ≡Δ) ⊢v) (sym A≡B)) neA ([~] _ (red DXC) wXC t~v')
-    in _ , cast-refl A~B ⊢t 
-                     (conv (stabilityTerm (symConEq Γ≡Δ) ⊢v) (sym A≡B))
-                     t[conv↑]v
-                     x₄ ,
+        t[conv↑]v = ne-ins x' (conv (stabilityTerm (symConEq Γ≡Δ) ⊢v) (sym A≡B)) neA ([~] _ (red DXC) wXC t~v')
+    in _ , cast-refl A~B t[conv↑]v x₄ ,
        refl ⊢A' , trans (sym A≡B') A≡B ,
        <=-trans (<=-cong-+ (le-refl (1+ (size~↓! A~B))) (leS (leS sizet~v')))
                 <=-help-2-2'
@@ -398,7 +389,7 @@ mutual
     in _ , castℕ-refl ([~] _ DN ℕₙ t~v) x₃  , refl (proj₁ (syntacticEq A≡ℕ)) , A≡ℕ ,
        leS (leS sizet~v)
 
-  trans~↑! {n = 1+ n} {A = A} {Γ = Γ} el Γ≡Δ (cast-cong {A'} x x₁ x₂ x₃' x₄' x₅ x₆) (cast-refl A~B ⊢t ⊢u x₃ x₄) (leS e) =
+  trans~↑! {n = 1+ n} {A = A} {Γ = Γ} el Γ≡Δ (cast-cong {A'} x x₁ x₄' x₅ x₆) (cast-refl A~B x₃ x₄) (leS e) =
     let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
         t~v , sizet~v = transConv↓Term {n = n} Γ≡Δ (univ (soundness~↓! x)) PE.refl x₄' x₃ (<<-trans (<=-help-b''c'' {a = size~↓! x} {b = 0} {c' = size~↓! A~B}) e)
         K , wK , XY , [U] , _ , sizeXY = trans~↓! {n = n}  PE.refl Γ≡Δ x A~B (<<-trans (<=-help-id-cong-c'' {a = size~↓! x} {b = size~↓! A~B}) e)
@@ -408,13 +399,17 @@ mutual
         eqU'' = U≡A-whnf (trans [U] [U]'' ) wK''
         A~A' = PE.subst (λ X → Γ ⊢ A' ~ A ↓! X ^ ι ¹) eqU'' A~A
         sizeA~A' = <=-trans (≡-to-<= (sizeSubst-gen (λ X → Γ ⊢ A' ~ A ↓! X ^ ι ¹) size~↓! A~A eqU'')) sizeA~A
-    in _ , cast-refl A~A' x₂ (conv (stabilityTerm (symConEq Γ≡Δ) ⊢u) (sym (univ (soundness~↓! x)))) t~v x₅ ,
+    in _ , cast-refl A~A' t~v x₅ ,
        refl (proj₂ (syntacticEq (univ (soundness~↓! A~A')))) , sym (univ (soundness~↓! x₁)) ,
        <=-trans (<=-cong-+ (leS sizeA~A') sizet~v) (leS (<=-trans (<=-cong-+3 sizeXY (le-refl _) (le-refl _)) (<=-help-3-abcde' {a = size~↓! x} {d = size~↓! A~B})))
 
-  trans~↑! {n = 1+ n} {A = A} {Δ = Δ} el Γ≡Δ (cast-refl' {B = B} B~A ⊢t ⊢u x₃ x₄) (cast-cong {A' = A'} {B' = B'} x₅ x₆ x₇ x₈ x₉ x₁₀ x₁₁) (leS e) =
+  trans~↑! {n = 1+ n} {A = A} {Δ = Δ} el Γ≡Δ (cast-refl' {B = B} B~A x₃ x₄) (cast-cong {A' = A'} {B' = B'} x₅ x₆ x₉ x₁₀ x₁₁) (leS e) =
     let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        t~v , sizet~v = transConv↓Term {n = n} Γ≡Δ (refl (syntacticTerm ⊢t)) PE.refl x₃ x₉
+        _ , _ , ⊢A , _ = inversion-Id (un-univ (syntacticTerm x₄))
+        _ , erl , _ = inversion-U (un-univ (syntacticTerm ⊢A))
+        _ , enextl = typeinfo-PE-injectivity erl
+        el = next-inj enextl
+        t~v , sizet~v = transConv↓Term {n = n} Γ≡Δ (refl (univ (PE.subst (λ l → _ ⊢ _ ∷ Univ ! ⁰ ^ [ ! , ι l ]) el ⊢A))) PE.refl x₃ x₉
                              (<<-trans (<<cong-right {b = 1+ (size~↓! x₅ + size~↓! x₆)} ) (<<rem-suc e)) 
         K , wK , B~A' , [U] , _  = trans~↓! {n = n} PE.refl Γ≡Δ B~A x₅
                                             (<<bind-suc (<=-help-3-ab {c = sizeConv↓Term x₃}) e) 
@@ -430,24 +425,22 @@ mutual
         eqU = U≡A-whnf [U] wK
         B~A'U = PE.subst (λ X →  _ ⊢ B ~ A' ↓! X ^ ι ¹) eqU B~A'
         sizeB~A' = <=inv-suc sizeB~A'
-    in _ , cast-refl' A~A' (conv ⊢t (stabilityEq (symConEq Γ≡Δ) (univ (soundness~↓! x₅))))
-                      (stabilityTerm (symConEq Γ≡Δ) x₈) (convConv↓Term (reflConEq ⊢Γ) A≡A' (ne neA') t~v)
-                      (stabilityTerm (symConEq Γ≡Δ) x₁₁) ,
+    in _ , cast-refl' A~A' (convConv↓Term (reflConEq ⊢Γ) A≡A' (ne neA') t~v) (stabilityTerm (symConEq Γ≡Δ) x₁₁) ,
       A≡A' ,  sym (univ (soundness~↓! B~A'U)) ,
-      PE.subst₂ (λ X Y → 1+ (X + Y) <= (size~↑! (cast-refl' B~A ⊢t ⊢u x₃ x₄) + size~↑! (cast-cong x₅ x₆ x₇ x₈ x₉ x₁₀ x₁₁)))
+      PE.subst₂ (λ X Y → 1+ (X + Y) <= (size~↑! (cast-refl' B~A x₃ x₄) + size~↑! (cast-cong x₅ x₆ x₉ x₁₀ x₁₁)))
                 (PE.sym (PE.trans (stabilitySize~↓! (symConEq Γ≡Δ) (PE.subst (λ X →  Δ ⊢ B' ~ A' ↓! X ^ ι ¹) eqU' B'~A'))
                                   (sizeSubst-gen (λ X →  _ ⊢ _ ~ _ ↓! X ^ _) size~↓!  B'~A' eqU')))
                 (PE.sym (convConv↓TermSize (reflConEq ⊢Γ) A≡A' (ne neA') t~v))
                 (leS (leS (<=-trans (<=-cong-+ (<=-trans sizeB~A' (<=-cong-+ (<=inv-suc sizeB~A) (le-refl _))) sizet~v)
                      (<=inv-suc (<=-help-3-abcde {b = size~↓! B~A} {c = size~↓! x₅})))))
 
-  trans~↑! {n = 1+ n} el Γ≡Δ (cast-refl' x x₁ x₂ (ne-ins x₃ x₁₀ x₁₁ ([~] A D whnfB t~u)) x₄) (cast-refl x₅ x₆ x₇ (ne-ins x₈ x₁₃ x₁₄ ([~] A' D' whnfB' u~v)) x₉) (leS e) =
+  trans~↑! {n = 1+ n} el Γ≡Δ (cast-refl' x (ne-ins x₃ x₁₀ x₁₁ ([~] A D whnfB t~u)) x₄) (cast-refl x₅ (ne-ins x₈ x₁₃ x₁₄ ([~] A' D' whnfB' u~v)) x₉) (leS e) =
     let X , t~v , A≡X , X≡B , sizet~v = trans~↑! {n = n} PE.refl Γ≡Δ t~u u~v (<<-trans (<=-help-22-rem {a = size~↓! x} {c = 1+ (size~↓! x₅)}) e)
         _ , neu = ne~↑! t~u
         _ , _ , ⊢u = syntacticEqTerm (soundness~↑! t~u)
         _ , ⊢u' , _ = syntacticEqTerm (soundness~↑! u~v)
-        _ , A₁≡A = neTypeEq neu x₂ ⊢u
-        _ , A₁≡A' = neTypeEq neu x₂ (stabilityTerm (symConEq Γ≡Δ) ⊢u')
+        _ , A₁≡A = neTypeEq neu (stabilityTerm (symConEq Γ≡Δ) x₈) ⊢u
+        _ , A₁≡A' = neTypeEq neu (stabilityTerm (symConEq Γ≡Δ) x₈) (stabilityTerm (symConEq Γ≡Δ) ⊢u')
     in _ , t~v , trans A₁≡A A≡X , trans X≡B (trans (sym A₁≡A') (sym (univ (soundness~↓! x)))) ,
        <=-trans sizet~v (<=-help-22-rem {a = 1+ (size~↓! x)} {c = 1+ (size~↓! x₅)})
 
@@ -535,6 +528,8 @@ mutual
   trans~↑! el Γ≡Δ (Id-ℕ0 x₂) (Id-ℕ x x₄) | _ , () , _
   trans~↑! el Γ≡Δ (Id-ℕS x₂ x₃) (Id-ℕ x x₅)  with ne~↓! x
   trans~↑! el Γ≡Δ (Id-ℕS x₂ x₃) (Id-ℕ x x₅) | _ , () , _
+
+--  trans~↑! = {!!}
 
 
   trans~↑% : ∀ {t u v A Γ Δ  l}

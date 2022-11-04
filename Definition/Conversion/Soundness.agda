@@ -34,7 +34,7 @@ mutual
   soundness~↑! (Id-UΠ x X) = let XX = soundness~↓! X
                                  xx = soundnessConv↑Term x
                              in Id-cong (refl (univ 0<1 (wfEqTerm XX))) xx XX
-  soundness~↑! (cast-cong X x _ _ x₁ x₂ x₃) = cast-cong (soundness~↓! X) (sym (soundness~↓! x)) (soundnessConv↓Term x₁) x₂ x₃
+  soundness~↑! (cast-cong X x x₁ x₂ x₃) = cast-cong (soundness~↓! X) (sym (soundness~↓! x)) (soundnessConv↓Term x₁) x₂ x₃
   soundness~↑! (cast-ℕ X x x₁ x₂) = let XX = soundness~↓! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x) x₁ x₂
   soundness~↑! (cast-ℕℕ X x x₁) = let XX = soundness~↓! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) (refl (ℕⱼ (wfEqTerm XX))) XX x x₁
   soundness~↑! (cast-Π x X x₁ x₂ x₃) = cast-cong (soundnessConv↑Term x) (soundness~↓! X) (soundnessConv↑Term x₁) x₂ x₃
@@ -42,7 +42,7 @@ mutual
   soundness~↑! (cast-ℕΠ x x₁ x₂ x₃) = let XX = (soundnessConv↑Term x) in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x₁) x₂ x₃
   soundness~↑! (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = cast-cong (soundnessConv↑Term x) (soundnessConv↑Term x₁) (soundnessConv↑Term x₂) x₃ x₄
   soundness~↑! (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = cast-cong (soundnessConv↑Term x) (soundnessConv↑Term x₁) (soundnessConv↑Term x₂) x₃ x₄
-  soundness~↑! (cast-refl x _ _ x₁ x₂) =
+  soundness~↑! (cast-refl x x₁ x₂) =
     let A≡A = soundness~↓! x
         t≡u = soundnessConv↓Term x₁
         _ , ⊢t , _ = syntacticEqTerm t≡u
@@ -51,7 +51,7 @@ mutual
     let t≡u = soundness~↓! x
         _ , ⊢t , _ = syntacticEqTerm t≡u
     in trans (cast-refl (refl (ℕⱼ (wfTerm ⊢t))) x₁ ⊢t) t≡u
-  soundness~↑! (cast-refl' x _ _ x₁ x₂) =
+  soundness~↑! (cast-refl' x x₁ x₂) =
     let A≡B = sym (soundness~↓! x)
         t≡u = soundnessConv↓Term x₁
         _ , ⊢t , ⊢u = syntacticEqTerm t≡u
