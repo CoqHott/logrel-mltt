@@ -30,9 +30,6 @@ open import Tools.Sum using (_⊎_ ; inj₁ ; inj₂)
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
-castNeutralInv : ∀ {l A B e t} → Neutral A → Neutral B → Neutral (cast l A B e t) → Neutral t 
-castNeutralInv neA neB (castₙ _ _ net) = net
-
 [conv↓]ne : ∀ {Γ t u A l} → Neutral A → Γ ⊢ t [conv↓] u ∷ A ^ l → ∃ λ B → Γ ⊢ t ~ u ↓! B ^ l × Γ ⊢ A ≡ B ^ [ ! , l ]
 [conv↓]ne neA (ne-ins x x₁ x₂ x₃) =
   let t~u = (ne-ins x x₁ x₂ x₃)

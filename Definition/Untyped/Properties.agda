@@ -756,3 +756,8 @@ subst-Univ-either a (gen Suckind c) ()
 subst-Univ-either a (gen (Natreckind x) c) ()
 subst-Univ-either a (gen (Emptykind l) c) ()
 subst-Univ-either a (gen (Emptyreckind l ll) c) ()
+
+
+castNeutralInv : ∀ {l A B e t} → Neutral A → Neutral B → Neutral (cast l A B e t) → Neutral t 
+castNeutralInv neA neB (castₙ _ _ net) = net
+
