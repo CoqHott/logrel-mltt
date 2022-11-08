@@ -73,7 +73,7 @@ mutual
   irrelevanceEqT (ℕᵥ D D′) A≡B = A≡B
   irrelevanceEqT (Emptyᵥ D D′) A≡B = A≡B
   irrelevanceEqT (ne (ne K D neK _) (ne K₁ D₁ neK₁ K≡K₁)) (ne₌ M D′ neM K≡M)
-                 rewrite whrDet* (red D , ne neK ) (red D₁ ,  ne neK₁ ) = 
+                 rewrite whrDet* (red D , ne (NeutralwhNeutral neK) ) (red D₁ ,  ne (NeutralwhNeutral neK₁) ) = 
     ne₌ M D′ neM  K≡M
   irrelevanceEqT {Γ} {r = r} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                          (Πᵣ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
@@ -134,7 +134,7 @@ mutual
   irrelevanceTermT (ℕᵥ D D′) t = t
   irrelevanceTermT (Emptyᵥ D D′) t = t
   irrelevanceTermT (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ k d nf)
-                   with whrDet* (red D₁ , ne neK₁) (red D , ne neK)
+                   with whrDet* (red D₁ , ne (NeutralwhNeutral neK₁)) (red D , ne (NeutralwhNeutral neK))
   irrelevanceTermT (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ k d nf)
     | PE.refl = neₜ k d nf
   irrelevanceTermT {Γ} {t = t} {r = r} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
@@ -198,7 +198,7 @@ mutual
   irrelevanceEqTermT (ℕᵥ D D′) t≡u = t≡u
   irrelevanceEqTermT (Emptyᵥ D D′) t≡u = t≡u
   irrelevanceEqTermT (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (neₜ₌ k m d d′ nf)
-                     with whrDet* (red D₁ , ne neK₁) (red D , ne neK)
+                     with whrDet* (red D₁ , ne (NeutralwhNeutral neK₁)) (red D , ne (NeutralwhNeutral neK))
   irrelevanceEqTermT (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ₌ k m d d′ nf)
     | PE.refl = neₜ₌ k m d d′ nf
   irrelevanceEqTermT {Γ} {t = t} {u = u} {r = r}

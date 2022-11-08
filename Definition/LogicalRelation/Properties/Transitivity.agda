@@ -25,15 +25,16 @@ mutual
            → Γ ⊩⟨ l ⟩  A ≡ B ^ r / [A]
            → Γ ⊩⟨ l′ ⟩ B ≡ C ^ r / [B]
            → Γ ⊩⟨ l ⟩  A ≡ C ^ r / [A]
+{-
   transEqT (ℕᵥ D D′ D″) A≡B B≡C = B≡C
   transEqT (Emptyᵥ D D′ D″) A≡B B≡C = B≡C
   transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ _)
                (ne K₂ D₂ neK₂ _))
            (ne₌ M D′ neM K≡M) (ne₌ M₁ D″ neM₁ K≡M₁)
-           rewrite whrDet* (red D₁ , ne neK₁) (red D′ , ne neM)
-                 | whrDet* (red D₂ , ne neK₂) (red D″ , ne neM₁) =
+           rewrite whrDet* (red D₁ , ne (NeutralwhNeutral neK₁)) (red D′ , ne (NeutralwhNeutral neM))
+                 | whrDet* (red D₂ , ne (NeutralwhNeutral neK₂)) (red D″ , ne (NeutralwhNeutral neM₁)) =
     ne₌ M₁ D″ neM₁
-        (~-trans K≡M K≡M₁)
+        (~-trans K≡M K≡M₁)        
   transEqT {Γ}  {r = r} {l = l} {l′ = l′} {l″ = l″}
            (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                (Πᵣ rF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
@@ -89,6 +90,15 @@ mutual
   transEqT (emb⁰¹¹ AB) A≡B B≡C = transEqT AB A≡B B≡C
   transEqT (emb¹⁰¹ AB) A≡B B≡C = transEqT AB A≡B B≡C
   transEqT (emb¹¹⁰ AB) A≡B B≡C = transEqT AB A≡B B≡C
+                            -}
+  transEqT (Uᵥ UA UB UC) A≡B B≡C = ?
+  transEqT (ℕᵥ ℕA ℕB ℕC) A≡B B≡C = ?
+  transEqT (Emptyᵥ EmptyA EmptyB EmptyC) A≡B B≡C = ?
+  transEqT (ne neA neB neC) A≡B B≡C = ?
+  transEqT (Πᵥ ΠA ΠB ΠC) A≡B B≡C = ?
+  transEqT (emb⁰¹¹ X) A≡B B≡C = ?
+  transEqT (emb¹⁰¹ X) A≡B B≡C = ?
+  transEqT (emb¹¹⁰ X) A≡B B≡C = ?
 
   -- Transitivty of type equality.
   transEq : ∀ {Γ A B C r l l′ l″}
@@ -108,6 +118,7 @@ mutual
   transEq′ PE.refl PE.refl PE.refl PE.refl [A] [B] [C] A≡B B≡C = transEq [A] [B] [C] A≡B B≡C
 
 
+{-
 transEqTermNe : ∀ {Γ n n′ n″ A r}
               → Γ ⊩neNf n  ≡ n′  ∷ A ^ r
               → Γ ⊩neNf n′ ≡ n″ ∷ A ^ r
@@ -122,8 +133,8 @@ mutual
                → Γ ⊩ℕ n  ≡ n″ ∷ℕ
   transEqTermℕ (ℕₜ₌ k k′ d d′ t≡u prop)
                (ℕₜ₌ k₁ k″ d₁ d″ t≡u₁ prop₁) =
-    let k₁Whnf = naturalwhNf (proj₁ (split prop₁))
-        k′Whnf = naturalwhNf (proj₂ (split prop))
+    let k₁Whnf = proj₁ (split prop₁)
+        k′Whnf = proj₂ (split prop)
         k₁≡k′ = whrDet*Term (redₜ d₁ , k₁Whnf) (redₜ d′ , k′Whnf)
         prop′ = PE.subst (λ x → [Natural]-prop _ x _) k₁≡k′ prop₁
     in  ℕₜ₌ k k″ d d″ (≅ₜ-trans t≡u (PE.subst (λ x → _ ⊢ x ≅ _ ∷ _ ^ _) k₁≡k′ t≡u₁))
@@ -155,8 +166,8 @@ transEqTermEmpty : ∀ {Γ n n′ n″}
   → Γ ⊩Empty n  ≡ n″ ∷Empty
 transEqTermEmpty (Emptyₜ₌ k k′ d d′ t≡u prop)
              (Emptyₜ₌ k₁ k″ d₁ d″ t≡u₁ prop₁) =
-  let k₁Whnf = ne (proj₁ (esplit prop₁))
-      k′Whnf = ne (proj₂ (esplit prop))
+  let k₁Whnf = ne (NeutralwhNeutral (proj₁ (esplit prop₁)))
+      k′Whnf = ne (NeutralwhNeutral (proj₂ (esplit prop)))
       k₁≡k′ = whrDet*Term (redₜ d₁ , k₁Whnf) (redₜ d′ , k′Whnf)
       prop′ = PE.subst (λ x → [Empty]-prop _ x _) k₁≡k′ prop₁
     in  Emptyₜ₌ k k″ d d″ (≅ₜ-trans t≡u (PE.subst (λ x → _ ⊢ x ≅ _ ∷ _ ^ _) k₁≡k′ t≡u₁))
@@ -179,7 +190,7 @@ transEqTerm (ℕᵣ D) [t≡u] [u≡v] = transEqTermℕ [t≡u] [u≡v]
 transEqTerm (Emptyᵣ D) [t≡u] [u≡v] = transEqTermEmpty [t≡u] [u≡v]
 transEqTerm (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNfₜ₌ neK₁ neM k≡m))
                               (neₜ₌ k₁ m₁ d₁ d″ (neNfₜ₌ neK₂ neM₁ k≡m₁)) =
-  let k₁≡m = whrDet*Term (redₜ d₁ , ne neK₂) (redₜ d′ , ne neM)
+  let k₁≡m = whrDet*Term (redₜ d₁ , NfwhNf (ne neK₂)) (redₜ d′ , NfwhNf (ne neM))
   in  neₜ₌ k m₁ d d″
            (neNfₜ₌ neK₁ neM₁
                    (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
@@ -193,3 +204,4 @@ transEqTerm (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                                 ([f≡g] ρ ⊢Δ [a])
                                 ([f≡g]₁ ρ ⊢Δ [a]))
 transEqTerm (emb 0<1 x) t≡u u≡v = transEqTerm x t≡u u≡v
+-}

@@ -33,7 +33,7 @@ mutual
   convTermT₁ (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (ne₌ M D′ neM K≡M)
              (neₜ k d (neNfₜ neK₂ ⊢k k≡k)) =
     let K≡K₁ = PE.subst (λ x → _ ⊢ _ ≡ x ^ _)
-                        (whrDet* (red D′ , ne neM) (red D₁ , ne neK₁))
+                        (whrDet* (red D′ , ne (NeutralwhNeutral neM)) (red D₁ , ne (NeutralwhNeutral neK₁)))
                         (≅-eq (~-to-≅ K≡M))
     in  neₜ k (convRed:*: d K≡K₁)
             (neNfₜ neK₂ (conv ⊢k K≡K₁) (~-conv k≡k K≡K₁))
@@ -82,7 +82,7 @@ mutual
   convTermT₂ (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (ne₌ M D′ neM K≡M)
              (neₜ k d (neNfₜ neK₂ ⊢k k≡k)) =
     let K₁≡K = PE.subst (λ x → _ ⊢ x ≡ _ ^ _)
-                        (whrDet* (red D′ , ne neM) (red D₁ , ne neK₁))
+                        (whrDet* (red D′ , ne (NeutralwhNeutral neM)) (red D₁ , ne (NeutralwhNeutral neK₁)))
                         (sym (≅-eq (~-to-≅ K≡M)))
     in  neₜ k (convRed:*: d K₁≡K)
             (neNfₜ neK₂ (conv ⊢k K₁≡K) (~-conv k≡k K₁≡K))
@@ -163,7 +163,7 @@ mutual
   convEqTermT₁ (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (ne₌ M D′ neM K≡M)
                (neₜ₌ k m d d′ (neNfₜ₌ neK₂ neM₁ k≡m)) =
     let K≡K₁ = PE.subst (λ x → _ ⊢ _ ≡ x ^ _)
-                        (whrDet* (red D′ , ne neM) (red D₁ , ne neK₁))
+                        (whrDet* (red D′ , ne (NeutralwhNeutral neM)) (red D₁ , ne (NeutralwhNeutral neK₁)))
                         (≅-eq (~-to-≅ K≡M))
     in  neₜ₌ k m (convRed:*: d K≡K₁)
                  (convRed:*: d′ K≡K₁)
@@ -207,7 +207,7 @@ mutual
   convEqTermT₂ (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (ne₌ M D′ neM K≡M)
                (neₜ₌ k m d d′ (neNfₜ₌ neK₂ neM₁ k≡m)) =
     let K₁≡K = PE.subst (λ x → _ ⊢ x ≡ _ ^ _)
-                        (whrDet* (red D′ , ne neM) (red D₁ , ne neK₁))
+                        (whrDet* (red D′ , ne (NeutralwhNeutral neM)) (red D₁ , ne (NeutralwhNeutral neK₁)))
                         (sym (≅-eq (~-to-≅ K≡M)))
     in  neₜ₌ k m (convRed:*: d K₁≡K) (convRed:*: d′ K₁≡K)
                  (neNfₜ₌ neK₂ neM₁ (~-conv k≡m K₁≡K))

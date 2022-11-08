@@ -152,7 +152,7 @@ mutual
 
        -- Neutrals are nfs.
        ne   : ∀ {n} → Neutral n → Nf n
-
+  
 data whNeutral : Term → Set where
   var     : ∀ n                        → whNeutral (var n)
   ∘ₙ      : ∀ {k u}     → whNeutral k → whNeutral (k ∘ u)
@@ -251,8 +251,8 @@ suc≢ne () PE.refl
 
 data Natural : Term → Set where
   zeroₙ :                     Natural zero
-  sucₙ  : ∀ {t}             → Natural (suc t)
-  ne    : ∀ {n} → whNeutral n → Natural n
+  sucₙ  : ∀ {t} → Natural t → Natural (suc t)
+  ne    : ∀ {n} → Neutral n → Natural n
 
 -- A (small) type in nf is either Π A B, ℕ, or neutral.
 -- Large types could also be U.
@@ -289,8 +289,8 @@ data Function : Term → Set where
 
 -- Natural, Type, and Function are a subsets of Nf.
 
-naturalwhNf : ∀ {n} → Natural n → whNf n
-naturalwhNf (sucₙ) = sucₙ
+naturalwhNf : ∀ {n} → Natural n → Nf n
+naturalwhNf (sucₙ x) = sucₙ (naturalwhNf x)
 naturalwhNf zeroₙ = zeroₙ
 naturalwhNf (ne x) = ne x
 
@@ -405,9 +405,9 @@ mutual
 -- Weakening can be applied to our nf views.
 
 wkNatural : ∀ {t} ρ → Natural t → Natural (wk ρ t)
-wkNatural ρ (sucₙ)    = sucₙ -- (wkNatural ρ n)
+wkNatural ρ (sucₙ n)    = sucₙ (wkNatural ρ n)
 wkNatural ρ zeroₙ   = zeroₙ
-wkNatural ρ (ne x) = ne (wkwhNeutral ρ x)
+wkNatural ρ (ne x) = ne (wkNeutral ρ x)
 
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
 wkType ρ Πₙ = Πₙ -- (wkType ρ A) (wkNf (lift ρ) B)

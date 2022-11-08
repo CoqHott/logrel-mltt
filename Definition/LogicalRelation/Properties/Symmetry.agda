@@ -26,7 +26,7 @@ mutual
   symEqT (ℕᵥ D D′) A≡B = red D
   symEqT (Emptyᵥ D D′) A≡B = red D
   symEqT (ne (ne K D neK K≡K) (ne K₁ D₁ neK₁ K≡K₁)) (ne₌ M D′ neM K≡M)
-         rewrite whrDet* (red D′ , ne neM) (red D₁ , ne neK₁) =
+         rewrite whrDet* (red D′ , ne (NeutralwhNeutral neM)) (red D₁ , ne (NeutralwhNeutral neK₁)) =
     ne₌ _ D neK
         (~-sym K≡M)
   symEqT {Γ = Γ} {r = r} (Πᵥ (Πᵣ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)

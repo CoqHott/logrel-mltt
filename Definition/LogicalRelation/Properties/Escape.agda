@@ -32,7 +32,7 @@ escapeEq (Uᵣ′ _ l′ l< ⊢Γ) PE.refl = ≅-Urefl ⊢Γ
 escapeEq (ℕᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-ℕrefl (wf ⊢A))
 escapeEq (Emptyᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-Emptyrefl (wf ⊢A))
 escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
-  ≅-red (red D) (red D′) (ne neK) (ne neM) (~-to-≅ K≡M)
+  ≅-red (red D) (red D′) (ne (NeutralwhNeutral neK)) (ne (NeutralwhNeutral neM)) (~-to-≅ K≡M)
 escapeEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ Πₙ Πₙ A≡B
@@ -63,14 +63,14 @@ escapeTermEq (Uᵣ′ r' l′ l< ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) ℕₙ
-             (naturalwhNf natK) (naturalwhNf natK′) k≡k′
+             natK natK′ k≡k′
 escapeTermEq (Emptyᵣ D) (Emptyₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = esplit prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) Emptyₙ
-             (ne natK) (ne natK′) k≡k′
+             (ne (NeutralwhNeutral natK)) (ne (NeutralwhNeutral natK′)) k≡k′
 escapeTermEq (ne′ K D neK K≡K)
                  (neₜ₌ k m d d′ (neNfₜ₌ neT neU t≡u)) =
-  ≅ₜ-red (red D) (redₜ d) (redₜ d′) (ne neK) (ne neT) (ne neU)
+  ≅ₜ-red (red D) (redₜ d) (redₜ d′) (ne (NeutralwhNeutral neK)) (ne (NeutralwhNeutral neT)) (ne (NeutralwhNeutral neU))
          (~-to-≅ₜ t≡u)
 escapeTermEq (Πᵣ′ rF F G D ⊢F ⊢G A≡A [F] [G] G-ext)
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
