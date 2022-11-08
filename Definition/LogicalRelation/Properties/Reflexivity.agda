@@ -14,7 +14,7 @@ import Tools.PropositionalEquality as PE
 
 -- Reflexivity of reducible types.
 reflEq : ∀ {l Γ A r} ([A] : Γ ⊩⟨ l ⟩ A ^ r) → Γ ⊩⟨ l ⟩ A ≡ A ^ r / [A]
-reflEq (Uᵣ′ _ l′ l< ⊢Γ) = PE.refl
+reflEq (Uᵣ′ _ l′ l< eq ⊢Γ) = PE.refl
 reflEq (ℕᵣ D) = red D
 reflEq (Emptyᵣ D) = red D
 reflEq (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) =
@@ -43,7 +43,7 @@ reflEmpty-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)
            → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
            → Γ ⊩⟨ l ⟩ t ≡ t ∷ A ^ r / [A]
-reflEqTerm (Uᵣ′ _ ⁰ 0<1 ⊢Γ) (Uₜ A d typeA A≡A [A]) =
+reflEqTerm (Uᵣ′ _ ⁰ 0<1 eq ⊢Γ) (Uₜ A d typeA A≡A [A]) =
   Uₜ₌ A A d d typeA typeA A≡A [A] [A] (reflEq [A])
 reflEqTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
   ℕₜ₌ n n [ ⊢t , ⊢u , d ] [ ⊢t , ⊢u , d ] t≡t

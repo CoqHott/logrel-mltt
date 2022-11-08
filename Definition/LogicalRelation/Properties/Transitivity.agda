@@ -15,17 +15,31 @@ open import Definition.LogicalRelation.Properties.Conversion
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+open import Tools.Nat
 
+
+test : ∀ {Γ A B C r r' r'' l l′ l″ [A] [B] [C]} 
+         → ShapeView₃ Γ l l′ l″ A B C r r' r'' [A] [B] [C]
+         → Nat
+test (Uᵥ UA UB UC) = ?
+test (ℕᵥ ℕA ℕB ℕC) = ?
+test (Emptyᵥ EmptyA EmptyB EmptyC) = ?
+test (ne neA neB neC) = ?
+test (Πᵥ ΠA ΠB ΠC) = ?
+test (emb⁰¹¹ X) = ?
+test (emb¹⁰¹ X) = ?
+test (emb¹¹⁰ X) = ?
+{-
 
 mutual
   -- Helper function for transitivity of type equality using shape views.
-  transEqT : ∀ {Γ A B C r l l′ l″}
-             {[A] : Γ ⊩⟨ l ⟩ A ^ r} {[B] : Γ ⊩⟨ l′ ⟩ B ^ r} {[C] : Γ ⊩⟨ l″ ⟩ C ^ r}
-           → ShapeView₃ Γ l l′ l″ A B C r r r [A] [B] [C]
-           → Γ ⊩⟨ l ⟩  A ≡ B ^ r / [A]
-           → Γ ⊩⟨ l′ ⟩ B ≡ C ^ r / [B]
-           → Γ ⊩⟨ l ⟩  A ≡ C ^ r / [A]
-{-
+  transEqT : ∀ {Γ A B C l l′ l″} 
+             {[A] : Γ ⊩⟨ l ⟩ A ^ !} {[B] : Γ ⊩⟨ l′ ⟩ B ^ !} {[C] : Γ ⊩⟨ l″ ⟩ C ^ !}
+           → ShapeView₃ Γ l l′ l″ A B C ! ! ! [A] [B] [C]
+           → Γ ⊩⟨ l ⟩  A ≡ B ^ ! / [A]
+           → Γ ⊩⟨ l′ ⟩ B ≡ C ^ ! / [B]
+           → Γ ⊩⟨ l ⟩  A ≡ C ^ ! / [A]
+
   transEqT (ℕᵥ D D′ D″) A≡B B≡C = B≡C
   transEqT (Emptyᵥ D D′ D″) A≡B B≡C = B≡C
   transEqT (ne (ne K [ ⊢A , ⊢B , D ] neK K≡K) (ne K₁ D₁ neK₁ _)
@@ -90,15 +104,17 @@ mutual
   transEqT (emb⁰¹¹ AB) A≡B B≡C = transEqT AB A≡B B≡C
   transEqT (emb¹⁰¹ AB) A≡B B≡C = transEqT AB A≡B B≡C
   transEqT (emb¹¹⁰ AB) A≡B B≡C = transEqT AB A≡B B≡C
-                            -}
+  
   transEqT (Uᵥ UA UB UC) A≡B B≡C = ?
   transEqT (ℕᵥ ℕA ℕB ℕC) A≡B B≡C = ?
-  transEqT (Emptyᵥ EmptyA EmptyB EmptyC) A≡B B≡C = ?
   transEqT (ne neA neB neC) A≡B B≡C = ?
   transEqT (Πᵥ ΠA ΠB ΠC) A≡B B≡C = ?
   transEqT (emb⁰¹¹ X) A≡B B≡C = ?
   transEqT (emb¹⁰¹ X) A≡B B≡C = ?
   transEqT (emb¹¹⁰ X) A≡B B≡C = ?
+                            -}
+
+{-
 
   -- Transitivty of type equality.
   transEq : ∀ {Γ A B C r l l′ l″}
@@ -118,7 +134,6 @@ mutual
   transEq′ PE.refl PE.refl PE.refl PE.refl [A] [B] [C] A≡B B≡C = transEq [A] [B] [C] A≡B B≡C
 
 
-{-
 transEqTermNe : ∀ {Γ n n′ n″ A r}
               → Γ ⊩neNf n  ≡ n′  ∷ A ^ r
               → Γ ⊩neNf n′ ≡ n″ ∷ A ^ r

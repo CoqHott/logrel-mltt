@@ -17,7 +17,8 @@ import Tools.PropositionalEquality as PE
 
 -- Reducible types are well-formed.
 escape : ∀ {l Γ A r} → Γ ⊩⟨ l ⟩ A ^ r → Γ ⊢ A ^ r
-escape (Uᵣ′ _ l′ l< ⊢Γ) = Uⱼ ⊢Γ
+
+escape (Uᵣ′ r l′ l< eq ⊢Γ) rewrite eq = Uⱼ ⊢Γ
 escape (ℕᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (Emptyᵣ [ ⊢A , ⊢B , D ]) = ⊢A
 escape (ne′ K [ ⊢A , ⊢B , D ] neK K≡K) = ⊢A
@@ -28,7 +29,7 @@ escape (emb 0<1 A) = escape A
 escapeEq : ∀ {l Γ A B r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
             → Γ ⊩⟨ l ⟩ A ≡ B ^ r / [A]
             → Γ ⊢ A ≅ B ^ r
-escapeEq (Uᵣ′ _ l′ l< ⊢Γ) PE.refl = ≅-Urefl ⊢Γ
+escapeEq (Uᵣ′ _ l′ l< eq ⊢Γ) PE.refl rewrite eq = ≅-Urefl ⊢Γ
 escapeEq (ℕᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ ℕₙ ℕₙ (≅-ℕrefl (wf ⊢A))
 escapeEq (Emptyᵣ [ ⊢A , ⊢B , D ]) D′ = ≅-red D D′ Emptyₙ Emptyₙ (≅-Emptyrefl (wf ⊢A))
 escapeEq (ne′ K D neK K≡K) (ne₌ M D′ neM K≡M) =
@@ -42,7 +43,7 @@ escapeEq (emb 0<1 A) A≡B = escapeEq A A≡B
 escapeTerm : ∀ {l Γ A t r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
               → Γ ⊩⟨ l ⟩ t ∷ A ^ r / [A]
               → Γ ⊢ t ∷ A ^ r
-escapeTerm (Uᵣ′ _ l′ l< ⊢Γ) (Uₜ A [ ⊢t , ⊢u , d ] typeA A≡A [A]) = ⊢t
+escapeTerm (Uᵣ′ r l′ l< eq ⊢Γ) (Uₜ A [ ⊢t , ⊢u , d ] typeA A≡A [A]) rewrite eq = ⊢t
 escapeTerm (ℕᵣ D) (ℕₜ n [ ⊢t , ⊢u , d ] t≡t prop) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm (Emptyᵣ D) (Emptyₜ e [ ⊢t , ⊢u , d ] t≡t prop) =
@@ -58,8 +59,8 @@ escapeTerm (emb 0<1 A) t = escapeTerm A t
 escapeTermEq : ∀ {l Γ A t u r} → ([A] : Γ ⊩⟨ l ⟩ A ^ r)
                 → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ r / [A]
                 → Γ ⊢ t ≅ u ∷ A ^ r
-escapeTermEq (Uᵣ′ r' l′ l< ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) =
-  ≅ₜ-red (id (Uⱼ ⊢Γ)) (redₜ d) (redₜ d′) Uₙ (typewhNf typeA) (typewhNf typeB) A≡B
+escapeTermEq (Uᵣ′ r' l′ l< eq ⊢Γ) (Uₜ₌ A B d d′ typeA typeB A≡B [A] [B] [A≡B]) rewrite eq =
+   ≅ₜ-red (id (Uⱼ ⊢Γ)) (redₜ d) (redₜ d′) Uₙ (typewhNf typeA) (typewhNf typeB) A≡B
 escapeTermEq (ℕᵣ D) (ℕₜ₌ k k′ d d′ k≡k′ prop) =
   let natK , natK′ = split prop
   in  ≅ₜ-red (red D) (redₜ d) (redₜ d′) ℕₙ

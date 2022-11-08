@@ -9,13 +9,10 @@ open import Definition.Untyped
 open import Definition.Typed
 open import Definition.Typed.Properties
 open import Definition.LogicalRelation
-open import Definition.LogicalRelation.Properties.Escape
-open import Definition.LogicalRelation.Properties.Reflexivity
 
-open import Tools.Product
 open import Tools.Empty using (⊥; ⊥-elim)
-import Tools.PropositionalEquality as PE
 
+{-
 -- Type for maybe embeddings of reducible types
 data MaybeEmb (l : TypeLevel) (⊩⟨_⟩ : TypeLevel → Set) : Set where
   noemb : ⊩⟨ l ⟩ → MaybeEmb l ⊩⟨_⟩
@@ -212,30 +209,38 @@ goodCasesRefl : ∀ {l l′ Γ A r r'} ([A] : Γ ⊩⟨ l ⟩ A ^ r) ([A′] : �
               → ShapeView Γ l l′ A A r r' [A] [A′]
 goodCasesRefl [A] [A′] = goodCases [A] [A′] (reflEq [A])
 
+-}
+
 
 -- A view for constructor equality between three types
 data ShapeView₃ Γ : ∀ l l′ l″ A B C r1 r2 r3
-                 (p : Γ ⊩⟨ l   ⟩ A ^ r1)
-                 (q : Γ ⊩⟨ l′  ⟩ B ^ r2)
+                 (p : Γ ⊩⟨ l  ⟩ A ^ r1)
+                 (q : Γ ⊩⟨ l′ ⟩ B ^ r2)
                  (r : Γ ⊩⟨ l″ ⟩ C ^ r3) → Set where
-  Uᵥ : ∀ {l l′ l″ r1 r2 r3} UA UB UC → ShapeView₃ Γ l l′ l″ (Univ r1) (Univ r2) (Univ r3) ! ! ! (Uᵣ UA) (Uᵣ UB) (Uᵣ UC)
-  ℕᵥ : ∀ {A B C l l′ l″} ℕA ℕB ℕC
-    → ShapeView₃ Γ l l′ l″ A B C ! ! ! (ℕᵣ ℕA) (ℕᵣ ℕB) (ℕᵣ ℕC)
-  Emptyᵥ : ∀ {A B C l l′ l″} EmptyA EmptyB EmptyC
-    → ShapeView₃ Γ l l′ l″ A B C % % % (Emptyᵣ EmptyA) (Emptyᵣ EmptyB) (Emptyᵣ EmptyC)
-  ne  : ∀ {A B C r1 r2 r3 l l′ l″} neA neB neC
-      → ShapeView₃ Γ l l′ l″ A B C r1 r2 r3 (ne neA) (ne neB) (ne neC)
-  Πᵥ : ∀ {A B C r1 r2 r3 l l′ l″} ΠA ΠB ΠC
-    → ShapeView₃ Γ l l′ l″ A B C r1 r2 r3 (Πᵣ ΠA) (Πᵣ ΠB) (Πᵣ ΠC)
-  emb⁰¹¹ : ∀ {A B C l l′ r1 r2 r3 p q r}
-         → ShapeView₃ Γ ⁰ l l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ ¹ l l′ A B C r1 r2 r3 (emb 0<1 p) q r
-  emb¹⁰¹ : ∀ {A B C l l′ r1 r2 r3  p q r}
-         → ShapeView₃ Γ l ⁰ l′ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l ¹ l′ A B C r1 r2 r3 p (emb 0<1 q) r
-  emb¹¹⁰ : ∀ {A B C l l′ r1 r2 r3 p q r}
-         → ShapeView₃ Γ l l′ ⁰ A B C r1 r2 r3 p q r
-         → ShapeView₃ Γ l l′ ¹ A B C r1 r2 r3 p q (emb 0<1 r)
+  emb⁰¹¹ : ∀ {A B C l l′ l″ r1 r2 r3 p q r}
+         → ShapeView₃ Γ l l′ l″ A B C r1 r2 r3 p q r
+         → ShapeView₃ Γ l l′ l″ A B C r1 r2 r3 p q r
+  
+test : ∀ {Γ A B C r r' r'' l l′ l″ [A] [B] [C]} 
+         → ShapeView₃ Γ l l′ l″ A B C r r' r'' [A] [B] [C]
+         → ⊥
+test (emb⁰¹¹ X) = ?
+
+{-
+test (ne neA neB neC) = ?
+test (Πᵥ ΠA ΠB ΠC) = ?
+test (emb⁰¹¹ X) = ?
+test (emb¹⁰¹ X) = ?
+test (emb¹¹⁰ X) = ?
+
+test (Uᵥ UA UB UC) = ?
+test (ℕᵥ ℕA ℕB ℕC) = ?
+test (Emptyᵥ EmptyA EmptyB EmptyC) = ?
+test (ne neA neB neC) = ?
+test (Πᵥ ΠA ΠB ΠC) = ?
+test (emb¹⁰¹ X) = ?
+test (emb¹¹⁰ X) = ?
+
 
 -- Combines two two-way views into a three-way view
 combine : ∀ {Γ l l′ l″ l‴ A B C r1 r2 r2' r3 [A] [B] [B]′ [C]}
@@ -287,3 +292,4 @@ combine (emb⁰¹ [AB]) [BC] = emb⁰¹¹ (combine [AB] [BC])
 combine (emb¹⁰ [AB]) [BC] = emb¹⁰¹ (combine [AB] [BC])
 combine [AB] (emb⁰¹ [BC]) = combine [AB] [BC]
 combine [AB] (emb¹⁰ [BC]) = emb¹¹⁰ (combine [AB] [BC])
+-}
