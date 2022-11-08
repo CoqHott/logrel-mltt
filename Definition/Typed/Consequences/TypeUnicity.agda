@@ -15,7 +15,7 @@ open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.RelevanceUnicity
 open import Definition.Typed.Consequences.Substitution
--- open import Definition.Conversion.Stability
+open import Definition.Conversion.Stability
 open import Definition.Typed.Consequences.InjectivitySProp
 
 open import Tools.Product
@@ -87,7 +87,6 @@ type-uniq (transpⱼ x x₁ X X₁ X₂ X₃) (transpⱼ x₂ x₃ Y Y₁ Y₂ Y
 type-uniq (castⱼ X X₁ X₂ X₃) (castⱼ Y Y₁ Y₂ Y₃) =
     let _ , _ = type-uniq X₃ Y₃
     in PE.refl , refl (univ X₁)
-type-uniq (castreflⱼ X X₁) (castreflⱼ Y Y₁) = PE.refl , refl (syntacticTerm (castreflⱼ X X₁))
 type-uniq (conv X x) Y = let el , eA = type-uniq X Y in el , trans (sym x) eA 
 type-uniq X (conv Y y) =
     let el , eA = type-uniq X Y

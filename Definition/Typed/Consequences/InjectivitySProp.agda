@@ -1,4 +1,5 @@
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module Definition.Typed.Consequences.InjectivitySProp where
 
@@ -12,7 +13,7 @@ open import Definition.Typed.Properties
 open import Definition.Typed.EqRelInstance
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Conversion
-open import Definition.Conversion.Decidable
+-- open import Definition.Conversion.Decidable
 open import Definition.Conversion.Soundness
 open import Definition.Conversion.Stability
 open import Definition.Conversion.EqRelInstance
