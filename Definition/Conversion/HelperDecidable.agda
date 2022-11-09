@@ -12,6 +12,8 @@ open import Definition.Conversion.Soundness
 open import Definition.Conversion.Symmetry
 open import Definition.Conversion.Stability
 open import Definition.Conversion.Conversion
+open import Definition.Conversion.ConvSize
+open import Definition.Conversion.ConversionProp
 open import Definition.Conversion.Lift
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.Substitution
@@ -422,3 +424,24 @@ abstract -- Agda will do some slow unfolding without abstract
       _ , neA , _ = ne~↓! A
     in convConv↓Term (reflConEq (wfTerm ⊢B₂)) ⊢A≡B (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym lA≡lB) t)
 
+  convert'~size : ∀ {Γ Δ A lA B lB t M lM}
+    → (Γ≡Δ : ⊢ Γ ≡ Δ)
+    → (A~ : Γ ⊢ A ~ A ↓! U lA ^ next lA)
+    → (B~ : Δ ⊢ B ~ B ↓! U lB ^ next lB)
+    → (A~B : Γ ⊢ A ~ B ↓! M ^ lM)
+    → (t : Δ ⊢ t [conv↓] t ∷ B ^ ι lB)
+    → sizeConv↓Term (convert'~ Γ≡Δ A~ B~ A~B t) PE.≡ sizeConv↓Term t
+  convert'~size {Γ} {Δ} {A'} {lA} {B'} {lB} {t'} {M} {lM} Γ≡Δ A B A~B t =
+    let
+      whnfM , neA , neB = ne~↓! A~B
+      ⊢M , ⊢A , ⊢B = syntacticEqTerm (soundness~↓! A~B)
+      _ , ⊢A₂ , _ = syntacticEqTerm (soundness~↓! A)
+      _ , ⊢B₂ , _ = syntacticEqTerm (soundness~↓! B)
+      lA≡lM , ⊢UA≡M = neTypeEq neA ⊢A₂ ⊢A
+      lM≡lB , ⊢M≡UA = neTypeEq neB ⊢B (stabilityTerm (symConEq Γ≡Δ) ⊢B₂)
+      lA≡lB = next-inj (PE.trans lA≡lM lM≡lB)
+      UA≡M = U≡A-whnf ⊢UA≡M whnfM
+      ⊢A≡B = stabilityEq Γ≡Δ (univ (sym (soundness~↓! (PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) UA≡M (PE.sym lA≡lM) A~B))))
+      _ , neA , _ = ne~↓! A
+    in PE.trans (convConv↓TermSize (reflConEq (wfTerm ⊢B₂)) ⊢A≡B (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym lA≡lB) t))
+                (sizeSubst-gen (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) sizeConv↓Term t (PE.sym lA≡lB))

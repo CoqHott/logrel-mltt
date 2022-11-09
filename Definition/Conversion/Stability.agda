@@ -163,7 +163,7 @@ mutual
   stability~↑! Γ≡Δ (Id-UΠ x X) = Id-UΠ (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ X)
   stability~↑! Γ≡Δ (cast-cong X x x₁ x₂ x₃) = cast-cong (stability~↓! Γ≡Δ X) (stability~↓! Γ≡Δ x)
                                                         (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
-  stability~↑! Γ≡Δ (cast-ℕ X x x₁ x₂) = cast-ℕ (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂)
+  stability~↑! Γ≡Δ (cast-ℕ X x x₁ x₂) = cast-ℕ (stability~↓! Γ≡Δ X) (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂)
   stability~↑! Γ≡Δ (cast-ℕℕ X x x₁) = cast-ℕℕ (stability~↓! Γ≡Δ X) (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
   stability~↑! Γ≡Δ (cast-Π x X x₁ x₂ x₃) = cast-Π (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) = cast-Πℕ (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
@@ -174,7 +174,7 @@ mutual
   stability~↑! Γ≡Δ (castℕ-refl x x₁) = castℕ-refl (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) 
   stability~↑! Γ≡Δ (cast-refl' x x₁ x₂) = cast-refl' (stability~↓! Γ≡Δ x) (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) 
   stability~↑! Γ≡Δ (castℕ-refl' x x₁) = castℕ-refl' (stability~↓! Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) 
-  stability~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) = cast-neℕ (stability~↓! Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
+  stability~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) = cast-neℕ (stability~↓! Γ≡Δ x) (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-neΠ x x₁ x₂ x₃ x₄) = cast-neΠ (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ x₁) (stabilityConv↑Term Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₄)
   
   stability~↑% : ∀ {k l A Γ Δ lA}
