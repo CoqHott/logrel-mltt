@@ -33,10 +33,10 @@ mutual
                 size~↑! t~u
 
   stabilitySize~↑! Γ≡Δ (var-refl x x₁) = PE.refl
-  stabilitySize~↑! Γ≡Δ (app-cong {rF = !} x x₁) = PE.cong₂ _+_
+  stabilitySize~↑! Γ≡Δ (app-cong {rF = !} x x₁) = PE.cong₂ (λ a b → 1+ (a + b))
              (stabilitySize~↓! Γ≡Δ x)
              (stabilitySizeConv↑Term Γ≡Δ x₁) 
-  stabilitySize~↑! Γ≡Δ (app-cong {rF = %} x x₁) = PE.cong₂ _+_
+  stabilitySize~↑! Γ≡Δ (app-cong {rF = %} x x₁) = PE.cong₂ (λ a b → 1+ (a + b))
              (stabilitySize~↓! Γ≡Δ x)
              PE.refl
   stabilitySize~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) = PE.cong₄ (λ a b c d → 1+ (a + b + c + d))

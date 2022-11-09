@@ -124,7 +124,7 @@ import Tools.PropositionalEquality as PE
 <=-help-3-abcde' :  ∀ {a b c d e : Nat} → (a + d + b + (c + e)) <= (a + b + c + 1+ (d + e)) 
 <=-help-3-abcde' = {!!}
 
-<=-help-abcd-b :  ∀ {a b c d : Nat} → (a + c + d) <= (a + b + (c + d))
+<=-help-abcd-b :  ∀ {a b c d : Nat} → (a + c + d) <= (a + b + 1+ (c + d))
 <=-help-abcd-b = {!!}
 
 <=-help-3-abcd :  ∀ {a b c d : Nat} → (a + b + (c + d)) <= (a + c + 1+ (b + d)) 
@@ -165,6 +165,19 @@ import Tools.PropositionalEquality as PE
 
 <=-help-abb'-c'' :  ∀ {a b b' b'' c' : Nat} → (a + b + b') <= (a + b' + b'' + 1+ (b + c'))
 <=-help-abb'-c'' = {!!}
+
+
+<=-help-id-cong-ab' :  ∀ {a b b' b'' c' c''  : Nat} → (a + b') <= (a + b' + b'' + 1+ (b + c' + c''))
+<=-help-id-cong-ab' = {!!}
+
+<=-help-id-cong-bc' :  ∀ {a b b' b'' c' c''  : Nat} → (b + c') <= (a + b' + b'' + 1+ (b + c' + c''))
+<=-help-id-cong-bc' = {!!}
+
+<=-help-cast :  ∀ {a b c d : Nat} → (c + d) <= (a + b + (2 + c) + d)
+<=-help-cast = {!!}
+
+<=-help-cast' :  ∀ {a b b' b'' c' c''  : Nat} → (1+ (a + b' + b'') + c'') <= (a + b' + b'' + 1+ (b + c' + (2 + c'')))
+<=-help-cast' = {!!}
 
 sizeSubst₃-gen :  ∀ {A B C a b c a' b' c'}
               → (P : A → B → C → Set)

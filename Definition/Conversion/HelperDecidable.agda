@@ -108,6 +108,17 @@ noNeΠ ()
 noNeUniv : ∀ {rA lA} → Neutral (Univ rA lA) → ⊥
 noNeUniv ()
 
+⁰-next :  ∀ {l} → ι ⁰ PE.≡ next l → ⊥
+⁰-next {⁰} ()
+⁰-next {¹} ()
+
+neutralZero : Neutral zero → ⊥
+neutralZero ()
+
+neutralSuc : ∀ {n} → Neutral (suc n) → ⊥
+neutralSuc ()
+
+
 Idℕ0-elim-- : ∀ {Γ l t} → Neutral t → Γ ⊢ t ~ zero ↓! ℕ ^ l → ⊥
 Idℕ0-elim-- net ([~] A D whnfB (cast-refl x x₃ x₄)) =
     let _ , _ , neA = ne~↓! x

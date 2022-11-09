@@ -56,10 +56,9 @@ mutual
                 (PE.subst (λ x → _ ⊢ var x ∷ _ ^ _) (PE.sym x≡y)
                          (stabilityTerm (symConEq Γ≡Δ) (PE.subst (λ lx → _ ⊢ _ ∷ _ ^ [ ! , lx ]) (PE.sym el) x₂)))) ,
       leS le0                   
-                         
 
   trans~↑! {n = 1+ n} {Γ = Γ} el Γ≡Δ (app-cong {k = k} {rF = !} {lΠ = lΠ} t~u a<>b) (app-cong {l = l} {rF = !} u~v b<>c) (leS e) =
-    let C , wC , t~v , ΠFG≡C , C≡ΠF′G′ , sizet~u = trans~↓! {n = n} PE.refl Γ≡Δ t~u u~v (<<-trans (<=-help-ab {b = size~↓! u~v}) e)
+    let C , wC , t~v , ΠFG≡C , C≡ΠF′G′ , sizet~u = trans~↓! {n = n} PE.refl Γ≡Δ t~u u~v (<<-trans (<=-help-ab' {a = size~↓! t~u} {b = size~↓! u~v}) e)
         H , E , C≡ΠHE = Π≡A ΠFG≡C wC
         ⊢Γ = proj₁ (contextConvSubst Γ≡Δ)
         ΠFG≡C' = PE.subst (λ X → _ ⊢ _ ≡ X ^ [ ! , ι _ ]) C≡ΠHE ΠFG≡C
@@ -68,17 +67,17 @@ mutual
         F≡F₁' , rF≡rF₁' , lF≡lF₁' , lG≡lG₁' , G≡G₁' = injectivity C≡ΠF′G′'
         t~v' = PE.subst (λ X →  Γ ⊢ k ~ l ↓! X ^ ι lΠ) C≡ΠHE t~v
         a<>c , sizea<>c = transConv↑Term {n = n} (PE.cong ι lF≡lF₁') Γ≡Δ (trans F≡F₁ F≡F₁') a<>b b<>c
-                              (<<-trans (<<cong-right {a = size~↑! (_⊢_~_↓!_^_.k~l t~u)} {b = size~↓! u~v}) e) 
+                              (<<-trans (<=-help-ab'' {a = size~↓! t~u} {c = size~↓! u~v}) e) 
         t≡v = soundnessConv↑Term a<>b
         _ , ⊢t , _ = syntacticEqTerm t≡v
     in _ , app-cong t~v' (convConv↑Term (reflConEq ⊢Γ) F≡F₁ a<>c) ,
        substTypeEq G≡G₁ (refl ⊢t) , substTypeEq G≡G₁' (conv t≡v F≡F₁) ,
-       PE.subst₂ (λ X Y → (X + Y) <= (size~↑! (app-cong t~u a<>b) + size~↑! (app-cong u~v b<>c)))
+       PE.subst₂ (λ X Y → 1+ (X + Y) <= (size~↑! (app-cong t~u a<>b) + size~↑! (app-cong u~v b<>c)))
                  (PE.sym (sizeSubst-gen  (λ X →  _ ⊢ _ ~ _ ↓! X ^ _) size~↓! t~v C≡ΠHE)) (PE.sym (convConv↑TermSize (reflConEq ⊢Γ) F≡F₁ a<>c))
-                 (<=-trans (<=-cong-+ sizet~u sizea<>c) (<=-switch-bc {a = size~↓! t~u} {b = size~↓! u~v}))
+                 (leS (<=-trans (<=-cong-+ sizet~u sizea<>c) (<=-help-3-abcd {a = size~↓! t~u} {b = size~↓! u~v}))) 
 
   trans~↑! {n = 1+ n} {Γ = Γ} el Γ≡Δ (app-cong {k = k} {rF = %} {lΠ = lΠ} t~u a<>b) (app-cong {l = l} {rF = %} u~v b<>c) (leS e) =
-    let C , wC , t~v , ΠFG≡C , C≡ΠF′G′ , sizet~u = trans~↓! {n = n} PE.refl Γ≡Δ t~u u~v (<<-trans (<=-help-ab1 {b = size~↓! u~v}) e)
+    let C , wC , t~v , ΠFG≡C , C≡ΠF′G′ , sizet~u = trans~↓! {n = n} PE.refl Γ≡Δ t~u u~v (<<-trans (<=-help-ab' {a = size~↓! t~u} {b = size~↓! u~v}) e)
         H , E , C≡ΠHE = Π≡A ΠFG≡C wC
         ⊢Γ = proj₁ (contextConvSubst Γ≡Δ)
         ΠFG≡C' = PE.subst (λ X → _ ⊢ _ ≡ X ^ [ ! , ι _ ]) C≡ΠHE ΠFG≡C
@@ -94,9 +93,9 @@ mutual
     in _ , app-cong t~v' (conv~↑% a<>c F≡F₁) ,
        substTypeEq G≡G₁ (proof-irrelevance ⊢t ⊢t) ,
        substTypeEq G≡G₁' (conv t≡v F≡F₁) ,
-       PE.subst (λ X → (X + 1) <= (size~↑! (app-cong t~u a<>b) + size~↑! (app-cong u~v b<>c)))
+       PE.subst (λ X → 1+ (X + 1) <= (size~↑! (app-cong t~u a<>b) + size~↑! (app-cong u~v b<>c)))
                 (PE.sym (sizeSubst-gen  (λ X →  _ ⊢ _ ~ _ ↓! X ^ _) size~↓! t~v C≡ΠHE))
-                (<=-trans (<=-cong-+ sizet~u (le-refl 1)) (leS (<=-help-abcd-b {c = size~↓! u~v})))
+                (leS (<=-trans (<=-cong-+ sizet~u (le-refl 1)) (leS (<=-help-abcd-b {c = size~↓! u~v}))))
                  
   trans~↑! el Γ≡Δ (app-cong {rF = !} t~u a<>b) (app-cong {rF = %} u~v b<>c) e =
    let whnfA , neK , neL = ne~↓! t~u
@@ -529,7 +528,7 @@ mutual
   trans~↑! el Γ≡Δ (Id-ℕS x₂ x₃) (Id-ℕ x x₅)  with ne~↓! x
   trans~↑! el Γ≡Δ (Id-ℕS x₂ x₃) (Id-ℕ x x₅) | _ , () , _
 
---  trans~↑! = {!!}
+  -- trans~↑! = {!!}
 
 
   trans~↑% : ∀ {t u v A Γ Δ  l}
@@ -809,7 +808,7 @@ mutual
   transConv↓Term Γ≡Δ A≡B el (U-refl x x₁) (ne x₂) with ne~↓! x₂
   transConv↓Term Γ≡Δ A≡B el (U-refl x x₁) (ne x₂) | _ , () , _
 
---  transConv↓Term = {!!}
+  -- transConv↓Term = {!!}
 
 
 -- Transitivity of algorithmic equality of types of the same context.

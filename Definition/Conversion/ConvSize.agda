@@ -19,7 +19,7 @@ mutual
   size~↑! : ∀ {t u A Γ l} → Γ ⊢ t ~ u ↑! A ^ l → Nat
 
   size~↑! (var-refl x x₁) = 1
-  size~↑! (app-cong x x₁) = size~↓! x + size[genconv↑] x₁
+  size~↑! (app-cong x x₁) = 1 + size~↓! x + size[genconv↑] x₁
   size~↑! (natrec-cong x x₁ x₂ x₃) = 1 + sizeConv↑ x + sizeConv↑Term x₁ + sizeConv↑Term x₂ + size~↓! x₃
   size~↑! (Emptyrec-cong x x₁) = 1 + sizeConv↑ x
   size~↑! (Id-cong x x₁ x₂) = 1 + size~↓! x + sizeConv↑Term  x₁ + sizeConv↑Term x₂ 
