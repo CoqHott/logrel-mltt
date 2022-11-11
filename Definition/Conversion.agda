@@ -94,13 +94,13 @@ mutual
               → Γ ⊢ t ~ cast ⁰ ℕ ℕ e u ↑! ℕ ^ ι ⁰
     cast-neℕ : ∀ {A A' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
-              → Γ ⊢ t [conv↓] t' ∷ A ^ ι ⁰
+              → Γ ⊢ t [conv↑] t' ∷ A ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) A ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) A' ℕ) ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ A ℕ e t ~ cast ⁰ A' ℕ e' t' ↑! ℕ ^ ι ⁰
     cast-ℕ : ∀ {A A' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
-              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
+              → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ A) ^ [ % , ι ⁰ ]
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ A') ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ A' e' t' ↑! A ^ ι ⁰

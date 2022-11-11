@@ -256,9 +256,7 @@ mutual
         eqU = U≡A-whnf [U] wK
         XY' = PE.subst (λ X →  Γ ⊢ A ~ A' ↓! X ^ ι ¹) eqU XY
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
-        N , wN , t~t' , [N] , _ , sizet~t = trans~↓! {n = n} PE.refl Γ≡Δ x x₃ (<<-trans (<=-help-ab'' {a = size~↓! X} {c = size~↓! Y}) e) 
-        eqN = ℕ≡A [N] wN
-        t~t = PE.subst (λ X →  Γ ⊢ _ ~ _ ↓! X ^ ι _) eqN t~t'
+        t~t , sizet~t = transConv↑Term {n = n} PE.refl Γ≡Δ (refl (univ (ℕⱼ  ⊢Γ))) x x₃ (<<-trans (<=-help-ab'' {a = size~↓! X} {c = size~↓! Y}) e) 
         sizeXY' = <=-trans (≡-to-<= (sizeSubst-gen (λ X →  Γ ⊢ A ~ A' ↓! X ^ ι ¹) size~↓! XY eqU)) sizeXY
     in _ , cast-ℕ XY' t~t x₁ (stabilityTerm (symConEq Γ≡Δ) x₅) , refl (proj₁ (syntacticEq (univ (soundness~↓! X)))) , univ (soundness~↓! X) ,
        leS (<=-trans (<=-cong-+ sizeXY' sizet~t) (<=-help-3-abcd {a = size~↓! X}))
@@ -470,7 +468,7 @@ mutual
         XY' = PE.subst (λ X → Γ ⊢ A ~ A' ↓! X ^ ι ¹) eqU XY
         ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
         sizeXY' = <=-trans (≡-to-<= (sizeSubst-gen (λ X → Γ ⊢ A ~ A' ↓! X ^ ι ¹) size~↓! XY eqU)) sizeXY
-        t~t , sizet~t = transConv↓Term {n = n} Γ≡Δ (univ (soundness~↓! x₁)) PE.refl x₂ x₆ (<<-trans (<=-help-ab'' {a = size~↓! x₁} {c = size~↓! x₅}) e)
+        t~t , sizet~t = transConv↑Term {n = n} PE.refl Γ≡Δ (univ (soundness~↓! x₁)) x₂ x₆ (<<-trans (<=-help-ab'' {a = size~↓! x₁} {c = size~↓! x₅}) e)
     in _ , cast-neℕ XY' t~t x₃ (stabilityTerm (symConEq Γ≡Δ) x₈) , refl (univ (ℕⱼ ⊢Γ)) , refl (univ (ℕⱼ ⊢Γ)) ,
        leS (<=-trans (<=-cong-+ sizeXY' sizet~t) (<=-help-3-abcd {a = size~↓! x₁} {b = size~↓! x₅}))
 

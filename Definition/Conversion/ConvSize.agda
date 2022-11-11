@@ -34,8 +34,8 @@ mutual
   size~↑! (castℕ-refl x x₁) = 1 + size~↓! x 
   size~↑! (cast-refl' x x₃ x₄) = 1 + size~↓! x + sizeConv↓Term x₃
   size~↑! (castℕ-refl' x x₁) = 1 + size~↓! x 
-  size~↑! (cast-neℕ x x₁ x₂ x₃) = 1 + size~↓! x + sizeConv↓Term x₁
-  size~↑! (cast-ℕ x x₁ x₂ x₃) = 1 + size~↓! x + size~↓! x₁
+  size~↑! (cast-neℕ x x₁ x₂ x₃) = 1 + size~↓! x + sizeConv↑Term x₁
+  size~↑! (cast-ℕ x x₁ x₂ x₃) = 1 + size~↓! x + sizeConv↑Term x₁
   size~↑! (cast-ℕℕ x x₁ x₂) = 1 + size~↓! x
   size~↑! (cast-neΠ x x₁ x₂ x₃ x₄) = 1 + sizeConv↑Term x + size~↓! x₁ + sizeConv↑Term x₂
   size~↑! (cast-Π x x₁ x₂ x₃ x₄) = 1 + sizeConv↑Term x + size~↓! x₁ + sizeConv↑Term x₂

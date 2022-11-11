@@ -12,9 +12,9 @@ open import Definition.Conversion.Soundness
 open import Definition.Conversion.Symmetry
 open import Definition.Conversion.Stability
 open import Definition.Conversion.Conversion
+open import Definition.Conversion.Lift
 open import Definition.Conversion.ConvSize
 open import Definition.Conversion.ConversionProp
-open import Definition.Conversion.Lift
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.Substitution
 open import Definition.Typed.Consequences.Injectivity
@@ -30,6 +30,7 @@ open import Tools.Product
 open import Tools.Empty
 open import Tools.Nullary
 import Tools.PropositionalEquality as PE
+
 
 dec-relevance : ∀ (r r′ : Relevance) → Dec (r PE.≡ r′)
 dec-relevance ! ! = yes PE.refl
@@ -50,6 +51,29 @@ neutralconvTerm~↑! : ∀ {t u A Γ l}
 neutralconvTerm~↑! neA (ne ([~] A D whnfB k~l)) = _ , k~l
 neutralconvTerm~↑! neA (ℕ-ins ([~] A D whnfB k~l)) = _ , k~l
 neutralconvTerm~↑! neA (ne-ins x x₁ x₂ ([~] A D whnfB k~l)) = _ , k~l
+
+noNeℕ : Neutral ℕ → ⊥
+noNeℕ ()
+
+noNeΠ : ∀ {A rA B} → Neutral (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) → ⊥
+noNeΠ ()
+
+noNeUniv : ∀ {rA lA} → Neutral (Univ rA lA) → ⊥
+noNeUniv ()
+
+⁰-next :  ∀ {l} → ι ⁰ PE.≡ next l → ⊥
+⁰-next {⁰} ()
+⁰-next {¹} ()
+
+neutralZero : Neutral zero → ⊥
+neutralZero ()
+
+neutralSuc : ∀ {n} → Neutral (suc n) → ⊥
+neutralSuc ()
+
+noℕ~ℕ : ∀ {Γ X l} → Γ ⊢ ℕ ~ ℕ ↓! X ^ l → ⊥
+noℕ~ℕ ()
+
 
 -- Algorithmic equality of variables infers propositional equality.
 strongVarEq : ∀ {m n A Γ l} → Γ ⊢ var n ~ var m ↑! A ^ l → n PE.≡ m
@@ -79,17 +103,11 @@ dec~↑!-app Γ≡Δ k k₁ k~k₁ (no ¬p) = no (λ { (_ , _ ,  app-cong k~k₁
     F≡F , rF≡rF , lF≡lF , lG≡lG , G≡G = injectivity Π≡Π
   in ¬p (convConvTerm%! (PE.subst₂ (λ x y → _ ⊢ _ [genconv↑] _ ∷ _ ^ [ x , ι y ]) (PE.sym rF≡rF) (PE.sym lF≡lF) p) (sym F≡F)) })
 
-nonNeutralℕ : Neutral ℕ → ⊥
-nonNeutralℕ ()
-
-nonNeutralU : ∀ {r l} → Neutral (Univ r l) → ⊥
-nonNeutralU ()
-
 Idℕ-elim : ∀ {Γ l A B t u t' u'} → Neutral A → Γ ⊢ Id A t u ~ Id ℕ t' u' ↑! B ^ l → ⊥
-Idℕ-elim neA (Id-cong x x₁ x₂) = let _ , _ , neℕ = ne~↓! x in ⊥-elim (nonNeutralℕ neℕ)
-Idℕ-elim neA (Id-ℕ x x₁) = ⊥-elim (nonNeutralℕ neA)
-Idℕ-elim neA (Id-ℕ0 x) = ⊥-elim (nonNeutralℕ neA)
-Idℕ-elim neA (Id-ℕS x x₁) = ⊥-elim (nonNeutralℕ neA)
+Idℕ-elim neA (Id-cong x x₁ x₂) = let _ , _ , neℕ = ne~↓! x in ⊥-elim (noNeℕ neℕ)
+Idℕ-elim neA (Id-ℕ x x₁) = ⊥-elim (noNeℕ neA)
+Idℕ-elim neA (Id-ℕ0 x) = ⊥-elim (noNeℕ neA)
+Idℕ-elim neA (Id-ℕS x x₁) = ⊥-elim (noNeℕ neA)
 
 Idℕ-elim' : ∀ {Γ l A B t u t' u'} → Neutral A → Γ ⊢ Id ℕ t u ~ Id A t' u' ↑! B ^ l → ⊥
 Idℕ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in Idℕ-elim neA e'
@@ -100,26 +118,6 @@ conv↑-inversion whnfA whnft whnfu ([↑]ₜ B t′ u′ D d d′ whnfB whnft�
       eu = whnfRed*Term d′ whnfu
       eA = whnfRed* D whnfA
   in PE.subst₃ (λ A X Y → _ ⊢ X [conv↓] Y ∷ A ^ _) (PE.sym eA) (PE.sym et) (PE.sym eu) t<>u
-
-noNeℕ : Neutral ℕ → ⊥
-noNeℕ ()
-
-noNeΠ : ∀ {A rA B} → Neutral (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) → ⊥
-noNeΠ ()
-
-noNeUniv : ∀ {rA lA} → Neutral (Univ rA lA) → ⊥
-noNeUniv ()
-
-⁰-next :  ∀ {l} → ι ⁰ PE.≡ next l → ⊥
-⁰-next {⁰} ()
-⁰-next {¹} ()
-
-neutralZero : Neutral zero → ⊥
-neutralZero ()
-
-neutralSuc : ∀ {n} → Neutral (suc n) → ⊥
-neutralSuc ()
-
 
 Idℕ0-elim-- : ∀ {Γ l t} → Neutral t → Γ ⊢ t ~ zero ↓! ℕ ^ l → ⊥
 Idℕ0-elim-- net ([~] A D whnfB (cast-refl x x₃ x₄)) =
@@ -171,10 +169,10 @@ Idℕ0S-elim' : ∀ {Γ l A u u' n} → Γ ⊢ Id ℕ (suc n) u ~ Id ℕ zero u'
 Idℕ0S-elim' e =  let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in Idℕ0S-elim e'
 
 IdU-elim : ∀ {Γ l A B t u t' u' rU lU} → Neutral A → Γ ⊢ Id A t u ~ Id (Univ rU lU) t' u' ↑! B ^ l → ⊥
-IdU-elim neA (Id-cong x x₁ x₂) = let _ , _ , neU = ne~↓! x in ⊥-elim (nonNeutralU neU)
-IdU-elim neA (Id-U x x₁) = ⊥-elim (nonNeutralU neA)
-IdU-elim neA (Id-Uℕ x) = ⊥-elim (nonNeutralU neA)
-IdU-elim neA (Id-UΠ x x₁) = ⊥-elim (nonNeutralU neA)
+IdU-elim neA (Id-cong x x₁ x₂) = let _ , _ , neU = ne~↓! x in ⊥-elim (noNeUniv neU)
+IdU-elim neA (Id-U x x₁) = ⊥-elim (noNeUniv neA)
+IdU-elim neA (Id-Uℕ x) = ⊥-elim (noNeUniv neA)
+IdU-elim neA (Id-UΠ x x₁) = ⊥-elim (noNeUniv neA)
 
 IdU-elim' : ∀ {Γ l A B t u t' u' rU lU} → Neutral A → Γ ⊢ Id (Univ rU lU) t u ~ Id A t' u' ↑! B ^ l → ⊥
 IdU-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in IdU-elim neA e'
@@ -423,6 +421,7 @@ abstract -- Agda will do some slow unfolding without abstract
       ⊢A≡B = stabilityEq Γ≡Δ (univ (sym (soundness~↓! (PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) UA≡M (PE.sym lA≡lM) A~B))))
       _ , neA , _ = ne~↓! A
     in convConv↓Term (reflConEq (wfTerm ⊢B₂)) ⊢A≡B (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym lA≡lB) t)
+
 
   convert'~size : ∀ {Γ Δ A lA B lB t M lM}
     → (Γ≡Δ : ⊢ Γ ≡ Δ)
