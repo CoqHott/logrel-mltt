@@ -840,3 +840,25 @@ trans~↑!Term t<>u u<>v =
       Γ≡Γ = reflConEq (wfEqTerm t≡u)
   in  trans~↑% Γ≡Γ t<>u u<>v
   
+
+trans~↓!-simpl : ∀ {t u v A B Γ l}
+              → Γ ⊢ t ~ u ↓! A ^ l
+              → Γ ⊢ u ~ v ↓! B ^ l
+              → ∃ λ C → Whnf C ×  Γ ⊢ t ~ v ↓! C ^ l × Γ ⊢ A ≡ C ^ [ ! , l ]
+trans~↓!-simpl t<>u u<>v =
+  let t≡u = soundness~↓! t<>u
+      Γ≡Γ = reflConEq (wfEqTerm t≡u)
+      ⊢A , _ , _ = syntacticEqTerm t≡u
+      a , b , c , d , _  = trans~↓! PE.refl Γ≡Γ t<>u u<>v (le-refl _)
+  in a , b , c , d
+
+trans~↑!-simpl : ∀ {t u v A B Γ l}
+              → Γ ⊢ t ~ u ↑! A ^ l
+              → Γ ⊢ u ~ v ↑! B ^ l
+              → ∃ λ C → Γ ⊢ t ~ v ↑! C ^ l × Γ ⊢ A ≡ C ^ [ ! , l ]
+trans~↑!-simpl t<>u u<>v =
+  let t≡u = soundness~↑! t<>u
+      Γ≡Γ = reflConEq (wfEqTerm t≡u)
+      ⊢A , _ , _ = syntacticEqTerm t≡u
+      a , b , c , _  = trans~↑! PE.refl Γ≡Γ t<>u u<>v (le-refl _)
+  in a , b , c

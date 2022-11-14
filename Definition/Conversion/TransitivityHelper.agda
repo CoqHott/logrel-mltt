@@ -179,6 +179,19 @@ import Tools.PropositionalEquality as PE
 <=-help-cast' :  ∀ {a b b' b'' c' c''  : Nat} → (1+ (a + b' + b'') + c'') <= (a + b' + b'' + 1+ (b + c' + (2 + c'')))
 <=-help-cast' = {!!}
 
+
+<=-help-abrem :  ∀ {x a b : Nat} → a <= (x + 1+ (a + b))
+<=-help-abrem = {!!}
+
+<=-help-abrem' :  ∀ {x a b : Nat} → b <= (1+ (a + (x + b)))
+<=-help-abrem' = {!!}
+
+<=-help-barem :  ∀ {x a b : Nat} → a <= (a + b + x)
+<=-help-barem = {!!}
+
+<=-help-barem' :  ∀ {x a b : Nat} → (b + x) <= (a + (2 + b) + x)
+<=-help-barem' = {!!}
+
 sizeSubst₃-gen :  ∀ {A B C a b c a' b' c'}
               → (P : A → B → C → Set)
               → (size : ∀ {a b c} → P a b c → Nat)

@@ -24,9 +24,10 @@ open import Definition.Typed.Consequences.Substitution
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Equality
 open import Definition.Typed.Consequences.Reduction
+open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Conversion.Symmetry
 
-open import Definition.Conversion.HelperDecidable
+-- open import Definition.Conversion.HelperDecidable
 
 open import Tools.Nat
 open import Tools.Product
@@ -35,28 +36,30 @@ open import Tools.Function
 open import Tools.Empty using (⊥; ⊥-elim)
 
 
+abstract -- Agda will do some slow unfolding without abstract
+  ~atℕ : ∀ {Γ t u}
+    → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+    → (∃ λ A → ∃ λ lA → Γ ⊢ t ~ u ↓! A ^ lA)
+    → Γ ⊢ t ~ u ↓! ℕ ^ ι ⁰
+  ~atℕ ⊢t∷ℕ (A , lA , t~u) =
+    let whnfA , neT , neU = ne~↓! t~u
+        ⊢A , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! t~u)
+        l≡l , ⊢ℕ≡A = neTypeEq neT ⊢t∷ℕ ⊢t
+        A≡ℕ = ℕ≡A ⊢ℕ≡A whnfA
+    in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡ℕ (PE.sym l≡l) t~u
 
-trans~↓!-simpl : ∀ {t u v A B Γ l}
-              → Γ ⊢ t ~ u ↓! A ^ l
-              → Γ ⊢ u ~ v ↓! B ^ l
-              → ∃ λ C → Whnf C ×  Γ ⊢ t ~ v ↓! C ^ l × Γ ⊢ A ≡ C ^ [ ! , l ]
-trans~↓!-simpl t<>u u<>v =
-  let t≡u = soundness~↓! t<>u
-      Γ≡Γ = reflConEq (wfEqTerm t≡u)
-      ⊢A , _ , _ = syntacticEqTerm t≡u
-      a , b , c , d , _  = trans~↓! PE.refl Γ≡Γ t<>u u<>v (le-refl _)
-  in a , b , c , d
+  ~atU : ∀ {Γ t u r lU l}
+    → Γ ⊢ t ~ t ↓! Univ r lU ^ l
+    → (∃ λ A → ∃ λ lA → Γ ⊢ t ~ u ↓! A ^ lA)
+    → Γ ⊢ t ~ u ↓! Univ r lU ^ l
+  ~atU t (A , lA , t~u) =
+    let whnfA , neT , neU = ne~↓! t~u
+        ⊢A , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! t~u)
+        _ , ⊢t∷U , _ = syntacticEqTerm (soundness~↓! t)
+        l≡l , ⊢U≡A = neTypeEq neT ⊢t∷U ⊢t
+        A≡U = U≡A-whnf ⊢U≡A whnfA
+    in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡U (PE.sym l≡l) t~u
 
-trans~↑!-simpl : ∀ {t u v A B Γ l}
-              → Γ ⊢ t ~ u ↑! A ^ l
-              → Γ ⊢ u ~ v ↑! B ^ l
-              → ∃ λ C → Γ ⊢ t ~ v ↑! C ^ l × Γ ⊢ A ≡ C ^ [ ! , l ]
-trans~↑!-simpl t<>u u<>v =
-  let t≡u = soundness~↑! t<>u
-      Γ≡Γ = reflConEq (wfEqTerm t≡u)
-      ⊢A , _ , _ = syntacticEqTerm t≡u
-      a , b , c , _  = trans~↑! PE.refl Γ≡Γ t<>u u<>v (le-refl _)
-  in a , b , c
   
 -- Algorithmic equality of neutrals with injected conversion.
 data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where

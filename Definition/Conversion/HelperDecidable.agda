@@ -1,10 +1,11 @@
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module Definition.Conversion.HelperDecidable where
 
 open import Definition.Untyped
 open import Definition.Untyped.Properties
-open import Definition.Typed
+open import Definition.Typed as T
 open import Definition.Typed.Properties
 open import Definition.Conversion
 open import Definition.Conversion.Whnf
@@ -13,6 +14,7 @@ open import Definition.Conversion.Symmetry
 open import Definition.Conversion.Stability
 open import Definition.Conversion.Conversion
 open import Definition.Conversion.Lift
+open import Definition.Conversion.Inversion
 open import Definition.Conversion.ConvSize
 open import Definition.Conversion.ConversionProp
 open import Definition.Typed.Consequences.Syntactic
@@ -24,6 +26,8 @@ open import Definition.Typed.Consequences.Inequality as IE
 open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Typed.Consequences.SucCong
 open import Definition.Typed.Consequences.Inversion
+open import Definition.Typed.Consequences.TypeUnicity
+open import Definition.Conversion.EqRelInstance
 
 open import Tools.Nat
 open import Tools.Product
@@ -357,28 +361,6 @@ decConv↓Term-U (ne x) t~t ¬u~u = ¬u~u x
 
 
 abstract -- Agda will do some slow unfolding without abstract
-  ~atℕ : ∀ {Γ t u}
-    → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
-    → (∃ λ A → ∃ λ lA → Γ ⊢ t ~ u ↓! A ^ lA)
-    → Γ ⊢ t ~ u ↓! ℕ ^ ι ⁰
-  ~atℕ ⊢t∷ℕ (A , lA , t~u) =
-    let whnfA , neT , neU = ne~↓! t~u
-        ⊢A , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! t~u)
-        l≡l , ⊢ℕ≡A = neTypeEq neT ⊢t∷ℕ ⊢t
-        A≡ℕ = ℕ≡A ⊢ℕ≡A whnfA
-    in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡ℕ (PE.sym l≡l) t~u
-
-  ~atU : ∀ {Γ t u r lU l}
-    → Γ ⊢ t ~ t ↓! Univ r lU ^ l
-    → (∃ λ A → ∃ λ lA → Γ ⊢ t ~ u ↓! A ^ lA)
-    → Γ ⊢ t ~ u ↓! Univ r lU ^ l
-  ~atU t (A , lA , t~u) =
-    let whnfA , neT , neU = ne~↓! t~u
-        ⊢A , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! t~u)
-        _ , ⊢t∷U , _ = syntacticEqTerm (soundness~↓! t)
-        l≡l , ⊢U≡A = neTypeEq neT ⊢t∷U ⊢t
-        A≡U = U≡A-whnf ⊢U≡A whnfA
-    in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡U (PE.sym l≡l) t~u
 
   convert~ : ∀ {Γ Δ A lA B lB t M lM}
     → ⊢ Γ ≡ Δ
@@ -444,3 +426,174 @@ abstract -- Agda will do some slow unfolding without abstract
       _ , neA , _ = ne~↓! A
     in PE.trans (convConv↓TermSize (reflConEq (wfTerm ⊢B₂)) ⊢A≡B (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym lA≡lB) t))
                 (sizeSubst-gen (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) sizeConv↓Term t (PE.sym lA≡lB))
+
+  cast-refl-dec : ∀ {Γ A B t e u}
+              → Γ ⊢ A ~ A ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ B ~ B ↓! U ⁰ ^ ι ¹
+              → Γ ⊢ t [conv↓] t ∷ A ^ ι ⁰
+              → (⊢e : Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ])
+              → (decAB : Dec (∃ λ U → ∃ λ lA → Γ ⊢ A ~ B ↓! U ^ lA))
+              → (dectu : Dec (∃ λ U → ∃ λ lA → Γ ⊢ t ~ u ↑! U ^ lA))
+              → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
+              → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
+              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ A B e t ~ u ↑! U ^ lA)
+  cast-refl-dec A B (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)) ⊢e (yes (_ , _ , A~B)) (yes (_ , _ , p)) _ _ =
+    let _ , neA , _ = ne~↓! A~B
+        var≡t = soundness~↑! p
+        ⊢K , ⊢t , ⊢u = syntacticEqTerm var≡t
+        el , eA = type-uniq ⊢t x
+        _ , whnfD , dd = whNormTerm (un-univ (PE.subst (λ X →  _ ⊢ _ ^ [ ! , X ]) el ⊢K)) 
+    in yes ( _ , _ , cast-refl (~atU A (_ , _ , A~B))
+                               (ne-ins x (conv (PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ ! , X ]) el ⊢u )
+                                               (PE.subst (λ X → _ ⊢ _ ≡ _ ^ [ ! , X ]) el eA))
+                                       neA ([~] _ (red (univ:⇒*: dd)) whnfD (PE.subst (λ X → _ ⊢ _ ~ _ ↑! _ ^  X) el p)))
+                                                                         ⊢e)
+  cast-refl-dec A~A' B~B' t~t' ⊢e (yes (_ , _ , A~B)) (no ¬p) noeqNe noeqℕ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → ⊥-elim (let _ , _ , neA' = ne~↓! x
+                                                            _ , neB' , _ = ne~↓! x₁
+                                                        in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-refl x x₁ x₂) → ¬p (_ , _ , let _ , neA , _ = ne~↓! A~B
+                                                          _ , var~t' , _ = [conv↓]ne neA x₁
+                                                          _ , var~t = neutral↓↑ var~t'
+                                                      in var~t) ;
+            (_ , _ , cast-refl' x x₁ x₂) → ⊥-elim (let _ , neB' , neA' = ne~↓! x
+                                                   in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , castℕ-refl' x x₁) → ⊥-elim (noeqℕ PE.refl) })
+  cast-refl-dec A~A' B~B' t~t' ⊢e (no ¬AB) _ noeqNe noeqℕ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → ⊥-elim (let _ , _ , neA' = ne~↓! x
+                                                            _ , neB' , _ = ne~↓! x₁
+                                                        in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-refl x x₁ x₂) → ¬AB (_ , _ , x) ;
+            (_ , _ , cast-refl' x x₁ x₂) → ⊥-elim (let _ , neB' , neA' = ne~↓! x
+                                                   in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , castℕ-refl' x x₁) → ⊥-elim (noeqℕ PE.refl) })
+
+  cast-refl'-dec : ∀ {Γ A B t e u}
+                 → Γ ⊢ A ~ A ↓! U ⁰ ^ next ⁰
+                 → Γ ⊢ B ~ B ↓! U ⁰ ^ ι ¹
+                 → Γ ⊢ t [conv↓] t ∷ A ^ ι ⁰
+                 → (⊢e : Γ ⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ])
+                 → (decAB : Dec (∃ λ U → ∃ λ lA → Γ ⊢ B ~ A ↓! U ^ lA))
+                 → (dectu : Dec (∃ λ U → ∃ λ lA → Γ ⊢ u ~ t ↑! U ^ lA))
+                 → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
+                 → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
+                 → Dec (∃ λ U → ∃ λ lA → Γ ⊢ u ~ cast ⁰ A B e t ↑! U ^ lA)
+  cast-refl'-dec A B (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)) ⊢e (yes (_ , _ , B~A)) (yes (_ , _ , p)) _ _ =
+    let _ , _ , neA = ne~↓! B~A
+        var≡t = soundness~↑! p
+        ⊢K , ⊢u , ⊢t  = syntacticEqTerm var≡t
+        el , eA = type-uniq ⊢t x
+        _ , whnfD , dd = whNormTerm (un-univ (PE.subst (λ X →  _ ⊢ _ ^ [ ! , X ]) el ⊢K)) 
+    in yes ( _ , _ , cast-refl' (~atU B (_ , _ , B~A))
+                                (ne-ins (conv (PE.subst (λ X → _ ⊢ _ ∷ _ ^ [ ! , X ]) el ⊢u )
+                                              (PE.subst (λ X → _ ⊢ _ ≡ _ ^ [ ! , X ]) el eA))
+                                        x
+                                        neA ([~] _ (red (univ:⇒*: dd)) whnfD (PE.subst (λ X → _ ⊢ _ ~ _ ↑! _ ^  X) el p)))
+                                        ⊢e)
+  cast-refl'-dec A~A' B~B' t~t' ⊢e (yes (_ , _ , A~B)) (no ¬p) noeqNe noeqℕ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → ⊥-elim (let _ , neA' , _ = ne~↓! x
+                                                            _ , _ , neB' = ne~↓! x₁
+                                                        in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-refl' x x₁ x₂) → ¬p (_ , _ , let _ , _ , neA = ne~↓! A~B
+                                                           _ , var~t' , _ = [conv↓]ne neA x₁  
+                                                           _ , var~t = neutral↓↑ var~t'
+                                                       in var~t) ;
+            (_ , _ , cast-refl x x₁ x₂) → ⊥-elim (let _ , neA' , neB' = ne~↓! x
+                                                  in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , castℕ-refl x x₁) → ⊥-elim (noeqℕ PE.refl) })
+  cast-refl'-dec A~A' B~B' t~t' ⊢e (no ¬AB) _ noeqNe noeqℕ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → ⊥-elim (let _ , neA' , _ = ne~↓! x
+                                                            _ , _ , neB' = ne~↓! x₁
+                                                        in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-refl' x x₁ x₂) → ¬AB (_ , _ , x) ;
+            (_ , _ , cast-refl x x₁ x₂) → ⊥-elim (let _ , neA' , neB' = ne~↓! x
+                                                  in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , castℕ-refl x x₁) → ⊥-elim (noeqℕ PE.refl) })
+
+  castℕ-refl-dec : ∀ {Γ A t e u}
+              → Γ ⊢ A ~ A ↓! U ⁰ ^ next ⁰
+              → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
+              → (noeqNeℕ : ∀ {A' t' e'} → Neutral A' → u PE.≡ cast ⁰ ℕ A' e' t' → ⊥)
+              → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
+              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ u ~ cast ⁰ ℕ A e t ↑! U ^ lA)
+  castℕ-refl-dec _ noeqNe noeqNeℕ noeqℕ = no (λ { (_ , _ , cast-refl x x₁ x₂) → let _ , neA , neB = ne~↓! x in noeqNe neA neB PE.refl ;
+                                                  (_ , _ , castℕ-refl x x₁) → noeqℕ PE.refl ;
+                                                  (_ , _ , cast-ℕ x x₁ x₂ x₃) → let _ , neA , _ = ne~↓! x in noeqNeℕ neA PE.refl } )
+
+  castℕ-refl'-dec : ∀ {Γ A t e u}
+              → Γ ⊢ A ~ A ↓! U ⁰ ^ next ⁰
+              → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
+              → (noeqNeℕ : ∀ {A' t' e'} → Neutral A' → u PE.≡ cast ⁰ ℕ A' e' t' → ⊥)
+              → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
+              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ ℕ A e t ~ u ↑! U ^ lA)
+  castℕ-refl'-dec _ noeqNe noeqNeℕ noeqℕ = no (λ { (_ , _ , cast-refl' x x₁ x₂) → let _ , neB , neA = ne~↓! x in noeqNe neA neB PE.refl ;
+                                                   (_ , _ , castℕ-refl' x x₁) → noeqℕ PE.refl ;
+                                                   (_ , _ , cast-ℕ x x₁ x₂ x₃) → let _ , _ , neA = ne~↓! x in noeqNeℕ neA PE.refl } )
+
+
+  cast-cast-≡ : ∀ {Γ A A' B B' t t' e e' X lX}
+                 → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ↑! X ^ lX
+                 → Γ ⊢ B ≡ B' ^ [ ! , ι ⁰ ]
+  cast-cast-≡ X =
+    let cast≡cast = soundness~↑! X
+        _ , ⊢cast , ⊢cast' = syntacticEqTerm cast≡cast
+        _ , _ , _ , _ , ⊢t , R≡R , eqR , _ = inversion-cast ⊢cast
+        _ , _ , _ , _ , _ , T≡T , eqT , _ = inversion-cast ⊢cast'
+        eqR , el = typeinfo-PE-injectivity eqR
+        eqT , _ = typeinfo-PE-injectivity eqT
+        T≡T' = PE.subst (λ X →  _ ⊢ _ ≡ _ ^ [ X , ι _ ]) (PE.sym eqT) T≡T
+        R≡R' = PE.subst (λ X →  _ ⊢ _ ≡ _ ^ [ X , ι _ ]) (PE.sym eqR) R≡R
+    in T.trans (T.sym R≡R') T≡T'
+
+  castℕℕ-refl-dec : ∀ {Γ t e u}
+              → Γ ⊢ t ~ t ↓! ℕ ^ ι ⁰
+              → (⊢e : Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ])
+              → (dectu : Dec (∃ λ U → ∃ λ lA → Γ ⊢ t ~ u ↑! U ^ lA))
+              → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
+              → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
+              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ ℕ ℕ e t ~ u ↑! U ^ lA)
+  castℕℕ-refl-dec X ⊢e (yes (_ , _ , p)) _ _ =
+    let var≡t = soundness~↑! p
+        ⊢K , ⊢t , ⊢u = syntacticEqTerm var≡t
+        _ , x , _ = syntacticEqTerm (soundness~↓! X)
+        el , eA = type-uniq ⊢t x
+        _ , whnfD , dd = whNormTerm (un-univ (PE.subst (λ X →  _ ⊢ _ ^ [ ! , X ]) el ⊢K))
+        eA' = ℕ≡A (trans (sym (PE.subst (λ X →  _ ⊢ _ ≡  _ ^ [ ! , X ]) el eA)) (subset* (univ⇒* (redₜ dd)))) whnfD
+    in yes ( _ , _ , castℕ-refl ([~] _ (univ⇒* (PE.subst (λ X → _ ⊢ _ ⇒* X ∷ Univ ! ⁰ ^ ι ¹) eA' (redₜ dd))) ℕₙ (PE.subst (λ X → _ ⊢ _ ~ _ ↑! _ ^  X) el p)) ⊢e)
+  castℕℕ-refl-dec t~t' ⊢e (no ¬p) noeqNe noeqℕ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → ⊥-elim (let _ , _ , neA' = ne~↓! x
+                                                            _ , neB' , _ = ne~↓! x₁
+                                                        in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-refl () x₁ x₂) ;
+            (_ , _ , cast-refl' x x₁ x₂) → ⊥-elim (let _ , neB' , neA' = ne~↓! x
+                                                   in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-ℕℕ x x₁ x₂) → ⊥-elim (noeqℕ PE.refl) ;
+            (_ , _ , castℕ-refl ([~] A D whnfB k~l) x₁) → ¬p (_ , _ , k~l) ;
+            (_ , _ , castℕ-refl' x x₁) → ⊥-elim (noeqℕ PE.refl) })
+
+  castℕℕ-refl'-dec : ∀ {Γ t e u}
+                 → Γ ⊢ t ~ t ↓! ℕ ^ ι ⁰
+                 → (⊢e : Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ])
+                 → (dectu : Dec (∃ λ U → ∃ λ lA → Γ ⊢ u ~ t ↑! U ^ lA))
+                 → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
+                 → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
+                 → Dec (∃ λ U → ∃ λ lA → Γ ⊢ u ~ cast ⁰ ℕ ℕ e t ↑! U ^ lA)
+  castℕℕ-refl'-dec X ⊢e (yes (_ , _ , p)) _ _ =
+    let var≡t = soundness~↑! p
+        ⊢K , ⊢u , ⊢t = syntacticEqTerm var≡t
+        _ , x , _ = syntacticEqTerm (soundness~↓! X)
+        el , eA = type-uniq ⊢t x
+        _ , whnfD , dd = whNormTerm (un-univ (PE.subst (λ X →  _ ⊢ _ ^ [ ! , X ]) el ⊢K))
+        eA' = ℕ≡A (trans (sym (PE.subst (λ X →  _ ⊢ _ ≡  _ ^ [ ! , X ]) el eA)) (subset* (univ⇒* (redₜ dd)))) whnfD
+    in yes ( _ , _ , castℕ-refl' ([~] _ (univ⇒* (PE.subst (λ X → _ ⊢ _ ⇒* X ∷ Univ ! ⁰ ^ ι ¹) eA' (redₜ dd))) ℕₙ (PE.subst (λ X → _ ⊢ _ ~ _ ↑! _ ^  X) el p)) ⊢e)
+
+  castℕℕ-refl'-dec t~t' ⊢e (no ¬p) noeqNe noeqℕ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → ⊥-elim (let _ , neA' , _ = ne~↓! x
+                                                            _ , _ , neB' = ne~↓! x₁
+                                                        in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-refl' () x₁ x₂) ;
+            (_ , _ , cast-refl x x₁ x₂) → ⊥-elim (let _ , neA' , neB' = ne~↓! x
+                                                  in noeqNe neA' neB' PE.refl) ;
+            (_ , _ , cast-ℕℕ x x₁ x₂) → ⊥-elim (noeqℕ PE.refl) ;
+            (_ , _ , castℕ-refl' ([~] A D whnfB k~l) x₁) → ¬p (_ , _ , k~l) ;
+            (_ , _ , castℕ-refl x x₁) → ⊥-elim (noeqℕ PE.refl) })

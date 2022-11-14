@@ -93,4 +93,3 @@ mutual
   whnfConv↓TermNe neA (ne-ins x x₁ x₂ x₃) =
     let _ , neT , neU = ne~↓! x₃
     in neT , neU
-
