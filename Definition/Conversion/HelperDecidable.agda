@@ -35,7 +35,6 @@ open import Tools.Empty
 open import Tools.Nullary
 import Tools.PropositionalEquality as PE
 
-
 dec-relevance : ∀ (r r′ : Relevance) → Dec (r PE.≡ r′)
 dec-relevance ! ! = yes PE.refl
 dec-relevance ! % = no (λ ())
@@ -359,8 +358,46 @@ decConv↓Term-U : ∀ {t u Γ r lU l}
   → ⊥
 decConv↓Term-U (ne x) t~t ¬u~u = ¬u~u x
 
-
 abstract -- Agda will do some slow unfolding without abstract
+
+  convert~-aux : ∀ {Δ B lB}
+    → (Δ ⊢ B ~ B ↓! U lB ^ next lB) 
+    → ⊢ Δ ≡ Δ
+  convert~-aux B = let ⊢M , ⊢A , ⊢B = syntacticEqTerm (soundness~↓! B) in reflConEq (wfTerm ⊢B)
+
+  convert~-aux' : ∀ {Γ Δ A lA B lB M lM}
+    → ⊢ Γ ≡ Δ
+    → (Γ ⊢ A ~ A ↓! U lA ^ next lA)
+    → (Δ ⊢ B ~ B ↓! U lB ^ next lB)
+    → (Γ ⊢ A ~ B ↓! M ^ lM)
+    → Δ ⊢ B ≡ A ^ [ ! , ι lA ]
+  convert~-aux' Γ≡Δ A B A~B  =
+    let
+      whnfM , neA , neB = ne~↓! A~B
+      ⊢M , ⊢A , ⊢B = syntacticEqTerm (soundness~↓! A~B)
+      _ , ⊢A₂ , _ = syntacticEqTerm (soundness~↓! A)
+      _ , ⊢B₂ , _ = syntacticEqTerm (soundness~↓! B)
+      lA≡lM , ⊢UA≡M = neTypeEq neA ⊢A₂ ⊢A
+      lM≡lB , ⊢M≡UA = neTypeEq neB ⊢B (stabilityTerm (symConEq Γ≡Δ) ⊢B₂)
+      lA≡lB = next-inj (PE.trans lA≡lM lM≡lB)
+      UA≡M = U≡A-whnf ⊢UA≡M whnfM
+    in stabilityEq Γ≡Δ (univ (sym (soundness~↓! (PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) UA≡M (PE.sym lA≡lM) A~B))))
+
+  convert~-aux'' : ∀ {Γ Δ A lA B lB M lM}
+    → ⊢ Γ ≡ Δ
+    → (Γ ⊢ A ~ A ↓! U lA ^ next lA)
+    → (Δ ⊢ B ~ B ↓! U lB ^ next lB)
+    → (Γ ⊢ A ~ B ↓! M ^ lM)
+    → lA PE.≡ lB
+  convert~-aux'' Γ≡Δ A B A~B  =
+    let
+       whnfM , neA , neB = ne~↓! A~B
+       ⊢M , ⊢A , ⊢B = syntacticEqTerm (soundness~↓! A~B)
+       _ , ⊢A₂ , _ = syntacticEqTerm (soundness~↓! A)
+       _ , ⊢B₂ , _ = syntacticEqTerm (soundness~↓! B)
+       lA≡lM , ⊢UA≡M = neTypeEq neA ⊢A₂ ⊢A
+       lM≡lB , ⊢M≡UA = neTypeEq neB ⊢B (stabilityTerm (symConEq Γ≡Δ) ⊢B₂)
+     in next-inj (PE.trans lA≡lM lM≡lB)
 
   convert~ : ∀ {Γ Δ A lA B lB t M lM}
     → ⊢ Γ ≡ Δ
@@ -369,19 +406,18 @@ abstract -- Agda will do some slow unfolding without abstract
     → (Γ ⊢ A ~ B ↓! M ^ lM)
     → (Δ ⊢ t [conv↑] t ∷ B ^ ι lB)
     → (Δ ⊢ t [conv↑] t ∷ A ^ ι lA)
-  convert~ Γ≡Δ A B A~B t =
-    let
-      whnfM , neA , neB = ne~↓! A~B
-      ⊢M , ⊢A , ⊢B = syntacticEqTerm (soundness~↓! A~B)
-      _ , ⊢A₂ , _ = syntacticEqTerm (soundness~↓! A)
-      _ , ⊢B₂ , _ = syntacticEqTerm (soundness~↓! B)
-      lA≡lM , ⊢UA≡M = neTypeEq neA ⊢A₂ ⊢A
-      lM≡lB , ⊢M≡UA = neTypeEq neB ⊢B (stabilityTerm (symConEq Γ≡Δ) ⊢B₂)
-      lA≡lB = next-inj (PE.trans lA≡lM lM≡lB)
-      UA≡M = U≡A-whnf ⊢UA≡M whnfM
-      ⊢A≡B = stabilityEq Γ≡Δ (univ (sym (soundness~↓! (PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) UA≡M (PE.sym lA≡lM) A~B))))
-    in convConv↑Term (reflConEq (wfTerm ⊢B₂)) ⊢A≡B (PE.subst (λ X → _ ⊢ _ [conv↑] _ ∷ _ ^ ι X) (PE.sym lA≡lB) t)
-
+  convert~ Γ≡Δ A B A~B t = convConv↑Term (convert~-aux B) (convert~-aux' Γ≡Δ A B A~B) (PE.subst (λ X → _ ⊢ _ [conv↑] _ ∷ _ ^ ι X) (PE.sym (convert~-aux'' Γ≡Δ A B A~B)) t)
+  
+  convert~size : ∀ {Γ Δ A lA B lB t M lM}
+    → (Γ≡Δ : ⊢ Γ ≡ Δ)
+    → (A~ : Γ ⊢ A ~ A ↓! U lA ^ next lA)
+    → (B~ : Δ ⊢ B ~ B ↓! U lB ^ next lB)
+    → (A~B : Γ ⊢ A ~ B ↓! M ^ lM)
+    → (t : Δ ⊢ t [conv↑] t ∷ B ^ ι lB)
+    → sizeConv↑Term (convert~ Γ≡Δ A~ B~ A~B t) PE.≡ sizeConv↑Term t
+  convert~size {Γ} {Δ} {A'} {lA} {B'} {lB} {t'} {M} {lM} Γ≡Δ A B A~B t =
+      PE.trans (convConv↑TermSize (convert~-aux B) (convert~-aux' Γ≡Δ A B A~B) (PE.subst (λ X → _ ⊢ _ [conv↑] _ ∷ _ ^ ι X) (PE.sym (convert~-aux'' Γ≡Δ A B A~B)) t))
+               (sizeSubst-gen (λ X → _ ⊢ _ [conv↑] _ ∷ _ ^ ι X) sizeConv↑Term t (PE.sym (convert~-aux'' Γ≡Δ A B A~B)))
 
   convert'~ : ∀ {Γ Δ A lA B lB t M lM}
     → ⊢ Γ ≡ Δ
@@ -390,19 +426,9 @@ abstract -- Agda will do some slow unfolding without abstract
     → (Γ ⊢ A ~ B ↓! M ^ lM)
     → (Δ ⊢ t [conv↓] t ∷ B ^ ι lB)
     → (Δ ⊢ t [conv↓] t ∷ A ^ ι lA)
-  convert'~ Γ≡Δ A B A~B t =
-    let
-      whnfM , neA , neB = ne~↓! A~B
-      ⊢M , ⊢A , ⊢B = syntacticEqTerm (soundness~↓! A~B)
-      _ , ⊢A₂ , _ = syntacticEqTerm (soundness~↓! A)
-      _ , ⊢B₂ , _ = syntacticEqTerm (soundness~↓! B)
-      lA≡lM , ⊢UA≡M = neTypeEq neA ⊢A₂ ⊢A
-      lM≡lB , ⊢M≡UA = neTypeEq neB ⊢B (stabilityTerm (symConEq Γ≡Δ) ⊢B₂)
-      lA≡lB = next-inj (PE.trans lA≡lM lM≡lB)
-      UA≡M = U≡A-whnf ⊢UA≡M whnfM
-      ⊢A≡B = stabilityEq Γ≡Δ (univ (sym (soundness~↓! (PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) UA≡M (PE.sym lA≡lM) A~B))))
-      _ , neA , _ = ne~↓! A
-    in convConv↓Term (reflConEq (wfTerm ⊢B₂)) ⊢A≡B (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym lA≡lB) t)
+  convert'~ Γ≡Δ A B A~B t = 
+    let whnfM , neA , neB = ne~↓! A~B
+    in convConv↓Term (convert~-aux B) (convert~-aux' Γ≡Δ A B A~B) (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym (convert~-aux'' Γ≡Δ A B A~B)) t)
 
 
   convert'~size : ∀ {Γ Δ A lA B lB t M lM}
@@ -415,18 +441,12 @@ abstract -- Agda will do some slow unfolding without abstract
   convert'~size {Γ} {Δ} {A'} {lA} {B'} {lB} {t'} {M} {lM} Γ≡Δ A B A~B t =
     let
       whnfM , neA , neB = ne~↓! A~B
-      ⊢M , ⊢A , ⊢B = syntacticEqTerm (soundness~↓! A~B)
-      _ , ⊢A₂ , _ = syntacticEqTerm (soundness~↓! A)
-      _ , ⊢B₂ , _ = syntacticEqTerm (soundness~↓! B)
-      lA≡lM , ⊢UA≡M = neTypeEq neA ⊢A₂ ⊢A
-      lM≡lB , ⊢M≡UA = neTypeEq neB ⊢B (stabilityTerm (symConEq Γ≡Δ) ⊢B₂)
-      lA≡lB = next-inj (PE.trans lA≡lM lM≡lB)
-      UA≡M = U≡A-whnf ⊢UA≡M whnfM
-      ⊢A≡B = stabilityEq Γ≡Δ (univ (sym (soundness~↓! (PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) UA≡M (PE.sym lA≡lM) A~B))))
-      _ , neA , _ = ne~↓! A
-    in PE.trans (convConv↓TermSize (reflConEq (wfTerm ⊢B₂)) ⊢A≡B (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym lA≡lB) t))
-                (sizeSubst-gen (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) sizeConv↓Term t (PE.sym lA≡lB))
+    in PE.trans (convConv↓TermSize (convert~-aux B) (convert~-aux' Γ≡Δ A B A~B) (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym (convert~-aux'' Γ≡Δ A B A~B)) t))
+                (sizeSubst-gen (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) sizeConv↓Term t (PE.sym (convert~-aux'' Γ≡Δ A B A~B)))
 
+
+
+abstract
   cast-refl-dec : ∀ {Γ A B t e u}
               → Γ ⊢ A ~ A ↓! U ⁰ ^ next ⁰
               → Γ ⊢ B ~ B ↓! U ⁰ ^ ι ¹
@@ -468,6 +488,7 @@ abstract -- Agda will do some slow unfolding without abstract
                                                    in noeqNe neA' neB' PE.refl) ;
             (_ , _ , castℕ-refl' x x₁) → ⊥-elim (noeqℕ PE.refl) })
 
+abstract
   cast-refl'-dec : ∀ {Γ A B t e u}
                  → Γ ⊢ A ~ A ↓! U ⁰ ^ next ⁰
                  → Γ ⊢ B ~ B ↓! U ⁰ ^ ι ¹
@@ -510,6 +531,7 @@ abstract -- Agda will do some slow unfolding without abstract
                                                   in noeqNe neA' neB' PE.refl) ;
             (_ , _ , castℕ-refl x x₁) → ⊥-elim (noeqℕ PE.refl) })
 
+abstract
   castℕ-refl-dec : ∀ {Γ A t e u}
               → Γ ⊢ A ~ A ↓! U ⁰ ^ next ⁰
               → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
@@ -530,7 +552,7 @@ abstract -- Agda will do some slow unfolding without abstract
                                                    (_ , _ , castℕ-refl' x x₁) → noeqℕ PE.refl ;
                                                    (_ , _ , cast-ℕ x x₁ x₂ x₃) → let _ , _ , neA = ne~↓! x in noeqNeℕ neA PE.refl } )
 
-
+abstract
   cast-cast-≡ : ∀ {Γ A A' B B' t t' e e' X lX}
                  → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ A' B' e' t' ↑! X ^ lX
                  → Γ ⊢ B ≡ B' ^ [ ! , ι ⁰ ]
@@ -545,6 +567,7 @@ abstract -- Agda will do some slow unfolding without abstract
         R≡R' = PE.subst (λ X →  _ ⊢ _ ≡ _ ^ [ X , ι _ ]) (PE.sym eqR) R≡R
     in T.trans (T.sym R≡R') T≡T'
 
+abstract
   castℕℕ-refl-dec : ∀ {Γ t e u}
               → Γ ⊢ t ~ t ↓! ℕ ^ ι ⁰
               → (⊢e : Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ])

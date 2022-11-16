@@ -78,4 +78,3 @@ mutual
   sizeConv↓ (U-refl x x₁) = 1
   sizeConv↓ (univ x) = 1 + sizeConv↓Term x
 
-
