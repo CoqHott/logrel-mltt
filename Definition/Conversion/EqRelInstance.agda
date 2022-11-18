@@ -48,6 +48,13 @@ abstract -- Agda will do some slow unfolding without abstract
         A≡ℕ = ℕ≡A ⊢ℕ≡A whnfA
     in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡ℕ (PE.sym l≡l) t~u
 
+  cast-ℕℕ : ∀ {Γ t t' e e'}
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
+  cast-ℕℕ t~t ⊢e ⊢e' = castℕ-refl ([~] _ (id (univ (ℕⱼ (wfTerm ⊢e)))) ℕₙ (castℕ-refl' t~t ⊢e')) ⊢e
+  
 -- Algorithmic equality of neutrals with injected conversion.
 data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
   ↑ : ∀ {B} → Γ ⊢ A ≡ B ^ r → Γ ⊢ k ~ l ↑ B ^ r → Γ ⊢ k ~ l ∷ A ^ r
@@ -340,8 +347,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
          t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡ℕ
                       ([~] _ (red D) whnfB′ x)
          _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
-         cast~cast = castℕ-refl ([~] _ (id (univ (ℕⱼ ⊢Γ ))) ℕₙ (castℕ-refl' t~t′ ⊢e')) ⊢e
-     in ↑ (refl (univ (ℕⱼ ⊢Γ))) (~↑! cast~cast)
+     in ↑ (refl (univ (ℕⱼ ⊢Γ))) (~↑! (cast-ℕℕ t~t′ ⊢e ⊢e'))
 
 ~-castΠ : ∀ {A A' : Term} {rA : Relevance} {P P' B B' e e' t t' : Term}
     {Γ : Con Term} →

@@ -329,10 +329,6 @@ mutual
     in cast ⁰ _ A′ e t′ , castℕₙ nfA′ nft′ ,
        cast-cong (refl (ℕⱼ (wfTerm ⊢e)) ) A≡A′ t≡t′ ⊢e
                  (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wfTerm ⊢e)) ) (refl (ℕⱼ (wfTerm ⊢e))) A≡A′)))
-  fullRedNe (cast-ℕℕ {e = e} {e' = e'} x ⊢e ⊢e') =
-      let t′ , nft′ , t≡t′ = fullRedNe′ x
-    in cast ⁰ _ _ e t′ , castℕℕₙ nft′ ,
-       cast-cong (refl (ℕⱼ (wfTerm ⊢e)) ) (refl (ℕⱼ (wfTerm ⊢e)) ) t≡t′ ⊢e ⊢e
   fullRedNe {Γ = Γ} (cast-Π {e = e} {e' = e'} x x₁ x₂ ⊢e ⊢e') =
     let A′ , nfA′ , A≡A′ = fullRedTerm x
         B′ , nfB′ , B≡B′ = fullRedNe′ x₁
