@@ -1,4 +1,5 @@
-{-# OPTIONS --safe #-}
+-- {-# OPTIONS --safe #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 
 module Definition.Conversion.SymmetrySize where
 
@@ -43,14 +44,13 @@ mutual
   size-sym~↑! Γ≡Δ (Id-U x x₁) = {!!}
   size-sym~↑! Γ≡Δ (Id-Uℕ x) = {!!}
   size-sym~↑! Γ≡Δ (Id-UΠ x x₁) = {!!}
-  size-sym~↑! Γ≡Δ (cast-cong x x₁ x₂ x₃ x₄ x₅ x₆) = {!!}
-  size-sym~↑! Γ≡Δ (cast-refl x x₁ x₂ x₃ x₄) = {!!}
+  size-sym~↑! Γ≡Δ (cast-cong x x₁ x₂ x₃ x₄) = {!!}
+  size-sym~↑! Γ≡Δ (cast-refl x x₁ x₂) = {!!}
   size-sym~↑! Γ≡Δ (castℕ-refl x x₁) = {!!}
-  size-sym~↑! Γ≡Δ (cast-refl' x x₁ x₂ x₃ x₄) = {!!}
+  size-sym~↑! Γ≡Δ (cast-refl' x x₁ x₂) = {!!}
   size-sym~↑! Γ≡Δ (castℕ-refl' x x₁) = {!!}
   size-sym~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) = {!!}
   size-sym~↑! Γ≡Δ (cast-ℕ x x₁ x₂ x₃) = {!!}
-  size-sym~↑! Γ≡Δ (cast-ℕℕ x x₁ x₂) = {!!}
   size-sym~↑! Γ≡Δ (cast-neΠ x x₁ x₂ x₃ x₄) = {!!}
   size-sym~↑! Γ≡Δ (cast-Π x x₁ x₂ x₃ x₄) = {!!}
   size-sym~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) = {!!}
@@ -60,7 +60,7 @@ mutual
 
   size-sym~↓! : ∀ {t u A Γ Δ l} (Γ≡Δ : ⊢ Γ ≡ Δ)
         (t~u : Γ ⊢ t ~ u ↓! A ^ l) → size~↓! (proj₂ (proj₂ (proj₂ (sym~↓! Γ≡Δ t~u)))) PE.≡ size~↓! t~u
-  size-sym~↓! Γ≡Δ ([~] A D whnfB k~l) = size-sym~↑! Γ≡Δ k~l
+  size-sym~↓! Γ≡Δ ([~] A D whnfB k~l) = PE.cong 1+ (size-sym~↑! Γ≡Δ k~l)
 
   size-symConv↑Term : ∀ {t u A Γ Δ l} (Γ≡Δ : ⊢ Γ ≡ Δ)
         (t~u : Γ ⊢ t [conv↑] u ∷ A ^ l) → sizeConv↑Term (symConv↑Term Γ≡Δ t~u) PE.≡ sizeConv↑Term t~u

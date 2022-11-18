@@ -36,7 +36,6 @@ mutual
                              in Id-cong (refl (univ 0<1 (wfEqTerm XX))) xx XX
   soundness~↑! (cast-cong X x x₁ x₂ x₃) = cast-cong (soundness~↓! X) (sym (soundness~↓! x)) (soundnessConv↓Term x₁) x₂ x₃
   soundness~↑! (cast-ℕ X x x₁ x₂) = let XX = soundness~↓! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x) x₁ x₂
-  soundness~↑! (cast-ℕℕ X x x₁) = let XX = soundness~↓! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) (refl (ℕⱼ (wfEqTerm XX))) XX x x₁
   soundness~↑! (cast-Π x X x₁ x₂ x₃) = cast-cong (soundnessConv↑Term x) (soundness~↓! X) (soundnessConv↑Term x₁) x₂ x₃
   soundness~↑! (cast-Πℕ x x₁ x₂ x₃) = let XX = (soundnessConv↑Term x) in cast-cong XX (refl (ℕⱼ (wfEqTerm XX))) (soundnessConv↑Term x₁) x₂ x₃
   soundness~↑! (cast-ℕΠ x x₁ x₂ x₃) = let XX = (soundnessConv↑Term x) in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x₁) x₂ x₃

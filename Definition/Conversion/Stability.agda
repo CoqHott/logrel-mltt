@@ -164,7 +164,6 @@ mutual
   stability~↑! Γ≡Δ (cast-cong X x x₁ x₂ x₃) = cast-cong (stability~↓! Γ≡Δ X) (stability~↓! Γ≡Δ x)
                                                         (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-ℕ X x x₁ x₂) = cast-ℕ (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂)
-  stability~↑! Γ≡Δ (cast-ℕℕ X x x₁) = cast-ℕℕ (stability~↓! Γ≡Δ X) (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
   stability~↑! Γ≡Δ (cast-Π x X x₁ x₂ x₃) = cast-Π (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) = cast-Πℕ (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) = cast-ℕΠ (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)

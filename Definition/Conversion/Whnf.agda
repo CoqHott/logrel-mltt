@@ -34,7 +34,6 @@ mutual
         nt , nt' = whnfConv↓TermNe nX x₁
     in castₙ nX nx nt , castₙ nX' nx' nt'
   ne~↑! (cast-ℕ X x x₁ x₂) = let _ , nt , nu = ne~↓! X in castℕₙ nt , castℕₙ nu
-  ne~↑! (cast-ℕℕ X x x₁) = let _ , nt , nu = ne~↓! X in castℕℕₙ nt , castℕℕₙ nu
   ne~↑! (cast-Π x X x₁ x₂ x₃) = let _ , nt , nu = ne~↓! X in castΠₙ nt , castΠₙ nu
   ne~↑! (cast-Πℕ x x₁ x₂ x₃) = castΠℕₙ , castΠℕₙ
   ne~↑! (cast-ℕΠ x x₁ x₂ x₃) = castℕΠₙ , castℕΠₙ

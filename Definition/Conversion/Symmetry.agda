@@ -129,12 +129,6 @@ mutual
           U≡B = U≡A-whnf U≡U' whnfU
           A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B A'~A
       in _ , univ (soundness~↓! X) , cast-ℕ A'≡A (symConv↑Term Γ≡Δ x) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₁)
-  sym~↑! Γ≡Δ (cast-ℕℕ X x x₁) =
-      let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-          N , whnfN , N≡N' , t'~t = sym~↓! Γ≡Δ X
-          ℕ≡B = ℕ≡A N≡N' whnfN
-          t'≡t = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) ℕ≡B t'~t
-      in _ , refl (univ (ℕⱼ ⊢Γ)) , cast-ℕℕ t'≡t (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x)
   sym~↑! Γ≡Δ (cast-Π x X x₁ x₂ x₃) =
       let U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ X
           B'~B = symConv↑Term Γ≡Δ x

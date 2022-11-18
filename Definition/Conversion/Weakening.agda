@@ -43,8 +43,6 @@ mutual
     cast-cong (wk~↓! [ρ] ⊢Δ X) (wk~↓! [ρ] ⊢Δ x) (wkConv↓Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-ℕ X x x₁ x₂) =
     cast-ℕ (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-ℕℕ X x x₁) =
-    cast-ℕℕ (wk~↓! [ρ] ⊢Δ X) (wkTerm [ρ] ⊢Δ x) (wkTerm [ρ] ⊢Δ x₁)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-Π x X x₁ x₂ x₃) =
     cast-Π (wkConv↑Term [ρ] ⊢Δ x) (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-Πℕ x x₁ x₂ x₃) =
