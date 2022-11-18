@@ -37,3 +37,6 @@ completeEqTerm↓ whnfA whnft whnfu t≡u = whnfconv↑conv↓ whnfA whnft whnfu
 
 completeEqNeutral : ∀ {t u l' l Γ} → Neutral t → Neutral u →  Γ ⊢ t ≡ u ∷ U l' ^  [ ! , l ] → Γ ⊢ t ~ u ↓! U l' ^ l
 completeEqNeutral net neu t≡u = neutralconv↓ net neu (completeEqTerm↓ Uₙ (ne net) (ne neu) t≡u)
+
+completeEqℕ : ∀ {t u l Γ} → Neutral t → Neutral u →  Γ ⊢ t ≡ u ∷ ℕ ^  [ ! , l ] → Γ ⊢ t ~ u ↓! ℕ ^ l
+completeEqℕ net neu t≡u = neutralℕconv↓ net neu (completeEqTerm↓ ℕₙ (ne net) (ne neu) t≡u)
