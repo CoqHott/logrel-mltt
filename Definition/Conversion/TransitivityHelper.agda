@@ -100,49 +100,79 @@ import Tools.PropositionalEquality as PE
   [ [ var 1 + [ var 0 + var 2 ] ] + [ var 3 + [ var 0 + var 4 ] ] ] PE.refl
 
 <=-help-ab :  ∀ {a b c d : Nat} → 1+ (a + b) <= (a + (1+ c) + (b + d))
-<=-help-ab = {!!}
+<=-help-ab {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
+  [ var 0 + [ var 1 + var 2 ] ]
+  [ [ var 1 + [ var 0 + var 3 ] ] + [ var 2 + var 4 ] ] PE.refl
 
 <=-help-ab1 :  ∀ {a b : Nat} → 1+ (a + b) <= (a + 1 + (b + 1))
-<=-help-ab1 = {!!}
+<=-help-ab1 {a} {b} = inequality (vars (1 ∷ a ∷ b ∷ []))
+  [ var 0 + [ var 1 + var 2 ] ]
+  [ [ var 1 + var 0 ] + [ var 2 + var 0 ] ] PE.refl
 
 <=-help-abc :  ∀ {a b c : Nat} → 1+ (a + c) <= (a + 1+ (b + (2 + c)))
-<=-help-abc = {!!}
+<=-help-abc {a} {b} {c} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ []))
+  [ var 0 + [ var 1 + var 3 ] ]
+  [ var 1 + [ var 0 + [ var 2 + [ [ var 0 + var 0 ] + var 3 ] ] ] ] PE.refl
 
 <=-help-abc' :  ∀ {a b c : Nat} → 1+ (a + c) <= (1+ b + (2 + a) + c)
-<=-help-abc' = {!!}
+<=-help-abc' {a} {b} {c} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ []))
+  [ var 0 + [ var 1 + var 3 ] ]
+  [ [ [ var 0 + var 2 ] + [ [ var 0 + var 0 ] + var 1 ] ] + var 3 ] PE.refl
 
 <=-help-ab1' :  ∀ {a b : Nat} → (a + b) <= (a + 1+ b)
-<=-help-ab1' = {!!}
+<=-help-ab1' {a} {b} = inequality (vars (1 ∷ a ∷ b ∷ []))
+  [ var 1 + var 2 ]
+  [ var 1 + [ var 0 + var 2 ] ] PE.refl
 
 <=-help-ab' :  ∀ {a b c d : Nat} → (a + b) <= (a + c + 1+ (b + d))
-<=-help-ab' = {!!}
+<=-help-ab' {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
+  [ var 1 + var 2 ]
+  [ [ var 1 + var 3 ] + [ var 0 + [ var 2 + var 4 ] ] ] PE.refl
 
 <=-help-ab'' :  ∀ {a b c d : Nat} → (b + d) <= (a + b + 1+ (c + d))
-<=-help-ab'' = {!!}
+<=-help-ab'' {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
+  [ var 2 + var 4 ]
+  [ [ var 1 + var 2 ] + [ var 0 + [ var 3 + var 4 ] ] ] PE.refl
 
 <=-help-3-ab :  ∀ {a b b' c d : Nat} → (a + b) <= (a + c + 1+ (b + b' + d))
-<=-help-3-ab = {!!}
+<=-help-3-ab {a} {b} {b'} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c ∷ d ∷ []))
+  [ var 1 + var 2 ]
+  [ [ var 1 + var 4 ] + [ var 0 + [ [ var 2 + var 3 ] + var 5 ] ] ] PE.refl
 
 <=-help-3-ab' :  ∀ {a b b' c d : Nat} → (b' + (1+ a)) <= (a + c + 1+ (b + (1+ b') + d))
-<=-help-3-ab' = {!!}
+<=-help-3-ab' {a} {b} {b'} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c ∷ d ∷ []))
+  [ var 3 + [ var 0 + var 1 ] ]
+  [ [ var 1 + var 4 ] + [ var 0 + [ [ var 2 + [ var 0 + var 3 ] ] + var 5 ] ] ] PE.refl
 
 <=-help-3-abb' :  ∀ {a b b' c d : Nat} → (b' + a + b) <= (a + c + 1+ (b + b' + d))
-<=-help-3-abb' = {!!}
+<=-help-3-abb' {a} {b} {b'} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c ∷ d ∷ []))
+  [ [ var 3 + var 1 ] + var 2 ]
+  [ [ var 1 + var 4 ] + [ var 0 + [ [ var 2 + var 3 ] + var 5 ] ] ] PE.refl
 
 <=-help-3-ab'c :  ∀ {a b b' c c' d : Nat} → (b' + c) <= (a + c + c' + 1+ (b + (1+ b') + d))
-<=-help-3-ab'c = {!!}
+<=-help-3-ab'c {a} {b} {b'} {c} {c'} {d} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c ∷ c' ∷ d ∷ []))
+  [ var 3 + var 4 ]
+  [ [ [ var 1 + var 4 ] + var 5 ] + [ var 0 + [ [ var 2 + [ var 0 + var 3 ] ] + var 6 ] ] ] PE.refl
 
 <=-help-3-abcde :  ∀ {a b c d e : Nat} → (a + b + c + (d + e)) <= (b + d + 1+ (c + a + e))
-<=-help-3-abcde = {!!}
+<=-help-3-abcde {a} {b} {c} {d} {e} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ e ∷ []))
+  [ [ [ var 1 + var 2 ] + var 3 ] + [ var 4 + var 5 ] ]
+  [ [ var 2 + var 4 ] + [ var 0 + [ [ var 3 + var 1 ] + var 5 ] ] ] PE.refl
 
 <=-help-3-abcde' :  ∀ {a b c d e : Nat} → (a + d + b + (c + e)) <= (a + b + c + 1+ (d + e))
-<=-help-3-abcde' = {!!}
+<=-help-3-abcde' {a} {b} {c} {d} {e} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ e ∷ []))
+  [ [ [ var 1 + var 4 ] + var 2 ] + [ var 3 + var 5 ] ]
+  [ [ [ var 1 + var 2 ] + var 3 ] + [ var 0 + [ var 4 + var 5 ] ] ] PE.refl
 
 <=-help-abcd-b :  ∀ {a b c d : Nat} → (a + c + d) <= (a + b + 1+ (c + d))
-<=-help-abcd-b = {!!}
+<=-help-abcd-b {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
+  [ [ var 1 + var 3 ] + var 4 ]
+  [ [ var 1 + var 2 ] + [ var 0 + [ var 3 + var 4 ] ] ] PE.refl
 
 <=-help-3-abcd :  ∀ {a b c d : Nat} → (a + b + (c + d)) <= (a + c + 1+ (b + d))
-<=-help-3-abcd = {!!}
+<=-help-3-abcd {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
+  [ [ var 1 + var 2 ] + [ var 3 + var 4 ] ]
+  [ [ var 1 + var 3 ] + [ var 0 + [ var 2 + var 4 ] ] ] PE.refl
 
 <=-help-nat-cong-ab :  ∀ {a b b' b'' b''' c' c'' c''' : Nat} → (a + b) <= (a + b' + b'' + b''' + 1+ (b + c' + c'' + c'''))
 <=-help-nat-cong-ab = {!!}
