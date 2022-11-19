@@ -191,12 +191,36 @@ mutual
         a = PE.trans (size-subst U≡B A'~A) (size-sym~↓! Γ≡Δ X)
         b = size-symConv↑Term Γ≡Δ x
     in PE.cong₂ (λ X Y → 1 + X + Y) a b
-  size-sym~↑! Γ≡Δ (cast-neΠ x x₁ x₂ x₃ x₄) = {!!}
-  size-sym~↑! Γ≡Δ (cast-Π x x₁ x₂ x₃ x₄) = {!!}
-  size-sym~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) = {!!}
-  size-sym~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) = {!!}
-  size-sym~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = {!!}
-  size-sym~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = {!!}
+  size-sym~↑! Γ≡Δ (cast-neΠ X x x₁ x₂ x₃) =
+    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+        U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ x
+        U≡B = U≡A-whnf U≡U' whnfU
+        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B A'~A
+        a = size-symConv↑Term Γ≡Δ X
+        b = PE.trans (size-subst U≡B A'~A) (size-sym~↓! Γ≡Δ x)
+        c = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x₁)) (size-symConv↑Term Γ≡Δ x₁)
+    in PE.cong₃ (λ X Y Z → 1 + X + Y + Z) a b c
+  size-sym~↑! Γ≡Δ (cast-Π x X x₁ x₂ x₃) =
+    let U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ X
+        B'~B = symConv↑Term Γ≡Δ x
+        U≡B = U≡A-whnf U≡U' whnfU
+        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B A'~A
+        a = size-symConv↑Term Γ≡Δ x
+        b = PE.trans (size-subst U≡B A'~A) (size-sym~↓! Γ≡Δ X)
+        c = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x₁)) (size-symConv↑Term Γ≡Δ x₁)
+    in PE.cong₃ (λ X Y Z → 1 + X + Y + Z) a b c
+  size-sym~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) =
+    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+        a = size-symConv↑Term Γ≡Δ x
+        b = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x₁)) (size-symConv↑Term Γ≡Δ x₁)
+    in PE.cong₂ (λ X Y → 1 + X + Y) a b
+  size-sym~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) = PE.cong₂ (λ X Y → 1 + X + Y) (size-symConv↑Term Γ≡Δ x) (size-symConv↑Term Γ≡Δ x₁)
+  size-sym~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) =
+    let a = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x₂)) (size-symConv↑Term Γ≡Δ x₂)
+    in PE.cong₃ (λ X Y Z → 1 + X + Y + Z) (size-symConv↑Term Γ≡Δ x) (size-symConv↑Term Γ≡Δ x₁) a
+  size-sym~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) =
+    let a = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x₂)) (size-symConv↑Term Γ≡Δ x₂)
+    in PE.cong₃ (λ X Y Z → 1 + X + Y + Z) (size-symConv↑Term Γ≡Δ x) (size-symConv↑Term Γ≡Δ x₁) a
 
   size-sym~↓! : ∀ {t u A Γ Δ l} (Γ≡Δ : ⊢ Γ ≡ Δ)
         (t~u : Γ ⊢ t ~ u ↓! A ^ l) → size~↓! (proj₂ (proj₂ (proj₂ (sym~↓! Γ≡Δ t~u)))) PE.≡ size~↓! t~u
