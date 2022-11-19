@@ -1,5 +1,4 @@
--- {-# OPTIONS --safe #-}
-{-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Conversion.SymmetrySize where
 
@@ -228,16 +227,45 @@ mutual
 
   size-symConv↑Term : ∀ {t u A Γ Δ l} (Γ≡Δ : ⊢ Γ ≡ Δ)
         (t~u : Γ ⊢ t [conv↑] u ∷ A ^ l) → sizeConv↑Term (symConv↑Term Γ≡Δ t~u) PE.≡ sizeConv↑Term t~u
-  size-symConv↑Term Γ≡Δ t~u = {!!}
+  size-symConv↑Term Γ≡Δ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) = PE.cong (λ X → 1 + X) (size-symConv↓Term Γ≡Δ t<>u)
 
   size-symConv↑ : ∀ {A B Γ Δ l} (Γ≡Δ : ⊢ Γ ≡ Δ)
         (A~B : Γ ⊢ A [conv↑] B ^ l) → sizeConv↑ (symConv↑ Γ≡Δ A~B) PE.≡ sizeConv↑ A~B
-  size-symConv↑ Γ≡Δ A~B = {!!}
+  size-symConv↑ Γ≡Δ ([↑] A′ B′ D D′ whnfA′ whnfB′ A′<>B′) = PE.cong (λ X → 1 + X) (size-symConv↓ Γ≡Δ A′<>B′)
 
   size-symConv↓Term : ∀ {t u A Γ Δ l} (Γ≡Δ : ⊢ Γ ≡ Δ)
         (t~u : Γ ⊢ t [conv↓] u ∷ A ^ l) → sizeConv↓Term (symConv↓Term Γ≡Δ t~u) PE.≡ sizeConv↓Term t~u
-  size-symConv↓Term Γ≡Δ t~u = {!!}
+  size-symConv↓Term Γ≡Δ (U-refl x x₁) = PE.refl
+  size-symConv↓Term Γ≡Δ (ne t~u) =
+    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
+        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
+        U≡B = U≡A-whnf A≡B whnfB
+        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ t~u)
+    in PE.cong (λ X → 1 + X) a
+  size-symConv↓Term Γ≡Δ (ℕ-refl x) = PE.refl
+  size-symConv↓Term Γ≡Δ (Empty-refl x) = PE.refl
+  size-symConv↓Term Γ≡Δ (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' x A<>B A<>B₁) =
+    let F≡H = soundnessConv↑Term A<>B
+        _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))
+    in PE.cong₂ (λ X Y → 1 + X + Y) (size-symConv↑Term Γ≡Δ A<>B) (size-symConv↑Term (Γ≡Δ ∙ univ F≡H) A<>B₁)
+  size-symConv↓Term Γ≡Δ (∃-cong x A<>B A<>B₁) =
+    let F≡H = soundnessConv↑Term A<>B
+        _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))
+    in PE.cong₂ (λ X Y → 1 + X + Y) (size-symConv↑Term Γ≡Δ A<>B) (size-symConv↑Term (Γ≡Δ ∙ univ F≡H) A<>B₁)
+  size-symConv↓Term Γ≡Δ (ℕ-ins t~u) =
+    let B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
+        B≡ℕ = ℕ≡A A≡B whnfB
+        a = PE.trans (size-subst B≡ℕ u~t) (size-sym~↓! Γ≡Δ t~u)
+    in PE.cong (λ X → 1 + X) a
+  size-symConv↓Term Γ≡Δ (ne-ins t u x t~u) =
+    let B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
+    in PE.cong (λ X → 1 + X) (size-sym~↓! Γ≡Δ t~u)
+  size-symConv↓Term Γ≡Δ (zero-refl x) = PE.refl
+  size-symConv↓Term Γ≡Δ (suc-cong x) = PE.cong (λ X → 1 + X) (size-symConv↑Term Γ≡Δ x)
+  size-symConv↓Term Γ≡Δ (η-eq l< l<' x x₁ x₂ y y₁ t<>u) =
+    PE.cong (λ X → 1 + X) (size-symConv↑Term (Γ≡Δ ∙ refl x) t<>u)
 
   size-symConv↓ : ∀ {A B Γ Δ l} (Γ≡Δ : ⊢ Γ ≡ Δ)
         (A~B : Γ ⊢ A [conv↓] B ^ l) → sizeConv↓ (symConv↓ Γ≡Δ A~B) PE.≡ sizeConv↓ A~B
-  size-symConv↓ Γ≡Δ A~B = {!!}
+  size-symConv↓ Γ≡Δ (U-refl PE.refl x₁) = PE.refl
+  size-symConv↓ Γ≡Δ (univ x) = PE.cong (λ X → 1 + X) (size-symConv↓Term Γ≡Δ x)
