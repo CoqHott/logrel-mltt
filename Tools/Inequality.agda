@@ -63,7 +63,7 @@ evalExpr a (node e e₁) = (evalExpr a e) + (evalExpr a e₁)
 
 evalNormalExpr′ : Assignment → Nat → NormalExpr → Nat
 evalNormalExpr′ a v [] = 0
-evalNormalExpr′ a v (n ∷ e) = (n × (a v)) + (evalNormalExpr′ a (1+ v) e)
+evalNormalExpr′ a v (n ∷ e) = (n ⋅ (a v)) + (evalNormalExpr′ a (1+ v) e)
 
 evalNormalExpr : Assignment → NormalExpr → Nat
 evalNormalExpr a e = evalNormalExpr′ a 0 e
@@ -82,7 +82,7 @@ evalNormalAdd′ a n (x ∷ e₁) [] = sym (plusZero _)
 evalNormalAdd′ a n (x ∷ e₁) (x₁ ∷ e₂) =
   let α = evalNormalAdd′ a (1+ n) e₁ e₂ in
   trans (cong₂ (λ X Y → X + Y) (distr-left x x₁ (a n)) α)
-        (comm-lemma₁ (x × a n) (x₁ × a n) (evalNormalExpr′ a (1+ n) e₁) (evalNormalExpr′ a (1+ n) e₂))
+        (comm-lemma₁ (x ⋅ a n) (x₁ ⋅ a n) (evalNormalExpr′ a (1+ n) e₁) (evalNormalExpr′ a (1+ n) e₂))
 
 evalNormalAdd : (a : Assignment) → (e₁ e₂ : NormalExpr)
               → evalNormalExpr a (normalAdd e₁ e₂) ≡ evalNormalExpr a e₁ + evalNormalExpr a e₂
