@@ -1,5 +1,4 @@
--- {-# OPTIONS --safe #-}
-{-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Typed.Consequences.InjectivitySProp where
 
