@@ -1,5 +1,4 @@
--- {-# OPTIONS --safe #-}
-{-# OPTIONS --allow-unsolved-metas #-}
+{-# OPTIONS --safe #-}
 
 module Definition.Conversion.Decidable where
 
@@ -18,7 +17,6 @@ open import Definition.Conversion.Conversion
 open import Definition.Conversion.ConversionProp
 open import Definition.Conversion.ConvSize
 open import Definition.Conversion.Lift
-open import Definition.Conversion.Transitivity
 open import Definition.Conversion.EqRelInstance
 open import Definition.Conversion.Inversion
 open import Definition.Typed.Consequences.Syntactic
@@ -33,9 +31,12 @@ open import Definition.Typed.Consequences.Inversion
 open import Definition.Typed.Consequences.TypeUnicity
 
 open import Definition.Conversion.HelperDecidable
+open import Definition.Conversion.DecidableLemmas
 
 open import Definition.Conversion.Consequences.Completeness
 open import Definition.Conversion.TransitivityHelper
+
+-- open import Definition.Conversion.Transitivity
 
 open import Tools.Nat
 open import Tools.Product
@@ -50,38 +51,6 @@ removeSuc : Nat → Nat
 removeSuc 0 = 0
 removeSuc (1+ n) = n
 
-<=-help-b'b-c'' :  ∀ {a b b' b'' c' : Nat} → (b' + b) <= (a + b' + b'' + 1+ (b + c'))
-<=-help-b'b-c'' = {!!}
-
-<=-help-b''-c'' :  ∀ {a b b' b'' c' : Nat} → (b'' + c') <= (a + b' + b'' + 1+ (b + c'))
-<=-help-b''-c'' = {!!}
-
-<=-help-ab'b''c'' :  ∀ {a b b' b'' c' : Nat} → 1+ (a + b' + b'' + c') <= (a + b' + b'' + 1+ (b + (2 + c')))
-<=-help-ab'b''c'' = {!!}
-
-<=-help-b''x :  ∀ {a b b'' x : Nat} → (b'' + x) <= (a + b + (2 +  b'') + x)
-<=-help-b''x = {!!}
-
-<=-help-ab-c'' :  ∀ {a b b' c' c'' : Nat} → (a + b) <= (a + b' + 1+ (b + c' + c''))
-<=-help-ab-c'' = {!!}
-
-<=-help-ac'-c'' :  ∀ {a b b' c' c'' : Nat} → (a + c') <= (a + b' + 1+ (b + c' + c''))
-<=-help-ac'-c'' = {!!}
-
-<=-help-bc'-c'' :  ∀ {a b b' c' c'' : Nat} → (b + c') <= (a + b' + 1+ (b + c' + c''))
-<=-help-bc'-c'' = {!!}
-
-<=-help-b'c'' :  ∀ {a b b' c' c'' : Nat} → (b' + c'') <= (a + b' + 1+ (b + c' + c''))
-<=-help-b'c'' = {!!}
-
-<=-help-ab'c'' :  ∀ {a b b' c' c'' : Nat} → 1+ (a + b' + c'') <= (a + b' + 1+ (b + c' + (2 + c'')))
-<=-help-ab'c'' = {!!}
-
-<=-help-cast-refl' :  ∀ {a b n : Nat} → (a + 1+ b) << 1+ n -> (a + b) << n
-<=-help-cast-refl' = {!!}
-
-<=-help-cast-refl'' :  ∀ {a b c : Nat} → (a + c) <= (a + 1+ (b + (2 + c)))
-<=-help-cast-refl'' = {!!}
 
 abstract
   cast-t-≡ : ∀ {Γ A B B' t t' e X lX} 
@@ -111,7 +80,21 @@ mutual
 
   dec~↑! {n = 0} _ _ _ ()
 
-{-
+  -- general cases for t ~ cast _ _ e u
+
+  dec~↑! {1+ n} Γ≡Δ X (cast-refl' A~A (ne-ins x' x₁' x₂' ([~] A₁' D₁' whnfB' k~l)) ⊢e') size =
+    dec~↑! {n} Γ≡Δ X k~l (<<-trans <=-help-cast-refl'' (<=-help-cast-refl' size))
+
+  dec~↑! {1+ n} Γ≡Δ (cast-refl' A~A (ne-ins x' x₁' x₂' ([~] A₁' D₁' whnfB' k~l)) ⊢e') X (leS size) =
+    dec~↑! {n} Γ≡Δ k~l X (<<-trans (<=-help-b''x {a = 0} {b = size~↓! A~A}) size)
+
+  dec~↑! {1+ n} Γ≡Δ X (castℕ-refl' ([~] A D whnfB k~l) ⊢e) size =
+    dec~↑! {n} Γ≡Δ X k~l (<<-trans <=-help-ab1' (<=-help-cast-refl' size))
+
+  dec~↑! {1+ n} Γ≡Δ (castℕ-refl' ([~] A D whnfB k~l) ⊢e) X (leS size) =
+    dec~↑! {n} Γ≡Δ k~l X (<<-trans (le-suc (le-refl _)) size)
+
+  -- diagonal cases
 
   dec~↑! Γ≡Δ (var-refl {n} ⊢x PE.refl) (var-refl {m} ⊢y m≡m) _ with n ≟ m
   ... | yes PE.refl =  yes (_ , (_ , var-refl ⊢x PE.refl))
@@ -1484,14 +1467,6 @@ mutual
         no (λ (_ , _ , X) → let _ , _ , neR = ne~↓! A~B
                             in IE.Π≢ne neR (sym (cast-cast-≡ X))) 
 
-
- 
-  dec~↑! {1+ n} Γ≡Δ X (cast-refl' A~A (ne-ins x' x₁' x₂' ([~] A₁' D₁' whnfB' k~l)) ⊢e') size =
-    dec~↑! {n} Γ≡Δ X k~l (<<-trans <=-help-cast-refl'' (<=-help-cast-refl' size))
-
-  dec~↑! {1+ n} Γ≡Δ (cast-refl' A~A (ne-ins x' x₁' x₂' ([~] A₁' D₁' whnfB' k~l)) ⊢e') X (leS size) =
-    dec~↑! {n} Γ≡Δ k~l X (<<-trans (<=-help-b''x {a = 0} {b = size~↓! A~A}) size)
-
   dec~↑! Γ≡Δ (castℕ-refl ([~] A D whnfB k~l) ⊢e) (var-refl x₃ x₄) (leS size) =
     let X = var-refl x₃ x₄
     in castℕℕ-refl-dec~ ([~] A D whnfB k~l) ⊢e
@@ -1603,13 +1578,6 @@ mutual
                                                          (trans (conv cast≡cast' R≡R')
                                                                 (T.cast-refl (refl (ℕⱼ (wfTerm ⊢t))) (stabilityTerm (symConEq Γ≡Δ) eℕℕ′) (stabilityTerm (symConEq Γ≡Δ) ⊢u))))) }
 
-  dec~↑! {1+ n} Γ≡Δ X (castℕ-refl' ([~] A D whnfB k~l) ⊢e) size =
-    dec~↑! {n} Γ≡Δ X k~l (<<-trans <=-help-ab1' (<=-help-cast-refl' size))
-
-  dec~↑! {1+ n} Γ≡Δ (castℕ-refl' ([~] A D whnfB k~l) ⊢e) X (leS size) =
-    dec~↑! {n} Γ≡Δ k~l X (<<-trans (le-suc (le-refl _)) size)
--}
-
   dec~↑! Γ≡Δ (cast-neℕ A t eℕA _) (cast-neℕ B u eℕB _) (leS size)
     with dec~↓! Γ≡Δ A B (<<-trans (<=-help-ab' {a = size~↓! A} {b = size~↓! B}) size) 
   ... | yes (_ , _ , AB)
@@ -1620,18 +1588,192 @@ mutual
   ... | no ¬tu = no λ { (_ , _ , cast-neℕ x x₁ x₂ x₃) → ¬tu x₁ }
   dec~↑! Γ≡Δ (cast-neℕ A t eℕA _) (cast-neℕ B u eℕB _) (leS size) | no ¬AB = no λ { (_ , _ , cast-neℕ x x₁ x₂ x₃) → ¬AB (_ , _ , x) }
 
-  dec~↑! Γ≡Δ (cast-neΠ x x₁ x₂ x₃ x₄) Y = {!!}
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (var-refl x₄ x₅) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (app-cong x₄ x₅) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (natrec-cong x₄ x₅ x₆ x₇) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Emptyrec-cong x₄ x₅) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Id-cong x₄ x₅ x₆) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Id-ℕ x₄ x₅) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Id-ℕ0 x₄) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Id-ℕS x₄ x₅) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Id-U x₄ x₅) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Id-Uℕ x₄) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (Id-UΠ x₄ x₅) _ = castneℕ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neℕ x₄ x₅ x₆ x₇) (cast-cong A B (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)) ⊢e ⊢e') (leS size) =
+    let X = cast-neℕ x₄ x₅ x₆ x₇
+    in cast-refl'-dec~ (stability~↓! (symConEq Γ≡Δ) A) (sym~↓!U (stability~↓! (symConEq Γ≡Δ) B))
+                       (stabilityConv↓Term (symConEq Γ≡Δ) (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)))
+                       (stabilityTerm (symConEq Γ≡Δ) ⊢e)
+                       (dec~↓! Γ≡Δ (sym~↓!U (stability~↓! (symConEq Γ≡Δ) B)) A (<<-trans (<=-trans (<=-trans (≡-to-<= (PE.trans (PE.cong (λ X → X + size~↓! A) (sym~↓!Usize _))
+                                                                                                (+-sym (size~↓! (stability~↓! (symConEq Γ≡Δ) B)) (size~↓! A))))
+                                                                                                (<=-cong-+ (le-refl (size~↓! A)) (≡-to-<= (stabilitySize~↓! _ B))))
+                                                                   (<=-help-abrem {x = removeSuc (size~↑! X)}
+                                                                                  {a = size~↓! A + size~↓! B} {b = 2 + size~↑! k~l}) ) size))
+                       (dec~↑! Γ≡Δ X k~l (<<-trans (<=-help-abc {a = removeSuc (size~↑! X)} {b = size~↓! A + size~↓! B} {c = size~↑! k~l}) size))
+                       (λ { neA neB e → let _ , _ , eB , _ = cast-PE-injectivity e in noNeℕ (PE.subst Neutral (PE.sym eB) neB) })
+                       (λ { e → let _ , eA , _ = cast-PE-injectivity e
+                                    _ , neA , _ = ne~↓! x₄
+                              in noNeℕ (PE.subst Neutral eA neA) })
+  dec~↑! Γ≡Δ (cast-neℕ B x₁ x₂ x₃) (cast-ℕΠ x₄ x₅ x₆ x₇) _ =
+    no (λ (_ , _ , X) → IE.ℕ≢Π! (cast-cast-≡ X))
+  dec~↑! Γ≡Δ (cast-neℕ B x₁ x₂ x₃) (cast-ΠΠ%! x₄ x₅ x₆ x₇ x₈) _ =
+    no (λ (_ , _ , X) → IE.ℕ≢Π! (cast-cast-≡ X))
+  dec~↑! Γ≡Δ (cast-neℕ B x₁ x₂ x₃) (cast-ΠΠ!% x₄ x₅ x₆ x₇ x₈) _ =
+    no (λ (_ , _ , X) → IE.ℕ≢Π! (cast-cast-≡ X))
+  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) (cast-Π x₄ x₅ x₆ x₇ x₈) _ =
+    castneℕ-refl'-dec~ x
+                    (λ neA neB e → let _ , eA , _ = cast-PE-injectivity e
+                                   in noNeΠ (PE.subst Neutral (PE.sym eA) neA))
+                    (λ neA e → let _ , eA , _ = cast-PE-injectivity e in noNeΠ (PE.subst Neutral (PE.sym eA) neA) )
+                    (λ e → let _ , _ , eB , _ = cast-PE-injectivity e
+                               _ , neB , _ = ne~↓! x₅
+                           in noNeℕ (PE.subst Neutral eB neB))
 
-  dec~↑! Γ≡Δ X Y = {!!}
+  dec~↑! Γ≡Δ (cast-neℕ x' x₁' x₂' x₃') (cast-refl A~A (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)) ⊢e) (leS size) =
+    let X = (cast-neℕ x' x₁' x₂' x₃')
+        _ , neA , neB = ne~↓! A~A
+        _ , _ , eqU , A~A' = sym~↓! (symConEq Γ≡Δ) A~A
+        _ , _ , ⊢B  = syntacticEqTerm (soundness~↓! A~A)
+    in cast-refl'-dec neA neB (stabilityTerm (symConEq Γ≡Δ) ⊢B) (stabilityTerm (symConEq Γ≡Δ) x) (stabilityTerm (symConEq Γ≡Δ) ⊢e)
+                      (yes (_ , _ , A~A'))
+                      (dec~↑! Γ≡Δ X k~l (<<-trans (<=-help-abc {a = removeSuc (size~↑! X)} {b = size~↓! A~A} {c = size~↑! k~l}) size))
+                      (λ { neA neB e → let _ , _ , eB , _ = cast-PE-injectivity e in noNeℕ (PE.subst Neutral (PE.sym eB) neB) } )
+                      (λ { e → let _ , eA , _ = cast-PE-injectivity e
+                                   _ , neA , _ = ne~↓! x'
+                               in noNeℕ (PE.subst Neutral eA neA) }) 
+  dec~↑! Γ≡Δ (cast-neℕ x' x₁' x₂' x₃') (castℕ-refl ([~] A D whnfB k~l) ⊢e) (leS size) =
+      let X = (cast-neℕ x' x₁' x₂' x₃')
+      in castℕℕ-refl'-dec~ (stability~↓! (symConEq Γ≡Δ) ([~] A D whnfB k~l))
+                           (stabilityTerm (symConEq Γ≡Δ) ⊢e)
+                           (dec~↑! Γ≡Δ X k~l (<<-trans (<=-help-1-2 {a = removeSuc (size~↑! X)}) size))
+                      (λ { neA neB e → let _ , _ , eB , _ = cast-PE-injectivity e in noNeℕ (PE.subst Neutral (PE.sym eB) neB) } )
+                      (λ { e → let _ , eA , _ = cast-PE-injectivity e
+                                   _ , neA , _ = ne~↓! x'
+                               in noNeℕ (PE.subst Neutral eA neA) })
 
+  dec~↑! Γ≡Δ (cast-neℕ x' x₁' x₂' x₃') (cast-ℕ x₂ x₃ x₄ x₅) (leS size) =  no (λ (_ , _ , X) → let _ , neA , _ = ne~↓! x₂ in IE.ℕ≢ne! neA (cast-cast-≡ X))
+
+  dec~↑! Γ≡Δ (cast-neℕ B x₁ x₂ x₃) (cast-Πℕ x₄ x₅ x₆ x₇) _ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → let _ , _ , neΠ = ne~↓! x in noNeΠ neΠ ;
+            (_ , _ , cast-refl x x₁ x₂) → let _ , _ , neℕ = ne~↓! x in noNeℕ neℕ ;
+            (_ , _ , castℕ-refl x x₁) → let _ , neℕ , _ = ne~↓! B in noNeℕ neℕ ;
+            (_ , _ , cast-refl' x x₁ x₂) → let _ , neℕ , _ = ne~↓! x in noNeℕ neℕ ;
+            (_ , _ , cast-neℕ x x₁ x₂ x₃) → let _ , _ , neΠ = ne~↓! x in noNeΠ neΠ ;
+            (_ , _ , cast-Π x x₁ x₂ x₃ x₄) → let _ , neΠ , _ = ne~↓! B in noNeΠ neΠ ;
+            (_ , _ , cast-Πℕ x x₁ x₂ x₃) → let _ , neΠ , _ = ne~↓! B in noNeΠ neΠ }) 
+
+  dec~↑! Γ≡Δ (cast-neΠ {rA = r} Π~Π A t eℕA _) (cast-neΠ {rA = r'} Π~Π' B u eℕB _) (leS size)
+    with dec-relevance r r' | decConv↑Term Γ≡Δ Π~Π Π~Π' (<<-trans (<=-help-id-cong {a = sizeConv↑Term Π~Π} {b = sizeConv↑Term Π~Π'}) size) |
+         dec~↓! Γ≡Δ A B (<<-trans (<=-help-b'c' {a = sizeConv↑Term Π~Π} {b = sizeConv↑Term Π~Π'}) size)
+  ... | no ¬p | _ | _ = no λ { (_ , _ , cast-neΠ x x₁ x₂ x₃ x₄) → ¬p PE.refl }
+  ... | yes PE.refl | no ¬ΠΠ′ | _ = no λ { (_ , _ , cast-neΠ x x₁ x₂ x₃ x₄) → ¬ΠΠ′ x }
+  ... | yes PE.refl | yes ΠΠ′ | no ¬AB = no λ { (_ , _ , cast-neΠ x x₁ x₂ x₃ x₄) → ¬AB (_ , _ , x₁) }
+  ... | yes PE.refl | yes ΠΠ′ | yes (_ , _ , AB)
+    with decConv↑Term Γ≡Δ t (convert~ Γ≡Δ A B AB u) (<<-trans (<=-trans (≡-to-<= (PE.cong (_+_ (sizeConv↑Term t)) (convert~size Γ≡Δ A B AB u)))
+                                                                        (<=-help-b''c'' {a = sizeConv↑Term Π~Π} {b = sizeConv↑Term Π~Π'})) 
+                                                              size)
+  ... | yes tu = yes (_ , _ , cast-neΠ ΠΠ′ (~atU' A (_ , _ , AB)) tu eℕA (stabilityTerm (symConEq Γ≡Δ) eℕB))
+  ... | no ¬tu = no λ { (_ , _ , cast-neΠ _ x x₁ x₂ x₃) → ¬tu x₁ }
+
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (var-refl x₄ x₅) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (app-cong x₄ x₅) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (natrec-cong x₄ x₅ x₆ x₇) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Emptyrec-cong x₄ x₅) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Id-cong x₄ x₅ x₆) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Id-ℕ x₄ x₅) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Id-ℕ0 x₄) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Id-ℕS x₄ x₅) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Id-U x₄ x₅) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Id-Uℕ x₄) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (Id-UΠ x₄ x₅) _ = castneΠ-refl'-dec~ x (λ {_ _ ()}) (λ {_ ()}) (λ {()})
+  dec~↑! Γ≡Δ (cast-neΠ Π x₄ x₅ x₆ x₇) (cast-cong A B (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)) ⊢e ⊢e') (leS size) =
+    let X = cast-neΠ Π x₄ x₅ x₆ x₇
+    in cast-refl'-dec~ (stability~↓! (symConEq Γ≡Δ) A) (sym~↓!U (stability~↓! (symConEq Γ≡Δ) B))
+                       (stabilityConv↓Term (symConEq Γ≡Δ) (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)))
+                       (stabilityTerm (symConEq Γ≡Δ) ⊢e)
+                       (dec~↓! Γ≡Δ (sym~↓!U (stability~↓! (symConEq Γ≡Δ) B)) A (<<-trans (<=-trans (<=-trans (≡-to-<= (PE.trans (PE.cong (λ X → X + size~↓! A) (sym~↓!Usize _))
+                                                                                                (+-sym (size~↓! (stability~↓! (symConEq Γ≡Δ) B)) (size~↓! A))))
+                                                                                                (<=-cong-+ (le-refl (size~↓! A)) (≡-to-<= (stabilitySize~↓! _ B))))
+                                                                   (<=-help-abrem {x = removeSuc (size~↑! X)}
+                                                                                  {a = size~↓! A + size~↓! B} {b = 2 + size~↑! k~l}) ) size))
+                       (dec~↑! Γ≡Δ X k~l (<<-trans (<=-help-abc {a = removeSuc (size~↑! X)} {b = size~↓! A + size~↓! B} {c = size~↑! k~l}) size))
+                       (λ { neA neB e → let _ , _ , eB , _ = cast-PE-injectivity e in noNeΠ (PE.subst Neutral (PE.sym eB) neB) })
+                       (λ { e → let _ , eA , _ = cast-PE-injectivity e
+                                    _ , neA , _ = ne~↓! x₄
+                              in noNeℕ (PE.subst Neutral eA neA) })
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (cast-Πℕ x₄ x₅ x₆ x₇) _ =
+    no (λ (_ , _ , X) → IE.ℕ≢Π! (sym (cast-cast-≡ X)))
+
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (cast-ΠΠ%! x₄ x₅ x₆ x₇ x₈) _ =
+      castneΠ-refl'-dec~ x
+                    (λ neA neB e → let _ , eA , _ = cast-PE-injectivity e
+                                   in noNeΠ (PE.subst Neutral (PE.sym eA) neA))
+                    (λ neA e → let _ , eA , _ = cast-PE-injectivity e in noNeΠ (PE.subst Neutral (PE.sym eA) neA) )
+                    (λ e → let _ , _ , eB , _ = cast-PE-injectivity e in ℕ≢Π (PE.sym eB))
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (cast-ΠΠ!% x₄ x₅ x₆ x₇ x₈) _ =
+      castneΠ-refl'-dec~ x
+                    (λ neA neB e → let _ , eA , _ = cast-PE-injectivity e
+                                   in noNeΠ (PE.subst Neutral (PE.sym eA) neA))
+                    (λ neA e → let _ , eA , _ = cast-PE-injectivity e in noNeΠ (PE.subst Neutral (PE.sym eA) neA) )
+                    (λ e → let _ , _ , eB , _ = cast-PE-injectivity e in ℕ≢Π (PE.sym eB))
+  dec~↑! Γ≡Δ (cast-neΠ _ x x₁ x₂ x₃) (cast-Π x₄ x₅ x₆ x₇ x₈) _ =  no (λ (_ , _ , X) → let _ , neA , _ = ne~↓! x₅ in IE.Π≢ne neA (cast-cast-≡ X))
+ 
+  dec~↑! Γ≡Δ (cast-neΠ Π x₄ x₅ x₆ x₇) (cast-refl A~A (ne-ins x x₁ x₂ ([~] A₁ D₁ whnfB k~l)) ⊢e) (leS size) =
+    let X = (cast-neΠ Π x₄ x₅ x₆ x₇)
+        _ , neA , neB = ne~↓! A~A
+        _ , _ , eqU , A~A' = sym~↓! (symConEq Γ≡Δ) A~A
+        _ , _ , ⊢B  = syntacticEqTerm (soundness~↓! A~A)
+    in cast-refl'-dec neA neB (stabilityTerm (symConEq Γ≡Δ) ⊢B) (stabilityTerm (symConEq Γ≡Δ) x) (stabilityTerm (symConEq Γ≡Δ) ⊢e)
+                      (yes (_ , _ , A~A'))
+                      (dec~↑! Γ≡Δ X k~l (<<-trans (<=-help-abc {a = removeSuc (size~↑! X)} {b = size~↓! A~A} {c = size~↑! k~l}) size))
+                      (λ { neA neB e → let _ , _ , eB , _ = cast-PE-injectivity e in noNeΠ (PE.subst Neutral (PE.sym eB) neB) } )
+                      (λ { e → let _ , eA , _ = cast-PE-injectivity e
+                                   _ , neA , _ = ne~↓! x₄
+                               in noNeℕ (PE.subst Neutral eA neA) }) 
+  dec~↑! Γ≡Δ (cast-neΠ Π x₄ x₅ x₆ x₇) (castℕ-refl ([~] A D whnfB k~l) ⊢e) (leS size) =
+      let X = (cast-neΠ Π x₄ x₅ x₆ x₇)
+      in castℕℕ-refl'-dec~ (stability~↓! (symConEq Γ≡Δ) ([~] A D whnfB k~l))
+                           (stabilityTerm (symConEq Γ≡Δ) ⊢e)
+                           (dec~↑! Γ≡Δ X k~l (<<-trans (<=-help-1-2 {a = removeSuc (size~↑! X)}) size))
+                      (λ { neA neB e → let _ , _ , eB , _ = cast-PE-injectivity e in noNeΠ (PE.subst Neutral (PE.sym eB) neB) } )
+                      (λ { e → let _ , eA , _ = cast-PE-injectivity e
+                                   _ , neA , _ = ne~↓! x₄
+                               in noNeℕ (PE.subst Neutral eA neA) }) 
+  dec~↑! Γ≡Δ (cast-neΠ Π x₄ x₅ x₆ x₇) (cast-ℕ x₂ x₃ x₄' x₅') (leS size) = no (λ (_ , _ , X) → let _ , neA , _ = ne~↓! x₂ in IE.Π≢ne neA (cast-cast-≡ X))
+  dec~↑! Γ≡Δ (cast-neΠ Π x₄ x₅ x₆ x₇) (cast-neℕ x₂ x₃ x₄' x₅') (leS size) = no (λ (_ , _ , X) → IE.ℕ≢Π! (sym (cast-cast-≡ X)))
+
+  dec~↑! Γ≡Δ (cast-neΠ Π x₄' x₅' x₆' x₇') (cast-ℕΠ x₄ x₅ x₆ x₇) _ =
+    no (λ { (_ , _ , cast-cong x x₁ x₂ x₃ x₄) → let _ , _ , neΠ = ne~↓! x in noNeℕ neΠ ;
+            (_ , _ , cast-refl x x₁ x₂) → let _ , _ , neℕ = ne~↓! x in noNeΠ neℕ ;
+            (_ , _ , cast-refl' x x₁ x₂) → let _ , neℕ , _ = ne~↓! x in noNeΠ neℕ ;
+            (_ , _ , cast-neΠ _ x x₁ x₂ x₃) → let _ , _ , neΠ = ne~↓! x in noNeℕ neΠ })
 {-
+
+  dec~↑! Γ≡Δ (var-refl x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (app-cong x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) Y = {!!}
+  dec~↑! Γ≡Δ (Emptyrec-cong x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (Id-cong x x₁ x₂) Y = {!!}
+  dec~↑! Γ≡Δ (Id-ℕ x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (Id-ℕ0 x) Y = {!!}
+  dec~↑! Γ≡Δ (Id-ℕS x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (Id-U x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (Id-Uℕ x) Y = {!!}
+  dec~↑! Γ≡Δ (Id-UΠ x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (cast-cong x x₁ x₂ x₃ x₄) Y = {!!}
   dec~↑! Γ≡Δ (cast-refl x x₁ x₂) Y = {!!}
   dec~↑! Γ≡Δ (castℕ-refl x x₁) Y = {!!}
-  dec~↑! Γ≡Δ (cast-refl' x x₁ x₂) Y = {!!}
-  dec~↑! Γ≡Δ (castℕ-refl' x x₁) Y = {!!}
+  dec~↑! Γ≡Δ (cast-ℕ x x₁ x₂ x₃) Y = {!!}
+  dec~↑! Γ≡Δ (cast-Π x x₁ x₂ x₃ x₄) Y = {!!}
+  dec~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) Y = {!!}
+  dec~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) Y = {!!}
+  dec~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) Y = {!!}
+  dec~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) Y = {!!}
   dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) Y = {!!}
-  dec~↑! Γ≡Δ (cast-neΠ x x₁ x₂ x₃ x₄) Y = {!!}
+
 -}
+
+  -- dec~↑! Γ≡Δ X Y = {!!}
 
   -- Decidability of algorithmic equality of neutrals with types in WHNF.
   dec~↓! : ∀ {n k k' l l' R T Γ Δ lR lT}
@@ -1641,7 +1783,6 @@ mutual
         → (size~↓! e + size~↓! e') << n
         → Dec (∃ λ A → ∃ λ lA → Γ ⊢ k ~ l ↓! A ^ lA)
 
-{-
   dec~↓! {n = 0} _ _ _ ()
   dec~↓! Γ≡Δ ([~] A D whnfB k~l) ([~] A₁ D₁ whnfB₁ k~l₁) (leS size)
         with dec~↑! Γ≡Δ k~l k~l₁ (<<-trans <=-help-ab1' size)
@@ -1651,8 +1792,8 @@ mutual
     in  yes (C , _ , [~] B (red D′) whnfC k~l₂)
   ... | no ¬p =
     no (λ { (A₂ , _ , [~] A₃ D₂ whnfB₂ k~l₂) → ¬p (A₃ , _ , k~l₂) })
--}
-  dec~↓! = {!!}
+
+  -- dec~↓! = {!!}
 
   -- Decidability of algorithmic equality of types.
   decConv↑ : ∀ {n A A' B B' r Γ Δ}
@@ -1662,7 +1803,6 @@ mutual
            → (sizeConv↑ e + sizeConv↑ e') << n           
            → Dec (Γ ⊢ A [conv↑] B ^ r)
 
-{-
   decConv↑ {n = 0} _ _ _ ()
   decConv↑ Γ≡Δ ([↑] A′ B′ D D′ whnfA′ whnfB′ A′<>B′)
                ([↑] A″ B″ D₁ D″ whnfA″ whnfB″ A′<>B″) (leS size)
@@ -1676,8 +1816,8 @@ mutual
             B‴≡B″ = whrDet* (D‴ , whnfB‴)
                                 (stabilityRed* (symConEq Γ≡Δ) D₁ , whnfA″)
         in  ¬p (PE.subst₂ (λ x y → _ ⊢ x [conv↓] y ^ r) A‴≡B′ B‴≡B″ A′<>B‴) })
--}
-  decConv↑ = {!!}
+
+  -- decConv↑ = {!!}
   
   decConv↓ : ∀ {n A A' B B' r Γ Δ}
            → ⊢ Γ ≡ Δ
@@ -1706,8 +1846,8 @@ mutual
                → (sizeConv↑Term e + sizeConv↑Term e') << n
                → Dec (Γ ⊢ t [conv↑] u ∷ A ^ l)
 
-  decConv↑Term = {!!}
-{-
+  -- decConv↑Term = {!!}
+
   decConv↑Term {n = 0} _ _ _ ()
   decConv↑Term Γ≡Δ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u)
                    ([↑]ₜ B₁ t″ u″ D₁ d₁ d″ whnfB₁ whnft″ whnfu″ t<>u₁) (leS size)
@@ -1731,7 +1871,6 @@ mutual
                                , whnft″)
         in  ¬p (PE.subst₃ (λ x y z → _ ⊢ x [conv↓] y ∷ z ^ _)
                           t‴≡u′ u‴≡u″ B₂≡B₁ t<>u₂) })
--}
 
   -- Decidability of algorithmic equality of terms in WHNF.
   decConv↓Term : ∀ {n t t' u u' A Γ Δ l}
@@ -1741,7 +1880,6 @@ mutual
                → (sizeConv↓Term e + sizeConv↓Term e') << n
                → Dec (Γ ⊢ t [conv↓] u ∷ A ^ l)
 
-{-
   decConv↓Term {n = 0} _ _ _ ()
   decConv↓Term Γ≡Δ (U-refl {r = r} _ x) (U-refl {r = r′} _ x₁) (leS size)
     with dec-relevance r r′
@@ -1872,8 +2010,8 @@ mutual
                                    ([~] .ℕ D whnfB (castℕ-refl x x₁)) → let _ , _ , neSuc = ne~↓! x in neutralSuc neSuc }))
   decConv↓Term Γ≡Δ (suc-cong x) (zero-refl x₁) _ = no λ { (ℕ-ins ()) ; (ne-ins x x₁ () x₃) }
   decConv↓Term Γ≡Δ (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (ne-ins x₈ x₉ () x₁₁)
--}
-  decConv↓Term Γ≡Δ X Y = {!!}
+
+  -- decConv↓Term Γ≡Δ X Y = {!!}
 
   -- Decidability of algorithmic equality of terms of equal types.
   decConv↑TermConv : ∀ {n t t' u u' A B r Γ Δ}
