@@ -281,38 +281,57 @@ import Tools.PropositionalEquality as PE
 
 
 <=-help-b'b-c'' :  ∀ {a b b' b'' c' : Nat} → (b' + b) <= (a + b' + b'' + 1+ (b + c'))
-<=-help-b'b-c'' = {!!}
+<=-help-b'b-c'' {a} {b} {b'} {b''} {c'} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ []))
+  [ var 3 + var 2 ]
+  [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ var 2 + var 5 ] ] ] PE.refl
 
 <=-help-b''-c'' :  ∀ {a b b' b'' c' : Nat} → (b'' + c') <= (a + b' + b'' + 1+ (b + c'))
-<=-help-b''-c'' = {!!}
+<=-help-b''-c'' {a} {b} {b'} {b''} {c'} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ []))
+  [ var 4 + var 5 ]
+  [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ var 2 + var 5 ] ] ] PE.refl
 
 <=-help-ab'b''c'' :  ∀ {a b b' b'' c' : Nat} → 1+ (a + b' + b'' + c') <= (a + b' + b'' + 1+ (b + (2 + c')))
-<=-help-ab'b''c'' = {!!}
+<=-help-ab'b''c'' {a} {b} {b'} {b''} {c'} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ []))
+  [ var 0 + [ [ [ var 1 + var 3 ] + var 4 ] + var 5 ] ]
+  [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ var 2 + [ [ var 0 + var 0 ] + var 5 ] ] ] ] PE.refl
 
 <=-help-b''x :  ∀ {a b b'' x : Nat} → (b'' + x) <= (a + b + (2 +  b'') + x)
-<=-help-b''x = {!!}
+<=-help-b''x {a} {b} {b''} {x} = inequality (vars (2 ∷ a ∷ b ∷ b'' ∷ x ∷ []))
+  [ var 3 + var 4 ]
+  [ [ [ var 1 + var 2 ] + [ var 0 + var 3 ] ] + var 4 ] PE.refl
 
 <=-help-ab-c'' :  ∀ {a b b' c' c'' : Nat} → (a + b) <= (a + b' + 1+ (b + c' + c''))
-<=-help-ab-c'' = {!!}
+<=-help-ab-c'' {a} {b} {b'} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c' ∷ c'' ∷ []))
+  [ var 1 + var 2 ]
+  [ [ var 1 + var 3 ] + [ var 0 + [ [ var 2 + var 4 ] + var 5 ] ] ] PE.refl
 
 <=-help-ac'-c'' :  ∀ {a b b' c' c'' : Nat} → (a + c') <= (a + b' + 1+ (b + c' + c''))
-<=-help-ac'-c'' = {!!}
+<=-help-ac'-c'' {a} {b} {b'} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c' ∷ c'' ∷ []))
+  [ var 1 + var 4 ]
+  [ [ var 1 + var 3 ] + [ var 0 + [ [ var 2 + var 4 ] + var 5 ] ] ] PE.refl
 
 <=-help-bc'-c'' :  ∀ {a b b' c' c'' : Nat} → (b + c') <= (a + b' + 1+ (b + c' + c''))
-<=-help-bc'-c'' = {!!}
+<=-help-bc'-c'' {a} {b} {b'} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c' ∷ c'' ∷ []))
+  [ var 2 + var 4 ]
+  [ [ var 1 + var 3 ] + [ var 0 + [ [ var 2 + var 4 ] + var 5 ] ] ] PE.refl
 
 <=-help-b'c'' :  ∀ {a b b' c' c'' : Nat} → (b' + c'') <= (a + b' + 1+ (b + c' + c''))
-<=-help-b'c'' = {!!}
+<=-help-b'c'' {a} {b} {b'} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c' ∷ c'' ∷ []))
+  [ var 3 + var 5 ]
+  [ [ var 1 + var 3 ] + [ var 0 + [ [ var 2 + var 4 ] + var 5 ] ] ] PE.refl
 
 <=-help-ab'c'' :  ∀ {a b b' c' c'' : Nat} → 1+ (a + b' + c'') <= (a + b' + 1+ (b + c' + (2 + c'')))
-<=-help-ab'c'' = {!!}
+<=-help-ab'c'' {a} {b} {b'} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ c' ∷ c'' ∷ []))
+  [ var 0 + [ [ var 1 + var 3 ] + var 5 ] ]
+  [ [ var 1 + var 3 ] + [ var 0 + [ [ var 2 + var 4 ] + [ [ var 0 + var 0 ] + var 5 ] ] ] ] PE.refl
 
 <=-help-cast-refl' :  ∀ {a b n : Nat} → (a + 1+ b) << 1+ n -> (a + b) << n
-<=-help-cast-refl' = {!!}
+<=-help-cast-refl' {a} {b} {n} H = <=inv-suc (PE.subst (λ X → X <= 1+ n) (PE.cong 1+ (plusSuc a b)) H)
 
 <=-help-cast-refl'' :  ∀ {a b c : Nat} → (a + c) <= (a + 1+ (b + (2 + c)))
-<=-help-cast-refl'' = {!!}
-
+<=-help-cast-refl'' {a} {b} {c} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ []))
+  [ var 1 + var 3 ]
+  [ var 1 + [ var 0 + [ var 2 + [ [ var 0 + var 0 ] + var 3 ] ] ] ] PE.refl
 
 
 sizeSubst₃-gen :  ∀ {A B C a b c a' b' c'}
