@@ -858,3 +858,55 @@ abstract
   ... | yes PE.refl | yes ΠΠ′ | yes (_ , _ , AB) with dectu (_ , _ , AB)
   ... | yes tu = yes (_ , _ , cast-neΠ ΠΠ′ (~atU' A (_ , _ , AB)) tu eℕA (stabilityTerm (symConEq Γ≡Δ) eℕB))
   ... | no ¬tu = no λ { (_ , _ , cast-neΠ _ x x₁ x₂ x₃) → ¬tu x₁ }
+
+abstract
+  dec-natrec-natrec : ∀ {Γ Δ k l h g a₀ b₀ F G lF k' l' h' g' a₀' b₀' F' G' lF'}
+              → ⊢ Γ ≡ Δ
+              → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] G ^ [ ! , ι lF ]
+              → Γ ⊢ a₀ [conv↑] b₀ ∷ F [ zero ] ^ ι lF
+              → Γ ⊢ h [conv↑] g ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ ! ^ ι lF
+              → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
+              → Δ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F' [conv↑] G' ^ [ ! , ι lF' ]
+              → Δ ⊢ a₀' [conv↑] b₀' ∷ F' [ zero ] ^ ι lF'
+              → Δ ⊢ h' [conv↑] g' ∷ Π ℕ ^ ! ° ⁰ ▹ (F' ^ ! ° lF' ▹▹ F' [ suc (var 0) ]↑ ° lF' ° lF' ^ !) ° lF' ° lF' ^ ! ^ ι lF'
+              → Δ ⊢ k' ~ l' ↓! ℕ ^ ι ⁰
+              → ((lF PE.≡ lF') → Dec (Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] F' ^ [ ! , ι lF ]))
+              → ((lF PE.≡ lF') → (Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] F' ^ [ ! , ι lF ]) →
+                     Dec (Γ ⊢ a₀ [conv↑] a₀' ∷ F [ zero ] ^ ι lF))
+              → ((lF PE.≡ lF') → (Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F [conv↑] F' ^ [ ! , ι lF ]) →
+                     Dec (Γ ⊢ h [conv↑] h' ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° lF ▹▹ F [ suc (var 0) ]↑ ° lF ° lF ^ !) ° lF ° lF ^ ! ^ ι lF))
+              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ k ~ k' ↓! U ^ lA)
+              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ natrec lF F a₀ h k ~ natrec lF' F' a₀' h' k' ↑! U ^ lA)
+
+  dec-natrec-natrec {lF = lF} {lF' = lF'} Γ≡Δ F a0 aS k G b0 bS k₀ decF deca dech deck with dec-level lF lF' 
+  ... | no ¬p = no (λ { (_ , .(ι lF) , natrec-cong x x₁ x₂ x₃) → ¬p PE.refl })
+  ... | yes PE.refl with decF PE.refl
+  ... | no ¬p = no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬p x })
+  ... | yes p with deca PE.refl p | dech PE.refl p | deck
+  ... | yes p0 | yes pS | yes pK = yes (_ , _ , let _ , ⊢k , _ = syntacticEqTerm (soundness~↓! k) in natrec-cong p p0 pS (~atℕ ⊢k pK))
+  ... | yes p0 | yes pS | no ¬pK = no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬pK (_ , _ , x₃) })
+  ... | yes p0 | no ¬pS | _ = no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬pS x₂ })
+  ... | no ¬p0 | _ | _ = no (λ { (_ , _ , natrec-cong x x₁ x₂ x₃) → ¬p0 x₁ })
+
+  dec-emptyrec-emptyrec : ∀ {Γ Δ k l F G lF k' l' F' G' lF'}
+              → ⊢ Γ ≡ Δ
+              → Γ ⊢ F [conv↑] G ^ [ ! , ι lF ]
+              → Γ ⊢ k ~ l ↑% sEmpty ^ ι ⁰
+              → Δ ⊢ F' [conv↑] G' ^ [ ! , ι lF' ]
+              → Δ ⊢ k' ~ l' ↑% sEmpty ^ ι ⁰
+              → ((lF PE.≡ lF') → Dec (Γ ⊢ F [conv↑] F' ^ [ ! , ι lF ]))
+              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ Emptyrec lF ⁰ F k ~ Emptyrec lF' ⁰ F' k' ↑! U ^ lA)
+  dec-emptyrec-emptyrec {lF = lF} {lF' = lF'} Γ≡Δ F k G k₀ decF with dec-level lF lF' 
+  ... | no ¬p = no (λ { (_ , .(ι lF) , Emptyrec-cong x x₁) → ¬p PE.refl })
+  ... | yes PE.refl with decF PE.refl
+  ... | yes p = let ⊢k , _  = soundness~↑% k
+                    ⊢k₀ , _ = soundness~↑% k₀
+                    ⊢Γ = wfTerm ⊢k
+                in yes (_ , _ , Emptyrec-cong p (%~↑ ⊢k (stabilityTerm (symConEq Γ≡Δ) ⊢k₀)))
+  ... | no ¬p = no (λ { (_ , .(ι lF) , Emptyrec-cong x x₁) → ¬p x })
+
+
+
+
+
+
