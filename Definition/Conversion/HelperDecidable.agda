@@ -265,101 +265,6 @@ IdUUΠ-elim () (Id-UΠ x x₁)
 IdUUΠ-elim' : ∀ {Γ l A rA B X t u u'} → Neutral t → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) u ~ Id (U ⁰) t u' ↑! X ^ l → ⊥
 IdUUΠ-elim' net e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in IdUUΠ-elim net e'
 
-{-
-castℕ-elim : ∀ {Γ l A B B' X t e t' e'} → Neutral A → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ ℕ B' e' t' ↑! X ^ l → ⊥
-castℕ-elim neA (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castℕ-elim () (cast-ℕ x x₁ x₂ x₃)
-castℕ-elim () (cast-ℕℕ x x₁ x₂)
-castℕ-elim () (cast-ℕΠ x x₁ x₂ x₃)
-castℕ-elim x (cast-refl x₁ x₂ x₃ x₄ x₅) =
-  let  = inversion-cast x₃
-  in {!!}
-castℕ-elim x (castℕ-refl' x₁ x₂) = {!!}
-
-
-castℕ-elim' : ∀ {Γ l A B B' X t e t' e'} → Neutral A → Γ ⊢ cast ⁰ ℕ B e t ~ cast ⁰ A B' e' t' ↑! X ^ l → ⊥
-castℕ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castℕ-elim neA e'
-
-castΠ-elim : ∀ {Γ l A B B' X t e t' e' r P Q} → Neutral A → Γ ⊢ cast ⁰ A B e t ~ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) B' e' t' ↑! X ^ l → ⊥
-castΠ-elim neA (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castΠ-elim () (cast-Π x x₁ x₂ x₃ x₄)
-castΠ-elim () (cast-Πℕ x x₁ x₂ x₃)
-castΠ-elim () (cast-ΠΠ%! x x₁ x₂ x₃ x₄)
-castΠ-elim () (cast-ΠΠ!% x x₁ x₂ x₃ x₄)
-
-castΠ-elim' : ∀ {Γ l A B B' X t e t' e' r P Q} → Neutral A → Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) B e t ~ cast ⁰ A B' e' t' ↑! X ^ l → ⊥
-castΠ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castΠ-elim neA e'
-
-castℕℕ-elim : ∀ {Γ l A X t e t' e'} → Neutral A → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ ℕ e' t' ↑! X ^ l → ⊥
-castℕℕ-elim neA (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castℕℕ-elim (var n) (cast-ℕ () x₁ x₂ x₃)
-castℕℕ-elim () (cast-ℕℕ x x₁ x₂)
-
-castℕℕ-elim' : ∀ {Γ l A X t e t' e'} → Neutral A → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ A e' t' ↑! X ^ l → ⊥
-castℕℕ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castℕℕ-elim neA e'
-
-castℕΠ-elim : ∀ {Γ l A A' X t e t' e' r P Q} → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) A' e' t' ↑! X ^ l → ⊥
-castℕΠ-elim (cast-cong () _ _ x₁ x₂ x₃ x₄)
-
-castℕΠ-elim' : ∀ {Γ l A A' X t e t' e' r P Q} → Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) A e t ~ cast ⁰ ℕ A' e' t' ↑! X ^ l → ⊥
-castℕΠ-elim' (cast-cong () _ _ x₁ x₂ x₃ x₄) 
-
-castℕneΠ-elim : ∀ {Γ l A X t e t' e' r P Q} → Neutral A → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e' t' ↑! X ^ l → ⊥
-castℕneΠ-elim neA (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castℕneΠ-elim neA (cast-ℕ () x₁ x₂ x₃)
-castℕneΠ-elim () (cast-ℕΠ x x₁ x₂ x₃)
-
-castℕneΠ-elim' : ∀ {Γ l A X t e t' e' r P Q} → Neutral A → Γ ⊢ cast ⁰ ℕ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ ℕ A e' t' ↑! X ^ l → ⊥
-castℕneΠ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castℕneΠ-elim neA e'
-
-castℕℕΠ-elim : ∀ {Γ l X t e t' e' r P Q} → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e' t' ↑! X ^ l → ⊥
-castℕℕΠ-elim (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castℕℕΠ-elim (cast-ℕ () x₁ x₂ x₃)
-
-castℕℕΠ-elim' : ∀ {Γ l X t e t' e' r P Q} → Γ ⊢ cast ⁰ ℕ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ ℕ ℕ e' t' ↑! X ^ l → ⊥
-castℕℕΠ-elim' e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castℕℕΠ-elim e'
-
-
-castΠneℕ-elim : ∀ {Γ l A X t e t' e' r P Q r' P' Q'} → Neutral A → Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) A e t ~
-                                                                       cast ⁰ (Π P' ^ r' ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) ℕ e' t' ↑! X ^ l → ⊥
-castΠneℕ-elim neA (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castΠneℕ-elim neA (cast-Π x () x₂ x₃ x₄)
-castΠneℕ-elim () (cast-Πℕ x x₁ x₂ x₃)
-
-castΠneℕ-elim' : ∀ {Γ l A X t e t' e' r P Q r' P' Q'} → Neutral A → Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) ℕ e t ~
-                                                                       cast ⁰ (Π P' ^ r' ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) A e' t' ↑! X ^ l → ⊥
-castΠneℕ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castΠneℕ-elim neA e'
-
-castΠneΠ-elim : ∀ {Γ l A X t e t' e' r P Q r' P' Q' r'' P'' Q''} → Neutral A →
-                  Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) A e t ~ cast ⁰ (Π P' ^ r' ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) (Π P'' ^ r'' ° ⁰ ▹ Q'' ° ⁰ ° ⁰ ^ !) e' t' ↑! X ^ l → ⊥
-castΠneΠ-elim neA (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castΠneΠ-elim neA (cast-Π x () x₂ x₃ x₄)
-castΠneΠ-elim () (cast-ΠΠ%! x x₁ x₂ x₃ x₄)
-castΠneΠ-elim () (cast-ΠΠ!% x x₁ x₂ x₃ x₄)
-
-castΠneΠ-elim' : ∀ {Γ l A X t e t' e' r P Q r' P' Q' r'' P'' Q''} → Neutral A →
-                  Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) (Π P'' ^ r'' ° ⁰ ▹ Q'' ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ (Π P' ^ r' ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) A e' t' ↑! X ^ l → ⊥
-castΠneΠ-elim' neA e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castΠneΠ-elim neA e'
-
-castΠΠℕ-elim : ∀ {Γ l X t e t' e' r P Q r' P' Q' r'' P'' Q''} →
-                  Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) ℕ e t ~ cast ⁰ (Π P' ^ r' ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) (Π P'' ^ r'' ° ⁰ ▹ Q'' ° ⁰ ° ⁰ ^ !) e' t' ↑! X ^ l → ⊥
-castΠΠℕ-elim (cast-cong () _ _ x₁ x₂ x₃ x₄)
-castΠΠℕ-elim (cast-Π x () x₂ x₃ x₄)
-
-castΠΠℕ-elim' : ∀ {Γ l X t e t' e' r P Q r' P' Q' r'' P'' Q''} →
-                  Γ ⊢ cast ⁰ (Π P ^ r ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) (Π P'' ^ r'' ° ⁰ ▹ Q'' ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ (Π P' ^ r' ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) ℕ e' t' ↑! X ^ l → ⊥
-castΠΠℕ-elim' e = let _ , _ , e' = sym~↑! (reflConEq (wfEqTerm (soundness~↑! e))) e in castΠΠℕ-elim e'
-
-
-castΠΠ!%-elim : ∀ {Γ l A A' X t e t' e' P Q P' Q'} → Γ ⊢ cast ⁰ (Π P ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) A e t ~
-                                                         cast ⁰ (Π P' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) A' e' t' ↑! X ^ l → ⊥
-castΠΠ!%-elim (cast-cong () _ _ x₁ x₂ x₃ x₄)
-
-castΠΠ%!-elim : ∀ {Γ l A A' X t e t' e' P Q P' Q'} → Γ ⊢ cast ⁰ (Π P ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) A e t ~
-                                                         cast ⁰ (Π P' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) A' e' t' ↑! X ^ l → ⊥
-castΠΠ%!-elim (cast-cong () _ _ x₁ x₂ x₃ x₄)
--}
-
 -- Helper functions for decidability for neutrals
 decConv↓Term-ℕ-ins : ∀ {t u v Γ l}
  → Γ ⊢ t [conv↓] u ∷ ℕ ^ l
@@ -527,3 +432,20 @@ abstract
     in PE.trans (convConv↓TermSize (convert~-aux B) (convert~-aux' Γ≡Δ A B A~B) (ne neA) (PE.subst (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) (PE.sym (convert~-aux'' Γ≡Δ A B A~B)) t))
                 (sizeSubst-gen (λ X → _ ⊢ _ [conv↓] _ ∷ _ ^ ι X) sizeConv↓Term t (PE.sym (convert~-aux'' Γ≡Δ A B A~B)))
                 
+
+abstract
+
+  castℕInv : ∀ {l e t} → Neutral (cast l ℕ ℕ e t) → Neutral t 
+  castℕInv (castℕℕₙ net) = net
+
+  cast-t-≡ : ∀ {Γ A B B' t t' e X lX} 
+                → Γ ⊢ t' ∷ B' ^ [ ! , ι ⁰ ]
+                → Γ ⊢ cast ⁰ A B e t ~ t' ↑! X ^ lX
+                → Γ ⊢ B ≡ B' ^ [ ! , ι ⁰ ]
+  cast-t-≡ ⊢t X =
+    let _ , ⊢cast , ⊢t' = syntacticEqTerm (soundness~↑! X)
+        _ , _ , _ , _ , _ , R≡R , eqR , _ = inversion-cast ⊢cast
+        eqR , el = typeinfo-PE-injectivity eqR
+        _ , eq = type-uniq ⊢t ⊢t'
+        R≡R' = PE.subst (λ X →  _ ⊢ _ ≡ _ ^ [ X , ι _ ]) (PE.sym eqR) R≡R
+    in T.trans (T.sym R≡R') (T.sym eq) 
