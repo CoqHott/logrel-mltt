@@ -103,9 +103,6 @@ mutual
             → Γ ⊢⊢ e ∷ (Id (Univ r ⁰) A B) ^ [ % , ι ⁰ ]
             → Γ ⊢⊢ t ∷ A ^ [ r , ι ⁰ ]
             → Γ ⊢⊢ cast ⁰ A B e t ∷ B ^ [ r , ι ⁰ ]
-    castreflⱼ : ∀ {A t}
-                 → Γ ⊢⊢ t ∷ A ^ [ ! , ι ⁰ ]
-                 → Γ ⊢⊢ castrefl A t ∷ (Id A t (cast ⁰ A A (Idrefl (U ⁰) A) t)) ^ [ % , ι ⁰ ]
     conv   : ∀ {t A B r}
            → Γ ⊢⊢ t ∷ A ^ r
            → Γ ⊢⊢ A ≡ B ^ r
@@ -260,6 +257,11 @@ mutual
             → Γ ⊢⊢ A' ^ [ rA' , ι ⁰ ]
             → Γ ∙ A' ^ [ rA' , ι ⁰ ] ⊢⊢ B' ^ [ ! , ι ⁰ ]
             → Γ ⊢⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) (Π A' ^ rA' ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) ≡ sEmpty ∷ SProp ^ [ ! , next ⁰ ]
+    cast-refl : ∀ {A B e t} → let l = ⁰ in
+                  Γ ⊢⊢ A ≡ B ^ [ ! , ι l ]
+                → Γ ⊢⊢ e ∷ (Id (U ⁰) A B) ^ [ % , ι ⁰ ]
+                → Γ ⊢⊢ t ∷ A ^ [ ! , ι l ]
+                → Γ ⊢⊢ cast l A B e t ≡ t ∷ B ^ [ ! , ι l ]            
     cast-cong : ∀ {A A' B B' e e' t t'} → let l = ⁰ in
                   Γ ⊢⊢ A ≡ A' ^ [ ! , ι l ]
                 → Γ ⊢⊢ B ≡ B' ^ [ ! , ι l ]
@@ -325,7 +327,6 @@ mutual
   ⊢is⊢⊢term (Idreflⱼ X) = Idreflⱼ (⊢is⊢⊢term X)
   ⊢is⊢⊢term (transpⱼ x x₁ X X₁ X₂ X₃) = transpⱼ (⊢is⊢⊢ x₁) (⊢is⊢⊢term X) (⊢is⊢⊢term X₁) (⊢is⊢⊢term X₂) (⊢is⊢⊢term X₃)
   ⊢is⊢⊢term (castⱼ X X₁ X₂ X₃) = castⱼ (⊢is⊢⊢term X₂) (⊢is⊢⊢term X₃) 
-  ⊢is⊢⊢term (castreflⱼ X X₁) = castreflⱼ (⊢is⊢⊢term X₁)
   ⊢is⊢⊢term (conv X x) = conv (⊢is⊢⊢term X) (⊢is⊢⊢eq x)
 
   ⊢is⊢⊢eqterm (refl x) = refl (⊢is⊢⊢term x)
@@ -355,6 +356,7 @@ mutual
   ⊢is⊢⊢eqterm (Id-U-ℕΠ x x₁) = Id-U-ℕΠ (univ (⊢is⊢⊢term x)) (univ (⊢is⊢⊢term x₁))
   ⊢is⊢⊢eqterm (Id-U-Πℕ x x₁) = Id-U-Πℕ (univ (⊢is⊢⊢term x)) (univ (⊢is⊢⊢term x₁))
   ⊢is⊢⊢eqterm (Id-U-ΠΠ!% r x x₁ x₂ x₃) = Id-U-ΠΠ!% r (univ (⊢is⊢⊢term x)) (univ (⊢is⊢⊢term x₁)) (univ (⊢is⊢⊢term x₂)) (univ (⊢is⊢⊢term x₃))
+  ⊢is⊢⊢eqterm (cast-refl X x x₁) = cast-refl (univ (⊢is⊢⊢eqterm X)) (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
   ⊢is⊢⊢eqterm (cast-cong X X₁ X₂ x x₁) = cast-cong (univ (⊢is⊢⊢eqterm X)) (univ (⊢is⊢⊢eqterm X₁)) (⊢is⊢⊢eqterm X₂) (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
   ⊢is⊢⊢eqterm (cast-Π x x₁ x₂ x₃ x₄ x₅) = cast-Π (⊢is⊢⊢term x₄) (⊢is⊢⊢term x₅)
   ⊢is⊢⊢eqterm (cast-ℕ-0 x) = cast-ℕ-0 (⊢is⊢⊢term x)
@@ -434,9 +436,6 @@ mutual
         Ueq , _ = inversion-U ⊢U
         _ , leq = Uinjectivity Ueq
     in castⱼ (PE.subst (λ l → _ ⊢ _ ∷ _ ^ [ ! , ι l ]) leq ⊢A) (PE.subst (λ l → _ ⊢ _ ∷ _ ^ [ ! , ι l ]) leq ⊢B) ⊢e (⊢⊢is⊢term X₃) 
-  ⊢⊢is⊢term (castreflⱼ X₁) =
-    let ⊢t = (⊢⊢is⊢term X₁)
-    in castreflⱼ (un-univ (syntacticTerm ⊢t)) ⊢t
   ⊢⊢is⊢term (conv X x) = conv (⊢⊢is⊢term X) (⊢⊢is⊢eq x)
 
   ⊢⊢is⊢eqterm (refl x) = refl (⊢⊢is⊢term x)
@@ -492,6 +491,7 @@ mutual
   ⊢⊢is⊢eqterm (Id-U-ℕΠ x x₁) = Id-U-ℕΠ (un-univ (⊢⊢is⊢ x)) (un-univ (⊢⊢is⊢ x₁))
   ⊢⊢is⊢eqterm (Id-U-Πℕ x x₁) = Id-U-Πℕ (un-univ (⊢⊢is⊢ x)) (un-univ (⊢⊢is⊢ x₁))
   ⊢⊢is⊢eqterm (Id-U-ΠΠ!% r x x₁ x₂ x₃) = Id-U-ΠΠ!% r (un-univ (⊢⊢is⊢ x)) (un-univ (⊢⊢is⊢ x₁)) (un-univ (⊢⊢is⊢ x₂)) (un-univ (⊢⊢is⊢ x₃)) 
+  ⊢⊢is⊢eqterm (cast-refl X x x₁) = cast-refl (un-univ≡ (⊢⊢is⊢eq X)) (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
   ⊢⊢is⊢eqterm (cast-cong X X₁ X₂ x x₁) = cast-cong (un-univ≡ (⊢⊢is⊢eq X)) (un-univ≡ (⊢⊢is⊢eq X₁)) (⊢⊢is⊢eqterm X₂) (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
   ⊢⊢is⊢eqterm (cast-Π x₄ x₅) =
     let ⊢e = ⊢⊢is⊢term x₄
