@@ -1642,7 +1642,6 @@ mutual
                → (sizeConv↓Term e + sizeConv↓Term e') << n
                → Dec (Γ ⊢ t [conv↓] u ∷ A ^ l)
 
-{-
   decConv↓Term {n = 0} _ _ _ ()
   decConv↓Term Γ≡Δ (U-refl {r = r} _ x) (U-refl {r = r′} _ x₁) (leS size)
     with dec-relevance r r′
@@ -1773,8 +1772,8 @@ mutual
                                    ([~] .ℕ D whnfB (castℕ-refl x x₁)) → let _ , _ , neSuc = ne~↓! x in neutralSuc neSuc }))
   decConv↓Term Γ≡Δ (suc-cong x) (zero-refl x₁) _ = no λ { (ℕ-ins ()) ; (ne-ins x x₁ () x₃) }
   decConv↓Term Γ≡Δ (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) (ne-ins x₈ x₉ () x₁₁)
--}
-  decConv↓Term Γ≡Δ X Y = {!!}
+
+  -- decConv↓Term Γ≡Δ X Y = {!!}
 
   -- Decidability of algorithmic equality of terms of equal types.
   decConv↑TermConv : ∀ {n t t' u u' A B r Γ Δ}
