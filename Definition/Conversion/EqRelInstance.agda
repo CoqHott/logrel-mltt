@@ -46,13 +46,6 @@ abstract -- Agda will do some slow unfolding without abstract
         l≡l , ⊢ℕ≡A = neTypeEq neT ⊢t∷ℕ ⊢t
         A≡ℕ = ℕ≡A ⊢ℕ≡A whnfA
     in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡ℕ (PE.sym l≡l) t~u
-
-  cast-ℕℕ : ∀ {Γ t t' e e'}
-              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
-              → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-              → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
-  cast-ℕℕ t~t ⊢e ⊢e' = castℕ-refl ([~] _ (id (univ (ℕⱼ (wfTerm ⊢e)))) ℕₙ (castℕ-refl' t~t ⊢e')) ⊢e
   
 -- Algorithmic equality of neutrals with injected conversion.
 data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
@@ -332,22 +325,6 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
          _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
      in ↑ (refl (univ ⊢B)) (~↑! (cast-ℕ t~t′ X ⊢e ⊢e'))
 
-~-castℕℕ : ∀ {e e' t t' : Term} {Γ : Con Term} →
-    ⊢ Γ →
-    Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ] →
-    Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ] →
-    Γ ⊢ e' ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ] →
-    Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
-~-castℕℕ ⊢Γ (↑ A≡B (~↑! x)) ⊢e ⊢e' =
-     let _ , ⊢B' = syntacticEq A≡B
-         B′ , whnfB′ , D = whNorm ⊢B'
-         ℕ≡B′ = trans A≡B (subset* (red D))
-         B≡ℕ = ℕ≡A ℕ≡B′ whnfB′
-         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡ℕ
-                      ([~] _ (red D) whnfB′ x)
-         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
-     in ↑ (refl (univ (ℕⱼ ⊢Γ))) (~↑! (cast-ℕℕ t~t′ ⊢e ⊢e'))
-
 ~-castΠ : ∀ {A A' : Term} {rA : Relevance} {P P' B B' e e' t t' : Term}
     {Γ : Con Term} →
     Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! [genconv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ] →
@@ -529,5 +506,5 @@ eqRelInstance = eqRel _⊢_[conv↑]_^_ _⊢_[genconv↑]_∷_^_ _⊢_~_∷_^_
                       ~-var ~-app ~-natrec ~-Emptyrec
                       ~-IdCong ~-Idℕ ~-Idℕ0 ~-IdℕS ~-IdU ~-IdUℕ ~-IdUΠ
                       ~-castcong ~-castneℕ ~-castneΠ ~-cast-refl ~-castℕ-refl
-                      ~-castℕ ~-castℕℕ ~-castΠ ~-castℕΠ ~-castΠℕ ~-castΠΠ%! ~-castΠΠ!%
+                      ~-castℕ ~-castΠ ~-castℕΠ ~-castΠℕ ~-castΠΠ%! ~-castΠΠ!%
                       ~-irrelevance

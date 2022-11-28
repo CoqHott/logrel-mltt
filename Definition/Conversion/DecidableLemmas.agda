@@ -72,6 +72,13 @@ abstract
         eqℕ = ℕ≡A eqC wC        
     in PE.subst (λ X →  _ ⊢ _ ~ _ ↓! X ^ ι ⁰) eqℕ t~t 
 
+  cast-ℕℕ : ∀ {Γ t t' e e'}
+              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
+              → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+              → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ↑! ℕ ^ ι ⁰
+  cast-ℕℕ t~t ⊢e ⊢e' = castℕ-refl ([~] _ (id (univ (ℕⱼ (wfTerm ⊢e)))) ℕₙ (castℕ-refl' t~t ⊢e')) ⊢e
+
 abstract
   cast-refl-dec : ∀ {Γ A B t e u}
               → Neutral A

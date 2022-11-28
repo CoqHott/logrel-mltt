@@ -267,13 +267,6 @@ record EqRelSet : Set₁ where
             → Γ ⊢ e' ∷ (Id (U ⁰) ℕ B') ^ [ % , ι ⁰ ]
             → Γ ⊢ cast ⁰ ℕ B e t ~ cast ⁰ ℕ B' e' t' ∷ B ^ [ ! , ι ⁰ ]
 
-    ~-castℕℕ : ∀ {e e' t t' Γ}
-             → ⊢ Γ
-             → Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ]
-            → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-            → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
-             → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
-
     ~-castΠ : ∀ {A A' rA P P' B B' e e' t t' Γ} →
            let l = ⁰ in
            Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
@@ -332,3 +325,15 @@ record EqRelSet : Set₁ where
   -- Composition of universe and generic equality compatibility
   ~-to-≅ : ∀ {t u r l Γ} → Γ ⊢ t ~ u ∷ (Univ r l) ^ [ ! , next l ] → Γ ⊢ t ≅ u ^ [ r , ι l ]
   ~-to-≅ t~u = ≅-univ (~-to-≅ₜ t~u)
+
+
+open EqRelSet {{...}}
+
+~-castℕℕ : ∀ {{eqrel : EqRelSet}} {e e' t t' Γ}
+             → Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ t' ∷ ℕ ^ [ ! , ι ⁰ ]
+             → Γ ⊢ e ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+             → Γ ⊢ e' ∷ (Id (U ⁰) ℕ ℕ) ^ [ % , ι ⁰ ]
+             → Γ ⊢ cast ⁰ ℕ ℕ e t ~ cast ⁰ ℕ ℕ e' t' ∷ ℕ ^ [ ! , ι ⁰ ]
+~-castℕℕ t~t ⊢t ⊢t' ⊢e ⊢e' = ~-castℕ-refl (~-sym (~-castℕ-refl (~-sym t~t) ⊢t' ⊢e')) ⊢t ⊢e

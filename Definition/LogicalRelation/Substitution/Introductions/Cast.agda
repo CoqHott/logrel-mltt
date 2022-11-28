@@ -308,7 +308,7 @@ import Data.Nat as Nat
                                                    (transTerm:⇒:* (CastRed*Termℕ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) )) (un-univ≡ (subset* D))
                                                                   (refl (un-univ ⊢B))))) (conv ⊢t (subset* D)) [[ ⊢B , ⊢ℕ' , D' ]])
                                                                   (conv:⇒*: (CastRed*Termℕℕ ⊢eℕℕ d) (sym (subset* D'))))) (subset* D') ))
-        (~-to-≅ₜ (~-castℕℕ (wfTerm ⊢n) n~n ⊢eℕℕ ⊢eℕℕ)) (ne (neNfₜ (castℕℕₙ nen) (castⱼ (ℕⱼ (wfTerm ⊢n)) (ℕⱼ (wfTerm ⊢n)) ⊢eℕℕ ⊢n) (~-castℕℕ (wfTerm ⊢n) n~n ⊢eℕℕ ⊢eℕℕ)))
+        (~-to-≅ₜ (~-castℕℕ  n~n ⊢n ⊢n ⊢eℕℕ ⊢eℕℕ)) (ne (neNfₜ (castℕℕₙ nen) (castⱼ (ℕⱼ (wfTerm ⊢n)) (ℕⱼ (wfTerm ⊢n)) ⊢eℕℕ ⊢n) (~-castℕℕ n~n ⊢n ⊢n ⊢eℕℕ ⊢eℕℕ)))
 
 
 [castext]ℕ : ∀ {A A' B B'  Γ}
@@ -374,7 +374,7 @@ import Data.Nat as Nat
                                                    (transTerm:⇒:* (CastRed*Termℕ (conv ⊢e′ (univ (Id-cong (refl (univ 0<1 (wf ⊢B') ))(un-univ≡ (subset* DA'))
                                                                   (refl (un-univ ⊢B'))))) (conv ⊢t′ (subset* DA')) [[ ⊢B' , ⊢ℕB' , DB' ]])
                                                                   (conv:⇒*: (CastRed*Termℕℕ ⊢eℕℕ' d′) (sym (subset* DB'))))) (sym (≅-eq ⊢B≡B′)))
-                   (~-conv (~-castℕℕ ⊢Γ k≡m ⊢eℕℕ ⊢eℕℕ') (sym (subset* DB)))
+                   (~-conv (~-castℕℕ k≡m (_⊢_:⇒*:_∷_^_.⊢u d) (_⊢_:⇒*:_∷_^_.⊢u d′) ⊢eℕℕ ⊢eℕℕ') (sym (subset* DB)))
 
 
 
