@@ -23,16 +23,10 @@ eqRelInstance = eqRel _⊢_≡_^_ _⊢_≡_∷_^_ _⊢_≡_∷_^_
                       conv conv wkEq wkEqTerm wkEqTerm
                       reduction reductionₜ
                       Urefl (refl ∘ᶠ univ 0<1) (refl ∘ᶠ ℕⱼ) (refl ∘ᶠ Emptyⱼ)
-                      Π-cong ∃-cong (refl ∘ᶠ zeroⱼ) suc-cong
+                      Π-cong (refl ∘ᶠ zeroⱼ) suc-cong
                       (λ lF lG x x₁ x₂ x₃ x₄ x₅ → η-eq lF lG x x₁ x₂ x₅)
                       genVar app-cong natrec-cong Emptyrec-cong
                       Id-cong
-                      (λ ⊢Γ → Id-cong (refl (ℕⱼ ⊢Γ)))
-                      (λ ⊢Γ → Id-cong (refl (ℕⱼ ⊢Γ)) (refl (zeroⱼ ⊢Γ)))
-                      (λ ⊢Γ t → Id-cong (refl (ℕⱼ ⊢Γ)) (suc-cong t))
-                      (λ ⊢Γ → Id-cong (refl (univ 0<1 ⊢Γ)))
-                      (λ ⊢Γ → Id-cong (refl (univ 0<1 ⊢Γ)) (refl (ℕⱼ ⊢Γ)))
-                      (λ ⊢A B → Id-cong (refl (univ 0<1 (wfEq (univ ⊢A)))) ⊢A B) 
                       cast-cong (λ A≡A t≡t e e' → cast-cong A≡A (refl (ℕⱼ (wfTerm e))) t≡t e e') cast-cong
                       (λ A t~u ⊢t ⊢e → trans (cast-refl A ⊢e ⊢t) (conv t~u (univ A)))
                       (λ t~u ⊢t ⊢e → trans (cast-refl (refl (ℕⱼ (wfTerm ⊢t))) ⊢e ⊢t) t~u)

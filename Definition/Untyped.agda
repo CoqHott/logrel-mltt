@@ -129,11 +129,11 @@ data Kind : Set where
   Emptyreckind : Level → Level → Kind
   Idkind : Kind
   Idreflkind : Kind
+  Idpikind : Kind
+  Idspropkind : Kind
   Transpkind : Kind
   Castkind : Level → Kind
   Castreflkind : Kind
-  Sigmakind : Kind
-  Pairkind : Kind
   Fstkind : Kind
   Sndkind : Kind
 
@@ -162,10 +162,6 @@ pattern Univ r l = gen (Ukind r l) []
 Π_^_°_▹_°_°_^_   : Term → Relevance → Level → Term → Level → Level → Relevance → Term  -- Dependent function type (B is a binder).
 Π A ^ r ° lA ▹ B ° lB ° lΠ ^ rΠ = gen (Pikind r lA lB lΠ rΠ) (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
 
--- Existential type : dependent pairs of proof-irrelevant terms
-∃_▹_ : Term → Term → Term
-∃ A ▹ B = gen Sigmakind (⟦ 0 , A ⟧ ∷ ⟦ 1 , B ⟧ ∷ [])
-
 -- Natural numbers
 ℕ      : Term
 ℕ = gen Natkind []
@@ -179,9 +175,6 @@ lam A ▹ t ^ l = gen (Lamkind l) (⟦ 0 , A ⟧ ∷ ⟦ 1 , t ⟧ ∷ [])
 
 _∘_^_    : (t u : Term) (l : Level)    → Term  -- Application.
 t ∘ u ^ l = gen (Appkind l) (⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
-
-⦅_,_,_⦆ : Term → Term → Term → Term -- Dependent pair formation
-⦅ G , t , u ⦆ = gen Pairkind (⟦ 1 , G ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 
 fst : (t : Term) → Term -- Dependent pair elimination
 fst t = gen Fstkind (⟦ 0 , t ⟧ ∷ [])
@@ -218,6 +211,14 @@ Id A t u = gen Idkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
 Idrefl : (A t : Term) → Term
 Idrefl A t = gen Idreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
 
+-- witness of functional extensionality
+IdΠ : (A B t u : Term) → Term
+IdΠ A B t u = gen Idpikind (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , u ⟧ ∷ [])
+
+-- witness of functional extensionality
+IdSProp : (A B : Term) → Term
+IdSProp A B = gen Idspropkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , B ⟧ ∷ [])
+
 -- transport on propositions
 transp : (A P t s u e : Term) → Term
 transp A P t s u e = gen Transpkind (⟦ 0 , A ⟧ ∷ ⟦ 1 , P ⟧ ∷ ⟦ 0 , t ⟧ ∷ ⟦ 0 , s ⟧ ∷ ⟦ 0 , u ⟧ ∷ ⟦ 0 , e ⟧ ∷ [])
@@ -238,10 +239,6 @@ castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
   → F PE.≡ H × rF PE.≡ rH × lF PE.≡ lH × G PE.≡ E × lG PE.≡ lE × lΠ PE.≡ lΠ' × r PE.≡ r'
 Π-PE-injectivity PE.refl = PE.refl , PE.refl , PE.refl , PE.refl , PE.refl , PE.refl , PE.refl
 
-∃-PE-injectivity : ∀ {F G H E} → ∃ F ▹ G PE.≡ ∃ H ▹ E
-  → F PE.≡ H × G PE.≡ E
-∃-PE-injectivity PE.refl = PE.refl , PE.refl
-
 -- If  suc n = suc m  then  n = m.
 
 suc-PE-injectivity : ∀ {n m} → suc n PE.≡ suc m → n PE.≡ m
@@ -260,13 +257,6 @@ data Neutral : Term → Set where
   var     : ∀ n                     → Neutral (var n)
   ∘ₙ      : ∀ {k u l}     → Neutral k → Neutral (k ∘ u ^ l)
   natrecₙ : ∀ {l C c g k} → Neutral k → Neutral (natrec l C c g k)
-  Idₙ : ∀ {A t u} → Neutral A → Neutral (Id A t u)
-  Idℕₙ : ∀ {t u} → Neutral t → Neutral (Id ℕ t u)
-  Idℕ0ₙ : ∀ {u} → Neutral u → Neutral (Id ℕ zero u)
-  IdℕSₙ : ∀ {t u} → Neutral u → Neutral (Id ℕ (suc t) u)
-  IdUₙ : ∀ {t u l} → Neutral t → Neutral (Id (U l) t u)
-  IdUℕₙ : ∀ {u l} → Neutral u → Neutral (Id (U l) ℕ u)
-  IdUΠₙ : ∀ {A rA lA B lB l r u} → Neutral u → Neutral (Id (U l) (Π A ^ rA ° lA ▹ B ° lB ° l ^ r) u)
   castₙ : ∀ {l A B e t} → Neutral A → Neutral B → Neutral t → Neutral (cast l A B e t)
   castnℕₙ : ∀ {l B e t} → Neutral B → Neutral (cast l B ℕ e t)
   castnΠₙ : ∀ {l A rA lA P lP r B e t} → Neutral B → Neutral (cast l B (Π A ^ rA ° lA ▹ P ° lP ° l ^ r) e t)
@@ -287,7 +277,7 @@ data Whnf : Term → Set where
   -- Type constructors are whnfs.
   Uₙ    : ∀ {r l} → Whnf (Univ r l)
   Πₙ    : ∀ {A r lA B lB l r'} → Whnf (Π A ^ r ° lA ▹ B ° lB ° l ^ r')
-  ∃ₙ    : ∀ {A B} → Whnf (∃ A ▹ B)
+  Idₙ : ∀ {A t u} → Whnf (Id A t u)
   ℕₙ    : Whnf ℕ
   Emptyₙ : ∀ {l} → Whnf (Empty l)
 
@@ -314,17 +304,11 @@ U≢Empty ()
 U≢Π : ∀ {r r' r'' l F lF G lG l'} → Univ r l PE.≢ Π F ^ r' ° lF ▹ G ° lG ° l' ^ r''
 U≢Π ()
 
-U≢∃ : ∀ {r l F G} → Univ r l PE.≢ ∃ F ▹ G
-U≢∃ ()
-
 U≢ne : ∀ {r l K} → Neutral K → Univ r l PE.≢ K
 U≢ne () PE.refl
 
 ℕ≢Π : ∀ {F r lF G lG l r'} → ℕ PE.≢ Π F ^ r ° lF ▹ G ° lG ° l ^ r'
 ℕ≢Π ()
-
-ℕ≢∃ : ∀ {F G} → ℕ PE.≢ ∃ F ▹ G
-ℕ≢∃ ()
 
 ℕ≢Empty : ∀ {l} → ℕ PE.≢ Empty l
 ℕ≢Empty ()
@@ -341,17 +325,8 @@ Empty≢ne () PE.refl
 Empty≢Π : ∀ {F r lF G lG l l' r'} → Empty l' PE.≢ Π F ^ r ° lF ▹ G ° lG ° l ^ r'
 Empty≢Π ()
 
-Empty≢∃ : ∀ {l F G} → Empty l PE.≢ ∃ F ▹ G
-Empty≢∃ ()
-
 Π≢ne : ∀ {F r lF G lG K l r'} → Neutral K → Π F ^ r ° lF ▹ G ° lG ° l ^ r' PE.≢ K
 Π≢ne () PE.refl
-
-Π≢∃ : ∀ {F r lF G lG F' G' l r'} → Π F ^ r ° lF ▹ G ° lG ° l ^ r' PE.≢ ∃ F' ▹ G'
-Π≢∃ ()
-
-∃≢ne : ∀ {F G K} → Neutral K → ∃ F ▹ G PE.≢ K
-∃≢ne () PE.refl
 
 zero≢suc : ∀ {n} → zero PE.≢ suc n
 zero≢suc ()
@@ -380,7 +355,7 @@ data Type : Term → Set where
   ℕₙ : Type ℕ
   Uₙ : ∀ {r l} → Type (Univ r l)
   Emptyₙ : ∀ {l} → Type (Empty l)
-  ∃ₙ : ∀ {A B} → Type (∃ A ▹ B)
+  Idₙ : ∀ {A t u} → Type (Id A t u)
   ne : ∀{n} → Neutral n → Type n
 
 -- A whnf of type Π A B is either lam t or neutral.
@@ -401,7 +376,7 @@ typeWhnf : ∀ {A} → Type A → Whnf A
 typeWhnf Πₙ = Πₙ
 typeWhnf ℕₙ = ℕₙ
 typeWhnf Uₙ  = Uₙ
-typeWhnf ∃ₙ = ∃ₙ
+typeWhnf Idₙ = Idₙ
 typeWhnf Emptyₙ = Emptyₙ
 typeWhnf (ne x) = ne x
 
@@ -481,13 +456,6 @@ wkNeutral ρ (var n)    = var (wkVar ρ n)
 wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
 wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
 wkNeutral ρ Emptyrecₙ = Emptyrecₙ
-wkNeutral ρ (Idₙ A) = Idₙ (wkNeutral ρ A)
-wkNeutral ρ (Idℕₙ t) = Idℕₙ (wkNeutral ρ t)
-wkNeutral ρ (Idℕ0ₙ t) = Idℕ0ₙ (wkNeutral ρ t)
-wkNeutral ρ (IdℕSₙ t) = IdℕSₙ (wkNeutral ρ t)
-wkNeutral ρ (IdUₙ t) = IdUₙ (wkNeutral ρ t)
-wkNeutral ρ (IdUℕₙ t) = IdUℕₙ (wkNeutral ρ t)
-wkNeutral ρ (IdUΠₙ t) = IdUΠₙ (wkNeutral ρ t)
 wkNeutral ρ (castₙ A B t) = castₙ (wkNeutral ρ A) (wkNeutral ρ B) (wkNeutral ρ t)
 wkNeutral ρ (castnℕₙ A) = castnℕₙ (wkNeutral ρ A)
 wkNeutral ρ (castnΠₙ A) = castnΠₙ (wkNeutral ρ A)
@@ -510,7 +478,7 @@ wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
 wkType ρ Πₙ      = Πₙ
 wkType ρ ℕₙ      = ℕₙ
 wkType ρ Uₙ      = Uₙ
-wkType ρ ∃ₙ      = ∃ₙ
+wkType ρ Idₙ      = Idₙ
 wkType ρ Emptyₙ  = Emptyₙ
 wkType ρ (ne x) = ne (wkNeutral ρ x)
 
@@ -521,7 +489,7 @@ wkFunction ρ (ne x) = ne (wkNeutral ρ x)
 wkWhnf : ∀ {t} ρ → Whnf t → Whnf (wk ρ t)
 wkWhnf ρ Uₙ      = Uₙ
 wkWhnf ρ Πₙ      = Πₙ
-wkWhnf ρ ∃ₙ      = ∃ₙ
+wkWhnf ρ Idₙ      = Idₙ
 wkWhnf ρ ℕₙ      = ℕₙ
 wkWhnf ρ Emptyₙ  = Emptyₙ
 wkWhnf ρ lamₙ    = lamₙ
@@ -533,11 +501,6 @@ wkWhnf ρ (ne x) = ne (wkNeutral ρ x)
 
 _^_°_▹▹_°_°_^_ : Term → Relevance → Level → Term → Level → Level → Relevance → Term
 A ^ r ° lA ▹▹ B ° lB ° l ^ r' = Π A ^ r ° lA ▹ wk1 B ° lB ° l ^ r'
-
--- Non-dependent version of ∃.
-
-_××_ : Term → Term → Term
-A ×× B = ∃ A ▹ wk1 B
 
 ------------------------------------------------------------------------
 -- Substitution

@@ -124,14 +124,6 @@ record EqRelSet : Set₁ where
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ≅ E ∷ (Univ r lG) ^ [ ! , next lG ]
               → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ r ≅ Π H ^ rF ° lF ▹ E ° lG ° l ^ r ∷ (Univ r l) ^ [ ! , next l ]
 
-    -- ∃-congruence
-    -- Since ∃ types are always small, no need for a type-level rule
-    ≅ₜ-∃-cong : ∀ {F G H E Γ}
-              → Γ ⊢ F ^ [ % , ι ⁰ ]
-              → Γ ⊢ F ≅ H ∷ SProp ^ [ ! , next ⁰ ]
-              → Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ≅ E ∷ SProp ^ [ ! , next ⁰ ]
-              → Γ ⊢ ∃ F ▹ G ≅ ∃ H ▹ E ∷ SProp ^ [ ! , next ⁰ ]
-
     -- Zero reflexivity
     ≅ₜ-zerorefl : ∀ {Γ} → ⊢ Γ → Γ ⊢ zero ≅ zero ∷ ℕ ^ [ ! , ι ⁰ ]
 
@@ -176,45 +168,10 @@ record EqRelSet : Set₁ where
 
     -- Id congruences
     ~-Id  : ∀ {A A' l t t' u u' Γ}
-          → Γ ⊢ A ~ A' ∷ Univ ! l ^ [ ! , next l ]
+          → Γ ⊢ A ≅ A' ∷ Univ ! l ^ [ ! , next l ]
           → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
           → Γ ⊢ u ≅ u' ∷ A ^ [ ! , ι l ]
           → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp ^ [ ! , next ⁰ ]
-
-    ~-Idℕ : ∀ {t t' u u' Γ}
-          → ⊢ Γ
-          → Γ ⊢ t ~ t' ∷ ℕ ^ [ ! , ι ⁰ ]
-          → Γ ⊢ u ≅ u' ∷ ℕ ^ [ ! , ι ⁰ ]
-          → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ∷ SProp ^ [ ! , next ⁰ ]
-
-    ~-Idℕ0 : ∀ {u u' Γ}
-           → ⊢ Γ
-           → Γ ⊢ u ~ u' ∷ ℕ ^ [ ! , ι ⁰ ]
-           → Γ ⊢ Id ℕ zero u ~ Id ℕ zero u' ∷ SProp ^ [ ! , next ⁰ ]
-
-    ~-IdℕS : ∀ {t t' u u' Γ}
-           → ⊢ Γ
-           → Γ ⊢ t ≅ t' ∷ ℕ ^ [ ! , ι ⁰ ]
-           → Γ ⊢ u ~ u' ∷ ℕ ^ [ ! , ι ⁰ ]
-           → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ∷ SProp ^ [ ! , next ⁰ ]
-
-    ~-IdU : ∀ {t t' u u' Γ} →
-          let l = ⁰ in
-            ⊢ Γ
-          → Γ ⊢ t ~ t' ∷ U l ^ [ ! , next l ]
-          → Γ ⊢ u ≅ u' ∷ U l ^ [ ! , next l ]
-          → Γ ⊢ Id (U l) t u ~ Id (U l) t' u' ∷ SProp ^ [ ! , next ⁰ ]
-
-    ~-IdUℕ : ∀ {u u' Γ}
-           → ⊢ Γ
-           → Γ ⊢ u ~ u' ∷ U ⁰ ^ [ ! , next ⁰ ]
-           → Γ ⊢ Id (U ⁰) ℕ u ~ Id (U ⁰) ℕ u' ∷ SProp ^ [ ! , next ⁰ ]
-
-    ~-IdUΠ : ∀ {A rA B A' B' u u' Γ} →
-          let l = ⁰ in
-           Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ≅ Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ [ ! , next ⁰ ]
-           → Γ ⊢ u ~ u' ∷ U l ^ [ ! , next l ]
-           → Γ ⊢ Id (U l)  (Π A ^ rA ° l ▹ B ° l ° ⁰ ^ ! ) u ~ Id (U l) (Π A' ^ rA ° l ▹ B' ° l ° ⁰ ^ !) u' ∷ SProp ^ [ ! , next ⁰ ]
 
     -- cast congruences
 

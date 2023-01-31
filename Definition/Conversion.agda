@@ -225,11 +225,6 @@ mutual
               → Γ ⊢ F [conv↑] H ∷ Univ rF lF ^ next lF
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G [conv↑] E  ∷ Univ rΠ lG ^ next lG
               → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rΠ [conv↓] Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ rΠ ∷ Univ rΠ lΠ ^ ll
-    ∃-cong    : ∀ {F G H E}
-              → Γ ⊢ F ^ [ % , ι ⁰ ]
-              → Γ ⊢ F [conv↑] H ∷ SProp ^ next ⁰
-              → Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G [conv↑] E  ∷ SProp ^ next ⁰
-              → Γ ⊢ ∃ F ▹ G [conv↓] ∃ H ▹ E ∷ SProp ^ next ⁰
     ℕ-ins     : ∀ {k l}
               → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
               → Γ ⊢ k [conv↓] l ∷ ℕ ^ ι ⁰
