@@ -29,8 +29,8 @@ reflEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] 
      (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
 reflEq (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A) =
   Πirr₌ _ _ D A≡A
-reflEq (∃ᵣ′ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A) =
-  ∃₌ _ _ D A≡A
+reflEq (Idᵣ′ F G _ [[ ⊢A , ⊢B , D ]] ⊢F ⊢G _ A≡A) =
+  Id₌ _ _ _ D A≡A
 reflEq {ι ¹} (emb X [A]) = reflEq [A]
 reflEq {∞} (emb X [A]) = reflEq [A]
 
@@ -68,7 +68,7 @@ reflEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm⁰ ([F] ρ ⊢Δ) [a]))
 reflEqTerm⁰ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
-reflEqTerm⁰ (∃ᵣ′ F G D ⊢F ⊢G A≡A) X = X , X
+reflEqTerm⁰ (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A) X = X , X
 
 reflEqTerm¹ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
            → Γ ⊩⟨ ι ¹ ⟩ t ∷ A ^ r / [A]
@@ -90,7 +90,7 @@ reflEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm¹ ([F] ρ ⊢Δ) [a]))
 reflEqTerm¹ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
-reflEqTerm¹ (∃ᵣ′ F G D ⊢F ⊢G A≡A) X = X , X
+reflEqTerm¹ (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A) X = X , X
 reflEqTerm¹ (emb X [A]) = reflEqTerm⁰ [A]
 
 reflEqTerm∞ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
@@ -113,7 +113,7 @@ reflEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm∞ ([F] ρ ⊢Δ) [a]))
 reflEqTerm∞ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
-reflEqTerm∞ (∃ᵣ′ F G D ⊢F ⊢G A≡A) X = X , X
+reflEqTerm∞ (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A) X = X , X
 reflEqTerm∞ (emb X [A]) = reflEqTerm¹ [A]
 
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)

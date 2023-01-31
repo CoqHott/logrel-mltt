@@ -196,7 +196,8 @@ module cast-ΠΠ-lemmas-2
       in univ x₁
 
    
-    ⊢e′ : Γ ⊢ e ∷ ∃ (Id (Univ rF ⁰) F F₁) ▹ (Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ° ⁰ ° ⁰ ^ %) ^ [ % , ι ⁰ ]
+{-
+⊢e′ : Γ ⊢ e ∷ ∃ (Id (Univ rF ⁰) F F₁) ▹ (Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ° ⁰ ° ⁰ ^ %) ^ [ % , ι ⁰ ]
     ⊢e′ =
       let
         b₀ = cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (Univ rF ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0)
@@ -207,9 +208,16 @@ module cast-ΠΠ-lemmas-2
         x₁ = conv x₀ (univ (Id-U-ΠΠ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁)))
         x₂ = PE.subst (λ X → Γ ⊢ e ∷ ∃ (Id (Univ rF ⁰) F F₁) ▹ (Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ X ]↑) (wk1d G₁) ° ⁰ ° ⁰ ^ %) ^ [ % , ι ⁰ ]) (PE.sym b≡b₀) x₁
       in x₂
-
+-}
     ⊢fste : Γ ⊢ fst e ∷ Id (Univ rF ⁰) F F₁ ^ [ % , ι ⁰ ]
-    ⊢fste = fstⱼ (un-univ ⊢IdFF₁) (un-univ ⊢IdG₁G) ⊢e′
+    ⊢fste =
+      let
+        b₀ = cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (Univ rF ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0)
+        b≡b₀ : b ρ₀ (var 1) (var 0) PE.≡ b₀
+        b≡b₀ = PE.cong₂ (λ X Y → cast ⁰ Y X (Idsym (Univ rF ⁰) X Y (var 1)) (var 0))
+          (PE.sym (wk1-wk (step id) F)) (PE.sym (wk1-wk (step id) F₁))
+        x₀ = conv ⊢e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (un-univ≡ (subset* D)) (un-univ≡ (subset* D₁))))
+      in fstⱼ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁) x₀
 
     ⊢IdG₁G' : Γ ∙ F₁ ^ [ rF , ι ⁰ ] ⊢ Id (U ⁰) (wk1d G [ b (step id) (fst (wk1 e)) (var 0) ]) G₁ ^ [ % , ι ⁰ ]
     ⊢IdG₁G' = let
@@ -222,19 +230,14 @@ module cast-ΠΠ-lemmas-2
 
     ⊢snde : Γ ⊢ snd e ∷ Π F₁ ^ rF ° ⁰ ▹ Id (U ⁰) (wk1d G [ b (step id) (fst (wk1 e)) (var 0) ]) G₁ ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
     ⊢snde =
-      let
-        x₀ = sndⱼ (un-univ ⊢IdFF₁) (un-univ ⊢IdG₁G) ⊢e′
-        x₁ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ (Π X ^ rF ° ⁰ ▹ subst _ (Id (U ⁰) Y (wk1d G₁)) ° ⁰ ° ⁰ ^ %) ^ [ % , ι ⁰ ])
-            (wk1-singleSubst F₁ (fst e)) (cast-subst-lemma2 G (b ρ₀ (var 1) (var 0))) x₀
-        x₂ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ Π F₁ ^ rF ° ⁰ ▹ Id (U ⁰) X Y ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ])
-          (singleSubstLift (wk (lift ρ₀) G) (b ρ₀ (var 1) (var 0))) (wk1d-singleSubst G₁ (fst e)) x₁
-        σ = liftSubst (sgSubst (fst e))
-        b≡b : subst σ (b ρ₀ (var 1) (var 0)) PE.≡ b (step id) (fst (wk1 e)) (var 0)
-        b≡b = PE.trans (PE.cong (λ X → cast ⁰ (subst σ (wk ρ₀ F₁)) (subst σ (wk ρ₀ F)) X (var 0)) (subst-Idsym σ (Univ rF ⁰) (wk ρ₀ F) (wk ρ₀ F₁) (var 1)))
-          (PE.cong₂ (λ X Y → cast ⁰ Y X (Idsym (Univ rF ⁰) X Y (fst (wk1 e))) (var 0)) (cast-subst-lemma5 F (fst e)) (cast-subst-lemma5 F₁ (fst e)))
-        x₃ = PE.subst₂ (λ X Y → Γ ⊢ snd e ∷ Π F₁ ^ rF ° ⁰ ▹ Id (U ⁰) (X [ Y ]) G₁ ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ])
-          (cast-subst-lemma3 G (fst e)) b≡b x₂
-     in x₃
+     let
+        b₀ = cast ⁰ (wk1 (wk1 F₁)) (wk1 (wk1 F)) (Idsym (Univ rF ⁰) (wk1 (wk1 F)) (wk1 (wk1 F₁)) (var 1)) (var 0)
+        b≡b₀ : b ρ₀ (var 1) (var 0) PE.≡ b₀
+        b≡b₀ = PE.cong₂ (λ X Y → cast ⁰ Y X (Idsym (Univ rF ⁰) X Y (var 1)) (var 0))
+          (PE.sym (wk1-wk (step id) F)) (PE.sym (wk1-wk (step id) F₁))
+        x₀ = conv ⊢e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (un-univ≡ (subset* D)) (un-univ≡ (subset* D₁))))
+        res = sndⱼ (un-univ ⊢F) (un-univ ⊢G) (un-univ ⊢F₁) (un-univ ⊢G₁) x₀
+      in PE.subst (λ X → Γ ⊢ snd e ∷ Π F₁ ^ rF ° ⁰ ▹ Id (U ⁰) X G₁ ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]) (wk1d[]-[]↑ G _) res
 
     ⊢snde′ : ∀ {ρ Δ x} → ([ρ] : ρ Twk.∷ Δ ⊆ Γ) (⊢Δ : ⊢ Δ)
         → (⊢x : Δ ⊢ x ∷ wk ρ F₁ ^ [ rF , ι ⁰ ])

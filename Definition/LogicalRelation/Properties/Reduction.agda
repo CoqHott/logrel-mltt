@@ -52,10 +52,10 @@ redSubst* D (Πirrᵣ′ rF lF F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A) 
   let ⊢A = redFirst* D
   in  (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A)
   ,   (Πirr₌ _ _ D′ A≡A)
-redSubst* D (∃ᵣ′ F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A) =
+redSubst* D (Idᵣ′ F t u [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢t ⊢u A≡A) =
   let ⊢A = redFirst* D
-  in  (∃ᵣ′ F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A)
-  ,   (∃₌ _ _ D′ A≡A)
+  in  (Idᵣ′ F t u [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢t ⊢u A≡A)
+  ,   (Id₌ _ _ _ D′ A≡A)
 redSubst* {l = ι ¹} D (emb l< X) with redSubst* D X
 redSubst* {l = ι ¹} D (emb l< X) | y , y₁ = emb l< y , y₁
 redSubst* {l = ∞} D (emb l< X) with redSubst* D X

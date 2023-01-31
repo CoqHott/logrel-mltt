@@ -239,6 +239,10 @@ castrefl A t = gen Castreflkind (⟦ 0 , A ⟧ ∷ ⟦ 0 , t ⟧ ∷ [])
   → F PE.≡ H × rF PE.≡ rH × lF PE.≡ lH × G PE.≡ E × lG PE.≡ lE × lΠ PE.≡ lΠ' × r PE.≡ r'
 Π-PE-injectivity PE.refl = PE.refl , PE.refl , PE.refl , PE.refl , PE.refl , PE.refl , PE.refl
 
+Id-PE-injectivity : ∀ {F G t u t' u'} → Id F t u PE.≡ Id G t' u'
+  → F PE.≡ G × t PE.≡ t' × u PE.≡ u'
+Id-PE-injectivity PE.refl = PE.refl , PE.refl , PE.refl
+
 -- If  suc n = suc m  then  n = m.
 
 suc-PE-injectivity : ∀ {n m} → suc n PE.≡ suc m → n PE.≡ m
@@ -304,11 +308,17 @@ U≢Empty ()
 U≢Π : ∀ {r r' r'' l F lF G lG l'} → Univ r l PE.≢ Π F ^ r' ° lF ▹ G ° lG ° l' ^ r''
 U≢Π ()
 
+U≢Id : ∀ {r l F t u} → Univ r l PE.≢ Id F t u
+U≢Id ()
+
 U≢ne : ∀ {r l K} → Neutral K → Univ r l PE.≢ K
 U≢ne () PE.refl
 
 ℕ≢Π : ∀ {F r lF G lG l r'} → ℕ PE.≢ Π F ^ r ° lF ▹ G ° lG ° l ^ r'
 ℕ≢Π ()
+
+ℕ≢Id : ∀ {F t u} → ℕ PE.≢ Id F t u
+ℕ≢Id ()
 
 ℕ≢Empty : ∀ {l} → ℕ PE.≢ Empty l
 ℕ≢Empty ()
@@ -325,8 +335,17 @@ Empty≢ne () PE.refl
 Empty≢Π : ∀ {F r lF G lG l l' r'} → Empty l' PE.≢ Π F ^ r ° lF ▹ G ° lG ° l ^ r'
 Empty≢Π ()
 
+Empty≢Id : ∀ {l F t u} → Empty l PE.≢ Id F t u
+Empty≢Id ()
+
 Π≢ne : ∀ {F r lF G lG K l r'} → Neutral K → Π F ^ r ° lF ▹ G ° lG ° l ^ r' PE.≢ K
 Π≢ne () PE.refl
+
+Π≢Id : ∀ {F r lF G lG F' t u l r'} → Π F ^ r ° lF ▹ G ° lG ° l ^ r' PE.≢ Id F' t u
+Π≢Id ()
+
+Id≢ne : ∀ {F t u K} → Neutral K → Id F t u PE.≢ K
+Id≢ne () PE.refl
 
 zero≢suc : ∀ {n} → zero PE.≢ suc n
 zero≢suc ()
