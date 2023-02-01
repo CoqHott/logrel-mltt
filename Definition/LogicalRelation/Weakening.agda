@@ -133,13 +133,13 @@ wk {ρ} {Γ} {Δ} {A} {rA} {l} [ρ] ⊢Δ (Πirrᵣ′ rF lF F G D ⊢F ⊢G A�
   in  Πirrᵣ′ rF lF  (U.wk ρ F) (U.wk (lift ρ) G) (T.wkRed:*: [ρ] ⊢Δ D) ⊢ρF
            (T.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G)
            (≅-wk [ρ] ⊢Δ A≡A)
-wk {ρ} {Γ} {Δ} {A} {rA} {l} [ρ] ⊢Δ (Idᵣ′ F t u D ⊢F ⊢t ⊢u A≡A) =
+wk {ρ} {Γ} {Δ} {A} {rA} {l} [ρ] ⊢Δ (Idᵣ′ F t u ll D ⊢F ⊢t ⊢u A≡A) =
   let ⊢ρF = T.wk [ρ] ⊢Δ ⊢F
-      iF = [ % , TypeInfo.l rA ]
-  in  Idᵣ′ (U.wk ρ F) (U.wk ρ t) (U.wk ρ u) (T.wkRed:*: [ρ] ⊢Δ D) ⊢ρF
-           (T.wk [ρ] ⊢Δ  ⊢t)
-           (T.wk [ρ] ⊢Δ  ⊢u)
+  in  Idᵣ′ (U.wk ρ F) (U.wk ρ t) (U.wk ρ u) ll (T.wkRed:*: [ρ] ⊢Δ D) ⊢ρF
+           (T.wkTerm [ρ] ⊢Δ ⊢t)
+           (T.wkTerm [ρ] ⊢Δ ⊢u)
            (≅-wk [ρ] ⊢Δ A≡A)
+           
 wk {l = ι ¹} ρ ⊢Δ (emb l< X) = emb l< (wk ρ ⊢Δ X)
 wk {l = ∞} ρ ⊢Δ (emb l< X) = emb l< (wk ρ ⊢Δ X)
 
@@ -176,7 +176,7 @@ wkEq {ρ} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G
 wkEq {ρ} [ρ] ⊢Δ (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
                 (Πirr₌ F′ G′ D′ A≡B) =
   Πirr₌ (U.wk ρ F′) (U.wk (lift ρ) G′) (T.wkRed* [ρ] ⊢Δ D′) (≅-wk [ρ] ⊢Δ A≡B)
-wkEq {ρ} [ρ] ⊢Δ (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+wkEq {ρ} [ρ] ⊢Δ (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
                 (Id₌ F′ t′ u′ D′ A≡B) =
   Id₌ (U.wk ρ F′) (U.wk ρ t′) (U.wk ρ u′) (T.wkRed* [ρ] ⊢Δ D′) (≅-wk [ρ] ⊢Δ A≡B)
 wkEq {l = ι ¹} ρ ⊢Δ (emb l< X) A≡B = wkEq ρ ⊢Δ X A≡B
@@ -252,7 +252,7 @@ wkTerm {ρ} {r = [ ! , l′ ]} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D �
                               (PE.cong (λ x → x ∘ _ ^ _ ) (PE.sym (wk-comp ρ₁ ρ _)))
                               [G]₁ [G]₂ ([f]₁ ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′))
 wkTerm {ρ} {r = [ % , l′ ]} [ρ] ⊢Δ (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) d = T.wkTerm [ρ] ⊢Δ d
-wkTerm {ρ} [ρ] ⊢Δ (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A) d = T.wkTerm [ρ] ⊢Δ d
+wkTerm {ρ} [ρ] ⊢Δ (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A) d = T.wkTerm [ρ] ⊢Δ d
 wkTerm {l = ι ¹} ρ ⊢Δ (emb l< X) t = wkTerm ρ ⊢Δ X t
 wkTerm {l = ∞} ρ ⊢Δ (emb l< X) t = wkTerm ρ ⊢Δ X t
 
@@ -320,7 +320,7 @@ wkEqTerm {ρ} {r = [ ! , l′ ]} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D
                                      ([f≡g] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′))
 wkEqTerm {ρ} {r = [ % , l′ ]} [ρ] ⊢Δ (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
                     (d , d′) = T.wkTerm [ρ] ⊢Δ d , T.wkTerm [ρ] ⊢Δ d′
-wkEqTerm {ρ} {r = [ % , l′ ]} [ρ] ⊢Δ (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+wkEqTerm {ρ} {r = [ % , l′ ]} [ρ] ⊢Δ (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
                     (d , d′) = T.wkTerm [ρ] ⊢Δ d , T.wkTerm [ρ] ⊢Δ d′
 wkEqTerm {l = ι ¹} ρ ⊢Δ (emb l< X) t≡u = wkEqTerm ρ ⊢Δ X t≡u
 wkEqTerm {l = ∞} ρ ⊢Δ (emb l< X) t≡u = wkEqTerm ρ ⊢Δ X t≡u

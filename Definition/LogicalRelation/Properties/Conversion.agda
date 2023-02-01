@@ -106,8 +106,8 @@ mutual
                      ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ]) (PE.sym ΠF₁G₁≡ΠF′G′)
                                           (≅-eq A≡B)
                  in conv d ΠFG≡ΠF₁G₁
-  convTermT₁ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u D ⊢F ⊢t ⊢u A≡A)
-                         (Idᵣ F₁ t' u' D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
+  convTermT₁ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u _ D ⊢F ⊢t ⊢u A≡A)
+                         (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
              (Id₌ F′ t′ u′ D′ A≡B)
              d = let IdF₁G₁≡IdF′G′   = whrDet* (red D₁ , Idₙ) (D′ , Idₙ)
                      F₁≡F′ , G₁≡G′ = Id-PE-injectivity IdF₁G₁≡IdF′G′
@@ -182,8 +182,8 @@ mutual
                      ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ])
                                           (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                  in  conv d (sym ΠFG≡ΠF₁G₁)
-  convTermT₂ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u D ⊢F ⊢t ⊢u A≡A)
-                         (Idᵣ F₁ t' u' D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
+  convTermT₂ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u _ D ⊢F ⊢t ⊢u A≡A)
+                         (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
              (Id₌ F′ t′ u′ D′ A≡B)
              d = let IdF₁G₁≡IdF′G′   = whrDet* (red D₁ , Idₙ) (D′ , Idₙ)
                      F₁≡F′ ,  G₁≡G′ = Id-PE-injectivity IdF₁G₁≡IdF′G′
@@ -286,8 +286,8 @@ mutual
                               ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ])
                                                    (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                           in conv d ΠFG≡ΠF₁G₁ , conv d′ ΠFG≡ΠF₁G₁
-  convEqTermT₁ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u D ⊢F ⊢t ⊢u A≡A)
-                           (Idᵣ F₁ t' u' D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
+  convEqTermT₁ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u _ D ⊢F ⊢t ⊢u A≡A)
+                           (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
                (Id₌ F′ t′ u′ D′ A≡B)
                (d , d′) = let IdF₁G₁≡IdF′G′ = whrDet* (red D₁ , Idₙ) (D′ , Idₙ)
                               IdFG≡IdF₁G₁ = PE.subst (λ x → Γ ⊢ Id F t u ≡ x ^ [ % , ll ])
@@ -357,8 +357,8 @@ mutual
                    ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ll ^ % ≡ x ^ [ % , ι ll ])
                                         (PE.sym ΠF₁G₁≡ΠF′G′) (≅-eq A≡B)
                in (conv d (sym ΠFG≡ΠF₁G₁)) , (conv d′ (sym ΠFG≡ΠF₁G₁))
-  convEqTermT₂ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u D ⊢F ⊢t ⊢u A≡A)
-                           (Idᵣ F₁ t' u' D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
+  convEqTermT₂ {Γ = Γ} {r = [ % , ll ]} (Idᵥ (Idᵣ F t u _ D ⊢F ⊢t ⊢u A≡A)
+                           (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
                (Id₌ F′ t′ u′ D′ A≡B)
                (d , d′) =
                let IdF₁G₁≡IdF′G′ = whrDet* (red D₁ , Idₙ) (D′ , Idₙ)

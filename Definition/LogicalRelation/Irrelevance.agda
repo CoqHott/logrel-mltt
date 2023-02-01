@@ -128,8 +128,8 @@ mutual
         F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ , _ = Π-PE-injectivity ΠFG≡ΠF₁G₁
     in  Πirr₌ F′ G′ (PE.subst₂ _ rF≡rF₁ lF≡lF₁ D′) 
         (PE.subst5 (λ x rx lx lx' lx'' → Γ ⊢ x ≅ Π F′ ^ rx ° lx ▹ G′ ° lx' ° lx'' ^ % ^ r) ΠFG≡ΠF₁G₁ rF≡rF₁ lF≡lF₁ lG≡lG₁ lΠ≡lΠ₁ A≡B)
-  irrelevanceEqT {Γ} {r = r} (Idᵥ (Idᵣ F t u D ⊢F ⊢t ⊢u A≡A)
-                         (Idᵣ F₁ t' u' D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
+  irrelevanceEqT {Γ} {r = r} (Idᵥ (Idᵣ F t u _ D ⊢F ⊢t ⊢u A≡A)
+                         (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
                  (Id₌ F′ t′ u′ D′ A≡B) =
     let IdFG≡IdF₁G₁   = whrDet* (red D , Idₙ) (red D₁ , Idₙ)
         F≡F₁ , t≡t' , u≡u' = Id-PE-injectivity IdFG≡IdF₁G₁
@@ -160,7 +160,7 @@ mutual
                                                                                                       (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [b])
                                                                                                       (irrelevanceEqTerm (irrelevance-level l< ([F] [ρ] ⊢Δ )) ([F] [ρ] ⊢Δ) x))
   irrelevance-level l< (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) = Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A 
-  irrelevance-level l< (Idᵣ′ F t u D ⊢F ⊢t ⊢u A≡A) = Idᵣ′ F t u D ⊢F ⊢t ⊢u A≡A
+  irrelevance-level l< (Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A) = Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A
   irrelevance-level {r = [ .! , ll ]} ∞< (Uᵣ (Uᵣ r .⁰ emb< eq d)) = emb ∞< (Uᵣ (Uᵣ r _ emb< eq d))
   irrelevance-level ∞< (emb emb< [A]) = emb ∞< (emb emb< [A])
 
@@ -244,8 +244,8 @@ mutual
                                    (Πirrᵣ rF₁ lF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
                   d = let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
                        in PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ΠFG≡ΠF₁G₁ d
-  irrelevanceTermT {Γ} {t = t} {r = [ % , ll ]} (Idᵥ (Idᵣ F tt u D ⊢F ⊢t ⊢u A≡A)
-                                   (Idᵣ F₁ t' u' D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
+  irrelevanceTermT {Γ} {t = t} {r = [ % , ll ]} (Idᵥ (Idᵣ F tt u _ D ⊢F ⊢t ⊢u A≡A)
+                                   (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
                    d = let IdFG≡IdF₁G₁ = whrDet* (red D , Idₙ) (red D₁ , Idₙ)
                        in PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) IdFG≡IdF₁G₁ d
   irrelevanceTermT (Uᵥ (Uᵣ r ll l< PE.refl D) (Uᵣ r' ll' l<' _ D')) t =
@@ -316,8 +316,8 @@ mutual
                      (d , d′) = let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ) in
                                 (PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) ΠFG≡ΠF₁G₁ d , PE.subst (λ x → Γ ⊢ u ∷ x ^ [ % , ll ]) ΠFG≡ΠF₁G₁ d′)
   irrelevanceEqTermT {Γ} {t = t} {u = u} {r = [ % , ll ]}
-                     (Idᵥ (Idᵣ F tt uu D ⊢F ⊢t ⊢u A≡A)
-                         (Idᵣ F₁ t' u' D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
+                     (Idᵥ (Idᵣ F tt uu _ D ⊢F ⊢t ⊢u A≡A)
+                         (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
                      (d , d′) = let IdFG≡IdF₁G₁   = whrDet* (red D , Idₙ) (red D₁ , Idₙ) in
                                 (PE.subst (λ x → Γ ⊢ t ∷ x ^ [ % , ll ]) IdFG≡IdF₁G₁ d , PE.subst (λ x → Γ ⊢ u ∷ x ^ [ % , ll ]) IdFG≡IdF₁G₁ d′)
   irrelevanceEqTermT (Uᵥ (Uᵣ r ll l< PE.refl D) (Uᵣ r' ll' l<' _ D')) t =

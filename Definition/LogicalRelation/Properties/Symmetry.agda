@@ -67,8 +67,8 @@ mutual
         F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , lΠ≡lΠ₁ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
     in  Πirr₌ _ _ (red (PE.subst₂ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) D))
            (PE.subst₂ _ (PE.sym rF₁≡rF′) (PE.sym lF₁≡lF′) (≅-sym (PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° lΠ ^ r ≅ x ^ [ r , ι lΠ ]) (PE.sym ΠF₁G₁≡ΠF′G′) A≡B)))
-  symEqT {Γ = Γ} {r = r} (Idᵥ (Idᵣ F t u D ⊢F ⊢t _ A≡A)
-                     (Idᵣ F₁ G₁ _ D₁ ⊢F₁ ⊢G₁ _ A≡A₁))
+  symEqT {Γ = Γ} {r = r} (Idᵥ (Idᵣ F t u _ D ⊢F ⊢t _ A≡A)
+                     (Idᵣ F₁ G₁ _ _ D₁ ⊢F₁ ⊢G₁ _ A≡A₁))
          (Id₌ F′ G′ _ D′ A≡B) =
     let IdF₁G₁≡IdF′G′   = whrDet* (red D₁ , Idₙ) (D′ , Idₙ)
     in  Id₌ _ _ _ (red D) (≅-sym (PE.subst (λ x → Γ ⊢ Id F t u ≅ x ^ r) (PE.sym IdF₁G₁≡IdF′G′) A≡B))
@@ -129,7 +129,7 @@ symEqTerm⁰ {r = [ ! , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
       (λ ρ ⊢Δ [a] → symEqTerm⁰ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
 symEqTerm⁰ {r = [ % , ll ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
-symEqTerm⁰ {r = [ % , ll ]} (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+symEqTerm⁰ {r = [ % , ll ]} (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
           (d , d′) = d′ , d
 
 
@@ -158,7 +158,7 @@ symEqTerm¹ {r = [ ! , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G
       (λ ρ ⊢Δ [a] → symEqTerm¹ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
 symEqTerm¹ {r = [ % , ll ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
-symEqTerm¹ {r = [ % , ll ]} (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+symEqTerm¹ {r = [ % , ll ]} (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
           (d , d′) = d′ , d
 symEqTerm¹ (emb <l x) t≡u = symEqTerm⁰ x t≡u
 
@@ -190,7 +190,7 @@ symEqTerm∞ {r = [ ! , ll ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
       (λ ρ ⊢Δ [a] → symEqTerm∞ ([G] ρ ⊢Δ [a]) ([f≡g] ρ ⊢Δ [a]))
 symEqTerm∞ {r = [ % , ll ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
           (d , d′) = d′ , d
-symEqTerm∞ {r = [ % , ll ]} (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+symEqTerm∞ {r = [ % , ll ]} (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
           (d , d′) = d′ , d
 symEqTerm∞ (emb <l x) t≡u = symEqTerm¹ x t≡u
 

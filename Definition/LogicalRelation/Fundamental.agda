@@ -25,16 +25,12 @@ open import Definition.LogicalRelation.Substitution.Introductions.Empty
 open import Definition.LogicalRelation.Substitution.Introductions.Emptyrec
 open import Definition.LogicalRelation.Substitution.Introductions.Universe
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
-open import Definition.LogicalRelation.Substitution.Introductions.Sigma
 open import Definition.LogicalRelation.Substitution.Introductions.Id
-open import Definition.LogicalRelation.Substitution.Introductions.IdUPiPi
 open import Definition.LogicalRelation.Substitution.Introductions.Cast
 open import Definition.LogicalRelation.Substitution.Introductions.CastRefl
 open import Definition.LogicalRelation.Substitution.Introductions.CastPi
-open import Definition.LogicalRelation.Substitution.Introductions.IdPi
 open import Definition.LogicalRelation.Substitution.Introductions.Lambda
 open import Definition.LogicalRelation.Substitution.Introductions.Application
-open import Definition.LogicalRelation.Substitution.Introductions.Pair
 open import Definition.LogicalRelation.Substitution.Introductions.Fst
 open import Definition.LogicalRelation.Substitution.Introductions.Snd
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst

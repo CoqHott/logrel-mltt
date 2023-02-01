@@ -26,7 +26,7 @@ escape (Emptyᵣ [[ ⊢A , ⊢B , D ]]) = ⊢A
 escape (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) = ⊢A
 escape (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = ⊢A
 escape (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A) = ⊢A
-escape (Idᵣ′ F G _ [[ ⊢A , ⊢B , D ]] ⊢F ⊢G _ A≡A) = ⊢A
+escape (Idᵣ′ F G _ _ [[ ⊢A , ⊢B , D ]] ⊢F ⊢G _ A≡A) = ⊢A
 escape {ι ¹} (emb X A) = escape A
 escape {∞} (emb X A) = escape A
 
@@ -44,7 +44,7 @@ escapeEq (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
   ≅-red (red D) D′ Πₙ Πₙ A≡B
 escapeEq (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) (Πirr₌ F′ G′ D′ A≡B) = ≅-red (red D) D′ Πₙ Πₙ A≡B
-escapeEq (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A) (Id₌ F′ G′ _ D′ A≡B) = ≅-red (red D) D′ Idₙ Idₙ A≡B
+escapeEq (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A) (Id₌ F′ G′ _ D′ A≡B) = ≅-red (red D) D′ Idₙ Idₙ A≡B
 escapeEq {ι ¹} (emb X A) A≡B = escapeEq A A≡B
 escapeEq {∞} (emb X A) A≡B = escapeEq A A≡B
 
@@ -64,7 +64,7 @@ escapeTerm {r = [ ! , l ] } (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G]
                (f , [[ ⊢t , ⊢u , d ]] , funcF , f≡f , [f] , [f]₁) =
   conv ⊢t (sym (subset* (red D)))
 escapeTerm {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) ⊢t = conv ⊢t (sym (subset* (red D)))
-escapeTerm (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A) ⊢t = conv ⊢t (sym (subset* (red D)))
+escapeTerm (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A) ⊢t = conv ⊢t (sym (subset* (red D)))
 escapeTerm {ι ¹} (emb X A) t = escapeTerm A t
 escapeTerm {∞} (emb X A) t = escapeTerm A t
 
@@ -89,7 +89,7 @@ escapeTermEq {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _  F G D ⊢F ⊢G A≡A [F] [
                  (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
   ≅ₜ-red (red D) (redₜ d) (redₜ d′) Πₙ (functionWhnf funcF) (functionWhnf funcG) f≡g
 escapeTermEq {r = [ % , l ] } (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
-escapeTermEq (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
+escapeTermEq (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A) (⊢t , ⊢u) = ~-to-≅ₜ (~-irrelevance ((conv ⊢t (sym (subset* (red D))))) ((conv ⊢u (sym (subset* (red D))))))
 escapeTermEq {ι ¹} (emb X A) t≡u = escapeTermEq A t≡u
 escapeTermEq {∞} (emb X A) t≡u = escapeTermEq A t≡u
 

@@ -219,10 +219,11 @@ record _⊩Id_ (Γ : Con Term) (A : Term) : Set where
     B : Term
     t : Term
     u : Term
+    l : Level
     D : Γ ⊢ A :⇒*: Id B t u ^ [ % , ι ⁰ ]
-    ⊢B : Γ ⊢ B ^ [ % , ι ⁰ ]
-    ⊢t : Γ ⊢ t ^ [ % , ι ⁰ ]
-    ⊢u : Γ ⊢ u ^ [ % , ι ⁰ ]
+    ⊢B : Γ ⊢ B ^ [ ! , ι l ]
+    ⊢t : Γ ⊢ t ∷ B ^ [ ! , ι l ]
+    ⊢u : Γ ⊢ u ∷ B ^ [ ! , ι l ]
     A≡A : Γ ⊢ (Id B t u) ≅ (Id B t u) ^ [ % , ι ⁰ ]
 
 -- Id-type equality
@@ -240,12 +241,12 @@ record _⊩Id_≡_/_ (Γ : Con Term) (A A' : Term) ([A] : Γ ⊩Id A ) : Set whe
 
 -- Terms of Id-types (always irrelevant)
 _⊩Id_∷_/_ : (Γ : Con Term) (e A : Term) ([A] : Γ ⊩Id A ) → Set
-Γ ⊩Id e ∷ A / Idᵣ B t u D ⊢B ⊢t ⊢u A≡A =
+Γ ⊩Id e ∷ A / Idᵣ B t u l D ⊢B ⊢t ⊢u A≡A =
   Γ ⊢ e ∷ Id B t u ^ [ % , ι ⁰ ]
 
 -- Term equality for Id-types
 _⊩Id_≡_∷_/_ : (Γ : Con Term) (e e' A : Term) ([A] : Γ ⊩Id A) → Set
-Γ ⊩Id e ≡ e' ∷ A / Idᵣ B t u D ⊢B ⊢t ⊢u A≡A =
+Γ ⊩Id e ≡ e' ∷ A / Idᵣ B t u l D ⊢B ⊢t ⊢u A≡A =
       (Γ ⊢ e ∷ Id B t u ^ [ % , ι ⁰ ])
       ×
       (Γ ⊢ e' ∷ Id B t u ^ [ % , ι ⁰ ])
@@ -452,7 +453,7 @@ pattern Uᵣ′ A ll r l a e d = Uᵣ {A = A} {ll = ll} (Uᵣ r l a e d)
 pattern ne′ b c d e = ne (ne b c d e)
 pattern Πᵣ′  a a' a'' lf lg b c d e f g h i j = Πᵣ (Πᵣ a a' a'' lf lg b c d e f g h i j)
 pattern Πirrᵣ′ a b c d e f g h = Πirrᵣ (Πirrᵣ a b c d e f g h)
-pattern Idᵣ′ a b c d e f g h = Idᵣ (Idᵣ a b c d e f g h)
+pattern Idᵣ′ a b c d e f g h i = Idᵣ (Idᵣ a b c d e f g h i)
 
 
 -- we need to split the LogRelKit into the level part and the general part to convince Agda termination checker
@@ -488,7 +489,7 @@ logRelIrr : ∀ {l t Γ l' A} ([A] : Γ ⊩⟨ l ⟩ A ^ [ % , l' ]) (⊢t : Γ 
 logRelIrr (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t = Emptyₜ (ne (conv ⊢t (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
 logRelIrr (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
 logRelIrr (ne x) ⊢t = neₜ ⊢t
-logRelIrr (Idᵣ′ B t u D ⊢B ⊢t' ⊢u A≡A) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Idₙ Idₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
+logRelIrr (Idᵣ′ B t u l D ⊢B ⊢t' ⊢u A≡A) ⊢t = conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Idₙ Idₙ (refl (_⊢_:⇒*:_^_.⊢B D)))
 logRelIrr {ι ¹} (emb X [A]) ⊢t = logRelIrr [A] ⊢t
 logRelIrr {∞} (emb X [A]) ⊢t = logRelIrr [A] ⊢t
 
@@ -498,7 +499,7 @@ logRelIrrEq (Emptyᵣ [[ ⊢A , ⊢B , D ]]) ⊢t ⊢u = Emptyₜ₌ (ne ((conv 
                                                          (conv ⊢u (reduction D (id ⊢B) Emptyₙ Emptyₙ (refl ⊢B))))
 logRelIrrEq (ne x) ⊢t ⊢u = neₜ₌ ⊢t ⊢u
 logRelIrrEq (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) , (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Πₙ Πₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )
-logRelIrrEq (Idᵣ′ _ _ _ D _ _ _ A≡A) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Idₙ Idₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) ,
+logRelIrrEq (Idᵣ′ _ _ _ _ D _ _ _ A≡A) ⊢t ⊢u = (conv ⊢t (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Idₙ Idₙ (refl (_⊢_:⇒*:_^_.⊢B D))) ) ,
                                             (conv ⊢u (reduction (red D) (id (_⊢_:⇒*:_^_.⊢B D)) Idₙ Idₙ (refl (_⊢_:⇒*:_^_.⊢B D))) )
 logRelIrrEq {ι ¹} (emb X [A]) ⊢t = logRelIrrEq [A] ⊢t
 logRelIrrEq {∞} (emb X [A]) ⊢t = logRelIrrEq [A] ⊢t

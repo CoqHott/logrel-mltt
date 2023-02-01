@@ -109,9 +109,9 @@ mutual
         F₂≡F″ , rF₂≡rF′ , lF₂≡lF′ , G₂≡G″ , lG₂≡lG″  , _ = Π-PE-injectivity (whrDet* (red D₂ , Πₙ) (D″ , Πₙ))
     in  Πirr₌ F″ G″ (PE.subst₂ _ rF₁≡rF′ lF₁≡lF′ D″) (PE.subst₂ _ rF₁≡rF′ lF₁≡lF′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° ⁰ ° lΠ ^ r ^ [ r , ι lΠ ]) ΠF₁G₁≡ΠF′G′ A≡B₁)))
   transEqT {Γ}  {r = r} {l = l} {l′ = l′} {l″ = l″}
-           (Idᵥ (Idᵣ F G _ D ⊢F ⊢G _ A≡A)
-               (Idᵣ F₁ G₁ _ D₁ ⊢F₁ ⊢G₁ _ A≡A₁)
-               (Idᵣ F₂ G₂ _ D₂ ⊢F₂ ⊢G₂ _ A≡A₂))
+           (Idᵥ (Idᵣ F G _ _ D ⊢F ⊢G _ A≡A)
+               (Idᵣ F₁ G₁ _ _ D₁ ⊢F₁ ⊢G₁ _ A≡A₁)
+               (Idᵣ F₂ G₂ _ _ D₂ ⊢F₂ ⊢G₂ _ A≡A₂))
            (Id₌ F′ G′ _ D′ A≡B)
            (Id₌ F″ t″ u″ D″ A≡B₁) =
     let IdF₁G₁≡IdF′G′    = whrDet* (red D₁ , Idₙ) (D′  , Idₙ)
@@ -220,7 +220,7 @@ transEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] 
 transEqTerm⁰ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
-transEqTerm⁰ {r = [ % , l ]} (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+transEqTerm⁰ {r = [ % , l ]} (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
 
@@ -264,7 +264,7 @@ transEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [
 transEqTerm¹ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
-transEqTerm¹ {r = [ % , l ]} (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+transEqTerm¹ {r = [ % , l ]} (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
 transEqTerm¹ (emb l< [A]) [t≡u] [u≡v] = transEqTerm⁰ [A] [t≡u] [u≡v]
@@ -322,7 +322,7 @@ transEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] 
 transEqTerm∞ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
-transEqTerm∞ {r = [ % , l ]} (Idᵣ′ F G _ D ⊢F ⊢G _ A≡A)
+transEqTerm∞ {r = [ % , l ]} (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A)
             (d , d′)
             (d₁ , d₁′) = d , d₁′
 transEqTerm∞ (emb {l′ = ι ¹} l< [A]) [t≡u] [u≡v] = transEqTerm¹ [A] [t≡u] [u≡v]

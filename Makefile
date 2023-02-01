@@ -27,8 +27,10 @@ pack: clean
 	$(agda) --html Everything.agda
 	zip -r formalization code html
 
-clean:
+agdaclean:
 	find . -name "*.agdai" -type f -delete
+
+clean: agdaclean
 	rm -rf code html formalization.zip
 
 ## Lines of Code ##########################################################

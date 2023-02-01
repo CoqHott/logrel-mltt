@@ -167,11 +167,11 @@ record EqRelSet : Set₁ where
              → Γ     ⊢ Emptyrec l ⁰ F e ~ Emptyrec l ⁰ F′ e′ ∷ F ^ [ ! , ι l ]
 
     -- Id congruences
-    ~-Id  : ∀ {A A' l t t' u u' Γ}
+    ≅ₜ-Id-cong  : ∀ {A A' l t t' u u' Γ}
           → Γ ⊢ A ≅ A' ∷ Univ ! l ^ [ ! , next l ]
           → Γ ⊢ t ≅ t' ∷ A ^ [ ! , ι l ]
           → Γ ⊢ u ≅ u' ∷ A ^ [ ! , ι l ]
-          → Γ ⊢ Id A t u ~ Id A' t' u' ∷ SProp ^ [ ! , next ⁰ ]
+          → Γ ⊢ Id A t u ≅ Id A' t' u' ∷ SProp ^ [ ! , next ⁰ ]
 
     -- cast congruences
 
