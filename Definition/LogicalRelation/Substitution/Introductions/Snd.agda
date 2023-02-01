@@ -35,9 +35,6 @@ open import Definition.LogicalRelation.Substitution.Irrelevance as S
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
--- lemma0 : ∀ σ A → (wk1 (wk1 (subst σ A))) PE.≡ subst (liftSubst (liftSubst σ)) (wk1 (wk1 A))
--- lemma0 σ A = PE.trans (PE.cong wk1 (PE.sym (Idsym-subst-lemma σ A))) (PE.sym (Idsym-subst-lemma (liftSubst σ) (wk1 A)))
-
 lemma1 : ∀ {σ rA} A A' B e →
                    subst (liftSubst σ) B [
                         cast ⁰ (wk1 (subst σ A'))
@@ -50,12 +47,11 @@ lemma1 : ∀ {σ rA} A A' B e →
                             (wk1 A)
                             (Idsym (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e)))
                             (var 0)]↑)
-lemma1 {σ} {rA} A A' B e = {!!}
-{-PE.trans (PE.cong₂ (λ X Y → X [ Y ]↑) (PE.sym (Idsym-subst-lemma-wk1d σ B))
-  (PE.cong₃ (λ X Y Z → cast ⁰ X Y Z (var 0)) (lemma0 σ A') (lemma0 σ A)
-    (PE.trans (PE.cong₂ (λ X Y → Idsym (Univ rA ⁰) X Y (var 1)) (lemma0 σ A) (lemma0 σ A'))
-    (PE.sym (subst-Idsym (liftSubst (liftSubst σ)) (Univ rA ⁰) (wk1 (wk1 A)) (wk1 (wk1 A')) (var 1))))))
-  (PE.sym ((singleSubstLift↑ (liftSubst σ) (U.wk (lift (step id)) B) _)))-}
+lemma1 {σ} {rA} A A' B e = PE.trans (PE.cong (λ X → subst (liftSubst σ) B [ X ]↑)
+  (PE.cong₃ (λ X Y Z → cast ⁰ X Y Z (var 0)) (PE.sym (Idsym-subst-lemma σ A')) (PE.sym (Idsym-subst-lemma σ A))
+    (PE.trans (PE.cong₃ (λ X Y Z → Idsym (Univ rA ⁰) X Y (fst Z)) (PE.sym (Idsym-subst-lemma σ A)) (PE.sym (Idsym-subst-lemma σ A')) (PE.sym (Idsym-subst-lemma σ e)))
+      (PE.sym (subst-Idsym (liftSubst σ) (Univ rA ⁰) (wk1 A) (wk1 A') (fst (wk1 e)))))))
+  (PE.sym (singleSubstLift↑ σ B _))
 
 
 Id-U-ΠΠ-resᵗᵛ : ∀ {A B A' B' e rA Γ} ([Γ] : ⊩ᵛ Γ) →
