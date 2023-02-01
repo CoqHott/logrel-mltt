@@ -20,7 +20,7 @@ open import Definition.LogicalRelation.Application
 open import Definition.LogicalRelation.Substitution
 open import Definition.LogicalRelation.Substitution.Properties
 open import Definition.LogicalRelation.Substitution.Reflexivity
-open import Definition.LogicalRelation.Substitution.Introductions.Sigma
+open import Definition.LogicalRelation.Substitution.Introductions.Id
 open import Definition.LogicalRelation.Substitution.Introductions.Pi
 open import Definition.LogicalRelation.Substitution.Introductions.SingleSubst
 open import Definition.LogicalRelation.Substitution.MaybeEmbed
@@ -30,55 +30,83 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 
 -- Valid fst term construction.
-fstᵛ : ∀ {F G tu Γ}
+fstᵛ : ∀ {A B A' B' e rA Γ}
        ([Γ] : ⊩ᵛ Γ) →
-       let l    = ∞
-           [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
-           [U∃] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
-       in      
-        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ % , ι ⁰ ] / [Γ])
-        ([G] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ G ^ [ % , ι ⁰ ] / [Γ] ∙ [F])
-        ([UG] : Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] ∙ [F])
-       → Γ ⊩ᵛ⟨ l ⟩ F ∷ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] / [UF]
-       → Γ ∙ F ^ [ % , ι ⁰ ] ⊩ᵛ⟨ l ⟩ G ∷ Univ % ⁰ ^ [ ! , next ⁰ ] / [Γ] ∙ [F] / (λ {Δ} {σ} → [UG] {Δ} {σ}) →
-       ([tu] : Γ ⊩ᵛ⟨ l ⟩ tu ∷ ∃ F ▹ G ^ [ % , ι ⁰ ] / [Γ] / ∃ᵛ {F} {G} [Γ] [F] [G])
-       → Γ ⊩ᵛ⟨ l ⟩ fst tu ∷ F ^ [ % , ι ⁰ ] / [Γ] / [F]
-fstᵛ {F} {G} {tu} {Γ} [Γ] [F] [G] [UG] [Fₜ] [Gₜ] [tu] {Δ = Δ} {σ = σ} ⊢Δ [σ] =
-  let [UF] = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
-      [σUF] = proj₁ ([UF] ⊢Δ [σ])
-      [σF] = proj₁ ([F] ⊢Δ [σ])
-      ⊢F = escape [σF]
-      [σF]ₜ = proj₁ ([Fₜ] ⊢Δ [σ])
-      ⊢Fₜ = escapeTerm [σUF] [σF]ₜ
-      [σUG] = proj₁ ([UG] {σ = liftSubst σ} (⊢Δ ∙ ⊢F)
-                          (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]))
-      [σG]ₜ = proj₁ ([Gₜ] (⊢Δ ∙ ⊢F)
-                        (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]))
-      ⊢Gₜ = escapeTerm [σUG] [σG]ₜ
-      [σtu] = proj₁ ([tu] (⊢Δ) [σ])
-      [∃FG] = ∃ᵛ {F} {G} {Γ} [Γ] [F] [G]
-      [σ∃FG] = proj₁ ([∃FG] ⊢Δ [σ])
-      ⊢tu = escapeTerm [σ∃FG] [σtu]
-      ⊢fst = fstⱼ {F = subst σ F} {G = subst (liftSubst σ) G} {t = subst σ tu}
-                   ⊢Fₜ ⊢Gₜ ⊢tu
-   in logRelIrr [σF] ⊢fst ,
-      (λ {σ′} [σ]′ [σ≡σ′] → logRelIrrEq [σF] ⊢fst
-     let [UF]′ = maybeEmbᵛ {A = Univ % _} [Γ] (Uᵛ (proj₂ (levelBounded ⁰)) [Γ])
-         [σUF]′ = proj₁ ([UF] ⊢Δ [σ]′)
-         [σF]′ = proj₁ ([F] ⊢Δ [σ]′)
-         ⊢F′ = escape [σF]′
-         [σF]ₜ′ = proj₁ ([Fₜ] ⊢Δ [σ]′)
-         ⊢Fₜ′ = escapeTerm [σUF]′ [σF]ₜ′
-         [σUG]′ = proj₁ ([UG] {σ = liftSubst σ′} (⊢Δ ∙ ⊢F′)
-                             (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]′))
-         [σG]ₜ′ = proj₁ ([Gₜ] (⊢Δ ∙ ⊢F′)
-                             (liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]′))
-         ⊢Gₜ′ = escapeTerm [σUG]′ [σG]ₜ′
-         [σtu]′ = proj₁ ([tu] (⊢Δ) [σ]′)
-         [σ∃FG]′ = proj₁ ([∃FG] ⊢Δ [σ]′)
-         ⊢tu′ = escapeTerm [σ∃FG]′ [σtu]′
-         ⊢fst′ = fstⱼ {F = subst σ′ F} {G = subst (liftSubst σ′) G} {t = subst σ′ tu}
-                       ⊢Fₜ′ ⊢Gₜ′ ⊢tu′
-         [σF≡σF′] = proj₂ ([F] ⊢Δ [σ]) [σ]′ [σ≡σ′]
-         ⊢σF≡σF′ = escapeEq [σF] [σF≡σF′]
-      in conv ⊢fst′ (≅-eq (≅-sym ⊢σF≡σF′)))  
+        let l    = ∞
+            lΠ = ⁰
+            [UA] = maybeEmbᵛ {A = Univ rA _} [Γ] (Uᵛ emb< [Γ])
+        in
+           ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ [ rA , ι lΠ ] / [Γ])
+           ([A'] : Γ ⊩ᵛ⟨ l ⟩ A' ^ [ rA , ι lΠ ] / [Γ])
+           ([UB] : Γ ∙ A ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A])
+           ([UB'] : Γ ∙ A' ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A'])
+           ([A]ₜ : Γ ⊩ᵛ⟨ l ⟩ A ∷ Univ rA lΠ ^ [ ! , next lΠ ] / [Γ] / [UA])
+           ([B]ₜ : Γ ∙ A ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ B ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A] / (λ {Δ} {σ} → [UB] {Δ} {σ}))
+           ([A']ₜ : Γ ⊩ᵛ⟨ l ⟩ A' ∷ Univ rA lΠ ^ [ ! , next lΠ ] / [Γ] / [UA])
+           ([B']ₜ :  Γ ∙ A' ^ [ rA , ι lΠ ] ⊩ᵛ⟨ l ⟩ B' ∷ Univ ! lΠ ^ [ ! , next lΠ ] / [Γ] ∙ [A'] / (λ {Δ} {σ} → [UB'] {Δ} {σ})) →
+           ([Id] : Γ ⊩ᵛ⟨ l ⟩ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] / [Γ])
+           ([e]ₜ :  Γ ⊩ᵛ⟨ l ⟩ e ∷ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ !) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] / [Γ] / [Id])
+       →   let [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ 
+           in Γ ⊩ᵛ⟨ l ⟩ fst e ∷ Id (Univ rA ⁰) A A'  ^ [ % , ι ⁰ ] / [Γ] / [IdAA']
+
+fstᵛ  {A} {B} {A'} {B'} {e} {rA} {Γ}
+      [Γ] [A] [A'] [UB] [UB'] [A]ₜ [B]ₜ [A']ₜ [B']ₜ [Id] [e]ₜ {Δ = Δ} {σ = σ} ⊢Δ [σ] =
+      let [UA] = maybeEmbᵛ {A = Univ rA _} [Γ] (Uᵛ emb< [Γ])
+          [σUA] = proj₁ ([UA] ⊢Δ [σ])
+          [σA] = proj₁ ([A] ⊢Δ [σ])
+          ⊢A = escape [σA]
+          [σA]ₜ = proj₁ ([A]ₜ ⊢Δ [σ])
+          ⊢Aₜ = escapeTerm [σUA] [σA]ₜ
+          [σA'] = proj₁ ([A'] ⊢Δ [σ])
+          ⊢A' = escape [σA']
+          [σA']ₜ = proj₁ ([A']ₜ ⊢Δ [σ])
+          ⊢A'ₜ = escapeTerm [σUA] [σA']ₜ
+          [σUB] = proj₁ ([UB] {σ = liftSubst σ} (⊢Δ ∙ ⊢A)
+                        (liftSubstS {F = A} [Γ] ⊢Δ [A] [σ]))
+          [σB]ₜ = proj₁ ([B]ₜ (⊢Δ ∙ ⊢A)
+                        (liftSubstS {F = A} [Γ] ⊢Δ [A] [σ]))
+          ⊢Bₜ = escapeTerm [σUB] [σB]ₜ
+          [σUB'] = proj₁ ([UB'] {σ = liftSubst σ} (⊢Δ ∙ ⊢A')
+                        (liftSubstS {F = A'} [Γ] ⊢Δ [A'] [σ]))
+          [σB']ₜ = proj₁ ([B']ₜ (⊢Δ ∙ ⊢A')
+                        (liftSubstS {F = A'} [Γ] ⊢Δ [A'] [σ]))
+          ⊢B'ₜ = escapeTerm [σUB'] [σB']ₜ
+          [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ
+          [σIdAA'] = proj₁ ([IdAA'] ⊢Δ [σ])
+          [σId] = proj₁ ([Id] ⊢Δ [σ])
+          [σe] = proj₁ ([e]ₜ (⊢Δ) [σ])
+          ⊢e = escapeTerm [σId] [σe]
+          ⊢fst = fstⱼ {A = subst σ A} {A' = subst σ A'} {B = subst (liftSubst σ) B} {B' = subst (liftSubst σ) B'} {e = subst σ e}
+                      ⊢Aₜ ⊢Bₜ ⊢A'ₜ ⊢B'ₜ ⊢e
+      in logRelIrr [σIdAA'] ⊢fst ,
+         λ {σ′} [σ]′ [σ≡σ′] → logRelIrrEq [σIdAA'] ⊢fst
+      let [σUA]′ = proj₁ ([UA] ⊢Δ [σ]′)
+          [σA]′ = proj₁ ([A] ⊢Δ [σ]′)
+          ⊢A′ = escape [σA]′
+          [σA]ₜ′ = proj₁ ([A]ₜ ⊢Δ [σ]′)
+          ⊢Aₜ′ = escapeTerm [σUA] [σA]ₜ′
+          [σA']′ = proj₁ ([A'] ⊢Δ [σ]′)
+          ⊢A'′ = escape [σA']′
+          [σA']ₜ′ = proj₁ ([A']ₜ ⊢Δ [σ]′)
+          ⊢A'ₜ′ = escapeTerm [σUA] [σA']ₜ′
+          [σUB]′ = proj₁ ([UB] {σ = liftSubst σ′} (⊢Δ ∙ ⊢A′)
+                        (liftSubstS {F = A} [Γ] ⊢Δ [A] [σ]′))
+          [σB]ₜ′ = proj₁ ([B]ₜ (⊢Δ ∙ ⊢A′)
+                        (liftSubstS {F = A} [Γ] ⊢Δ [A] [σ]′))
+          ⊢Bₜ′ = escapeTerm [σUB]′ [σB]ₜ′
+          [σUB']′ = proj₁ ([UB'] {σ = liftSubst σ′} (⊢Δ ∙ ⊢A'′)
+                        (liftSubstS {F = A'} [Γ] ⊢Δ [A'] [σ]′))
+          [σB']ₜ′ = proj₁ ([B']ₜ (⊢Δ ∙ ⊢A'′)
+                        (liftSubstS {F = A'} [Γ] ⊢Δ [A'] [σ]′))
+          ⊢B'ₜ′ = escapeTerm [σUB']′ [σB']ₜ′
+          [σIdAA']′ = proj₁ ([IdAA'] ⊢Δ [σ]′)
+          [σId]′ = proj₁ ([Id] ⊢Δ [σ]′)
+          [σe]′ = proj₁ ([e]ₜ (⊢Δ) [σ]′)
+          ⊢e′ = escapeTerm [σId]′ [σe]′
+          ⊢fst′ = fstⱼ {A = subst σ′ A} {A' = subst σ′ A'} {B = subst (liftSubst σ′) B} {B' = subst (liftSubst σ′) B'} {e = subst σ′ e}
+                      ⊢Aₜ′ ⊢Bₜ′ ⊢A'ₜ′ ⊢B'ₜ′ ⊢e′
+          [σA≡σA′] = proj₂ ([A] ⊢Δ [σ]) [σ]′ [σ≡σ′]
+          ⊢σA≡σA′ = ≅-un-univ (escapeEq [σA] [σA≡σA′])
+          [σA≡σA'′] = proj₂ ([A'] ⊢Δ [σ]) [σ]′ [σ≡σ′]
+          ⊢σA≡σA'′ = ≅-un-univ (escapeEq [σA'] [σA≡σA'′])
+      in conv ⊢fst′ (univ (Id-cong (refl (un-univ (Ugenⱼ ⊢Δ))) (≅ₜ-eq (≅ₜ-sym ⊢σA≡σA′)) (≅ₜ-eq (≅ₜ-sym ⊢σA≡σA'′))))
