@@ -63,7 +63,7 @@ U≡A′ : ∀ {A rU Γ l lU nlU } ([U] : Γ ⊩⟨ l ⟩U Univ rU lU ^ nlU)
     → Γ ⊩⟨ l ⟩ Univ rU lU ≡ A ^ [ ! , nlU ] / (U-intr [U])
     → Γ ⊢ A ⇒* Univ rU lU ^ [ ! , nlU ]
 U≡A′ (noemb (Uᵣ r l′ l< eq d)) [U≡A] =
- let r≡r , l≡l  = Uinjectivity (subset* (red d))
+ let r≡r , l≡l , _ = Uinjectivity (subset* (red d))
  in PE.subst (λ r → _ ⊢ _ ⇒* Univ r _ ^ [ ! , _ ]) (PE.sym r≡r)
          (PE.subst (λ l → _ ⊢ _ ⇒* Univ _ l ^ [ ! , _ ]) (PE.sym l≡l) [U≡A])
 U≡A′ (emb emb< [U]) [U≡A] = U≡A′ [U] [U≡A] 

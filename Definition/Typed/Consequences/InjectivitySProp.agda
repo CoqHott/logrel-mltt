@@ -52,27 +52,32 @@ injectivity-irr ⊢ΠFG≡ΠHE =
   in soundnessConv↑ [F] , er , el , soundnessConv↑ [G]  
 
 
--- Injectivity of ∃
+-- Injectivity of Id
 
-∃injectivity↓ : ∀ {Γ F G H E} →
-              Γ ⊢ ∃ F ▹ G [conv↓] ∃ H ▹ E ^ [ % , ι ⁰ ]
-            → Γ ⊢ F [conv↑] H ^ [ % , ι ⁰ ]
-            × Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G [conv↑] E ^ [ % , ι ⁰ ]
-∃injectivity↓ (univ (∃-cong x x₁ x₂)) = univConv↑ x₁ , univConv↑ x₂
+Idinjectivity↓ : ∀ {Γ F t u E t' u'} →
+              Γ ⊢ Id F t u [conv↓] Id E t' u' ^ [ % , ι ⁰ ]
+            → ∃ λ l →
+              Γ ⊢ F [conv↑] E ^ [ ! , ι l ]
+            × Γ ⊢ t [conv↑] t' ∷ F ^ ι l
+            × Γ ⊢ u [conv↑] u' ∷ F ^ ι l
+Idinjectivity↓ (univ (Id-cong x x₁ x₂)) = _ , univConv↑ x , x₁ , x₂
 
-∃injectivity↑ : ∀ {Γ F G H E} →
-              Γ ⊢ ∃ F ▹ G [conv↑] ∃ H ▹ E ^ [ % , ι ⁰ ]
-            → Γ ⊢ F [conv↑] H ^ [ % , ι ⁰ ]
-            × Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G [conv↑] E ^ [ % , ι ⁰ ]
-∃injectivity↑ ([↑] A′ B′ D D′ whnfA′ whnfB′ A′<>B′)
-  rewrite PE.sym (whnfRed* D ∃ₙ) | PE.sym (whnfRed* D′ ∃ₙ) = ∃injectivity↓ A′<>B′
+Idinjectivity↑ : ∀ {Γ F t u E t' u'} →
+              Γ ⊢ Id F t u [conv↑] Id E t' u' ^ [ % , ι ⁰ ]
+            → ∃ λ l →
+              Γ ⊢ F [conv↑] E ^ [ ! , ι l ]
+            × Γ ⊢ t [conv↑] t' ∷ F ^ ι l
+            × Γ ⊢ u [conv↑] u' ∷ F ^ ι l
+Idinjectivity↑ ([↑] A′ B′ D D′ whnfA′ whnfB′ A′<>B′)
+  rewrite PE.sym (whnfRed* D Idₙ) | PE.sym (whnfRed* D′ Idₙ) = Idinjectivity↓ A′<>B′
 
-
-∃injectivity : ∀ {Γ F G H E} →
-              Γ ⊢ ∃ F ▹ G ≡ ∃ H ▹ E ^ [ % , ι ⁰ ]
-            → Γ ⊢ F ≡ H ^ [ % , ι ⁰ ]
-            × Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ≡ E ^ [ % , ι ⁰ ]
-∃injectivity ⊢∃FG≡∃HE  =
-  let [∃FG≡∃HE] = completeEq ⊢∃FG≡∃HE
-      [F] , [G] = ∃injectivity↑ [∃FG≡∃HE]
-  in soundnessConv↑ [F] , soundnessConv↑ [G]  
+Idinjectivity : ∀ {Γ F t u E t' u'} →
+              Γ ⊢ Id F t u ≡ Id E t' u' ^ [ % , ι ⁰ ]
+            → ∃ λ l →
+              Γ ⊢ F ≡ E ^ [ ! , ι l ]
+            × Γ ⊢ t ≡ t' ∷ F ^ [ ! , ι l ]
+            × Γ ⊢ u ≡ u' ∷ F ^ [ ! , ι l ]
+Idinjectivity ⊢IdFG≡IdHE  =
+  let [IdFG≡IdHE] = completeEq ⊢IdFG≡IdHE
+      l , [F] , [t] , [u] = Idinjectivity↑ [IdFG≡IdHE]
+  in l , soundnessConv↑ [F] , soundnessConv↑Term [t] , soundnessConv↑Term [u]

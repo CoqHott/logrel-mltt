@@ -131,18 +131,18 @@ injectivity-irr ⊢ΠFG≡ΠHE =
 Uinjectivity′ : ∀ {Γ r₁ r₂ l₁ l₂ lU l}
                ([U] : Γ ⊩⟨ l ⟩U Univ r₁ l₁ ^ lU)
              → Γ ⊩⟨ l ⟩ Univ r₁ l₁ ≡ Univ r₂ l₂ ^ [ ! , lU ] / U-intr [U]
-             → r₁ PE.≡ r₂ × l₁ PE.≡ l₂
+             → r₁ PE.≡ r₂ × l₁ PE.≡ l₂ × next l₁ PE.≡ lU
 Uinjectivity′ (noemb (Uᵣ r l′ l< eq d)) D =
   let A , B = Univ-PE-injectivity (whnfRed* D Uₙ) 
       A' , B' = Univ-PE-injectivity (whnfRed* (red d) Uₙ)
-  in (PE.trans A' (PE.sym A)) , (PE.trans B' (PE.sym B))
+  in (PE.trans A' (PE.sym A)) , (PE.trans B' (PE.sym B)) , PE.trans (PE.cong next B') eq
 Uinjectivity′ (emb emb< a) b = Uinjectivity′ a b
 Uinjectivity′ (emb ∞< a) b = Uinjectivity′ a b
 
 
 Uinjectivity : ∀ {Γ r₁ r₂ l₁ l₂ lU} →
                  Γ ⊢ Univ r₁ l₁ ≡ Univ r₂ l₂  ^ [ ! , lU ] →
-                 r₁ PE.≡ r₂ × l₁ PE.≡ l₂
+                 r₁ PE.≡ r₂ × l₁ PE.≡ l₂ × next l₁ PE.≡ lU
 Uinjectivity ⊢U≡U =
   let [U] , _ , [U≡U] = reducibleEq ⊢U≡U
   in Uinjectivity′ (U-elim [U]) (irrelevanceEq [U] (U-intr (U-elim [U])) [U≡U])

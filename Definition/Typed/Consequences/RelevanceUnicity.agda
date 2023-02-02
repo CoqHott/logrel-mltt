@@ -55,12 +55,12 @@ mutual
         er₂ , _ = Uinjectivity e₂
     in PE.trans (PE.sym er₁) er₂ , PE.refl
   Univ-uniq′ e₁ e₂ el₁ PE.refl w (ℕⱼ x) y =
-    let e₁′ , el₁′  = Uinjectivity e₁
-        e₂′ , el₂′ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-ℕ y)) ) 
+    let e₁′ , el₁′ , _ = Uinjectivity e₁
+        e₂′ , el₂′ , _ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-ℕ y)) ) 
     in PE.sym (PE.trans e₂′ e₁′) , PE.cong next (PE.sym el₂′)
   Univ-uniq′ e₁ e₂ el₁ el₂ w (Emptyⱼ x) y =
-    let e₁′ , el₁′  = Uinjectivity e₁
-        e₂′ , el₂′ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-Empty y)) ) 
+    let e₁′ , el₁′ , _ = Uinjectivity e₁
+        e₂′ , el₂′ , _ = Uinjectivity (trans (sym e₂) (proj₁ (inversion-Empty y)) ) 
     in PE.sym (PE.trans e₂′ e₁′) , PE.trans (PE.cong next (PE.sym el₂′)) el₂
   Univ-uniq′ e₁ e₂ el₁ el₂ (Πₙ w) (Πⱼ a ▹ b ▹ x ▹ x₁) (Πⱼ a' ▹ b' ▹ y ▹ y₁) =
     let er₁ , _ = Uinjectivity e₁ 

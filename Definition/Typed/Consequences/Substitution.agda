@@ -160,11 +160,10 @@ singleSubst↑ {A} {rA = rA} t with wfTerm t
               , PE.subst (λ x → _ ∙ A ^ rA ⊢ _ ∷ x ^ _) (wk1-tailId A) t
 
 -- Well-formed singleton substitution of term equality with lifting.
-singleSubst↑Eq : ∀ {A rA t u Γ} → Γ ∙ A ^ rA ⊢ t ≡ u ∷ wk1 A ^ rA
-              → Γ ∙ A ^ rA ⊢ˢ consSubst (wk1Subst idSubst) t ≡ consSubst (wk1Subst idSubst) u ∷ Γ ∙ A ^ rA
-singleSubst↑Eq {A} {rA} t with wfEqTerm t
-... | ⊢Γ ∙ ⊢A = substRefl (wk1Subst′ ⊢Γ ⊢Γ ⊢A (idSubst′ ⊢Γ))
-              , PE.subst (λ x → _ ∙ A ^ rA ⊢ _ ≡ _ ∷ x ^ rA) (wk1-tailId A) t
+singleSubst↑Eq : ∀ {A A' rA t u Γ} → Γ ∙ A' ^ rA ⊢ t ≡ u ∷ wk1 A ^ rA
+              → Γ ∙ A' ^ rA ⊢ˢ consSubst (wk1Subst idSubst) t ≡ consSubst (wk1Subst idSubst) u ∷ Γ ∙ A ^ rA
+singleSubst↑Eq {A} {A'} {rA} t with wfEqTerm t
+... | ⊢Γ ∙ ⊢A = substRefl (wk1Subst′ ⊢Γ ⊢Γ ⊢A (idSubst′ ⊢Γ)) , PE.subst (λ x → _ ∙ A' ^ rA ⊢ _ ≡ _ ∷ x ^ rA) (wk1-tailId A) t
 
 -- Helper lemmas for single substitution
 
@@ -207,8 +206,8 @@ subst↑Type : ∀ {t F rF G rG Γ}
            → Γ ∙ F ^ rF ⊢ G [ t ]↑ ^ rG
 subst↑Type ⊢G ⊢t = substitution ⊢G (singleSubst↑ ⊢t) (wfTerm ⊢t)
 
-subst↑TypeEq : ∀ {t u F rF G E rG Γ}
+subst↑TypeEq : ∀ {t u F F' rF G E rG Γ}
              → Γ ∙ F ^ rF ⊢ G ≡ E ^ rG
-             → Γ ∙ F ^ rF ⊢ t ≡ u ∷ wk1 F ^ rF
-             → Γ ∙ F ^ rF ⊢ G [ t ]↑ ≡ E [ u ]↑ ^ rG
-subst↑TypeEq ⊢G ⊢t = substitutionEq ⊢G (singleSubst↑Eq ⊢t) (wfEqTerm ⊢t)
+             → Γ ∙ F' ^ rF ⊢ t ≡ u ∷ wk1 F ^ rF
+             → Γ ∙ F' ^ rF ⊢ G [ t ]↑ ≡ E [ u ]↑ ^ rG
+subst↑TypeEq ⊢G ⊢t = substitutionEq ⊢G (singleSubst↑Eq ⊢t) (wfEqTerm ⊢t) -- ⊢G (singleSubst↑Eq ⊢t) (wfEqTerm ⊢t)
