@@ -32,13 +32,6 @@ mutual
                           (wk~↓! [ρ] ⊢Δ t~u))
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Emptyrec-cong {k} {l} {F} {G} x t~u) =
     Emptyrec-cong (wkConv↑ [ρ] ⊢Δ x) (wk~↑% [ρ] ⊢Δ t~u)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-cong X x x₁) = Id-cong (wk~↓! [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ x x₁) = Id-ℕ (wk~↓! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕ0 x) = Id-ℕ0 (wk~↓! [ρ] ⊢Δ x)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-ℕS x x₁) = Id-ℕS (wkConv↑Term [ρ] ⊢Δ x) (wk~↓! [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-U x x₁) = Id-U (wk~↓! [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-Uℕ x) = Id-Uℕ (wk~↓! [ρ] ⊢Δ x)
-  wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-UΠ x x₁) = Id-UΠ (wkConv↑Term [ρ] ⊢Δ x) (wk~↓! [ρ] ⊢Δ x₁)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-cong X x x₁ x₂ x₃) =
     cast-cong (wk~↓! [ρ] ⊢Δ X) (wk~↓! [ρ] ⊢Δ x) (wkConv↓Term [ρ] ⊢Δ x₁) (wkTerm [ρ] ⊢Δ x₂) (wkTerm [ρ] ⊢Δ x₃)
   wk~↑! {ρ} {Δ = Δ} [ρ] ⊢Δ (cast-ℕ X x x₁ x₂) =
@@ -132,6 +125,4 @@ mutual
   wkConv↓Term ρ ⊢Δ (Π-cong eql eqr eqlF eqlG l< l<'   x A<>B A<>B₁) =
     let ⊢ρF = wk ρ ⊢Δ x
     in  Π-cong eql eqr eqlF eqlG l< l<' ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)
-  wkConv↓Term ρ ⊢Δ (∃-cong x A<>B A<>B₁) =
-    let ⊢ρF = wk ρ ⊢Δ x
-    in  ∃-cong ⊢ρF (wkConv↑Term ρ ⊢Δ A<>B) (wkConv↑Term (lift ρ) (⊢Δ ∙ ⊢ρF) A<>B₁)
+  wkConv↓Term {ρ} {Δ = Δ} [ρ] ⊢Δ (Id-cong X x x₁) = Id-cong (wkConv↑Term [ρ] ⊢Δ X) (wkConv↑Term [ρ] ⊢Δ x) (wkConv↑Term [ρ] ⊢Δ x₁)

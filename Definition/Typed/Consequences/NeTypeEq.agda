@@ -49,34 +49,6 @@ neTypeEq (natrecₙ neT) (natrecⱼ _ x t∷A t∷A₁ t∷A₂) (natrecⱼ _ x�
   PE.refl , refl (substType x₁ t∷B₂)
 neTypeEq Emptyrecₙ (Emptyrecⱼ x t∷A) (Emptyrecⱼ x₁ t∷B) =
   PE.refl , refl x₁
-neTypeEq (Idₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let e , q = neTypeEq X Y Z
-      el = next-inj e
-  in PE.refl , refl (Ugenⱼ (wfTerm Y) )
-neTypeEq (Idℕₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let e , q = neTypeEq X Y₁ Z₁
-      el = ιinj e
-  in PE.refl , refl (Ugenⱼ (wfTerm Y) ) 
-neTypeEq (Idℕ0ₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let e , q = neTypeEq X Y₂ Z₂
-      el = ιinj e
-  in PE.refl , refl (Ugenⱼ (wfTerm Y) )
-neTypeEq (IdℕSₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let e , q = neTypeEq X Y₂ Z₂
-      el = ιinj e
-  in PE.refl , refl (Ugenⱼ (wfTerm Y) ) 
-neTypeEq (IdUₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let e , q = neTypeEq X Y₁ Z₁
-      el = ιinj e
-  in PE.refl , refl (Ugenⱼ (wfTerm Y) ) 
-neTypeEq (IdUℕₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let e , q = neTypeEq X Y₂ Z₂
-      el = ιinj e
-  in PE.refl , refl (Ugenⱼ (wfTerm Y) ) 
-neTypeEq (IdUΠₙ X) (Idⱼ Y Y₁ Y₂) (Idⱼ Z Z₁ Z₂) =
-  let e , q = neTypeEq X Y₂ Z₂
-      el = ιinj e
-  in PE.refl , refl (Ugenⱼ (wfTerm Y) )
 neTypeEq X (castⱼ Y Y₁ Y₂ Y₃)  (castⱼ Z Z₁ Z₂ Z₃) = PE.refl , refl (univ Y₁) 
 neTypeEq x (conv t∷A x₁) t∷B = 
   let e , q = neTypeEq x t∷A t∷B

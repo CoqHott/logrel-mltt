@@ -21,13 +21,6 @@ mutual
   ne~↑! (natrec-cong x x₁ x₂ x₃) = let _ , q , w = ne~↓! x₃
                                   in  natrecₙ q , natrecₙ w
   ne~↑! (Emptyrec-cong x x₁) = Emptyrecₙ , Emptyrecₙ
-  ne~↑! (Id-cong X x x₁) = let _ , nt , nu = ne~↓! X in Idₙ nt , Idₙ nu
-  ne~↑! (Id-ℕ X x) = let _ , nt , nu = ne~↓! X in Idℕₙ nt , Idℕₙ nu
-  ne~↑! (Id-ℕ0 X) = let _ , nt , nu = ne~↓! X in Idℕ0ₙ nt , Idℕ0ₙ nu
-  ne~↑! (Id-ℕS x X) = let _ , nt , nu = ne~↓! X in IdℕSₙ nt , IdℕSₙ nu
-  ne~↑! (Id-U X x) = let _ , nt , nu = ne~↓! X in IdUₙ nt , IdUₙ nu
-  ne~↑! (Id-Uℕ X) = let _ , nt , nu = ne~↓! X in IdUℕₙ nt , IdUℕₙ nu
-  ne~↑! (Id-UΠ x X) = let _ , nt , nu = ne~↓! X in IdUΠₙ nt , IdUΠₙ nu
   ne~↑! (cast-cong X x x₁ x₂ x₃) =
     let _ , nX , nX' = ne~↓! X
         _ , nx' , nx = ne~↓! x
@@ -70,7 +63,7 @@ mutual
   whnfConv↓Term (ℕ-refl x) = Uₙ , ℕₙ , ℕₙ
   whnfConv↓Term (Empty-refl x) = Uₙ , Emptyₙ , Emptyₙ
   whnfConv↓Term (Π-cong _ _ _ _ _ _ x x₁ x₂) = Uₙ , Πₙ , Πₙ
-  whnfConv↓Term (∃-cong x x₁ x₂) = Uₙ , ∃ₙ , ∃ₙ
+  whnfConv↓Term (Id-cong x x₁ x₂) = Uₙ , Idₙ , Idₙ
   whnfConv↓Term (U-refl _ _) = Uₙ , Uₙ , Uₙ
   whnfConv↓Term (zero-refl x) = ℕₙ , zeroₙ , zeroₙ
   whnfConv↓Term (suc-cong x) = ℕₙ , sucₙ , sucₙ

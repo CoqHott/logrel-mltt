@@ -55,9 +55,10 @@ mutual
   convConv↓TermSize Γ≡Δ A≡B whnfB (Π-cong lΠ rF lF lG l< l<' x x₁ x₂) rewrite U≡A-whnf A≡B whnfB = PE.cong₂ (λ n m → 1 + (n + m))
     (stabilitySizeConv↑Term Γ≡Δ x₁)
     (stabilitySizeConv↑Term (Γ≡Δ ∙ refl x) x₂)
-  convConv↓TermSize Γ≡Δ A≡B whnfB (∃-cong x x₁ x₂) rewrite U≡A-whnf A≡B whnfB = PE.cong₂ (λ n m → 1 + (n + m))
+  convConv↓TermSize Γ≡Δ A≡B whnfB (Id-cong x x₁ x₂) rewrite U≡A-whnf A≡B whnfB = PE.cong₃ (λ n m k → 1 + (n + m + k))
+    (stabilitySizeConv↑Term Γ≡Δ x)
     (stabilitySizeConv↑Term Γ≡Δ x₁)
-    (stabilitySizeConv↑Term (Γ≡Δ ∙ refl x) x₂)
+    (stabilitySizeConv↑Term Γ≡Δ x₂)
   convConv↓TermSize Γ≡Δ A≡B whnfB (ℕ-ins x) rewrite ℕ≡A A≡B whnfB =
     PE.cong 1+ (stabilitySize~↓! Γ≡Δ x)
   convConv↓TermSize Γ≡Δ A≡B whnfB (ne-ins t u x x₁) with ne≡A x A≡B whnfB

@@ -86,25 +86,6 @@ stabilityRedTerm Γ≡Δ (natrec-suc x x₁ x₂ x₃) =
   let ⊢Γ , _ , _ = contextConvSubst Γ≡Δ
   in  natrec-suc (stabilityTerm Γ≡Δ x) (stability (Γ≡Δ ∙ refl (univ (ℕⱼ ⊢Γ))) x₁)
                  (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
-stabilityRedTerm Γ≡Δ (Id-subst X x x₁) = Id-subst (stabilityRedTerm Γ≡Δ X) (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
-stabilityRedTerm Γ≡Δ (Id-ℕ-subst X x) = Id-ℕ-subst (stabilityRedTerm Γ≡Δ X) (stabilityTerm Γ≡Δ x)
-stabilityRedTerm Γ≡Δ (Id-ℕ-0-subst X) = Id-ℕ-0-subst (stabilityRedTerm Γ≡Δ X)
-stabilityRedTerm Γ≡Δ (Id-ℕ-S-subst x X) = Id-ℕ-S-subst (stabilityTerm Γ≡Δ x) (stabilityRedTerm Γ≡Δ X)
-stabilityRedTerm Γ≡Δ (Id-U-subst X x) = Id-U-subst (stabilityRedTerm Γ≡Δ X) (stabilityTerm Γ≡Δ x)
-stabilityRedTerm Γ≡Δ (Id-U-ℕ-subst X) = Id-U-ℕ-subst (stabilityRedTerm Γ≡Δ X)
-stabilityRedTerm Γ≡Δ (Id-U-Π-subst x x₁ X) = Id-U-Π-subst (stabilityTerm Γ≡Δ x) (stabilityTerm (Γ≡Δ ∙ refl (univ x)) x₁) (stabilityRedTerm Γ≡Δ X)
-stabilityRedTerm Γ≡Δ (Id-Π l< l<' x x₁ x₂ x₃) = Id-Π l< l<' (stabilityTerm Γ≡Δ x) (stabilityTerm (Γ≡Δ ∙ refl (univ x)) x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
-stabilityRedTerm Γ≡Δ (Id-ℕ-00 x) = let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Id-ℕ-00 ⊢Δ
-stabilityRedTerm Γ≡Δ (Id-ℕ-SS x x₁) = Id-ℕ-SS (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
-stabilityRedTerm Γ≡Δ (Id-U-ΠΠ x x₁ x₂ x₃) = Id-U-ΠΠ (stabilityTerm Γ≡Δ x) (stabilityTerm (Γ≡Δ ∙ refl (univ x)) x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm (Γ≡Δ ∙ refl (univ x₂)) x₃)
-stabilityRedTerm Γ≡Δ (Id-U-ℕℕ x) = let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ in Id-U-ℕℕ ⊢Δ
-stabilityRedTerm Γ≡Δ (Id-SProp x x₁) = Id-SProp (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
-stabilityRedTerm Γ≡Δ (Id-ℕ-0S x) = Id-ℕ-0S (stabilityTerm Γ≡Δ x)
-stabilityRedTerm Γ≡Δ (Id-ℕ-S0 x) = Id-ℕ-S0 (stabilityTerm Γ≡Δ x)
-stabilityRedTerm Γ≡Δ (Id-U-ℕΠ x x₁) = Id-U-ℕΠ (stabilityTerm Γ≡Δ x) (stabilityTerm (Γ≡Δ ∙ refl (univ x)) x₁)
-stabilityRedTerm Γ≡Δ (Id-U-Πℕ x x₁) = Id-U-Πℕ (stabilityTerm Γ≡Δ x) (stabilityTerm (Γ≡Δ ∙ refl (univ x)) x₁)
-stabilityRedTerm Γ≡Δ (Id-U-ΠΠ!% x x₁ x₂ x₃ x₄) =
-  Id-U-ΠΠ!% x (stabilityTerm Γ≡Δ x₁) (stabilityTerm (Γ≡Δ ∙ refl (univ x₁)) x₂) (stabilityTerm Γ≡Δ x₃) (stabilityTerm (Γ≡Δ ∙ refl (univ x₃)) x₄)
 stabilityRedTerm Γ≡Δ (cast-subst X x x₁ x₂) = cast-subst (stabilityRedTerm Γ≡Δ X) (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂)
 stabilityRedTerm Γ≡Δ (cast-ℕ-subst X x x₁) =
   cast-ℕ-subst (stabilityRedTerm Γ≡Δ X) (stabilityTerm Γ≡Δ x) (stabilityTerm Γ≡Δ x₁)
@@ -154,13 +135,6 @@ mutual
   stability~↑! Γ≡Δ (Emptyrec-cong x₁ k~l) =
     Emptyrec-cong (stabilityConv↑ Γ≡Δ x₁)
                 (stability~↑% Γ≡Δ k~l)
-  stability~↑! Γ≡Δ (Id-cong X x x₁) = Id-cong (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁)
-  stability~↑! Γ≡Δ (Id-ℕ X x) = Id-ℕ (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x)
-  stability~↑! Γ≡Δ (Id-ℕ0 X) = Id-ℕ0 (stability~↓! Γ≡Δ X)
-  stability~↑! Γ≡Δ (Id-ℕS x X) = Id-ℕS (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ X)
-  stability~↑! Γ≡Δ (Id-U X x) = Id-U (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x)
-  stability~↑! Γ≡Δ (Id-Uℕ X) = Id-Uℕ (stability~↓! Γ≡Δ X)
-  stability~↑! Γ≡Δ (Id-UΠ x X) = Id-UΠ (stabilityConv↑Term Γ≡Δ x) (stability~↓! Γ≡Δ X)
   stability~↑! Γ≡Δ (cast-cong X x x₁ x₂ x₃) = cast-cong (stability~↓! Γ≡Δ X) (stability~↓! Γ≡Δ x)
                                                         (stabilityConv↓Term Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₃)
   stability~↑! Γ≡Δ (cast-ℕ X x x₁ x₂) = cast-ℕ (stability~↓! Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x) (stabilityTerm Γ≡Δ x₁) (stabilityTerm Γ≡Δ x₂)
@@ -243,9 +217,7 @@ mutual
   stabilityConv↓Term Γ≡Δ (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' F A<>B A<>B₁) =
     Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' (stability Γ≡Δ F) (stabilityConv↑Term Γ≡Δ A<>B)
            (stabilityConv↑Term (Γ≡Δ ∙ refl F) A<>B₁)
-  stabilityConv↓Term Γ≡Δ (∃-cong F A<>B A<>B₁) =
-    ∃-cong (stability Γ≡Δ F) (stabilityConv↑Term Γ≡Δ A<>B)
-           (stabilityConv↑Term (Γ≡Δ ∙ refl F) A<>B₁)
+  stabilityConv↓Term Γ≡Δ (Id-cong X x x₁) = Id-cong (stabilityConv↑Term Γ≡Δ X) (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁)
   stabilityConv↓Term Γ≡Δ (ℕ-ins x) =
     ℕ-ins (stability~↓! Γ≡Δ x)
   stabilityConv↓Term Γ≡Δ (ne-ins t u neN x) =

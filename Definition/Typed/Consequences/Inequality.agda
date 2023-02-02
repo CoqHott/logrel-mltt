@@ -75,27 +75,27 @@ U≢Π! U≡Π =
   in  U≢Π-red (id ⊢Π) U≡Π
 
 
--- ∃ vs Pi
+-- Id vs Pi
 
-∃≢Π′ : ∀ {A B Γ l l′}
-       ([∃] : Γ ⊩∃ A)
+Id≢Π′ : ∀ {A B Γ l l′}
+       ([Id] : Γ ⊩Id A)
        ([Π] : Γ ⊩Πirr B)
-     → ShapeView Γ l l′ _ _ _ _ (∃ᵣ [∃]) (Πirrᵣ [Π]) → ⊥
-∃≢Π′ a b ()
+     → ShapeView Γ l l′ _ _ _ _ (Idᵣ [Id]) (Πirrᵣ [Π]) → ⊥
+Id≢Π′ a b ()
 
-∃≢Π-red : ∀ {B F G rF lF P Q Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
-            → Γ ⊢ ∃ P ▹ Q ≡ B ^ [ % , ι ⁰ ] → ⊥
-∃≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩∃ A)
-                (λ Γ l A → Γ ⊩Πirr A) ∃ᵣ Πirrᵣ
-                (λ x → extractMaybeEmb (∃-elim x))
+Id≢Π-red : ∀ {B F G rF lF P t u Γ} → Γ ⊢ B ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
+            → Γ ⊢ Id P t u ≡ B ^ [ % , ι ⁰ ] → ⊥
+Id≢Π-red {ll} D = A≢B (λ Γ l A → Γ ⊩Id A)
+                (λ Γ l A → Γ ⊩Πirr A) Idᵣ Πirrᵣ
+                (λ x → extractMaybeEmb (Id-elim x))
                 (λ x → extractMaybeEmb (Πirr-elim′ D x))
-                ∃≢Π′
+                Id≢Π′
 
 -- U and Π F ▹ G for any F and G cannot be judgmentally equal.
-∃≢Π! : ∀ {P Q F rF lF G Γ} → Γ ⊢ ∃ P ▹ Q ≡ Π F ^ rF ° lF ▹ G  ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] → ⊥
-∃≢Π! ∃≡Π =
-  let _ , ⊢Π = syntacticEq ∃≡Π
-  in ∃≢Π-red (id ⊢Π) ∃≡Π
+Id≢Π! : ∀ {P t u F rF lF G Γ} → Γ ⊢ Id P t u ≡ Π F ^ rF ° lF ▹ G  ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ] → ⊥
+Id≢Π! Id≡Π =
+  let _ , ⊢Π = syntacticEq Id≡Π
+  in Id≢Π-red (id ⊢Π) Id≡Π
 
 
 U≢ne′ : ∀ {A lU r lK K Γ l l′}

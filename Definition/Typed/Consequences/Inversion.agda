@@ -77,17 +77,6 @@ abstract
                               , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c , rG≡
                               , r≡!
   
-  -- Inversion of ∃-types.
-  inversion-∃ : ∀ {F G Γ C  r}
-              → Γ ⊢ ∃ F ▹ G ∷ C ^ r
-              →   Γ ⊢ F ∷ SProp ^ [ ! , next ⁰ ]
-                × Γ ∙ F ^ [ % , ι ⁰ ] ⊢ G ∷ SProp ^ [ ! , next ⁰ ]
-                × Γ ⊢ C ≡ SProp ^ [ ! , next ⁰ ]
-                × r PE.≡ [ ! , next ⁰ ]
-  inversion-∃ (∃ⱼ_▹_ x x₁) = x , x₁ , refl (Ugenⱼ (wfTerm x)) , PE.refl
-  inversion-∃ (conv x x₁) = let a , b , c , r≡! = inversion-∃ x
-                            in a , b , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c , r≡!
-  
   inversion-Empty : ∀ {Γ C r} → Γ ⊢ sEmpty ∷ C ^ r → Γ ⊢ C ≡ SProp ^ r × r PE.≡ [ ! , next ⁰ ]
   inversion-Empty (Emptyⱼ x) = refl (Ugenⱼ x) , PE.refl
   inversion-Empty (conv x x₁) =

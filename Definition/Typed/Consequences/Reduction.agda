@@ -22,7 +22,7 @@ whNorm′ (ℕᵣ D) = ℕ , ℕₙ , D
 whNorm′ (Emptyᵣ D) = sEmpty , Emptyₙ , D
 whNorm′ (ne′ K D neK K≡K) = K , ne neK , D
 whNorm′ (Πᵣ {l = l} (Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) = Π F ^ rF ° lF ▹ G ° lG ° l ^ ! , Πₙ , D
-whNorm′ (∃ᵣ′ F G D ⊢F ⊢G A≡A) = ∃ F ▹ G , ∃ₙ , D
+whNorm′ (Idᵣ′ A t u _ D ⊢F ⊢G _ A≡A) = Id A t u , Idₙ , D
 whNorm′ (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) = Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % , Πₙ , D
 whNorm′ (emb emb< [A]) = whNorm′ [A]
 whNorm′ (emb ∞< [A]) = whNorm′ [A]

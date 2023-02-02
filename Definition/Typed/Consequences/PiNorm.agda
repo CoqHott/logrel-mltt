@@ -33,7 +33,7 @@ data ΠNorm : Term → Set where
   Uₙ : ∀ {r l} → ΠNorm (Univ r l)
   Πₙ : ∀ {F rF lF G lG lΠ} → ΠNorm G → ΠNorm (Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !)
   Πirrₙ : ∀ {F rF lF G} → ΠNorm (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %)
-  ∃ₙ : ∀ {F G} → ΠNorm (∃ F ▹ G)
+  Idₙ : ∀ {A t u} → ΠNorm (Id A t u)
   ℕₙ : ΠNorm ℕ
   Emptyₙ : ΠNorm sEmpty
   ne   : ∀ {n} → Neutral n → ΠNorm n
@@ -126,7 +126,7 @@ doΠNorm′ (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A
                               (wkSingleSubstId _)
                               (doΠNorm′ ([G] (step id) (wf ⊢G) [F]′))
   in Π F ^ rF ° lF ▹ G′ ° lG ° _ ^ ! , Πₙ nG′ , univ (Πⱼ (λ x → lF≤ , lG≤) ▹ (λ abs → ⊥-elim (!≢% abs)) ▹ (un-univ ⊢F) ▹ (un-univ ⊢G′)) , regular* D ⇨* deep* D′
-doΠNorm′ (∃ᵣ′ F G D ⊢F ⊢G A≡A) = ∃ F ▹ G , ∃ₙ , univ (∃ⱼ un-univ ⊢F ▹ un-univ ⊢G) , regular* (red D) 
+doΠNorm′ (Idᵣ′ F t u _ D ⊢F ⊢t ⊢u A≡A) = Id F t u , Idₙ , univ (Idⱼ (un-univ ⊢F) ⊢t ⊢u) , regular* (red D) 
 doΠNorm′ (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A) =
                  Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰  ^ % , Πirrₙ , univ (Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ x → PE.refl , PE.refl) ▹ (un-univ ⊢F) ▹ (un-univ ⊢G)) , regular* D 
 doΠNorm′ (emb emb< [A]) = doΠNorm′ [A]
@@ -140,7 +140,7 @@ doΠNorm ⊢A = doΠNorm′ (reducible ⊢A)
 ΠNorm-whnf Uₙ = Uₙ
 ΠNorm-whnf (Πₙ _) = Πₙ
 ΠNorm-whnf Πirrₙ = Πₙ
-ΠNorm-whnf ∃ₙ = ∃ₙ
+ΠNorm-whnf Idₙ = Idₙ
 ΠNorm-whnf ℕₙ = ℕₙ
 ΠNorm-whnf Emptyₙ = Emptyₙ
 ΠNorm-whnf (ne x) = ne x

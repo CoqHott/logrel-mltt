@@ -40,33 +40,6 @@ mutual
                   → Γ ⊢ F [conv↑] G ^ [ ! , ι ll ]
                   → Γ ⊢ k ~ l ↑% sEmpty ^ ι ⁰
                   → Γ ⊢ Emptyrec ll ⁰ F k ~ Emptyrec ll ⁰ G l ↑! F ^ ι ll
-    Id-cong : ∀ {l A A' t t' u u'}
-              → Γ ⊢ A ~ A' ↓! U l ^ next l
-              → Γ ⊢ t [conv↑] t' ∷ A ^ ι l
-              → Γ ⊢ u [conv↑] u' ∷ A ^ ι l
-              → Γ ⊢ Id A t u ~ Id A' t' u' ↑! SProp ^ next ⁰
-    Id-ℕ : ∀ {t t' u u'}
-              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
-              → Γ ⊢ u [conv↑] u' ∷ ℕ ^ ι ⁰
-              → Γ ⊢ Id ℕ t u ~ Id ℕ t' u' ↑! SProp ^ next ⁰
-    Id-ℕ0 : ∀ {t t'}
-              → Γ ⊢ t ~ t' ↓! ℕ ^ ι ⁰
-              → Γ ⊢ Id ℕ zero t ~ Id ℕ zero t' ↑! SProp ^ next ⁰
-    Id-ℕS : ∀ {t t' u u'}
-              → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
-              → Γ ⊢ u ~ u' ↓! ℕ ^ ι ⁰
-              → Γ ⊢ Id ℕ (suc t) u ~ Id ℕ (suc t') u' ↑! SProp ^ next ⁰
-    Id-U : ∀ {t t' u u'}
-              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
-              → Γ ⊢ u [conv↑] u' ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ Id (U ⁰) t u ~ Id (U ⁰) t' u' ↑! SProp ^ next ⁰
-    Id-Uℕ : ∀ {t t'}
-              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
-              → Γ ⊢ Id (U ⁰) ℕ t ~ Id (U ⁰) ℕ t' ↑! SProp ^ next ⁰
-    Id-UΠ : ∀ {A rA B A' B' t t'}
-              → Γ ⊢ Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !  ∷ U ⁰ ^ ι ¹
-              → Γ ⊢ t ~ t' ↓! U ⁰ ^ ι ¹
-              → Γ ⊢ Id (U ⁰) (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° ⁰ ^ ! ) t ~ Id (U ⁰) (Π A' ^ rA ° ⁰ ▹ B' ° ⁰ ° ⁰ ^ !) t' ↑! SProp ^ next ⁰
     cast-cong : ∀ {A A' B B' t t' e e'}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ B' ~ B ↓! U ⁰ ^ ι ¹
@@ -225,6 +198,11 @@ mutual
               → Γ ⊢ F [conv↑] H ∷ Univ rF lF ^ next lF
               → Γ ∙ F ^ [ rF , ι lF ] ⊢ G [conv↑] E  ∷ Univ rΠ lG ^ next lG
               → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rΠ [conv↓] Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ rΠ ∷ Univ rΠ lΠ ^ ll
+    Id-cong : ∀ {l A A' t t' u u'}
+              → Γ ⊢ A [conv↑] A' ∷ U l ^ next l
+              → Γ ⊢ t [conv↑] t' ∷ A ^ ι l
+              → Γ ⊢ u [conv↑] u' ∷ A ^ ι l
+              → Γ ⊢ Id A t u [conv↓] Id A' t' u' ∷ SProp ^ next ⁰
     ℕ-ins     : ∀ {k l}
               → Γ ⊢ k ~ l ↓! ℕ ^ ι ⁰
               → Γ ⊢ k [conv↓] l ∷ ℕ ^ ι ⁰

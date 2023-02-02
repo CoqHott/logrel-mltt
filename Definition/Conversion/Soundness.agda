@@ -25,15 +25,6 @@ mutual
                 (soundnessConv↑Term x₃) (soundness~↓! k~l)
   soundness~↑! (Emptyrec-cong x₁ k~l) = let ⊢k , ⊢l , _ = soundness~↑% k~l in
     Emptyrec-cong (soundnessConv↑ x₁) ⊢k ⊢l
-  soundness~↑! (Id-cong X x x₁) = Id-cong (soundness~↓! X) (soundnessConv↑Term x) (soundnessConv↑Term x₁)
-  soundness~↑! (Id-ℕ X x) = Id-cong (refl (ℕⱼ (wfEqTerm (soundness~↓! X)))) (soundness~↓! X) (soundnessConv↑Term x)
-  soundness~↑! (Id-ℕ0 X) = let XX = soundness~↓! X in Id-cong (refl (ℕⱼ (wfEqTerm XX))) (refl (zeroⱼ (wfEqTerm XX))) XX
-  soundness~↑! (Id-ℕS x X) = let XX = soundness~↓! X in Id-cong (refl (ℕⱼ (wfEqTerm XX))) (suc-cong (soundnessConv↑Term x)) XX
-  soundness~↑! (Id-U X x) = Id-cong (refl (univ 0<1 (wfEqTerm (soundness~↓! X)))) (soundness~↓! X) (soundnessConv↑Term x)
-  soundness~↑! (Id-Uℕ X) = let XX = soundness~↓! X in Id-cong (refl (univ 0<1 (wfEqTerm XX))) (refl (ℕⱼ (wfEqTerm XX))) XX
-  soundness~↑! (Id-UΠ x X) = let XX = soundness~↓! X
-                                 xx = soundnessConv↑Term x
-                             in Id-cong (refl (univ 0<1 (wfEqTerm XX))) xx XX
   soundness~↑! (cast-cong X x x₁ x₂ x₃) = cast-cong (soundness~↓! X) (sym (soundness~↓! x)) (soundnessConv↓Term x₁) x₂ x₃
   soundness~↑! (cast-ℕ X x x₁ x₂) = let XX = soundness~↓! X in cast-cong (refl (ℕⱼ (wfEqTerm XX))) XX (soundnessConv↑Term x) x₁ x₂
   soundness~↑! (cast-Π x X x₁ x₂ x₃) = cast-cong (soundnessConv↑Term x) (soundness~↓! X) (soundnessConv↑Term x₁) x₂ x₃
@@ -99,8 +90,8 @@ mutual
   soundnessConv↓Term (Empty-refl ⊢Γ) = refl (Emptyⱼ ⊢Γ)
   soundnessConv↓Term (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' F c c₁) =
     Π-cong l< l<' F (soundnessConv↑Term c) (soundnessConv↑Term c₁)
-  soundnessConv↓Term (∃-cong F c c₁) =
-    ∃-cong F (soundnessConv↑Term c) (soundnessConv↑Term c₁)
+  soundnessConv↓Term (Id-cong A c c₁) =
+    Id-cong (soundnessConv↑Term A) (soundnessConv↑Term c) (soundnessConv↑Term c₁)
   soundnessConv↓Term (ℕ-ins x) = soundness~↓! x
   -- soundnessConv↓Term (Empty-ins x) = soundness~↓% x
   soundnessConv↓Term (ne-ins t u x x₁) =

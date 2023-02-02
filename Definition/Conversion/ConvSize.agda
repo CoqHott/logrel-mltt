@@ -22,13 +22,6 @@ mutual
   size~↑! (app-cong x x₁) = 1 + size~↓! x + size[genconv↑] x₁
   size~↑! (natrec-cong x x₁ x₂ x₃) = 1 + sizeConv↑ x + sizeConv↑Term x₁ + sizeConv↑Term x₂ + size~↓! x₃
   size~↑! (Emptyrec-cong x x₁) = 1 + sizeConv↑ x
-  size~↑! (Id-cong x x₁ x₂) = 1 + size~↓! x + sizeConv↑Term  x₁ + sizeConv↑Term x₂ 
-  size~↑! (Id-ℕ x x₁) = 1 + size~↓! x + sizeConv↑Term  x₁
-  size~↑! (Id-ℕ0 x) = 1 + size~↓! x 
-  size~↑! (Id-ℕS x x₁) = 1 + sizeConv↑Term x + size~↓! x₁
-  size~↑! (Id-U x x₁) = 1 + size~↓! x + sizeConv↑Term x₁
-  size~↑! (Id-Uℕ x) = 1 + size~↓! x 
-  size~↑! (Id-UΠ x x₁) = 1 + sizeConv↑Term x + size~↓! x₁
   size~↑! (cast-cong x x₁ x₄ x₅ x₆) = 1 + size~↓! x + size~↓! x₁ + sizeConv↓Term x₄
   size~↑! (cast-refl x x₃ x₄) = 1 + size~↓! x + sizeConv↓Term x₃
   size~↑! (castℕ-refl x x₁) = 1 + size~↓! x 
@@ -66,7 +59,7 @@ mutual
   sizeConv↓Term (ℕ-refl x) = 1
   sizeConv↓Term (Empty-refl x) = 1
   sizeConv↓Term (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) = 1 + sizeConv↑Term x₇ + sizeConv↑Term x₈
-  sizeConv↓Term (∃-cong x x₁ x₂) = 1 + sizeConv↑Term x₁ + sizeConv↑Term x₂
+  sizeConv↓Term (Id-cong x x₁ x₂) = 1 + sizeConv↑Term x + sizeConv↑Term x₁ + sizeConv↑Term x₂
   sizeConv↓Term (ℕ-ins x) = 1 + size~↓! x
   sizeConv↓Term (ne-ins x x₁ x₂ x₃) = 1 + size~↓! x₃ 
   sizeConv↓Term (zero-refl x) = 1

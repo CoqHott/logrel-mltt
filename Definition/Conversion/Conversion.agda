@@ -87,10 +87,10 @@ mutual
     let eqU = U≡A-whnf A≡B whnfB
     in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqU)
                 (Π-cong lΠ rF lF lG l< l<' (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂))
-  convConv↓Term Γ≡Δ A≡B whnfB (∃-cong x x₁ x₂) =
+  convConv↓Term Γ≡Δ A≡B whnfB (Id-cong x x₁ x₂) =
     let eqU = U≡A-whnf A≡B whnfB
     in PE.subst (λ x → _ ⊢ _ [conv↓] _ ∷ x ^ _) (PE.sym eqU)
-                (∃-cong (stability Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term (Γ≡Δ ∙ refl x) x₂))
+                (Id-cong (stabilityConv↑Term Γ≡Δ x) (stabilityConv↑Term Γ≡Δ x₁) (stabilityConv↑Term Γ≡Δ x₂))
 
 -- Conversion of algorithmic equality with the same context.
 convConvTerm : ∀ {t u A B Γ l}

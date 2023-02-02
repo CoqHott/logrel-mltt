@@ -70,7 +70,7 @@ mutual
     let er₁ , _ = Uinjectivity e₁ 
         er₂ , _ = Uinjectivity e₂
     in PE.trans (PE.sym er₁) er₂ , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ ∃ₙ (∃ⱼ x ▹ x₁) (∃ⱼ y ▹ y₁) = 
+  Univ-uniq′ e₁ e₂ el₁ el₂ Idₙ (Idⱼ x x₁ x₂) (Idⱼ y y₁ y₂) = 
     let er₁ , _ = Uinjectivity e₁ 
         er₂ , _ = Uinjectivity e₂
     in  PE.trans (PE.sym er₁) er₂ , PE.refl 
@@ -89,41 +89,6 @@ mutual
   Univ-uniq′ e₁ e₂ el₁ el₂ (ne ()) (sucⱼ X) y 
   Univ-uniq′ e₁ e₂ el₁ el₂ w (natrecⱼ _ x x₁ x₂ x₃) (natrecⱼ _ x₄ y y₁ y₂) = proj₁ (Uinjectivity (trans (sym e₁) e₂)) , PE.refl
   Univ-uniq′ e₁ e₂ el₁ el₂ w (Emptyrecⱼ x x₁) (Emptyrecⱼ y y₁) = proj₁ (Uinjectivity (trans (sym e₁) e₂)) , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ (ne (Idₙ x)) (Idⱼ X X₁ X₂) (Idⱼ {l = ll} Y Y₁ Y₂) =
-    let _ , el = Univ-uniq (ne x) X Y
-        er₁ , _ = Uinjectivity e₁
-        er₂ , _ = Uinjectivity e₂
-    in PE.trans (PE.sym er₁) er₂ , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ (ne (Idℕₙ x)) (Idⱼ X X₁ X₂) (Idⱼ {l = ll} Y Y₁ Y₂) =
-    let _ , el = Univ-uniq ℕₙ X Y
-        er₁ , _ = Uinjectivity e₁
-        er₂ , _ = Uinjectivity e₂
-    in PE.trans (PE.sym er₁) er₂ , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ (ne (Idℕ0ₙ x)) (Idⱼ X X₁ X₂) (Idⱼ {l = ll} Y Y₁ Y₂) =
-    let _ , el = Univ-uniq ℕₙ X Y
-        er₁ , _ = Uinjectivity e₁
-        er₂ , _ = Uinjectivity e₂
-    in PE.trans (PE.sym er₁) er₂ , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ (ne (IdℕSₙ x)) (Idⱼ X X₁ X₂) (Idⱼ {l = ll} Y Y₁ Y₂) =
-    let _ , el = Univ-uniq ℕₙ X Y
-        er₁ , _ = Uinjectivity e₁
-        er₂ , _ = Uinjectivity e₂
-    in PE.trans (PE.sym er₁) er₂ , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ (ne (IdUₙ x)) (Idⱼ X X₁ X₂) (Idⱼ {l = ll} Y Y₁ Y₂) =
-    let _ , el = Univ-uniq Uₙ X Y
-        er₁ , _ = Uinjectivity e₁
-        er₂ , _ = Uinjectivity e₂
-    in PE.trans (PE.sym er₁) er₂ , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ (ne (IdUℕₙ x)) (Idⱼ X X₁ X₂) (Idⱼ {l = ll} Y Y₁ Y₂) =
-    let _ , el = Univ-uniq Uₙ X Y
-        er₁ , _ = Uinjectivity e₁
-        er₂ , _ = Uinjectivity e₂
-    in PE.trans (PE.sym er₁) er₂ , PE.refl
-  Univ-uniq′ e₁ e₂ el₁ el₂ (ne (IdUΠₙ x)) (Idⱼ X X₁ X₂) (Idⱼ {l = ll} Y Y₁ Y₂) =
-    let _ , el = Univ-uniq Uₙ X Y
-        er₁ , _ = Uinjectivity e₁
-        er₂ , _ = Uinjectivity e₂
-    in PE.trans (PE.sym er₁) er₂ , PE.refl
   Univ-uniq′ e₁ e₂ el₁ el₂ w (castⱼ X X₁ X₂ X₃) (castⱼ y y₁ y₂ y₃) = proj₁ (Uinjectivity (trans (sym e₁) e₂)) , PE.refl
   Univ-uniq′ e₁ e₂ el₁ el₂ w (conv x x₁) y = Univ-uniq′ (trans x₁ e₁) e₂ el₁ el₂ w x y 
   Univ-uniq′ e₁ e₂ el₁ el₂ w x (conv y y₁) = Univ-uniq′ e₁ (trans y₁ e₂) el₁ el₂ w x y 
@@ -211,7 +176,7 @@ relevance-uniq (ℕⱼ x) (ℕⱼ x₁) = PE.refl
 relevance-uniq (Emptyⱼ x) (Emptyⱼ x₁) = PE.refl
 relevance-uniq (Πⱼ x ▹ x₁ ▹ X ▹ X₁) (Πⱼ x₂ ▹ x₃ ▹ Y ▹ Y₁) =
           PE.refl 
-relevance-uniq (∃ⱼ X ▹ X₁) (∃ⱼ Y ▹ Y₁) = PE.refl
+relevance-uniq (Idⱼ X X₁ _) (Idⱼ Y Y₁ _) = PE.refl
 relevance-uniq (var xx x) (var _ y) =
     let T≡T , e = varTypeEq′ x y
         er , el = typelevel-injectivity e
@@ -220,16 +185,13 @@ relevance-uniq (lamⱼ x x₁ x₂ X) (lamⱼ y y₁ y₂ Y) =
   let erF , elF  = relevance-unicity x₂ y₂
   in relevance-uniq X (PE.subst₂ (λ r l → _ ∙ _ ^ [ r , ι l ] ⊢ _ ∷ _ ^ _) (PE.sym erF) (PE.sym (ιinj elF)) Y)
 relevance-uniq (_ ▹ _ ▹ _ ▹ X ∘ⱼ X₁) (_ ▹ _ ▹ _ ▹ Y ∘ⱼ Y₁) = relevance-uniq X Y
-relevance-uniq {Γ} ⦅ x , x₁ , X , X₁ ⦆ⱼ (⦅_,_,_,_⦆ⱼ {F = F} {G = G} y y₁ Y Y₁)  = PE.refl 
-relevance-uniq (fstⱼ X X₁ X₂) (fstⱼ Y Y₁ Y₂) =
+relevance-uniq (fstⱼ X X₁ X₂ _ _) (fstⱼ Y Y₁ Y₂ _ _) =
     PE.refl 
-relevance-uniq (sndⱼ X X₁ X₂) (sndⱼ Y Y₁ Y₂) = PE.refl
+relevance-uniq (sndⱼ X X₁ X₂ _ _) (sndⱼ Y Y₁ Y₂ _ _) = PE.refl
 relevance-uniq (zeroⱼ x) (zeroⱼ x₁) = PE.refl 
 relevance-uniq (sucⱼ X) (sucⱼ Y) = PE.refl 
 relevance-uniq (natrecⱼ _ x X X₁ X₂) (natrecⱼ _ y Y Y₁ Y₂) = relevance-uniq X₁ Y₁
 relevance-uniq (Emptyrecⱼ x X) (Emptyrecⱼ y Y) = let er , el = relevance-unicity x y in er
-relevance-uniq (Idⱼ X X₁ X₂) (Idⱼ Y Y₁ Y₂) =
-    PE.refl 
 relevance-uniq (Idreflⱼ X) (Idreflⱼ Y) =
     PE.refl 
 relevance-uniq (transpⱼ x x₁ X X₁ X₂ X₃) (transpⱼ x₂ x₃ Y Y₁ Y₂ Y₃) =

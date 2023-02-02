@@ -69,61 +69,6 @@ mutual
         u~t = sym~↑% Γ≡Δ t~u
         a = size-symConv↑ Γ≡Δ x
     in PE.cong (λ X → 1 + X) a
-  size-sym~↑! Γ≡Δ (Id-cong X x x₁) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ X)
-        b = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x)) (size-symConv↑Term Γ≡Δ x)
-        c = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x₁)) (size-symConv↑Term Γ≡Δ x₁)
-    in PE.cong₃ (λ X Y Z → 1 + X + Y + Z) a b c
-  size-sym~↑! Γ≡Δ (Id-ℕ X x) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = ℕ≡A A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ X)
-        b = size-symConv↑Term Γ≡Δ x
-    in PE.cong₂ (λ X Y → 1 + X + Y) a b
-  size-sym~↑! Γ≡Δ (Id-ℕ0 X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = ℕ≡A A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ X)
-    in PE.cong (λ X → 1 + X) a
-  size-sym~↑! Γ≡Δ (Id-ℕS x X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = ℕ≡A A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ X)
-        b = size-symConv↑Term Γ≡Δ x
-    in PE.cong₂ (λ X Y → 1 + X + Y) b a
-  size-sym~↑! Γ≡Δ (Id-U X x) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ X)
-        b = size-symConv↑Term Γ≡Δ x
-    in PE.cong₂ (λ X Y → 1 + X + Y) a b
-  size-sym~↑! Γ≡Δ (Id-Uℕ X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ X)
-    in PE.cong (λ X → 1 + X) a
-  size-sym~↑! Γ≡Δ (Id-UΠ x X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-        a = PE.trans (size-subst U≡B u~t) (size-sym~↓! Γ≡Δ X)
-        b = size-symConv↑Term Γ≡Δ x
-    in PE.cong₂ (λ X Y → 1 + X + Y) b a
   size-sym~↑! Γ≡Δ (cast-cong X x x₁ x₂ x₃) =
     let U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ X
         UB , whnfUB , U≡UB' , B'~B = sym~↓! Γ≡Δ x
@@ -248,10 +193,11 @@ mutual
     let F≡H = soundnessConv↑Term A<>B
         _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))
     in PE.cong₂ (λ X Y → 1 + X + Y) (size-symConv↑Term Γ≡Δ A<>B) (size-symConv↑Term (Γ≡Δ ∙ univ F≡H) A<>B₁)
-  size-symConv↓Term Γ≡Δ (∃-cong x A<>B A<>B₁) =
-    let F≡H = soundnessConv↑Term A<>B
-        _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))
-    in PE.cong₂ (λ X Y → 1 + X + Y) (size-symConv↑Term Γ≡Δ A<>B) (size-symConv↑Term (Γ≡Δ ∙ univ F≡H) A<>B₁)
+  size-symConv↓Term Γ≡Δ (Id-cong X x x₁) =
+    let a = size-symConv↑Term Γ≡Δ X
+        b = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x)) (size-symConv↑Term Γ≡Δ x)
+        c = PE.trans (convConv↑TermSize _ _ (symConv↑Term Γ≡Δ x₁)) (size-symConv↑Term Γ≡Δ x₁)
+    in PE.cong₃ (λ X Y Z → 1 + X + Y + Z) a b c
   size-symConv↓Term Γ≡Δ (ℕ-ins t~u) =
     let B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ t~u
         B≡ℕ = ℕ≡A A≡B whnfB

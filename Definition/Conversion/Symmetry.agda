@@ -64,50 +64,6 @@ mutual
         -- F≡G = stabilityEq Γ≡Δ (soundnessConv↑ x)
     in  _ , soundnessConv↑ x
     , Emptyrec-cong (symConv↑ Γ≡Δ x) u~t
-  sym~↑! Γ≡Δ (Id-cong X x x₁) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-cong A'≡A
-                                     (convConvTerm (symConv↑Term Γ≡Δ x) (univ (soundness~↓! (stability~↓! Γ≡Δ X))))
-                                     (convConvTerm (symConv↑Term Γ≡Δ x₁) (univ (soundness~↓! (stability~↓! Γ≡Δ X))))
-  sym~↑! Γ≡Δ (Id-ℕ X x) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = ℕ≡A A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-ℕ A'≡A (symConv↑Term Γ≡Δ x)
-  sym~↑! Γ≡Δ (Id-ℕ0 X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = ℕ≡A A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-ℕ0 A'≡A
-  sym~↑! Γ≡Δ (Id-ℕS x X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = ℕ≡A A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-ℕS (symConv↑Term Γ≡Δ x) A'≡A
-  sym~↑! Γ≡Δ (Id-U X x) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-U A'≡A (symConv↑Term Γ≡Δ x)
-  sym~↑! Γ≡Δ (Id-Uℕ X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-Uℕ A'≡A
-  sym~↑! Γ≡Δ (Id-UΠ x X) =
-    let ⊢Γ , ⊢Δ , _ = contextConvSubst Γ≡Δ
-        B , whnfB , A≡B , u~t = sym~↓! Γ≡Δ X
-        U≡B = U≡A-whnf A≡B whnfB
-        A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B u~t
-    in _ , refl (Ugenⱼ ⊢Γ) , Id-UΠ (symConv↑Term Γ≡Δ x) A'≡A
   sym~↑! Γ≡Δ (cast-cong X x x₁ x₂ x₃) =
       let U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ X
           UB , whnfUB , U≡UB' , B'~B = sym~↓! Γ≡Δ x
@@ -265,11 +221,11 @@ mutual
   symConv↓Term Γ≡Δ (Empty-refl _) =
     let _ , ⊢Δ , _ = contextConvSubst Γ≡Δ
     in  Empty-refl ⊢Δ
-  symConv↓Term Γ≡Δ (∃-cong x A<>B A<>B₁) =
-    let F≡H = soundnessConv↑Term A<>B
-        _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))
-    in ∃-cong ⊢H (symConv↑Term Γ≡Δ A<>B)
-                 (symConv↑Term (Γ≡Δ ∙ univ F≡H) A<>B₁)
+  symConv↓Term Γ≡Δ (Id-cong F<>F′ t<>t u<>u) =
+    let F≡F′ = univ (soundnessConv↑Term F<>F′)
+    in Id-cong (symConv↑Term Γ≡Δ F<>F′)
+               (convConvTerm (symConv↑Term Γ≡Δ t<>t) (stabilityEq Γ≡Δ F≡F′))
+               (convConvTerm (symConv↑Term Γ≡Δ u<>u) (stabilityEq Γ≡Δ F≡F′))
   symConv↓Term Γ≡Δ (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' x A<>B A<>B₁) =
     let F≡H = soundnessConv↑Term A<>B
         _ , ⊢H = syntacticEq (stabilityEq Γ≡Δ (univ F≡H))
