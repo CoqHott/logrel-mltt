@@ -926,23 +926,7 @@ mutual
                                    _ , neA , _ = ne~↓! x₄
                                in noNeℕ (PE.subst Neutral eA neA) })
 
-{-
-  dec~↑! Γ≡Δ (var-refl x x₁) Y = {!!}
-  dec~↑! Γ≡Δ (app-cong x x₁) Y = {!!}
-  dec~↑! Γ≡Δ (natrec-cong x x₁ x₂ x₃) Y = {!!}
-  dec~↑! Γ≡Δ (Emptyrec-cong x x₁) Y = {!!}
-  dec~↑! Γ≡Δ (cast-cong x x₁ x₂ x₃ x₄) Y = {!!}
-  dec~↑! Γ≡Δ (cast-refl x x₁ x₂) Y = {!!}
-  dec~↑! Γ≡Δ (castℕ-refl x x₁) Y = {!!}
-  dec~↑! Γ≡Δ (cast-ℕ x x₁ x₂ x₃) Y = {!!}
-  dec~↑! Γ≡Δ (cast-Π x x₁ x₂ x₃ x₄) Y = {!!}
-  dec~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) Y = {!!}
-  dec~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) Y = {!!}
-  dec~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) Y = {!!}
-  dec~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) Y = {!!}
-  dec~↑! Γ≡Δ (cast-neℕ x x₁ x₂ x₃) Y = {!!}
-
--}
+  -- dec~↑! Γ≡Δ = {!!}
 
   -- Decidability of algorithmic equality of neutrals with types in WHNF.
   dec~↓! : ∀ {n k k' l l' R T Γ Δ lR lT}
@@ -1050,6 +1034,7 @@ mutual
                → Dec (Γ ⊢ t [conv↓] u ∷ A ^ l)
 
   decConv↓Term {n = 0} _ _ _ ()
+
   decConv↓Term Γ≡Δ (U-refl {r = r} _ x) (U-refl {r = r′} _ x₁) (leS size)
     with dec-relevance r r′
   ... | yes p = yes (U-refl p x)
@@ -1079,27 +1064,43 @@ mutual
   ... | no ¬p = no λ { (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) → ¬p x₈ }
   ... | yes pGE = yes (Π-cong l≡ PE.refl PE.refl PE.refl lF< lG< ⊢F pFH pGE)
 
-{-
-  dec~↑! Γ≡Δ (Id-cong A t u) (Id-cong B v w) (leS size) =
-    dec-id-id Γ≡Δ A t u B v w (dec~↓! Γ≡Δ A B (<<-trans (<=-help-id-cong {a =  size~↓! A}) size))
-      (λ (M , lM , A~B) → decConv↑Term Γ≡Δ t (convert~ Γ≡Δ A B A~B v)
-                                             (<<-trans (<=-trans (<=-cong-+ (le-refl (sizeConv↑Term t))
-                                                       (≡-to-<= (convert~size Γ≡Δ A B A~B v)))
-                                                       (<=-help-b'c' {a = size~↓! A} {b = size~↓! B})) size))
-      (λ (M , lM , A~B) → decConv↑Term Γ≡Δ u (convert~ Γ≡Δ A B A~B w)
-                                             (<<-trans (<=-trans (<=-cong-+ (le-refl (sizeConv↑Term u))
-                                                       (≡-to-<= (convert~size Γ≡Δ A B A~B w)))
-                                                       (<=-help-b''c'' {a = size~↓! A} {b = size~↓! B})) size))
--}
-
-
-  decConv↓Term Γ≡Δ (Id-cong ⊢F F G) (Id-cong ⊢H H E) (leS size)
-    with decConv↑Term Γ≡Δ F H (<=-trans (leS (<=-help-ab' {a = sizeConv↑Term F})) size)
-  ... | no ¬p = no λ { (Id-cong x₁ x₂ x₃) → ¬p x₂ }
-  ... | yes pFH
-    with decConv↑Term (Γ≡Δ ∙ univ (soundnessConv↑Term pFH)) G E (<=-trans (leS (<=-help-ab'' {a = sizeConv↑Term F} {c = sizeConv↑Term H})) size)
-  ... | no ¬p = no λ { (Id-cong x₁ x₂ x₃) → ¬p x₃ }
-  ... | yes pGE = yes (Id-cong ⊢F pFH pGE)
+  decConv↓Term Γ≡Δ (Id-cong {l} A t u) (Id-cong {l'} B t' u') (leS size)
+    with dec-level l l'
+  ... | no ¬p = no λ { (Id-cong x₁ x₂ x₃) →
+        let _ , ⊢A₁ , ⊢A₂ = syntacticEqTerm (soundnessConv↑Term x₁)
+            _ , ⊢A₁' , _ = syntacticEqTerm (soundnessConv↑Term A)
+            _ , ⊢A₂' , _ = syntacticEqTerm (soundnessConv↑Term (stabilityConv↑Term (symConEq Γ≡Δ) B))
+            el , _ = type-uniq ⊢A₁ ⊢A₁'
+            el' , _ = type-uniq ⊢A₂ ⊢A₂'
+        in ¬p (PE.trans (PE.sym (next-inj el)) (next-inj el')) } 
+  ... | yes PE.refl 
+    with decConv↑Term Γ≡Δ A B (<<-trans (<=-help-id-cong {a =  sizeConv↑Term A}) size)
+  ... | no ¬p = no λ { (Id-cong x₁ x₂ x₃) →
+        let _ , ⊢A₁ , ⊢A₂ = syntacticEqTerm (soundnessConv↑Term x₁)
+            _ , ⊢A₁' , _ = syntacticEqTerm (soundnessConv↑Term A)
+            el , _ = type-uniq ⊢A₁ ⊢A₁'
+        in ¬p (PE.subst (λ ll → _ ⊢ _  [conv↑] _ ∷ U ll ^ next ll ) (next-inj el) x₁) }
+  ... | yes A~B
+    with decConv↑TermConv Γ≡Δ (univ (soundnessConv↑Term A~B)) t t' 
+                          (<<-trans (<=-trans (<=-cong-+ (le-refl (sizeConv↑Term t))
+                                    (≡-to-<= PE.refl))
+                                    (<=-help-b'c' {a = sizeConv↑Term A} {b = sizeConv↑Term B})) size)
+  ... | no ¬p = no λ { (Id-cong x₁ x₂ x₃) →
+        let _ , ⊢A₁ , ⊢A₂ = syntacticEqTerm (soundnessConv↑Term x₁)
+            _ , ⊢A₁' , _ = syntacticEqTerm (soundnessConv↑Term A)
+            el , _ = type-uniq ⊢A₁ ⊢A₁'
+        in ¬p (PE.subst (λ ll → _ ⊢ _  [conv↑] _ ∷ _ ^ ι ll ) (next-inj el) x₂) } 
+  ... | yes t~t' 
+    with decConv↑TermConv Γ≡Δ (univ (soundnessConv↑Term A~B)) u u'
+                            (<<-trans (<=-trans (<=-cong-+ (le-refl (sizeConv↑Term u))
+                                                (≡-to-<= PE.refl))
+                                                (<=-help-b''c'' {a = sizeConv↑Term A} {b = sizeConv↑Term B})) size) 
+  ... | no ¬p = no λ { (Id-cong x₁ x₂ x₃) →
+        let _ , ⊢A₁ , ⊢A₂ = syntacticEqTerm (soundnessConv↑Term x₁)
+            _ , ⊢A₂' , _ = syntacticEqTerm (soundnessConv↑Term (stabilityConv↑Term (symConEq Γ≡Δ) B))
+            el , _ = type-uniq ⊢A₂ ⊢A₂'
+        in ¬p (PE.subst (λ ll → _ ⊢ _  [conv↑] _ ∷ _ ^ ι ll ) (next-inj el) x₃)}
+  ... | yes u~u' = yes (Id-cong A~B t~t' u~u')
 
   decConv↓Term Γ≡Δ (ℕ-ins K) (ℕ-ins K₁) (leS size)
     with dec~↓! Γ≡Δ K K₁ (<=-trans (<=-help-ab1' {a = 1+ (size~↓! K)}) size)
