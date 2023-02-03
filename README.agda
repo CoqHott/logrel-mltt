@@ -151,8 +151,6 @@ import Definition.LogicalRelation.Substitution.Introductions.Application
 import Definition.LogicalRelation.Substitution.Introductions.Lambda
 
 -- Validity of ∃-types, pairs and projections
-import Definition.LogicalRelation.Substitution.Introductions.Sigma
-import Definition.LogicalRelation.Substitution.Introductions.Pair
 import Definition.LogicalRelation.Substitution.Introductions.Fst
 import Definition.LogicalRelation.Substitution.Introductions.Snd
 
@@ -163,11 +161,7 @@ import Definition.LogicalRelation.Substitution.Introductions.CastPi
 import Definition.LogicalRelation.Substitution.Introductions.Transp
 
 -- Validity of identity types, and reflexivity
-import Definition.LogicalRelation.Substitution.Introductions.Idlemmas
-import Definition.LogicalRelation.Substitution.Introductions.IdUniv
-import Definition.LogicalRelation.Substitution.Introductions.IdNat
-import Definition.LogicalRelation.Substitution.Introductions.IdPi
-import Definition.LogicalRelation.Substitution.Introductions.IdUPiPi
+import Definition.LogicalRelation.Substitution.Introductions.Id
 import Definition.LogicalRelation.Substitution.Introductions.IdRefl
 
 -- Reducibility of well-formedness.
