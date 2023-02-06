@@ -11,7 +11,6 @@ open import Tools.Nat
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
-
 infix 10 _⊢_~_↑_^_
 infix 10 _⊢_[conv↑]_^_
 infix 10 _⊢_[conv↓]_^_
