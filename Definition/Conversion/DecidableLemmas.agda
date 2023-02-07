@@ -336,20 +336,20 @@ abstract
     in cast-refl-dec neA neB ⊢A ⊢t ⊢e decAB dectu noeqNe noeqℕ
 
   castℕ-refl-dec~ : ∀ {Γ A A' t e u}
-              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ A' ~ A ↓! U ⁰ ^ next ⁰
               → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
               → (noeqNeℕ : ∀ {A' t' e'} → Neutral A' → u PE.≡ cast ⁰ ℕ A' e' t' → ⊥)
               → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ u ~ cast ⁰ ℕ A e t ↑! U ^ lA)
-  castℕ-refl-dec~ A noeqNe noeqNeℕ noeqℕ = let _ , neA , _ = ne~↓! A in castℕ-refl-dec neA noeqNe noeqNeℕ noeqℕ
+  castℕ-refl-dec~ A noeqNe noeqNeℕ noeqℕ = let _ , _ , neA = ne~↓! A in castℕ-refl-dec neA noeqNe noeqNeℕ noeqℕ
 
   castℕ-refl'-dec~ : ∀ {Γ A A' t e u}
-              → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
+              → Γ ⊢ A' ~ A ↓! U ⁰ ^ next ⁰
               → (noeqNe : ∀ {A' B' t' e'} → Neutral A' → Neutral B' → u PE.≡ cast ⁰ A' B' e' t' → ⊥)
               → (noeqNeℕ : ∀ {A' t' e'} → Neutral A' → u PE.≡ cast ⁰ ℕ A' e' t' → ⊥)
               → (noeqℕ : ∀ {t' e'} → u PE.≡ cast ⁰ ℕ ℕ e' t' → ⊥)
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ ℕ A e t ~ u ↑! U ^ lA)
-  castℕ-refl'-dec~ A noeqNe noeqNeℕ noeqℕ = let _ , neA , _ = ne~↓! A in castℕ-refl'-dec neA noeqNe noeqNeℕ noeqℕ
+  castℕ-refl'-dec~ A noeqNe noeqNeℕ noeqℕ = let _ , _ , neA = ne~↓! A in castℕ-refl'-dec neA noeqNe noeqNeℕ noeqℕ
 
   castneℕ-refl-dec~ : ∀ {Γ A A' t e u}
               → Γ ⊢ A ~ A' ↓! U ⁰ ^ next ⁰
