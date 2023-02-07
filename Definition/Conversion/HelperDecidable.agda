@@ -109,6 +109,17 @@ abstract -- Agda will do some slow unfolding without abstract
         A≡U = U≡A-whnf ⊢U≡A whnfA
     in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡U (PE.sym l≡l) t~u
 
+  ~atU- : ∀ {Γ t u r lU l}
+    → Γ ⊢ u ∷ Univ r lU ^ [ ! , l ]
+    → (∃ λ A → ∃ λ lA → Γ ⊢ t ~ u ↓! A ^ lA)
+    → Γ ⊢ t ~ u ↓! Univ r lU ^ l
+  ~atU- ⊢u∷U (A , lA , t~u) =
+    let whnfA , neT , neU = ne~↓! t~u
+        ⊢A , ⊢t , ⊢u = syntacticEqTerm (soundness~↓! t~u)
+        l≡l , ⊢U≡A = neTypeEq neU ⊢u∷U ⊢u
+        A≡U = U≡A-whnf ⊢U≡A whnfA
+    in PE.subst₂ (λ X Y → _ ⊢ _ ~ _ ↓! X ^ Y) A≡U (PE.sym l≡l) t~u
+
   ~atUsize : ∀ {Γ t u r lU l}
     → (⊢t : Γ ⊢ t ∷ Univ r lU ^ [ ! , l ])
     → (t~u : ∃ λ A → ∃ λ lA → Γ ⊢ t ~ u ↓! A ^ lA)
