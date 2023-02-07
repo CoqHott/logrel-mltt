@@ -72,8 +72,10 @@ mutual
   soundnessConv↓Term (ne x) = soundness~↓! x
   soundnessConv↓Term (ℕ-refl ⊢Γ) = refl (ℕⱼ ⊢Γ)
   soundnessConv↓Term (Empty-refl ⊢Γ) = refl (Emptyⱼ ⊢Γ)
-  soundnessConv↓Term (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' F c c₁) =
-    Π-cong l< l<' F (soundnessConv↑Term c) (soundnessConv↑Term c₁)
+  soundnessConv↓Term (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' c c₁) =
+    let F=F = soundnessConv↑Term c
+        _ , F , _  = syntacticEqTerm F=F
+    in Π-cong l< l<' (univ F) F=F (soundnessConv↑Term c₁)
   soundnessConv↓Term (Id-cong A c c₁) =
     Id-cong (soundnessConv↑Term A) (soundnessConv↑Term c) (soundnessConv↑Term c₁)
   soundnessConv↓Term (ℕ-ins x) = soundness~↓! x

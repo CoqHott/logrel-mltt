@@ -124,9 +124,6 @@ mutual
     U-refl    : ∀ {r r' }
               → r PE.≡ r' -- needed for K issues
               → ⊢ Γ → Γ ⊢⊢ Univ r ⁰ [conv↓] Univ r' ⁰ ∷ U ¹ ^ next ¹
-    ne        : ∀ {r K L lU l}
-                → Γ ⊢⊢ K ~ L ↓! Univ r lU ^ l
-                → Γ ⊢⊢ K [conv↓] L ∷ Univ r lU ^ l
     ℕ-refl    : ⊢ Γ → Γ ⊢⊢ ℕ [conv↓] ℕ ∷ U ⁰ ^ next ⁰
     Empty-refl : ⊢ Γ → Γ ⊢⊢ sEmpty [conv↓] sEmpty ∷ SProp ^ next ⁰
     Π-cong    : ∀ {F G H E rF rH rΠ lF lH lG lE lΠ ll}
@@ -136,7 +133,6 @@ mutual
               → lG PE.≡ lE -- needed for K issues
               → (rΠ PE.≡ ! → lF ≤ lΠ × lG ≤ lΠ)
               → (rΠ PE.≡ % → lG PE.≡ ⁰ × lΠ PE.≡ ⁰)
-              → Γ ⊢ F ^ [ rF , ι lF ]
               → Γ ⊢⊢ F [conv↑] H ∷ Univ rF lF ^ next lF
               → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ G [conv↑] E  ∷ Univ rΠ lG ^ next lG
               → Γ ⊢⊢ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ rΠ [conv↓] Π H ^ rH ° lH ▹ E ° lE ° lΠ ^ rΠ ∷ Univ rΠ lΠ ^ ll
@@ -145,6 +141,9 @@ mutual
               → Γ ⊢⊢ t [conv↑] t' ∷ A ^ ι l
               → Γ ⊢⊢ u [conv↑] u' ∷ A ^ ι l
               → Γ ⊢⊢ Id A t u [conv↓] Id A' t' u' ∷ SProp ^ next ⁰
+    ne        : ∀ {r K L lU l}
+                → Γ ⊢⊢ K ~ L ↓! Univ r lU ^ l
+                → Γ ⊢⊢ K [conv↓] L ∷ Univ r lU ^ l
     ℕ-ins     : ∀ {k l}
               → Γ ⊢⊢ k ~ l ↓! ℕ ^ ι ⁰
               → Γ ⊢⊢ k [conv↓] l ∷ ℕ ^ ι ⁰

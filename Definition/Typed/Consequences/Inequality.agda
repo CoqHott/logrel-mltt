@@ -11,6 +11,8 @@ open import Definition.LogicalRelation.Irrelevance
 open import Definition.LogicalRelation.ShapeView
 open import Definition.LogicalRelation.Fundamental.Reducibility
 open import Definition.Typed.Consequences.Syntactic
+open import Definition.Typed.Consequences.Inversion
+open import Definition.Typed.Consequences.Equality
 
 open import Tools.Product
 open import Tools.Empty
@@ -132,10 +134,13 @@ U≢ne! neK U≡K =
                    ℕ≢Π′
 
 -- ℕ and Π F ▹ G for any F and G cannot be judgmentally equal.
-ℕ≢Π! : ∀ {F rF G lF lG  Γ} → Γ ⊢ ℕ ≡ Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ ! ^ [ ! , ι ⁰ ]  → ⊥
+ℕ≢Π! : ∀ {F rF G lF lG r Γ} → Γ ⊢ ℕ ≡ Π F ^ rF ° lF ▹ G ° lG ° ⁰ ^ r ^ [ ! , ι ⁰ ]  → ⊥
 ℕ≢Π! ℕ≡Π =
   let ⊢ℕ , ⊢Π = syntacticEq ℕ≡Π
-  in  ℕ≢Π-red (id ⊢ℕ) (id ⊢Π) ℕ≡Π
+      rG , _ , _ , _ , _ , U=U , err , _ = inversion-Π (un-univ ⊢Π)
+      r=r , _ = Univ-PE-injectivity (U≡A-whnf U=U Uₙ)
+      eqr = PE.trans (PE.sym err) r=r
+  in  ℕ≢Π-red (id ⊢ℕ) (id (PE.subst (λ X → _ ⊢ Π _ ^ _ ° _ ▹ _ ° _ ° _ ^ X ^ [ _ , _ ] ) eqr ⊢Π)) (PE.subst (λ X → _ ⊢ _ ≡ Π _ ^ _ ° _ ▹ _ ° _ ° _ ^ X ^ [ _ , _ ] ) eqr ℕ≡Π) 
 
 -- Empty and Π
 Empty≢Π′ : ∀ {A B Γ l l′}
@@ -211,7 +216,10 @@ Empty≢ne% neK Empty≡K =
                         Π≢ne′
 
 -- Π F ▹ G and K for any F and G and neutral K cannot be judgmentally equal.
-Π≢ne : ∀ {F rF lF lG G K l Γ} → Neutral K → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ≡ K ^ [ ! , ι l ] → ⊥
+Π≢ne : ∀ {F rF lF lG r G K l Γ} → Neutral K → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° l ^ r ≡ K ^ [ ! , ι l ] → ⊥
 Π≢ne neK Π≡K =
   let ⊢Π , ⊢K = syntacticEq Π≡K
-  in  Π≢ne-red (id ⊢Π) (id ⊢K) neK Π≡K
+      rG , _ , _ , _ , _ , U=U , err , _ = inversion-Π (un-univ ⊢Π)
+      r=r , _ = Univ-PE-injectivity (U≡A-whnf U=U Uₙ)
+      eqr = PE.trans (PE.sym err) r=r
+  in  Π≢ne-red (id (PE.subst (λ X → _ ⊢ Π _ ^ _ ° _ ▹ _ ° _ ° _ ^ X ^ [ _ , _ ] ) eqr ⊢Π)) (id ⊢K) neK (PE.subst (λ X → _ ⊢ Π _ ^ _ ° _ ▹ _ ° _ ° _ ^ X ≡ _ ^ [ _ , _ ] ) eqr Π≡K)

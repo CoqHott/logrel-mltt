@@ -84,13 +84,13 @@ mutual
           B'~B = symConv↑Term Γ≡Δ x
           U≡B = U≡A-whnf U≡U' whnfU
           A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B A'~A
-      in _ , univ (soundness~↓! X) , cast-ℕ A'≡A (symConv↑Term Γ≡Δ x) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₁)
+      in _ , univ (sym (soundness~↓! X)) , cast-ℕ A'≡A (symConv↑Term Γ≡Δ x) (stabilityTerm Γ≡Δ x₂) (stabilityTerm Γ≡Δ x₁)
   sym~↑! Γ≡Δ (cast-Π x X x₁ x₂ x₃) =
       let U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ X
           B'~B = symConv↑Term Γ≡Δ x
           U≡B = U≡A-whnf U≡U' whnfU
           A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B A'~A
-      in _ , univ (soundness~↓! X) , cast-Π B'~B A'≡A
+      in _ , univ (sym (soundness~↓! X)) , cast-Π B'~B A'≡A
                                             (convConvTerm (symConv↑Term Γ≡Δ x₁) (univ (soundnessConv↑Term (stabilityConv↑Term Γ≡Δ x))))
                                             (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₂)
   sym~↑! Γ≡Δ (cast-Πℕ x x₁ x₂ x₃) =
@@ -98,13 +98,13 @@ mutual
       in _ , refl (univ (ℕⱼ ⊢Γ)) , cast-Πℕ (symConv↑Term Γ≡Δ x)
                                            (convConvTerm (symConv↑Term Γ≡Δ x₁) (univ (soundnessConv↑Term (stabilityConv↑Term Γ≡Δ x))))
                                            (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₂)
-  sym~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) = _ , univ (soundnessConv↑Term x) , cast-ℕΠ (symConv↑Term Γ≡Δ x) (symConv↑Term Γ≡Δ x₁)
+  sym~↑! Γ≡Δ (cast-ℕΠ x x₁ x₂ x₃) = _ , univ (sym (soundnessConv↑Term x)) , cast-ℕΠ (symConv↑Term Γ≡Δ x) (symConv↑Term Γ≡Δ x₁)
                                                                               (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₂)
-  sym~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = _ , univ (soundnessConv↑Term x₁) ,
+  sym~↑! Γ≡Δ (cast-ΠΠ%! x x₁ x₂ x₃ x₄) = _ , univ (sym (soundnessConv↑Term x₁)) ,
                                          cast-ΠΠ%! (symConv↑Term Γ≡Δ x) (symConv↑Term Γ≡Δ x₁)
                                                    (convConvTerm (symConv↑Term Γ≡Δ x₂) (univ (soundnessConv↑Term (stabilityConv↑Term Γ≡Δ x))))
                                                    (stabilityTerm Γ≡Δ x₄) (stabilityTerm Γ≡Δ x₃)
-  sym~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = _ , univ (soundnessConv↑Term x₁) ,
+  sym~↑! Γ≡Δ (cast-ΠΠ!% x x₁ x₂ x₃ x₄) = _ , univ (sym (soundnessConv↑Term x₁)) ,
                                          cast-ΠΠ!% (symConv↑Term Γ≡Δ x) (symConv↑Term Γ≡Δ x₁)
                                                    (convConvTerm (symConv↑Term Γ≡Δ x₂) (univ (soundnessConv↑Term (stabilityConv↑Term Γ≡Δ x))))
                                                    (stabilityTerm Γ≡Δ x₄) (stabilityTerm Γ≡Δ x₃)
@@ -153,7 +153,7 @@ mutual
         U , whnfU , U≡U' , A'~A = sym~↓! Γ≡Δ x
         U≡B = U≡A-whnf U≡U' whnfU
         A'≡A = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) U≡B A'~A
-    in _ , univ (soundnessConv↑Term X) ,
+    in _ , univ (sym (soundnessConv↑Term X)) ,
        cast-neΠ (symConv↑Term Γ≡Δ X) A'≡A (convConvTerm (symConv↑Term Γ≡Δ x₁) (univ (soundness~↓! (stability~↓! Γ≡Δ x))))
                                      (stabilityTerm Γ≡Δ x₃) (stabilityTerm Γ≡Δ x₂)
 

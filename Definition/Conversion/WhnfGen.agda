@@ -41,7 +41,7 @@ mutual
     in ne x , ne neT , ne neU
   whnfConv↓Term (ℕ-refl x) = Uₙ , ℕₙ , ℕₙ
   whnfConv↓Term (Empty-refl x) = Uₙ , Emptyₙ , Emptyₙ
-  whnfConv↓Term (Π-cong _ _ _ _ _ _ x x₁ x₂) = Uₙ , Πₙ , Πₙ
+  whnfConv↓Term (Π-cong _ _ _ _ _ _ x₁ x₂) = Uₙ , Πₙ , Πₙ
   whnfConv↓Term (Id-cong x x₁ x₂) = Uₙ , Idₙ , Idₙ
   whnfConv↓Term (U-refl _ _) = Uₙ , Uₙ , Uₙ
   whnfConv↓Term (zero-refl x) = ℕₙ , zeroₙ , zeroₙ

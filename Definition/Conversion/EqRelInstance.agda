@@ -176,7 +176,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
                       ([~] _ (red D) whnfB′ x)
          _ , ⊢Π , _ = syntacticEqTerm (soundnessConv↑Term Π<>Π)
      in ↑ (refl (univ ⊢Π))
-          (~↑! (cast-neΠ Π<>Π t~t′ t<>u ⊢e ⊢e'))
+          (~↑! (cast-neΠ (symConv↑Term (reflConEq (wfTerm ⊢Π)) Π<>Π) t~t′ t<>u ⊢e ⊢e'))
 
 ~-cast-refl : ∀ {A B e t u : Term} {Γ : Con Term} →
     Γ ⊢ A ~ B ∷ U ⁰ ^ [ ! , next ⁰ ] →
@@ -220,10 +220,16 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
      let _ , ⊢B' = syntacticEq A≡B
          B′ , whnfB′ , D = whNorm ⊢B'
          U≡B′ = trans A≡B (subset* (red D))
-         B≡U = U≡A-whnf U≡B′ whnfB′
-         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
-                      ([~] _ (red D) whnfB′ x)
-         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
+         B≡U = U≡A-whnf U≡B′ whnfB′       
+         _ , eqX , x'' = sym~↑! (reflConEq (wf ⊢B')) x
+         ⊢BU , _ , ⊢B   = syntacticEqTerm (soundness~↑! x'')
+         A≡B'' = trans A≡B eqX
+         BU′ , whnfBU′ , D' = whNorm ⊢BU
+         U≡B' = trans A≡B'' (subset* (red D'))
+         B≡U' = U≡A-whnf U≡B' whnfBU′
+         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U'
+                      ([~] _ (red D') whnfBU′ x'')
+         _ , _ , ⊢B = syntacticEqTerm (soundness~↓! t~t′)
      in ↑ (refl (univ ⊢B)) (~↑! (cast-ℕ t~t′ X ⊢e ⊢e'))
 
 ~-castΠ : ∀ {A A' : Term} {rA : Relevance} {P P' B B' e e' t t' : Term}
@@ -239,10 +245,16 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
          B′ , whnfB′ , D = whNorm ⊢B'
          U≡B′ = trans A≡B (subset* (red D))
          B≡U = U≡A-whnf U≡B′ whnfB′
-         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U
-                      ([~] _ (red D) whnfB′ x)
-         _ , ⊢B , _ = syntacticEqTerm (soundness~↓! t~t′)
-     in ↑ (refl (univ ⊢B)) (~↑! (cast-Π X t~t′ Y ⊢e ⊢e'))
+         _ , eqX , x'' = sym~↑! (reflConEq (wf ⊢B')) x
+         ⊢BU , _ , ⊢B   = syntacticEqTerm (soundness~↑! x'')
+         A≡B'' = trans A≡B eqX
+         BU′ , whnfBU′ , D' = whNorm ⊢BU
+         U≡B' = trans A≡B'' (subset* (red D'))
+         B≡U' = U≡A-whnf U≡B' whnfBU′
+         t~t′ = PE.subst (λ x → _ ⊢ _ ~ _ ↓! x ^ _) B≡U'
+                      ([~] _ (red D') whnfBU′ x'')
+         _ , _ , ⊢B = syntacticEqTerm (soundness~↓! t~t′)
+     in ↑ (refl (univ ⊢B)) (~↑! (cast-Π X t~t′ Y ⊢e ⊢e')) --t~t′
 
 ~-castℕΠ : ∀ {A A' : Term} {rA : Relevance} {P P' e e' t t' : Term}
     {Γ : Con Term} →
@@ -254,7 +266,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     Γ ⊢ e' ∷ Id (U ⁰) ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) ^ [ % , ι ⁰ ] →
     Γ ⊢ cast ⁰ ℕ (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ ℕ (Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) e' t' ∷
     Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
-~-castℕΠ ⊢A ⊢P X Y ⊢e ⊢e' = ↑ (refl (univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ ⊢A ▹ ⊢P))) (~↑! (cast-ℕΠ X Y ⊢e ⊢e'))
+~-castℕΠ ⊢A ⊢P X Y ⊢e ⊢e' = ↑ (refl (univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ ⊢A ▹ ⊢P))) (~↑! (cast-ℕΠ (symConv↑Term (reflConEq (wfTerm ⊢e)) X) Y ⊢e ⊢e'))
 
 ~-castΠℕ : ∀ {A A' : Term} {rA : Relevance} {P P' e e' t t' : Term}
     {Γ : Con Term} →
@@ -282,7 +294,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     Γ ⊢ cast ⁰ (Π A ^ % ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~
         cast ⁰ (Π A' ^ % ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ ! ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) e' t' ∷ Π B ^ ! ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
 ~-castΠΠ%! ⊢A ⊢P X ⊢B ⊢Q Y t~t' ⊢e ⊢e' = ↑ (refl (univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ ⊢B ▹ ⊢Q)))
-                                           (~↑! (cast-ΠΠ%! X Y t~t' ⊢e ⊢e'))
+                                           (~↑! (cast-ΠΠ%! X (symConv↑Term (reflConEq (wfTerm ⊢e)) Y) t~t' ⊢e ⊢e'))
 
 ~-castΠΠ!% : ∀ {A A' P P' B B' Q Q' e e' t t' : Term} {Γ : Con Term} →
     Γ ⊢ A ∷ Univ ! ⁰ ^ [ ! , next ⁰ ] →
@@ -297,7 +309,7 @@ data _⊢_~_∷_^_ (Γ : Con Term) (k l A : Term) (r : TypeInfo) : Set where
     Γ ⊢ cast ⁰ (Π A ^ ! ° ⁰ ▹ P ° ⁰ ° ⁰ ^ !) (Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ !) e t ~
         cast ⁰ (Π A' ^ ! ° ⁰ ▹ P' ° ⁰ ° ⁰ ^ !) (Π B' ^ % ° ⁰ ▹ Q' ° ⁰ ° ⁰ ^ !) e' t' ∷ Π B ^ % ° ⁰ ▹ Q ° ⁰ ° ⁰ ^ ! ^ [ ! , ι ⁰ ]
 ~-castΠΠ!% ⊢A ⊢P X ⊢B ⊢Q Y t~t' ⊢e ⊢e' = ↑ (refl (univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ ⊢B ▹ ⊢Q)))
-                                           (~↑! (cast-ΠΠ!% X Y t~t' ⊢e ⊢e'))
+                                           (~↑! (cast-ΠΠ!% X (symConv↑Term (reflConEq (wfTerm ⊢e)) Y) t~t' ⊢e ⊢e'))
 
 ~-sym : {k l A : Term} {r : TypeInfo} {Γ : Con Term} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ l ~ k ∷ A ^ r
 ~-sym (↑ A≡B x) =

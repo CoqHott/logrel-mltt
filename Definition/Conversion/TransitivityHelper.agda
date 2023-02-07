@@ -130,6 +130,11 @@ abstract
           [ var 1 + var 2 ]
           [ [ var 1 + var 3 ] + [ var 0 + [ var 2 + var 4 ] ] ] PE.refl
 
+        <=-help-ab'- :  ∀ {a b c d : Nat} → (b + 1+ a) <= (a + c + 1+ (1+ b + d))
+        <=-help-ab'- {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
+          [ var 2 + [ var 0 + var 1 ] ]
+          [ [ var 1 + var 3 ] + [ var 0 + [ [ var 0 + var 2 ] + var 4 ] ] ] PE.refl
+
         <=-help-ab'' :  ∀ {a b c d : Nat} → (b + d) <= (a + b + 1+ (c + d))
         <=-help-ab'' {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
           [ var 2 + var 4 ]
@@ -175,6 +180,11 @@ abstract
           [ [ var 1 + var 2 ] + [ var 3 + var 4 ] ]
           [ [ var 1 + var 3 ] + [ var 0 + [ var 2 + var 4 ] ] ] PE.refl
 
+        <=-help-3-abcd- :  ∀ {a b c d : Nat} → (b + a + (c + d)) <= (a + c + 1+ (b + d))
+        <=-help-3-abcd- {a} {b} {c} {d} = inequality (vars (1 ∷ a ∷ b ∷ c ∷ d ∷ []))
+          [ [ var 2 + var 1 ] + [ var 3 + var 4 ] ]
+          [ [ var 1 + var 3 ] + [ var 0 + [ var 2 + var 4 ] ] ] PE.refl
+
         <=-help-nat-cong-ab :  ∀ {a b b' b'' b''' c' c'' c''' : Nat} → (a + b) <= (a + b' + b'' + b''' + 1+ (b + c' + c'' + c'''))
         <=-help-nat-cong-ab {a} {b} {b'} {b''} {b'''} {c'} {c''} {c'''} =
           inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ b''' ∷ c' ∷ c'' ∷ c''' ∷ []))
@@ -210,9 +220,19 @@ abstract
           [ var 1 + var 2 ]
           [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ [ var 2 + var 5 ] + var 6 ] ] ] PE.refl
 
+        <=-help-id-cong- :  ∀ {a b b' b'' c' c''  : Nat} → (b + a) <= (a + b' + b'' + 1+ (b + c' + c''))
+        <=-help-id-cong- {a} {b} {b'} {b''} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ c'' ∷ []))
+          [ var 2 + var 1 ]
+          [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ [ var 2 + var 5 ] + var 6 ] ] ] PE.refl
+
         <=-help-id-cong' :  ∀ {a b b' b'' c' c''  : Nat} → (a + b + (b' + c') + (b'' + c'') ) <= (a + b' + b'' + 1+ (b + c' + c''))
         <=-help-id-cong' {a} {b} {b'} {b''} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ c'' ∷ []))
           [ [ [ var 1 + var 2 ] + [ var 3 + var 5 ] ] + [ var 4 + var 6 ] ]
+          [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ [ var 2 + var 5 ] + var 6 ] ] ] PE.refl
+
+        <=-help-id-cong'- :  ∀ {a b b' b'' c' c''  : Nat} → (b + a + (b' + c') + (b'' + c'') ) <= (a + b' + b'' + 1+ (b + c' + c''))
+        <=-help-id-cong'- {a} {b} {b'} {b''} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ c'' ∷ []))
+          [ [ [ var 2 + var 1 ] + [ var 3 + var 5 ] ] + [ var 4 + var 6 ] ]
           [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ [ var 2 + var 5 ] + var 6 ] ] ] PE.refl
 
         <=-help-id-cong'' :  ∀ {a b b' b'' c' c''  : Nat} → (a + b + (c' + b') + (b'' + c'') ) <= (a + b' + b'' + 1+ (b + c' + c''))
@@ -228,6 +248,11 @@ abstract
         <=-help-b'c' :  ∀ {a b b' b'' c' c''  : Nat} → (b' + c') <= (a + b' + b'' + 1+ (b + c' + c''))
         <=-help-b'c' {a} {b} {b'} {b''} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ c'' ∷ []))
           [ var 3 + var 5 ]
+          [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ [ var 2 + var 5 ] + var 6 ] ] ] PE.refl
+
+        <=-help-b'c'- :  ∀ {a b b' b'' c' c''  : Nat} → (c' + b') <= (a + b' + b'' + 1+ (b + c' + c''))
+        <=-help-b'c'- {a} {b} {b'} {b''} {c'} {c''} = inequality (vars (1 ∷ a ∷ b ∷ b' ∷ b'' ∷ c' ∷ c'' ∷ []))
+          [ var 5 + var 3 ]
           [ [ [ var 1 + var 3 ] + var 4 ] + [ var 0 + [ [ var 2 + var 5 ] + var 6 ] ] ] PE.refl
 
         <=-help-id-cong-c'' :  ∀ {a b b' b'' c' : Nat} → (a + b) <= (a + b' + b'' + 1+ (b + c'))
