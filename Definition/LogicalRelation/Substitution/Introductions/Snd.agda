@@ -108,9 +108,7 @@ Id-U-ΠΠ-resᵗᵛ {A} {B} {A'} {B'} {e} {rA} {Γ}
       [liftσ'] = λ {Δ} {σ} ⊢Δ [σ] → liftSubstS {F = A'} {σ = σ} {Δ = Δ} [Γ] ⊢Δ [A'] [σ]
       [ΠAB] = Πᵗᵛ {A} {B} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A] (λ {Δ} {σ} → [UB] {Δ} {σ}) [A]ₜ [B]ₜ
       [ΠA'B'] = Πᵗᵛ {A'} {B'} (≡is≤ PE.refl) (≡is≤ PE.refl) [Γ] [A'] (λ {Δ} {σ} → [UB'] {Δ} {σ}) [A']ₜ [B']ₜ
-      [IdAA']ₜ = Idᵗᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ (Uᵗᵛ [Γ])
       [IdAA'] = Idᵛ {A = Univ rA ⁰} {t = A} {u = A'} [Γ] (λ {Δ} {σ} → [UA] {Δ} {σ}) [A]ₜ [A']ₜ 
-      [ΓId] = _∙_ {A = Id (Univ rA ⁰) A A'} [Γ] [IdAA']
       [wSProp] = Uᵛ {rU = %} ∞< [ΓA']
       [wA'] = wk1ᵗᵛ {F = A'} {G = A'} {lG = ⁰} [Γ] [A'] [A']ₜ
       [wA']' = wk1ᵛ {A = A'} {F = A'} [Γ] [A'] [A']
