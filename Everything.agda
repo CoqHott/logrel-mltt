@@ -89,4 +89,5 @@ import Definition.Conversion.Consequences.Completeness
 -- Decidability of conversion
 import Definition.Typed.Decidable
 import Definition.Typed.NonParanoidTyping
+import Definition.Conversion.ConversionGenEquiv
 import Definition.Conversion.Decidable

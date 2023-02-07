@@ -77,7 +77,7 @@ mutual
               → Γ ⊢ e' ∷ (Id (U ⁰) ℕ A') ^ [ % , ι ⁰ ]
               → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ A' e' t' ↑! A ^ ι ⁰
     cast-neΠ : ∀ {A rA P A' P' B B' t t' e e'}
-              → Γ ⊢ Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! [conv↑] Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
+              → Γ ⊢ Π A' ^ rA ° ⁰ ▹ P' ° ⁰ ° ⁰  ^ ! [conv↑] Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
               → Γ ⊢ B ~ B' ↓! U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ B  ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) B (Π A ^ rA ° ⁰ ▹ P ° ⁰ ° ⁰ ^ ! )) ^ [ % , ι ⁰ ]
