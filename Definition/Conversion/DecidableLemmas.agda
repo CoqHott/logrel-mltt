@@ -86,6 +86,7 @@ abstract
   cast-ℕℕ t~t ⊢e ⊢e' = castℕ-refl ([~] _ (id (univ (ℕⱼ (wfTerm ⊢e)))) ℕₙ (castℕ-refl' t~t ⊢e')) ⊢e
 
 abstract
+
   cast-refl-dec : ∀ {Γ A B t e u}
               → Neutral A
               → Neutral B
@@ -580,14 +581,13 @@ abstract
               → Δ ⊢ B' ~ B ↓! U ⁰ ^ next ⁰
               → Δ ⊢ u [conv↑] u' ∷ ℕ ^ ι ⁰
               → Δ ⊢ e' ∷ (Id (U ⁰) ℕ B) ^ [ % , ι ⁰ ]
-              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ B ~ A ↓! U ^ lA)
+              → Dec (∃ λ U → ∃ λ lA → Δ ⊢ B ~ A ↓! U ^ lA)
               → Dec (Γ ⊢ t [conv↑] u ∷ ℕ ^ ι ⁰)
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ ℕ A e t ~ cast ⁰ ℕ B e' u ↑! U ^ lA)
   dec-castℕ-castℕ Γ≡Δ A t eℕA B u eℕB decAB dectu with decAB | dectu
-  ... | yes AB | yes tu = yes (_ , _ , cast-ℕ (~atU-' A AB) tu eℕA (stabilityTerm (symConEq Γ≡Δ) eℕB))
+  ... | yes (_ , _ , AB) | yes tu = yes (_ , _ , cast-ℕ (~atU-' A (_ , _ , stability~↓! (symConEq Γ≡Δ) AB)) tu eℕA (stabilityTerm (symConEq Γ≡Δ) eℕB))
   ... | yes AB | no ¬tu = no λ { (_ , _ , cast-ℕ x x₁ x₂ x₃) → ¬tu x₁ }
-  ... | no ¬AB | _ = no λ { (_ , _ , cast-ℕ x x₁ x₂ x₃) → ¬AB (_ , _ , x) }
-
+  ... | no ¬AB | _ = no λ { (_ , _ , cast-ℕ x x₁ x₂ x₃) → ¬AB (_ , _ , stability~↓! Γ≡Δ x) }
 
   dec-castΠ-castΠ : ∀ {Γ Δ A A' X rX Y X' Y' t t' u u' B B' Z rZ W Z' W' e e'}
               → ⊢ Γ ≡ Δ
@@ -600,51 +600,47 @@ abstract
               → Δ ⊢ u [conv↑] u' ∷ Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ ! ^ ι ⁰
               → Δ ⊢ e' ∷ (Id (U ⁰) (Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) B) ^ [ % , ι ⁰ ]
               → Dec (Γ ⊢ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹)
-              → Dec (∃ λ U → ∃ λ lA → Γ ⊢ B ~ A ↓! U ^ lA)
+              → Dec (∃ λ U → ∃ λ lA → Δ ⊢ B ~ A ↓! U ^ lA)
               → ((Γ ⊢ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹) → Dec (Γ ⊢ t [conv↑] u ∷ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ ! ^ ι ⁰))
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ (Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ !) A e t ~ cast ⁰ (Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) B e' u ↑! U ^ lA)
   dec-castΠ-castΠ {rX = rX} {rZ = rZ} Γ≡Δ Π A t eΠA Π' B u eΠB decΠΠ decAB dectu with dec-relevance rX rZ | decΠΠ | decAB
   ... | no ¬p | _ | _ = no λ { (_ , _ , cast-Π x x₁ x₂ x₃ x₄) → ¬p PE.refl }
   ... | yes PE.refl | no ¬ΠΠ′ | _ = no λ { (_ , _ , cast-Π x x₁ x₂ x₃ x₄) → ¬ΠΠ′ x }
-  ... | yes PE.refl | yes ΠΠ′ | no ¬AB = no λ { (_ , _ , cast-Π x x₁ x₂ x₃ x₄) → ¬AB (_ , _ , x₁) }
-  ... | yes PE.refl | yes ΠΠ′ | yes AB with dectu ΠΠ′
-  ... | yes p = yes (_ , _ , cast-Π ΠΠ′ (~atU-' A AB) p eΠA (stabilityTerm (symConEq Γ≡Δ) eΠB))
+  ... | yes PE.refl | yes ΠΠ′ | no ¬AB = no λ { (_ , _ , cast-Π x x₁ x₂ x₃ x₄) → ¬AB (_ , _ , stability~↓! Γ≡Δ x₁) }
+  ... | yes PE.refl | yes ΠΠ′ | yes (_ , _ , AB) with dectu ΠΠ′
+  ... | yes p = yes (_ , _ , cast-Π ΠΠ′ (~atU-' A (_ , _ , stability~↓! (symConEq Γ≡Δ) AB)) p eΠA (stabilityTerm (symConEq Γ≡Δ) eΠB))
   ... | no ¬p = no λ { (_ , _ , cast-Π x x₁ x₂ x₃ x₄) → ¬p x₂ }
 
-  dec-castΠℕ-castΠℕ : ∀ {Γ Δ X rX Y X' Y' t t' u u' Z rZ W Z' W' e e'}
+  dec-castΠℕ-castΠℕ : ∀ {Γ Δ X rX Y t t' u u' Z rZ W e e'}
               → ⊢ Γ ≡ Δ
-              → Γ ⊢ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ ! [conv↑] Π X' ^ rX ° ⁰ ▹ Y' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ ! ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) (Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ !) ℕ) ^ [ % , ι ⁰ ]
-              → Δ ⊢ Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ ! [conv↑] Π Z' ^ rZ ° ⁰ ▹ W' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
               → Δ ⊢ u [conv↑] u' ∷ Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ ! ^ ι ⁰
               → Δ ⊢ e' ∷ (Id (U ⁰) (Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) ℕ) ^ [ % , ι ⁰ ]
               → Dec (Γ ⊢ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹)
               → ((Γ ⊢ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹) → Dec (Γ ⊢ t [conv↑] u ∷ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ ! ^ ι ⁰))
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ (Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ !) ℕ e t ~ cast ⁰ (Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) ℕ e' u ↑! U ^ lA)
-  dec-castΠℕ-castΠℕ {rX = rX} {rZ = rZ} Γ≡Δ Π t eΠℕ Π' u eΠℕ′ decΠΠ dectu with dec-relevance rX rZ | decΠΠ 
+  dec-castΠℕ-castΠℕ {rX = rX} {rZ = rZ} Γ≡Δ t eΠℕ u eΠℕ′ decΠΠ dectu with dec-relevance rX rZ | decΠΠ 
   ... | no ¬p | _ = no λ { (_ , _ , cast-Πℕ x x₁ x₂ x₃) → ¬p PE.refl }
   ... | yes PE.refl | no ¬ΠΠ′ = no λ { (_ , _ , cast-Πℕ x x₁ x₂ x₃) → ¬ΠΠ′ x }
   ... | yes PE.refl | yes ΠΠ′ with dectu ΠΠ′
   ... | yes p = yes (_ , _ , cast-Πℕ ΠΠ′ p eΠℕ (stabilityTerm (symConEq Γ≡Δ) eΠℕ′))
   ... | no ¬p = no λ { (_ , _ , cast-Πℕ x x₁ x₂ x₃) → ¬p x₁ }
 
-  dec-castℕΠ-castℕΠ : ∀ {Γ Δ X rX Y X' Y' t t' u u' Z rZ W Z' W' e e'}
+  dec-castℕΠ-castℕΠ : ∀ {Γ Δ X rX Y t t' u u' Z rZ W e e'}
               → ⊢ Γ ≡ Δ
-              → Γ ⊢ Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ ! [conv↑] Π X' ^ rX ° ⁰ ▹ Y' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
               → Γ ⊢ t [conv↑] t' ∷ ℕ ^ ι ⁰
               → Γ ⊢ e ∷ (Id (U ⁰) ℕ (Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
-              → Δ ⊢ Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ ! [conv↑] Π Z' ^ rZ ° ⁰ ▹ W' ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ next ⁰
               → Δ ⊢ u [conv↑] u' ∷ ℕ ^ ι ⁰
               → Δ ⊢ e' ∷ (Id (U ⁰) ℕ (Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
-              → Dec (Γ ⊢ Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! [conv↑] Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹)
+              → Dec (Δ ⊢ Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! [conv↑] Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹)
               → Dec (Γ ⊢ t [conv↑] u ∷ ℕ ^ ι ⁰)
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ ℕ (Π X ^ rX ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ !) e t ~ cast ⁰ ℕ (Π Z ^ rZ ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) e' u ↑! U ^ lA)
-  dec-castℕΠ-castℕΠ {rX = rX} {rZ = rZ} Γ≡Δ Π t eΠℕ Π' u eΠℕ′ decΠΠ dectu with dec-relevance rX rZ | decΠΠ | dectu
+  dec-castℕΠ-castℕΠ {rX = rX} {rZ = rZ} Γ≡Δ t eΠℕ u eΠℕ′ decΠΠ dectu with dec-relevance rX rZ | decΠΠ | dectu
   ... | no ¬p | _ | _ = no λ { (_ , _ , cast-ℕΠ x x₁ x₂ x₃) → ¬p PE.refl }
-  ... | yes PE.refl | no ¬ΠΠ′ | _ = no λ { (_ , _ , cast-ℕΠ x x₁ x₂ x₃) → ¬ΠΠ′ x }
+  ... | yes PE.refl | no ¬ΠΠ′ | _ = no λ { (_ , _ , cast-ℕΠ x x₁ x₂ x₃) → ¬ΠΠ′ (stabilityConv↑Term Γ≡Δ x) }
   ... | yes PE.refl | yes ΠΠ′ | no ¬p = no λ { (_ , _ , cast-ℕΠ x x₁ x₂ x₃) → ¬p x₁ }
-  ... | yes PE.refl | yes ΠΠ′ | yes p = yes (_ , _ , cast-ℕΠ ΠΠ′ p eΠℕ (stabilityTerm (symConEq Γ≡Δ) eΠℕ′))
+  ... | yes PE.refl | yes ΠΠ′ | yes p = yes (_ , _ , cast-ℕΠ (stabilityConv↑Term (symConEq Γ≡Δ) ΠΠ′) p eΠℕ (stabilityTerm (symConEq Γ≡Δ) eΠℕ′))
 
   dec-castΠΠ%!-castΠΠ%! : ∀ {Γ Δ X Y A B t t' u u' Z W C D e e'}
               → ⊢ Γ ≡ Δ
@@ -653,14 +649,14 @@ abstract
               → Δ ⊢ u [conv↑] u' ∷ Π Z ^ % ° ⁰ ▹ W ° ⁰ ° ⁰  ^ ! ^ ι ⁰
               → Δ ⊢ e' ∷ (Id (U ⁰) (Π Z ^ % ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) (Π C ^ ! ° ⁰ ▹ D ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
               → Dec (Γ ⊢ Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ % ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹)
-              → Dec (Γ ⊢ Π C ^ ! ° ⁰ ▹ D ° ⁰ ° ⁰  ^ ! [conv↑] Π A ^ ! ° ⁰ ▹ B ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹)
+              → Dec (Δ ⊢ Π C ^ ! ° ⁰ ▹ D ° ⁰ ° ⁰  ^ ! [conv↑] Π A ^ ! ° ⁰ ▹ B ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹)
               → ((Γ ⊢ Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ % ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹) → Dec (Γ ⊢ t [conv↑] u ∷ Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ ! ^ ι ⁰))
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ (Π X ^ % ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ !) (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° ⁰  ^ !) e t ~ cast ⁰ (Π Z ^ % ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) (Π C ^ ! ° ⁰ ▹ D ° ⁰ ° ⁰  ^ !) e' u ↑! U ^ lA)
   dec-castΠΠ%!-castΠΠ%! Γ≡Δ t eAB u eCD decΠΠ decΠΠ' dectu with decΠΠ | decΠΠ' 
   ... | no ¬AC | _ = no λ { (_ , _ , cast-ΠΠ%! x x₁ x₂ x₃ x₄) → ¬AC x }
-  ... | yes AC | no ¬BD = no λ { (_ , _ , cast-ΠΠ%! x x₁ x₂ x₃ x₄) → ¬BD x₁ }
+  ... | yes AC | no ¬BD = no λ { (_ , _ , cast-ΠΠ%! x x₁ x₂ x₃ x₄) → ¬BD (stabilityConv↑Term Γ≡Δ x₁) }
   ... | yes AC | yes BD with dectu AC
-  ... | yes p = yes (_ , _ , cast-ΠΠ%! AC BD p eAB (stabilityTerm (symConEq Γ≡Δ) eCD))
+  ... | yes p = yes (_ , _ , cast-ΠΠ%! AC (stabilityConv↑Term (symConEq Γ≡Δ) BD) p eAB (stabilityTerm (symConEq Γ≡Δ) eCD))
   ... | no ¬p = no λ { (_ , _ , cast-ΠΠ%! x x₁ x₂ x₃ x₄) → ¬p x₂ }
 
   dec-castΠΠ!%-castΠΠ!% : ∀ {Γ Δ X Y A B t t' u u' Z W C D e e'}
@@ -670,14 +666,14 @@ abstract
               → Δ ⊢ u [conv↑] u' ∷ Π Z ^ ! ° ⁰ ▹ W ° ⁰ ° ⁰  ^ ! ^ ι ⁰
               → Δ ⊢ e' ∷ (Id (U ⁰) (Π Z ^ ! ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) (Π C ^ % ° ⁰ ▹ D ° ⁰ ° ⁰  ^ !)) ^ [ % , ι ⁰ ]
               → Dec (Γ ⊢ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ ! ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹)
-              → Dec (Γ ⊢ Π C ^ % ° ⁰ ▹ D ° ⁰ ° ⁰  ^ ! [conv↑] Π A ^ % ° ⁰ ▹ B ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹)
+              → Dec (Δ ⊢ Π C ^ % ° ⁰ ▹ D ° ⁰ ° ⁰  ^ ! [conv↑] Π A ^ % ° ⁰ ▹ B ° ⁰ ° ⁰  ^ ! ∷ U ⁰ ^ ι ¹)
               → ((Γ ⊢ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ ! [conv↑] Π Z ^ ! ° ⁰ ▹ W ° ⁰ ° ⁰ ^ ! ∷ U ⁰ ^ ι ¹) → Dec (Γ ⊢ t [conv↑] u ∷ Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰  ^ ! ^ ι ⁰))
               → Dec (∃ λ U → ∃ λ lA → Γ ⊢ cast ⁰ (Π X ^ ! ° ⁰ ▹ Y ° ⁰ ° ⁰ ^ !) (Π A ^ % ° ⁰ ▹ B ° ⁰ ° ⁰  ^ !) e t ~ cast ⁰ (Π Z ^ ! ° ⁰ ▹ W ° ⁰ ° ⁰  ^ !) (Π C ^ % ° ⁰ ▹ D ° ⁰ ° ⁰  ^ !) e' u ↑! U ^ lA)
   dec-castΠΠ!%-castΠΠ!% Γ≡Δ t eAB u eCD decΠΠ decΠΠ' dectu with decΠΠ | decΠΠ' 
   ... | no ¬AC | _ = no λ { (_ , _ , cast-ΠΠ!% x x₁ x₂ x₃ x₄) → ¬AC x }
-  ... | yes AC | no ¬BD = no λ { (_ , _ , cast-ΠΠ!% x x₁ x₂ x₃ x₄) → ¬BD x₁ }
+  ... | yes AC | no ¬BD = no λ { (_ , _ , cast-ΠΠ!% x x₁ x₂ x₃ x₄) → ¬BD (stabilityConv↑Term Γ≡Δ x₁) }
   ... | yes AC | yes BD with dectu AC
-  ... | yes p = yes (_ , _ , cast-ΠΠ!% AC BD p eAB (stabilityTerm (symConEq Γ≡Δ) eCD))
+  ... | yes p = yes (_ , _ , cast-ΠΠ!% AC (stabilityConv↑Term (symConEq Γ≡Δ) BD) p eAB (stabilityTerm (symConEq Γ≡Δ) eCD))
   ... | no ¬p = no λ { (_ , _ , cast-ΠΠ!% x x₁ x₂ x₃ x₄) → ¬p x₂ }
 
   dec-castℕrefl-castℕrefl : ∀ {Γ Δ t t' v v' e e'}
