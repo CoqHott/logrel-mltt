@@ -10,8 +10,10 @@ open import Definition.Typed
 open import Tools.Nat
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+open import Definition.LogicalRelation
 open import Definition.Conversion
 open import Definition.ConversionGen
+open import Definition.Conversion.Lift
 open import Definition.Conversion.Whnf as W
 open import Definition.Conversion.WhnfGen as WG
 open import Definition.Conversion.Soundness as S
@@ -21,12 +23,59 @@ open import Definition.Typed.Consequences.Inversion
 open import Definition.Typed.Consequences.Equality
 open import Definition.Typed.Consequences.TypeUnicity
 open import Definition.Typed.Consequences.Injectivity
+open import Definition.Typed.Consequences.NeTypeEq
 open import Definition.Typed.Consequences.Inequality as I
 open import Definition.Typed.Properties
 open import Definition.Conversion.Symmetry
 open import Definition.Conversion.Stability
+open import Definition.Typed.EqRelInstance
 
 open import Tools.Empty
+
+notIdU : ∀ {Γ A t u l} → Γ ⊢ Id A t u ^ [ ! , l ] → ⊥
+notIdU (univ x) =
+  let _ , _ , _ , _ , U=SProp , _ = inversion-Id x
+      er , _ = Univ-PE-injectivity (U≡A-whnf U=SProp Uₙ)
+  in !≢% (PE.sym er)
+
+notEmptyU : ∀ {Γ ll l} → Γ ⊢ Empty ll ^ [ ! , l ] → ⊥
+notEmptyU (univ x) =
+  let U=SProp , _ = inversion-Empty x
+      er , _ = Univ-PE-injectivity (U≡A-whnf U=SProp Uₙ)
+  in !≢% (PE.sym er)
+
+ℕsmall' : ∀ {Γ A l} → Γ ⊢ ℕ ∷ A ^ [ ! , l ] → l PE.≡ ι ¹
+ℕsmall' (ℕⱼ x) = PE.refl
+ℕsmall' (conv X x) = ℕsmall' X
+
+ℕsmall : ∀ {Γ l} → Γ ⊢ ℕ ^ [ ! , l ] → l PE.≡ ι ⁰
+ℕsmall {l = ι ⁰} (univ x) = PE.refl
+ℕsmall {l = ι ¹} (univ x) with ℕsmall' x
+... | ()
+
+Ubig : ∀ {Γ r l} → Γ ⊢ Univ r l ^ [ ! , ∞ ] → l PE.≡ ¹
+Ubig (Uⱼ x) = PE.refl
+
+nesmall : ∀ {Γ N l} → Neutral N → Γ ⊢ N ^ [ ! , l ] → ∃ (λ l' → l PE.≡ ι l')
+nesmall neN (univ {l = l} x) = l , PE.refl
+
+-- Lifting of algorithmic equality of types from WHNF to generic types.
+liftConv⊢⊢ : ∀ {A B rA Γ}
+          → Γ ⊢⊢ A [conv↓] B ^ rA
+          → Γ ⊢⊢ A [conv↑] B ^ rA
+liftConv⊢⊢ A<>B =
+  let ⊢A , ⊢B = syntacticEq (SG.soundnessConv↓ A<>B)
+      whnfA , whnfB = WG.whnfConv↓ A<>B
+  in  [↑] _ _ (id ⊢A) (id ⊢B) whnfA whnfB A<>B
+
+-- Lifting of algorithmic equality of terms from WHNF to generic terms.
+liftConvTerm⊢⊢ : ∀ {t u A Γ l}
+             → Γ ⊢⊢ t [conv↓] u ∷ A ^ l
+             → Γ ⊢⊢ t [conv↑] u ∷ A ^ l
+liftConvTerm⊢⊢ t<>u =
+  let ⊢A , ⊢t , ⊢u = syntacticEqTerm (SG.soundnessConv↓Term t<>u)
+      whnfA , whnfT , whnfU = WG.whnfConv↓Term t<>u
+  in  [↑]ₜ _ _ _ (id ⊢A) (id ⊢t) (id ⊢u) whnfA whnfT whnfU t<>u
 
 inversion-whnf-conv :  ∀ {Γ t t' A l} → Whnf A → Whnf t → Whnf t' → Γ ⊢⊢ t [conv↑] t' ∷ A ^ l → Γ ⊢⊢ t [conv↓] t' ∷ A ^ l
 inversion-whnf-conv neA net net' ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) with whnfRed* D neA | whnfRed*Term d net | whnfRed*Term d′ net'
@@ -51,63 +100,71 @@ mutual
     let _ , neA , neA' = W.ne~↓! x
         _ , neB , neB' = W.ne~↓! x₁
         t=t = S.soundnessConv↓Term x₂
+        _ , _ ,  ⊢A' =  syntacticEqTerm (S.soundness~↓! x)
+        _ , ⊢B ,  ⊢B' =  syntacticEqTerm (S.soundness~↓! x₁)
         ⊢A , ⊢t , ⊢t' = syntacticEqTerm t=t
         _ , net , net' = W.whnfConv↓Term x₂
-    in cast-cong (ne (⊢is⊢⊢~↓! x)) (ne (⊢is⊢⊢~↓! x₁))
-                 ([↑]ₜ _ _ _ (id ⊢A) (id ⊢t) (id ⊢t') (ne neA) net net' (⊢is⊢⊢conv↓Term x₂))
+    in cast-cong (ne (un-univ ⊢A) ⊢A' Uₙ (⊢is⊢⊢~↓! x)) (ne ⊢B ⊢B' Uₙ (⊢is⊢⊢~↓! x₁))
+                 (liftConvTerm⊢⊢ (⊢is⊢⊢conv↓Term x₂)) 
                  x₃ x₄ (castₙ neA neB' (inversion-ne neA net ⊢t))
                                            (castₙ neA' neB (inversion-ne neA net' ⊢t'))
   ⊢is⊢⊢~! (cast-refl x x₁ x₂) =
     let _ , neA , neA' = W.ne~↓! x
         t=t = S.soundnessConv↓Term x₁
+        _ , ⊢A ,  ⊢A' = syntacticEqTerm (S.soundness~↓! x)
         _ , ⊢t , ⊢t' = syntacticEqTerm t=t
         _ , net , net' = W.whnfConv↓Term x₁
-    in cast-refl (ne (⊢is⊢⊢~↓! x)) (⊢is⊢⊢conv↓Term x₁) x₂ (castₙ neA neA' (inversion-ne neA net ⊢t)) (inversion-ne neA net' ⊢t')
+    in cast-refl (ne ⊢A ⊢A' Uₙ (⊢is⊢⊢~↓! x)) (⊢is⊢⊢conv↓Term x₁) x₂ (castₙ neA neA' (inversion-ne neA net ⊢t)) (inversion-ne neA net' ⊢t')
   ⊢is⊢⊢~! (castℕ-refl x x₁) =
     let t=t = S.soundness~↓! x
         _ , ⊢t , ⊢t' = syntacticEqTerm t=t
         _ , net , net' = W.ne~↓! x
-    in cast-refl (ℕ-refl (wfTerm ⊢t)) (ℕ-ins (⊢is⊢⊢~↓! x)) x₁ (castℕℕₙ net) net'
+    in cast-refl (ℕ-cong (wfTerm ⊢t)) (ne ⊢t ⊢t' ℕₙ (⊢is⊢⊢~↓! x)) x₁ (castℕℕₙ net) net'
   ⊢is⊢⊢~! (cast-refl' x x₁ x₂) =
     let _ , neA , neA' = W.ne~↓! x
+        _ , ⊢A ,  ⊢A' = syntacticEqTerm (S.soundness~↓! x)
         t=t = S.soundnessConv↓Term x₁
         _ , ⊢t , ⊢t' = syntacticEqTerm t=t
         _ , net , net' = W.whnfConv↓Term x₁
-    in cast-refl' (ne (⊢is⊢⊢~↓! x)) (⊢is⊢⊢conv↓Term x₁) x₂ (castₙ neA' neA (inversion-ne neA' net' ⊢t')) (inversion-ne neA' net ⊢t)
+    in cast-refl' (ne ⊢A ⊢A' Uₙ (⊢is⊢⊢~↓! x)) (⊢is⊢⊢conv↓Term x₁) x₂ (castₙ neA' neA (inversion-ne neA' net' ⊢t')) (inversion-ne neA' net ⊢t)
   ⊢is⊢⊢~! (castℕ-refl' x x₁) =
     let t=t = S.soundness~↓! x
         _ , ⊢t , ⊢t' = syntacticEqTerm t=t
         _ , net , net' = W.ne~↓! x
-    in cast-refl' (ℕ-refl (wfTerm ⊢t)) (ℕ-ins (⊢is⊢⊢~↓! x)) x₁ (castℕℕₙ net') net
+    in cast-refl' (ℕ-cong (wfTerm ⊢t)) (ne ⊢t ⊢t' ℕₙ (⊢is⊢⊢~↓! x)) x₁ (castℕℕₙ net') net
   ⊢is⊢⊢~! (cast-neℕ x x₁ x₂ x₃) =
     let _ , neA , neA' = W.ne~↓! x
+        _ , ⊢A ,  ⊢A' = syntacticEqTerm (S.soundness~↓! x)
         t=t = S.soundnessConv↑Term x₁
         _ , ⊢t , ⊢t' = syntacticEqTerm t=t
-    in cast-cong (ne (⊢is⊢⊢~↓! x)) (ℕ-refl (wfTerm ⊢t)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃
+    in cast-cong (ne ⊢A ⊢A' Uₙ (⊢is⊢⊢~↓! x)) (ℕ-cong (wfTerm ⊢t)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃
                  (castnℕₙ neA) (castnℕₙ neA')
   ⊢is⊢⊢~! (cast-ℕ x x₁ x₂ x₃) =
     let _ , neA , neA' = W.ne~↓! x
+        _ , ⊢A ,  ⊢A' = syntacticEqTerm (S.soundness~↓! x)
         t=t = S.soundnessConv↑Term x₁
         _ , ⊢t , ⊢t' = syntacticEqTerm t=t
-    in cast-cong (ℕ-refl (wfTerm ⊢t)) (ne (⊢is⊢⊢~↓! x)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃
+    in cast-cong (ℕ-cong (wfTerm ⊢t)) (ne ⊢A ⊢A' Uₙ (⊢is⊢⊢~↓! x)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃
                  (castℕₙ neA') (castℕₙ neA)
   ⊢is⊢⊢~! (cast-neΠ ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) x₁ x₂ x₃ x₄) =
     let _ , neA , neA' = W.ne~↓! x₁
         t=t = S.soundnessConv↑Term x₂
+        _ , ⊢A ,  ⊢A' = syntacticEqTerm (S.soundness~↓! x₁)
         _ , ⊢t , ⊢t' = syntacticEqTerm t=t
         Π=Π = whnfRed*Term d Πₙ
         Π=Π' = whnfRed*Term d′ Πₙ
         U=U = whnfRed* D Uₙ
-    in cast-cong (ne (⊢is⊢⊢~↓! x₁))
+    in cast-cong (ne ⊢A ⊢A' Uₙ (⊢is⊢⊢~↓! x₁))
                  (PE.subst₃ (λ X Y Z → _ ⊢⊢ X [conv↓] Y ∷ Z ^ ι ¹) (PE.sym Π=Π) (PE.sym Π=Π') (PE.sym U=U)
                             (⊢is⊢⊢conv↓Term t<>u))
                  (⊢is⊢⊢conv↑Term x₂) x₃ x₄
                  (castnΠₙ neA) (castnΠₙ neA') 
   ⊢is⊢⊢~! (cast-Π x x₁ x₂ x₃ x₄) =
     let _ , neA , neA' = W.ne~↓! x₁
-    in cast-cong (inversion-whnf-conv Uₙ Πₙ Πₙ (⊢is⊢⊢conv↑Term x)) (ne (⊢is⊢⊢~↓! x₁)) (⊢is⊢⊢conv↑Term x₂) x₃ x₄ (castΠₙ neA') (castΠₙ neA)
-  ⊢is⊢⊢~! (cast-Πℕ x x₁ x₂ x₃) = cast-cong (inversion-whnf-conv Uₙ Πₙ Πₙ (⊢is⊢⊢conv↑Term x)) (ℕ-refl (wfTerm x₂)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃ castΠℕₙ castΠℕₙ
-  ⊢is⊢⊢~! (cast-ℕΠ x x₁ x₂ x₃) = cast-cong (ℕ-refl (wfTerm x₂)) (inversion-whnf-conv Uₙ Πₙ Πₙ (⊢is⊢⊢conv↑Term x)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃ castℕΠₙ castℕΠₙ
+        _ , ⊢A ,  ⊢A' = syntacticEqTerm (S.soundness~↓! x₁)
+    in cast-cong (inversion-whnf-conv Uₙ Πₙ Πₙ (⊢is⊢⊢conv↑Term x)) (ne ⊢A ⊢A' Uₙ (⊢is⊢⊢~↓! x₁)) (⊢is⊢⊢conv↑Term x₂) x₃ x₄ (castΠₙ neA') (castΠₙ neA)
+  ⊢is⊢⊢~! (cast-Πℕ x x₁ x₂ x₃) = cast-cong (inversion-whnf-conv Uₙ Πₙ Πₙ (⊢is⊢⊢conv↑Term x)) (ℕ-cong (wfTerm x₂)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃ castΠℕₙ castΠℕₙ
+  ⊢is⊢⊢~! (cast-ℕΠ x x₁ x₂ x₃) = cast-cong (ℕ-cong (wfTerm x₂)) (inversion-whnf-conv Uₙ Πₙ Πₙ (⊢is⊢⊢conv↑Term x)) (⊢is⊢⊢conv↑Term x₁) x₂ x₃ castℕΠₙ castℕΠₙ
   ⊢is⊢⊢~! (cast-ΠΠ%! ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u)
                      ([↑]ₜ B' t′' u′' D' d' d′' whnfB' whnft′' whnfu′' t<>u') x₂ x₃ x₄) =
     let Π=Π = whnfRed*Term d Πₙ
@@ -142,19 +199,21 @@ mutual
   ⊢is⊢⊢conv↓ (U-refl x x₁) = U-refl x x₁
   ⊢is⊢⊢conv↓ (univ x) = univ (⊢is⊢⊢conv↓Term x)
   ⊢is⊢⊢conv↑Term ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) = [↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ (⊢is⊢⊢conv↓Term t<>u) 
-  ⊢is⊢⊢conv↓Term (U-refl x x₁) = U-refl x x₁
-  ⊢is⊢⊢conv↓Term (ne x) = ne (⊢is⊢⊢~↓! x)
-  ⊢is⊢⊢conv↓Term (ℕ-refl x) = ℕ-refl x
-  ⊢is⊢⊢conv↓Term (Empty-refl x) = Empty-refl x
+  ⊢is⊢⊢conv↓Term (U-refl x x₁) = U-cong x x₁
+  ⊢is⊢⊢conv↓Term (ne x) = let _ , ⊢A ,  ⊢A' = syntacticEqTerm (S.soundness~↓! x) in ne ⊢A ⊢A' Uₙ (⊢is⊢⊢~↓! x)
+  ⊢is⊢⊢conv↓Term (ℕ-refl x) = ℕ-cong x
+  ⊢is⊢⊢conv↓Term (Empty-refl x) = Empty-cong x
   ⊢is⊢⊢conv↓Term (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈) = Π-cong x x₁ x₂ x₃ x₄ x₅ (⊢is⊢⊢conv↑Term x₇) (⊢is⊢⊢conv↑Term x₈)
   ⊢is⊢⊢conv↓Term (Id-cong x x₁ x₂) = Id-cong (⊢is⊢⊢conv↑Term x) (⊢is⊢⊢conv↑Term x₁) (⊢is⊢⊢conv↑Term x₂)
-  ⊢is⊢⊢conv↓Term (ℕ-ins x) = ℕ-ins (⊢is⊢⊢~↓! x)
-  ⊢is⊢⊢conv↓Term (ne-ins x x₁ x₂ x₃) = ne-ins x x₁ x₂ (⊢is⊢⊢~↓! x₃)
-  ⊢is⊢⊢conv↓Term (zero-refl x) = zero-refl x
+  ⊢is⊢⊢conv↓Term (ℕ-ins x) = let _ , ⊢t , ⊢u = syntacticEqTerm (S.soundness~↓! x) in ne ⊢t ⊢u ℕₙ (⊢is⊢⊢~↓! x)
+  ⊢is⊢⊢conv↓Term (ne-ins x x₁ x₂ x₃) = ne x x₁ (ne x₂) (⊢is⊢⊢~↓! x₃)
+  ⊢is⊢⊢conv↓Term (zero-refl x) = zero-cong x
   ⊢is⊢⊢conv↓Term (suc-cong x) = suc-cong (⊢is⊢⊢conv↑Term x)
-  ⊢is⊢⊢conv↓Term (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) = η-eq x x₁ x₂ x₃ x₄ x₅ x₆ (⊢is⊢⊢conv↑Term x₇)
+  ⊢is⊢⊢conv↓Term (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) = η-eq x x₁ x₃ x₄ x₅ x₆ (⊢is⊢⊢conv↑Term x₇)
   ⊢is⊢⊢genconv↑ {l = [ ! , l ]} X = ⊢is⊢⊢conv↑Term X
   ⊢is⊢⊢genconv↑ {l = [ % , l ]} X = ⊢is⊢⊢~% X
+
+
 
 inversion-ne-U :  ∀ {Γ A A' r l lU} → Neutral A → Γ ⊢ A [conv↓] A' ∷ Univ r lU ^ l →  Γ ⊢ A ~ A' ↓! Univ r lU ^ l
 inversion-ne-U neA (ne x) = x
@@ -223,6 +282,8 @@ mutual
   ⊢⊢is⊢conv↓Term : ∀ {Γ A t u l} → Γ ⊢⊢ t [conv↓] u ∷ A ^ l → Γ ⊢ t [conv↓] u ∷ A ^ l
   ⊢⊢is⊢genconv↑ : ∀ {Γ A t u l} → Γ ⊢⊢ t [genconv↑] u ∷ A ^ l → Γ ⊢ t [genconv↑] u ∷ A ^ l
 
+  -- ⊢⊢is⊢~! = {!!}
+
   ⊢⊢is⊢~! (var-refl x x₁) = var-refl x x₁
   ⊢⊢is⊢~! (app-cong x x₁) = app-cong (⊢⊢is⊢~↓! x) (⊢⊢is⊢genconv↑ x₁) 
   ⊢⊢is⊢~! (natrec-cong x x₁ x₂ x₃) = natrec-cong (⊢⊢is⊢conv↑ x) (⊢⊢is⊢genconv↑ x₁) (⊢⊢is⊢genconv↑ x₂) (⊢⊢is⊢~↓! x₃)
@@ -263,10 +324,7 @@ mutual
     in subst7 (λ X Y Z T U V W → _ ⊢ cast ⁰ _ (Π _ ^ _ ° V ▹ _ ° W ° ⁰ ^ T) _ _ ~
       cast ⁰ _ (Π _ ^ X ° Y ▹ _ ° Z ° ⁰ ^ U) _ _ ↑!
       Π _ ^ _ ° V ▹ _ ° W ° ⁰ ^ T ^ ι ⁰) (PE.sym er) (PE.sym elF) (PE.sym elG) (PE.sym er'') (PE.sym  er') (PE.sym elF') (PE.sym elG')
-      (cast-neΠ ([↑]ₜ _ _ _ (id (Ugenⱼ (wfTerm x₃)))
-                      (id (un-univ (PE.subst₄  (λ X Y Z W → _ ⊢ Π _ ^ W ° X ▹ _ ° Y ° ⁰ ^ Z ^ [ _ , _ ]) elF elG er' er ⊢Π)))
-                      (id (un-univ (PE.subst₃  (λ X Y Z → _ ⊢ Π _ ^ _ ° X ▹ _ ° Y ° ⁰ ^ Z ^ [ _ , _ ]) elF' elG' er'' ⊢Π')))
-                      Uₙ Πₙ Πₙ foo)
+      (cast-neΠ (liftConvTerm foo)
                 (inversion-ne-U x₅ (⊢⊢is⊢conv↓Term x))
                 (⊢⊢is⊢conv↑Term x₂)
                 (PE.subst₃  (λ X Y Z → _ ⊢ _ ∷ Id (U ⁰) _ (Π _ ^ _ ° X ▹ _ ° Y ° ⁰ ^ Z) ^ [ % , ι ⁰ ]) elF' elG' er'' x₃)
@@ -505,20 +563,39 @@ mutual
   ⊢⊢is⊢conv↓ (U-refl x x₁) = U-refl x x₁
   ⊢⊢is⊢conv↓ (univ x) = univ (⊢⊢is⊢conv↓Term x)
   ⊢⊢is⊢conv↑Term ([↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ t<>u) = [↑]ₜ B t′ u′ D d d′ whnfB whnft′ whnfu′ (⊢⊢is⊢conv↓Term t<>u)
-  ⊢⊢is⊢conv↓Term (U-refl x x₁) = U-refl x x₁
-  ⊢⊢is⊢conv↓Term (ℕ-refl x) = ℕ-refl x
-  ⊢⊢is⊢conv↓Term (Empty-refl x) = Empty-refl x
+  ⊢⊢is⊢conv↓Term (U-cong x x₁) = U-refl x x₁
+  ⊢⊢is⊢conv↓Term (ℕ-cong x) = ℕ-refl x
+  ⊢⊢is⊢conv↓Term (Empty-cong x) = Empty-refl x
   ⊢⊢is⊢conv↓Term (Π-cong x x₁ x₂ x₃ x₄ x₅ x₆ x₇) =
     let F=F = SG.soundnessConv↑Term x₆
         _ , F , _  = syntacticEqTerm F=F
     in Π-cong x x₁ x₂ x₃ x₄ x₅ (univ F) (⊢⊢is⊢conv↑Term x₆) (⊢⊢is⊢conv↑Term x₇)
   ⊢⊢is⊢conv↓Term (Id-cong x x₁ x₂) = Id-cong (⊢⊢is⊢conv↑Term x) (⊢⊢is⊢conv↑Term x₁) (⊢⊢is⊢conv↑Term x₂)
-  ⊢⊢is⊢conv↓Term (ne x) = ne (⊢⊢is⊢~↓! x)
-  ⊢⊢is⊢conv↓Term (ℕ-ins x) = ℕ-ins (⊢⊢is⊢~↓! x)
-  ⊢⊢is⊢conv↓Term (ne-ins x x₁ x₂ x₃) = ne-ins x x₁ x₂ (⊢⊢is⊢~↓! x₃)
-  ⊢⊢is⊢conv↓Term (zero-refl x) = zero-refl x
+  ⊢⊢is⊢conv↓Term (zero-cong x) = zero-refl x
   ⊢⊢is⊢conv↓Term (suc-cong x) = suc-cong (⊢⊢is⊢conv↑Term x) 
-  ⊢⊢is⊢conv↓Term (η-eq x x₁ x₂ x₃ x₄ x₅ x₆ x₇) = η-eq x x₁ x₂ x₃ x₄ x₅ x₆ (⊢⊢is⊢conv↑Term x₇)
+  ⊢⊢is⊢conv↓Term (η-eq x x₁ x₃ x₄ x₅ x₆ x₇) =
+    let t=t = ⊢⊢is⊢conv↑Term x₇
+        _ , ⊢t , ⊢t' = syntacticEqTerm (SG.soundnessConv↑Term x₇)
+        ⊢ΓF = wfTerm ⊢t
+        ⊢Γ , ⊢F = inversion-ctx ⊢ΓF
+    in η-eq x x₁ ⊢F x₃ x₄ x₅ x₆ t=t
+  ⊢⊢is⊢conv↓Term (ne x x₁ Uₙ x₃) =
+    let t=u = ⊢⊢is⊢~↓! x₃
+        whnf , net , neu = W.ne~↓! t=u
+        _ , ⊢t , ⊢t' = syntacticEqTerm (S.soundness~↓! t=u)
+        _ , M=U = neTypeEq net ⊢t x
+        M==U = U≡A-whnf (sym M=U) whnf
+    in ne (PE.subst (λ X → _ ⊢ _ ~ _ ↓! X ^ _) M==U t=u)
+  ⊢⊢is⊢conv↓Term (ne ⊢ℕ x₁ ℕₙ x₃) with ℕsmall (syntacticTerm ⊢ℕ) 
+  ... | PE.refl =
+    let t=u = ⊢⊢is⊢~↓! x₃
+        whnf , net , neu = W.ne~↓! t=u
+        _ , ⊢t , ⊢t' = syntacticEqTerm (S.soundness~↓! t=u)
+        _ , M=U = neTypeEq net ⊢t ⊢ℕ
+        M==U = ℕ≡A (sym M=U) whnf
+    in ℕ-ins (PE.subst (λ X → _ ⊢ _ ~ _ ↓! X ^ _) M==U t=u)
+  ⊢⊢is⊢conv↓Term (ne x x₁ (ne x₂) x₃) with nesmall x₂ (syntacticTerm x)
+  ... | _ , PE.refl = ne-ins x x₁ x₂ (⊢⊢is⊢~↓! x₃)
+
   ⊢⊢is⊢genconv↑ {l = [ ! , l ]} X = ⊢⊢is⊢conv↑Term X
   ⊢⊢is⊢genconv↑ {l = [ % , l ]} X = ⊢⊢is⊢~% X
-

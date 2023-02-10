@@ -18,6 +18,19 @@ infix 10 _⊢⊢_[conv↑]_∷_^_
 infix 10 _⊢⊢_[conv↓]_∷_^_
 infix 10 _⊢⊢_[genconv↑]_∷_^_
 
+data PosType : Term → Set where
+  ℕₙ : PosType ℕ
+  Uₙ : ∀ {r l} → PosType (Univ r l)
+  ne : ∀{n} → Neutral n → PosType n
+
+-- These views classify only whnfs.
+-- Natural, PosType, and Function are a subsets of Whnf.
+
+posTypeWhnf : ∀ {A} → PosType A → Whnf A
+posTypeWhnf ℕₙ = ℕₙ
+posTypeWhnf Uₙ  = Uₙ
+posTypeWhnf (ne x) = ne x
+
 mutual
   -- Neutral equality.
   data _⊢⊢_~_↑!_^_ (Γ : Con Term) : (k l A : Term) → TypeLevel → Set where
@@ -121,11 +134,11 @@ mutual
 
   -- Term equality with types and terms in WHNF.
   data _⊢⊢_[conv↓]_∷_^_ (Γ : Con Term) : (t u A : Term) (l : TypeLevel) → Set where
-    U-refl    : ∀ {r r' }
+    U-cong    : ∀ {r r' }
               → r PE.≡ r' -- needed for K issues
               → ⊢ Γ → Γ ⊢⊢ Univ r ⁰ [conv↓] Univ r' ⁰ ∷ U ¹ ^ next ¹
-    ℕ-refl    : ⊢ Γ → Γ ⊢⊢ ℕ [conv↓] ℕ ∷ U ⁰ ^ next ⁰
-    Empty-refl : ⊢ Γ → Γ ⊢⊢ sEmpty [conv↓] sEmpty ∷ SProp ^ next ⁰
+    ℕ-cong    : ⊢ Γ → Γ ⊢⊢ ℕ [conv↓] ℕ ∷ U ⁰ ^ next ⁰
+    Empty-cong : ⊢ Γ → Γ ⊢⊢ sEmpty [conv↓] sEmpty ∷ SProp ^ next ⁰
     Π-cong    : ∀ {F G H E rF rH rΠ lF lH lG lE lΠ ll}
               → ll PE.≡ next lΠ
               → rF PE.≡ rH -- needed for K issues
@@ -141,32 +154,31 @@ mutual
               → Γ ⊢⊢ t [conv↑] t' ∷ A ^ ι l
               → Γ ⊢⊢ u [conv↑] u' ∷ A ^ ι l
               → Γ ⊢⊢ Id A t u [conv↓] Id A' t' u' ∷ SProp ^ next ⁰
-    ne        : ∀ {r K L lU l}
-                → Γ ⊢⊢ K ~ L ↓! Univ r lU ^ l
-                → Γ ⊢⊢ K [conv↓] L ∷ Univ r lU ^ l
-    ℕ-ins     : ∀ {k l}
-              → Γ ⊢⊢ k ~ l ↓! ℕ ^ ι ⁰
-              → Γ ⊢⊢ k [conv↓] l ∷ ℕ ^ ι ⁰
-    ne-ins    : ∀ {k l M N ll}
-              → Γ ⊢ k ∷ N ^ [ ! , ι ll ]
-              → Γ ⊢ l ∷ N ^ [ ! , ι ll ]
-              → Neutral N
-              → Γ ⊢⊢ k ~ l ↓! M ^ ι ll
-              → Γ ⊢⊢ k [conv↓] l ∷ N ^ ι ll
-    zero-refl : ⊢ Γ → Γ ⊢⊢ zero [conv↓] zero ∷ ℕ ^ ι ⁰
+    zero-cong : ⊢ Γ → Γ ⊢⊢ zero [conv↓] zero ∷ ℕ ^ ι ⁰
     suc-cong  : ∀ {m n}
               → Γ ⊢⊢ m [conv↑] n ∷ ℕ ^ ι ⁰
               → Γ ⊢⊢ suc m [conv↓] suc n ∷ ℕ ^ ι ⁰
+    ne        : ∀ {k l M W ll}
+              → Γ ⊢ k ∷ W ^ [ ! , ll ]
+              → Γ ⊢ l ∷ W ^ [ ! , ll ]
+              → PosType W
+              → Γ ⊢⊢ k ~ l ↓! M ^ ll
+              → Γ ⊢⊢ k [conv↓] l ∷ W ^ ll
+{-    lam-cong  : ∀ {t t' F F' G rF lF lG l}
+              → lF ≤ l
+              → lG ≤ l
+              → Γ ⊢ lam F' ▹ t' ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
+              → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ t [conv↑] t' ∷ G ^ ι lG
+              → Γ ⊢⊢ lam F ▹ t ^ l [conv↓] lam F' ▹ t' ^ l ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ ι l-}
     η-eq      : ∀ {f g F G rF lF lG l}
               → lF ≤ l
               → lG ≤ l
-              → Γ ⊢ F ^ [ rF , ι lF ]
               → Γ ⊢ f ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
               → Γ ⊢ g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ [ ! , ι l ]
               → Function f
               → Function g
               → Γ ∙ F ^ [ rF , ι lF ] ⊢⊢ wk1 f ∘ var 0 ^ l [conv↑] wk1 g ∘ var 0 ^ l ∷ G ^ ι lG
-                → Γ ⊢⊢ f [conv↓] g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ ι l
+              → Γ ⊢⊢ f [conv↓] g ∷ Π F ^ rF ° lF ▹ G ° lG ° l ^ ! ^ ι l
 
   _⊢⊢_[genconv↑]_∷_^_ : (Γ : Con Term) (t u A : Term) (r : TypeInfo) → Set
   _⊢⊢_[genconv↑]_∷_^_ Γ k l A [ ! , ll ] =  Γ ⊢⊢ k [conv↑] l ∷ A ^ ll

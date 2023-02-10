@@ -77,7 +77,7 @@ abstract
                               , trans (sym (PE.subst (λ rx → _ ⊢ _ ≡ _ ^ rx) r≡! x₁)) c , rG≡
                               , r≡!
   
-  inversion-Empty : ∀ {Γ C r} → Γ ⊢ sEmpty ∷ C ^ r → Γ ⊢ C ≡ SProp ^ r × r PE.≡ [ ! , next ⁰ ]
+  inversion-Empty : ∀ {Γ C r l} → Γ ⊢ Empty l ∷ C ^ r → Γ ⊢ C ≡ SProp ^ r × r PE.≡ [ ! , next ⁰ ]
   inversion-Empty (Emptyⱼ x) = refl (Ugenⱼ x) , PE.refl
   inversion-Empty (conv x x₁) =
     let C≡SProp , r = inversion-Empty x

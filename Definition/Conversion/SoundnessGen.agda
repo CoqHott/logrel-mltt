@@ -3,16 +3,27 @@
 module Definition.Conversion.SoundnessGen where
 
 open import Definition.Untyped
+open import Definition.Untyped.Properties
 open import Definition.Typed
 open import Definition.Typed.Properties
+open import Definition.Typed.Weakening as T hiding (wk; wkTerm; wkEqTerm)
 open import Definition.ConversionGen
 open import Definition.Conversion.WhnfGen
 open import Definition.Typed.Consequences.Syntactic
 open import Definition.Typed.Consequences.NeTypeEq
+open import Definition.Typed.Consequences.Inversion
+open import Definition.Typed.Consequences.Equality
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
+
+inversion-lam' : ∀ {t F F' G rF lF lG lΠ Γ} → Γ ⊢ lam F ▹ t ^ lΠ ∷ Π F' ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] →
+      Γ ⊢ F ^ [ rF , ι lF ]
+    -- × Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ ! , ι lG ]
+inversion-lam' X with inversion-lam X
+... | _ , _ , _ , _ , _ , ⊢F , ⊢G , Π=Π , PE.refl with Π≡A Π=Π Πₙ
+... | _ , _ , PE.refl = ⊢F 
 
 mutual
   -- Algorithmic equality of neutrals is well-formed.
@@ -69,27 +80,49 @@ mutual
 
   -- Algorithmic equality of terms in WHNF is well-formed.
   soundnessConv↓Term : ∀ {a b A lA Γ} → Γ ⊢⊢ a [conv↓] b ∷ A ^ lA → Γ ⊢ a ≡ b ∷ A ^ [ ! , lA ]
-  soundnessConv↓Term (ne x) = soundness~↓! x
-  soundnessConv↓Term (ℕ-refl ⊢Γ) = refl (ℕⱼ ⊢Γ)
-  soundnessConv↓Term (Empty-refl ⊢Γ) = refl (Emptyⱼ ⊢Γ)
+  soundnessConv↓Term (ℕ-cong ⊢Γ) = refl (ℕⱼ ⊢Γ)
+  soundnessConv↓Term (Empty-cong ⊢Γ) = refl (Emptyⱼ ⊢Γ)
   soundnessConv↓Term (Π-cong PE.refl PE.refl PE.refl PE.refl l< l<' c c₁) =
     let F=F = soundnessConv↑Term c
         _ , F , _  = syntacticEqTerm F=F
     in Π-cong l< l<' (univ F) F=F (soundnessConv↑Term c₁)
   soundnessConv↓Term (Id-cong A c c₁) =
     Id-cong (soundnessConv↑Term A) (soundnessConv↑Term c) (soundnessConv↑Term c₁)
-  soundnessConv↓Term (ℕ-ins x) = soundness~↓! x
-  -- soundnessConv↓Term (Empty-ins x) = soundness~↓% x
-  soundnessConv↓Term (ne-ins t u x x₁) =
+  soundnessConv↓Term (ne t u x x₁) =
     let whnfM , neA , neB = ne~↓! x₁
         X = soundness~↓! x₁
         _ , t∷M , _ = syntacticEqTerm X
         _ , M≡A' = neTypeEq neA t∷M t -- soundnessConv↑ M≡A
     in conv X M≡A'
-  soundnessConv↓Term (zero-refl ⊢Γ) = refl (zeroⱼ ⊢Γ)
+  soundnessConv↓Term (zero-cong ⊢Γ) = refl (zeroⱼ ⊢Γ)
   soundnessConv↓Term (suc-cong c) = suc-cong (soundnessConv↑Term c)
-  soundnessConv↓Term (η-eq l< l<' F x x₁ y y₁ c) = η-eq l< l<' F x x₁ (soundnessConv↑Term c)
-  soundnessConv↓Term (U-refl PE.refl ⊢Γ) = refl (univ 0<1 ⊢Γ)
+{-  soundnessConv↓Term (lam-cong {G = G} l< l<' ⊢t' c) =
+    let t=t' = soundnessConv↑Term c
+        _ , ⊢t , ⊢t'' = syntacticEqTerm t=t'
+        ⊢ΓF = wfTerm ⊢t
+        ⊢Γ , ⊢F = inversion-ctx ⊢ΓF
+        -- ⊢F' = inversion-lam' ⊢lt
+        ⊢wk1F = T.wk (step id) (⊢Γ ∙ ⊢F) ⊢F
+        -- ⊢wk1F' = T.wk (step id) (⊢Γ ∙ ⊢F) ⊢F'
+        β-red′ = PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
+                          (wkSingleSubstId G)
+                          (β-red l< l<' ⊢wk1F (T.wkTerm (lift (step id))
+                                              (⊢Γ ∙ ⊢F ∙ ⊢wk1F) ⊢t)
+                                              (var (⊢Γ ∙ ⊢F) here)) 
+        β-red′′ = PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
+                           (wkSingleSubstId G)
+                           (β-red l< l<' ⊢wk1F (T.wkTerm (lift (step id))
+                                               (⊢Γ ∙ ⊢F ∙ ⊢wk1F) ⊢t'')
+                                               (var (⊢Γ ∙ ⊢F) here)) 
+    in η-eq l< l<' ⊢F (lamⱼ (λ x₁ → l< , l<') (λ {()}) ⊢F ⊢t) ⊢t'
+                      (trans β-red′ (sym (trans β-red′′ {!!}))) -}
+  soundnessConv↓Term (η-eq l< l<' x x₁ y y₁ c) =
+    let t=t' = soundnessConv↑Term c
+        _ , ⊢t , ⊢t' = syntacticEqTerm t=t'
+        ⊢ΓF = wfTerm ⊢t
+        ⊢Γ , ⊢F = inversion-ctx ⊢ΓF
+    in η-eq l< l<' ⊢F x x₁ t=t'
+  soundnessConv↓Term (U-cong PE.refl ⊢Γ) = refl (univ 0<1 ⊢Γ)
 
 
 
