@@ -7,6 +7,7 @@ open import Definition.Untyped
 open import Tools.Nat using (Nat)
 open import Tools.Product
 open import Tools.Empty
+open import Tools.Unit
 import Tools.PropositionalEquality as PE
 
 infixl 30 _∙_
@@ -282,7 +283,15 @@ mutual
                  → Γ ∙ A ^ [ rA , ι lA ] ⊢ B ∷ (U lB) ^ [ ! , next lB ]
                  → Γ ⊢ t ⇒ u ∷ Π A ^ rA ° lA ▹ B ° lB ° l ^ ! ^ ι l
                  → Γ ⊢ a ∷ A ^ [ rA , ι lA ]
+                 → (IsLambda t → ⊥)
                  → Γ ⊢ t ∘ a ^ l ⇒ u ∘ a ^ l  ∷ B [ a ] ^ ι lB
+    app-subst'   : ∀ {A B t a b lA lB l}
+                 → Γ     ⊢ A ∷ (Univ ! lA) ^ [ ! , next lA ]
+                 → Γ ∙ A ^ [ ! , ι lA ] ⊢ B ∷ (U lB) ^ [ ! , next lB ]
+                 → Γ ⊢ t ∷ Π A ^ ! ° lA ▹ B ° lB ° l ^ ! ^ [ ! , ι l ]
+                 → Neutral t
+                 → Γ ⊢ a ⇒ b ∷ A ^ ι lA 
+                 → Γ ⊢ t ∘ a ^ l ⇒ t ∘ b ^ l  ∷ B [ a ] ^ ι lB
     β-red        : ∀ {A B lA lB a t rA l}
                  → lA ≤ l
                  → lB ≤ l
@@ -291,12 +300,40 @@ mutual
                  → Γ ∙ A ^ [ rA , ι lA ] ⊢ t ∷ B ^ [ ! , ι lB ]
                  → Γ     ⊢ a ∷ A ^ [ rA , ι lA ]
                  → Γ     ⊢ (lam A ▹ t ^ l) ∘ a ^ l ⇒ t [ a ] ∷ B [ a ] ^ ι lB
+    suc-subst    : ∀ {m n}
+                → Γ ⊢ m ⇒ n ∷ ℕ ^ ι ⁰
+                → Γ ⊢ suc m ⇒ suc n ∷ ℕ ^ ι ⁰ 
     natrec-subst : ∀ {z s n n′ F l}
                  → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , ι l ]
                  → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , ι l ]
                  → Γ     ⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var Nat.zero) ]↑ ° l ° l ^ !) ° l ° l ^ ! ^ [ ! , ι l ]
                  → Γ     ⊢ n ⇒ n′ ∷ ℕ ^ ι ⁰
+                 → (IsNatural n → ⊥)
                  → Γ     ⊢ natrec l F z s n ⇒ natrec l F z s n′ ∷ F [ n ] ^ ι l
+    natrec-substF : ∀ {z s n F′ F l}
+                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ⇒ F′ ^ [ ! , ι l ]
+                 → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , ι l ]
+                 → Γ     ⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var Nat.zero) ]↑ ° l ° l ^ !) ° l ° l ^ ! ^ [ ! , ι l ]
+                 → Γ     ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
+                 → Neutral n
+                 → Γ     ⊢ natrec l F z s n ⇒ natrec l F′ z s n ∷ F [ n ] ^ ι l
+    natrec-substZ : ∀ {z s n z′ F l}
+                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , ι l ]
+                 → Γ     ⊢ z ⇒ z′ ∷ F [ zero ] ^ ι l
+                 → Γ     ⊢ s ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var Nat.zero) ]↑ ° l ° l ^ !) ° l ° l ^ ! ^ [ ! , ι l ]
+                 → Γ     ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
+                 → Neutral n
+                 → Nf F
+                 → Γ     ⊢ natrec l F z s n ⇒ natrec l F z′ s n ∷ F [ n ] ^ ι l
+    natrec-substS : ∀ {z s n s′ F l}
+                 → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , ι l ]
+                 → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , ι l ]
+                 → Γ     ⊢ s ⇒ s′ ∷ Π ℕ ^ ! ° ⁰ ▹ (F ^ ! ° l ▹▹ F [ suc (var Nat.zero) ]↑ ° l ° l ^ !) ° l ° l ^ ! ^ ι l
+                 → Γ     ⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
+                 → Neutral n
+                 → Nf F
+                 → Nf z
+                 → Γ     ⊢ natrec l F z s n ⇒ natrec l F z s′ n ∷ F [ n ] ^ ι l
     natrec-zero  : ∀ {z s F l }
                  → Γ ∙ ℕ ^ [ ! , ι ⁰ ] ⊢ F ^ [ ! , ι l ]
                  → Γ     ⊢ z ∷ F [ zero ] ^ [ ! , ι l ]
@@ -314,6 +351,7 @@ mutual
                   → Γ ⊢ B ∷ U l ^ [ ! , next l ]
                   → Γ ⊢ e ∷ Id (U l) A B ^ [ % , ι ⁰ ]
                   → Γ ⊢ t ∷ A ^ [ ! , ι l ]
+                  → (IsType A → ⊥)
                   → Γ ⊢ cast l A B e t ⇒ cast l A' B e t ∷ B ^ ι l
     cast-ne-subst : ∀ {K B B' e t} → let l = ⁰ in
                     Γ ⊢ K ∷ U l ^ [ ! , next l ]
@@ -321,11 +359,13 @@ mutual
                   → Γ ⊢ B ⇒ B' ∷ U l ^ next l
                   → Γ ⊢ e ∷ Id (U l) K B ^ [ % , ι ⁰ ]
                   → Γ ⊢ t ∷ K ^ [ ! , ι l ]
+                  → (IsType B → ⊥)
                   → Γ ⊢ cast l K B e t ⇒ cast l K B' e t ∷ B ^ ι l
     cast-ℕ-subst : ∀ {B B' e t}
                   → Γ ⊢ B ⇒ B' ∷ U ⁰ ^ next ⁰
                   → Γ ⊢ e ∷ Id (U ⁰) ℕ B ^ [ % , ι ⁰ ]
                   → Γ ⊢ t ∷ ℕ ^ [ ! , ι ⁰ ]
+                  → (IsType B → ⊥)
                   → Γ ⊢ cast ⁰ ℕ B e t ⇒ cast ⁰ ℕ B' e t ∷ B ^ ι ⁰
     cast-Π-subst : ∀ {A rA P B B' e t} → let l = ⁰ in let lA = ⁰ in let lP = ⁰ in
                     Γ ⊢ A ∷ (Univ rA lA) ^ [ ! , next lA ]
@@ -333,6 +373,7 @@ mutual
                   → Γ ⊢ B ⇒ B' ∷ U l ^ next l
                   → Γ ⊢ e ∷ Id (U l) (Π A ^ rA ° lA ▹ P ° lP ° l ^ !) B ^ [ % , ι l ]
                   → Γ ⊢ t ∷ (Π A ^ rA ° lA ▹ P ° lP ° l ^ !) ^ [ ! , ι l ]
+                  → (IsType B → ⊥)
                   → Γ ⊢ cast l (Π A ^ rA ° lA ▹ P ° lP ° l ^ !) B e t ⇒ cast l (Π A ^ rA ° lA ▹ P ° lP ° l ^ !) B' e t ∷ B ^ ι l
     cast-Π : ∀ {A A' rA B B' e f} → let l = ⁰ in
                Γ ⊢ A ∷ (Univ rA l) ^ [ ! , next l ]
@@ -362,6 +403,7 @@ mutual
     cast-ℕ-cong : ∀ {e t u}
                → Γ ⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ]
                → Γ ⊢ t ⇒ u ∷ ℕ ^ ι ⁰
+               → (IsNatural t → ⊥)
                → Γ ⊢ cast ⁰ ℕ ℕ e t
                    ⇒ cast ⁰ ℕ ℕ e u
                    ∷ ℕ ^ ι ⁰
@@ -403,13 +445,30 @@ data _⊢_⇒*_^_ (Γ : Con Term) : Term → Term → TypeInfo → Set where
       → Γ ⊢ A′ ⇒* B  ^ r
       → Γ ⊢ A  ⇒* B  ^ r
 
--- Type reduction to whnf
-_⊢_↘_^_ : (Γ : Con Term) → Term → Term → TypeInfo → Set
-Γ ⊢ A ↘ B ^ r = Γ ⊢ A ⇒* B ^ r × Whnf B
+map⇒*Term : ∀ {Γ A t u l} → (f : Term → Set) → Γ ⊢ t ⇒* u  ∷ A ^ l → Set
+map⇒*Term f (id x) = ⊤
+map⇒*Term {t = t} f (x ⇨ X) = f t × map⇒*Term f X
 
--- Term reduction to whnf
+map⇒* : ∀ {Γ A B l} → (f : Term → Set) → Γ ⊢ A ⇒* B ^ l → Set
+map⇒* f (id x) = ⊤
+map⇒* {A = A} f (x ⇨ X) = f A × map⇒* f X
+
+notLambda* : ∀ {Γ A t u l} → Γ ⊢ t  ⇒* u  ∷ A ^ l → Set
+notLambda* = map⇒*Term (λ t → IsLambda t  → ⊥)
+
+notNatural* : ∀ {Γ A t u l} → Γ ⊢ t  ⇒* u  ∷ A ^ l → Set
+notNatural* = map⇒*Term (λ t → IsNatural t  → ⊥)
+
+notType* : ∀ {Γ A B l} → Γ ⊢ A ⇒* B ^ l → Set
+notType* = map⇒* (λ t → IsType t  → ⊥)
+
+-- Type reduction to nf
+_⊢_↘_^_ : (Γ : Con Term) → Term → Term → TypeInfo → Set
+Γ ⊢ A ↘ B ^ r = Γ ⊢ A ⇒* B ^ r × Nf B
+
+-- Term reduction to nf
 _⊢_↘_∷_^_ : (Γ : Con Term) → Term → Term → Term → TypeLevel → Set
-Γ ⊢ t ↘ u ∷ A ^ l = Γ ⊢ t ⇒* u ∷ A ^ l × Whnf u
+Γ ⊢ t ↘ u ∷ A ^ l = Γ ⊢ t ⇒* u ∷ A ^ l × Nf u
 
 -- Type equality with well-formed types
 _⊢_:≡:_^_ : (Γ : Con Term) → Term → Term → TypeInfo → Set

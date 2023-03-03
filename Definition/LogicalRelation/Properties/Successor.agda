@@ -24,11 +24,10 @@ sucTerm′ : ∀ {l Γ n}
          → Γ ⊩⟨ l ⟩ n ∷ ℕ ^ [ ! , ι ⁰ ] / ℕ-intr [ℕ]
          → Γ ⊩⟨ l ⟩ suc n ∷ ℕ ^ [ ! , ι ⁰ ] / ℕ-intr [ℕ]
 sucTerm′ (noemb D) (ℕₜ n [[ ⊢t , ⊢u , d ]] n≡n prop) =
-  let natN = natural prop
-  in  ℕₜ _ [[ sucⱼ ⊢t , sucⱼ ⊢t , id (sucⱼ ⊢t) ]]
-         (≅-suc-cong (≅ₜ-red (red D) d d ℕₙ
-                             (naturalWhnf natN) (naturalWhnf natN) n≡n))
-         (sucᵣ (ℕₜ n [[ ⊢t , ⊢u , d ]] n≡n prop))
+  let natN = naturalNf (natural prop)
+  in  ℕₜ _ [[ sucⱼ ⊢t , sucⱼ ⊢u , suc* d ]]
+         (≅-suc-cong n≡n)
+         (sucᵣ prop)
 sucTerm′ (emb emb< x) [n] = sucTerm′ x [n]
 sucTerm′ (emb ∞< x) [n] = sucTerm′ x [n]
 
@@ -47,12 +46,9 @@ sucEqTerm′ : ∀ {l Γ n n′}
              ([ℕ] : Γ ⊩⟨ l ⟩ℕ ℕ)
            → Γ ⊩⟨ l ⟩ n ≡ n′ ∷ ℕ ^ [ ! , ι ⁰ ] / ℕ-intr [ℕ]
            → Γ ⊩⟨ l ⟩ suc n ≡ suc n′ ∷ ℕ ^ [ ! , ι ⁰ ] / ℕ-intr [ℕ]
-sucEqTerm′ (noemb D) (ℕₜ₌ k k′ [[ ⊢t , ⊢u , d ]]
-                              [[ ⊢t₁ , ⊢u₁ , d₁ ]] t≡u prop) =
+sucEqTerm′ (noemb D) (ℕₜ₌ k k′ d d′ t≡u prop) =
   let natK , natK′ = split prop
-  in  ℕₜ₌ _ _ (idRedTerm:*: (sucⱼ ⊢t)) (idRedTerm:*: (sucⱼ ⊢t₁))
-        (≅-suc-cong (≅ₜ-red (red D) d d₁ ℕₙ (naturalWhnf natK) (naturalWhnf natK′) t≡u))
-        (sucᵣ (ℕₜ₌ k k′ [[ ⊢t , ⊢u , d ]] [[ ⊢t₁ , ⊢u₁ , d₁ ]] t≡u prop))
+  in  ℕₜ₌ _ _  (suc'* d) (suc'* d′) (≅-suc-cong t≡u) (sucᵣ prop) 
 sucEqTerm′ (emb emb< x) [n≡n′] = sucEqTerm′ x [n≡n′]
 sucEqTerm′ (emb ∞< x) [n≡n′] = sucEqTerm′ x [n≡n′]
 

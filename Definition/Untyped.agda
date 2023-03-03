@@ -257,46 +257,47 @@ Univ-PE-injectivity PE.refl = PE.refl , PE.refl
 -- either it has a variable in head position that blocks reduction.
 -- either it is of the form Emptyrec (or terms that should reduce to emptyrec, such as incompatible casts)
 
-data Neutral : Term → Set where
-  var     : ∀ n                     → Neutral (var n)
-  ∘ₙ      : ∀ {k u l}     → Neutral k → Neutral (k ∘ u ^ l)
-  natrecₙ : ∀ {l C c g k} → Neutral k → Neutral (natrec l C c g k)
-  castₙ : ∀ {l A B e t} → Neutral A → Neutral B → Neutral t → Neutral (cast l A B e t)
-  castnℕₙ : ∀ {l B e t} → Neutral B → Neutral (cast l B ℕ e t)
-  castnΠₙ : ∀ {l A rA lA P lP r B e t} → Neutral B → Neutral (cast l B (Π A ^ rA ° lA ▹ P ° lP ° l ^ r) e t)
-  castℕₙ : ∀ {l B e t} → Neutral B → Neutral (cast l ℕ B e t)
-  castΠₙ : ∀ {l A rA lA P lP r B e t} → Neutral B → Neutral (cast l (Π A ^ rA ° lA ▹ P ° lP ° l ^ r) B e t)
-  castℕℕₙ : ∀ {l e t} → Neutral t → Neutral (cast l ℕ ℕ e t)
-  castℕΠₙ : ∀ {l A rA r B e t} → Neutral (cast l ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l ^ r) e t)
-  castΠℕₙ : ∀ {l A rA r B e t} → Neutral (cast l (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l ^ r) ℕ e t)
-  castΠΠ%!ₙ : ∀ {l A B A' B' r r' e t} → Neutral (cast l (Π A ^ % ° ⁰ ▹ B ° ⁰ ° l ^ r) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° l ^ r') e t)
-  castΠΠ!%ₙ : ∀ {l A B A' B' r r' e t} → Neutral (cast l (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° l ^ r) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° l ^ r') e t)
-  Emptyrecₙ : ∀ {l lEmpty A e} -> Neutral (Emptyrec l lEmpty A e)
-
--- Weak head normal forms (whnfs).
+mutual 
+  data Neutral : Term → Set where
+    var     : ∀ n                     → Neutral (var n)
+    ∘ₙ      : ∀ {k u l}     → Neutral k → Nf u → Neutral (k ∘ u ^ l)
+    natrecₙ : ∀ {l C c g k} → Neutral k → Nf C → Nf c → Nf g → Neutral (natrec l C c g k)
+    castₙ : ∀ {l A B e t} → Neutral A → Neutral B → Neutral t → Neutral (cast l A B e t)
+    castnℕₙ : ∀ {l B e t} → Neutral B → Nf t → Neutral (cast l B ℕ e t)
+    castnΠₙ : ∀ {l A rA lA P lP r B e t} → Neutral B → Nf A → Nf P → Nf t → Neutral (cast l B (Π A ^ rA ° lA ▹ P ° lP ° l ^ r) e t)
+    castℕₙ : ∀ {l B e t} → Neutral B → Nf t → Neutral (cast l ℕ B e t)
+    castΠₙ : ∀ {l A rA lA P lP r B e t} → Neutral B → Nf A → Nf P → Nf t → Neutral (cast l (Π A ^ rA ° lA ▹ P ° lP ° l ^ r) B e t)
+    castℕℕₙ : ∀ {l e t} → Neutral t → Neutral (cast l ℕ ℕ e t)
+    castℕΠₙ : ∀ {l A rA r B e t} → Nf A → Nf B → Nf t → Neutral (cast l ℕ (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l ^ r) e t)
+    castΠℕₙ : ∀ {l A rA r B e t} → Nf A → Nf B → Nf t → Neutral (cast l (Π A ^ rA ° ⁰ ▹ B ° ⁰ ° l ^ r) ℕ e t)
+    castΠΠ%!ₙ : ∀ {l A B A' B' r r' e t} → Nf A → Nf B → Nf A' → Nf B' → Nf t → Neutral (cast l (Π A ^ % ° ⁰ ▹ B ° ⁰ ° l ^ r) (Π A' ^ ! ° ⁰ ▹ B' ° ⁰ ° l ^ r') e t)
+    castΠΠ!%ₙ : ∀ {l A B A' B' r r' e t} → Nf A → Nf B → Nf A' → Nf B' → Nf t → Neutral (cast l (Π A ^ ! ° ⁰ ▹ B ° ⁰ ° l ^ r) (Π A' ^ % ° ⁰ ▹ B' ° ⁰ ° l ^ r') e t)
+    Emptyrecₙ : ∀ {l lEmpty A e} -> Nf A → Neutral (Emptyrec l lEmpty A e)
+  
+-- Weak head normal forms (nfs).
 -- These are the (lazy) values of our language.
+  
+  data Nf : Term → Set where
+  
+    -- Type constructors are nfs.
+    Uₙ    : ∀ {r l} → Nf (Univ r l)
+    Πₙ    : ∀ {A r lA B lB l r'} → Nf A → Nf B → Nf (Π A ^ r ° lA ▹ B ° lB ° l ^ r')
+    Idₙ : ∀ {A t u} → Nf A → Nf t → Nf u → Nf (Id A t u)
+    ℕₙ    : Nf ℕ
+    Emptyₙ : ∀ {l} → Nf (Empty l)
+  
+    -- Introductions are nfs.
+    lamₙ  : ∀ {A t l} → Nf t → Nf (lam A ▹ t ^ l)
+    zeroₙ : Nf zero
+    sucₙ  : ∀ {t} → Nf t → Nf (suc t)
 
-data Whnf : Term → Set where
-
-  -- Type constructors are whnfs.
-  Uₙ    : ∀ {r l} → Whnf (Univ r l)
-  Πₙ    : ∀ {A r lA B lB l r'} → Whnf (Π A ^ r ° lA ▹ B ° lB ° l ^ r')
-  Idₙ : ∀ {A t u} → Whnf (Id A t u)
-  ℕₙ    : Whnf ℕ
-  Emptyₙ : ∀ {l} → Whnf (Empty l)
-
-  -- Introductions are whnfs.
-  lamₙ  : ∀ {A t l} → Whnf (lam A ▹ t ^ l)
-  zeroₙ : Whnf zero
-  sucₙ  : ∀ {t} → Whnf (suc t)
-
-  -- Neutrals are whnfs.
-  ne   : ∀ {n} → Neutral n → Whnf n
+    -- Neutrals are nfs.
+    ne   : ∀ {n} → Neutral n → Nf n
 
 
--- Whnf inequalities.
+-- Nf inequalities.
 
--- Different whnfs are trivially distinguished by propositional equality.
+-- Different nfs are trivially distinguished by propositional equality.
 -- (The following statements are sometimes called "no-confusion theorems".)
 
 U≢ℕ : ∀ {r l} → Univ r l PE.≢ ℕ
@@ -357,51 +358,65 @@ suc≢ne : ∀ {n k} → Neutral k → suc n PE.≢ k
 suc≢ne () PE.refl
 
 
--- Several views on whnfs (note: not recursive).
+-- Several views on nfs (note: not recursive).
 
--- A whnf of type ℕ is either zero, suc t, or neutral.
+-- A nf of type ℕ is either zero, suc t, or neutral.
 
 data Natural : Term → Set where
   zeroₙ :                     Natural zero
-  sucₙ  : ∀ {t}             → Natural (suc t)
+  sucₙ  : ∀ {t}             → Natural t → Natural (suc t)
   ne    : ∀ {n} → Neutral n → Natural n
 
--- A type in whnf is either Π A B, ℕ, or neutral.
+-- A type in nf is either Π A B, ℕ, or neutral.
 -- Large types could also be U.
 
 data Type : Term → Set where
-  Πₙ : ∀ {A r lA B lB l r'} → Type (Π A ^ r ° lA ▹ B ° lB ° l ^ r')
+  Πₙ : ∀ {A r lA B lB l r'} → Nf A → Nf B → Type (Π A ^ r ° lA ▹ B ° lB ° l ^ r')
   ℕₙ : Type ℕ
   Uₙ : ∀ {r l} → Type (Univ r l)
   Emptyₙ : ∀ {l} → Type (Empty l)
-  Idₙ : ∀ {A t u} → Type (Id A t u)
+  Idₙ : ∀ {A t u} → Nf A → Nf t → Nf u → Type (Id A t u)
   ne : ∀{n} → Neutral n → Type n
 
--- A whnf of type Π A B is either lam t or neutral.
+-- A nf of type Π A B is either lam t or neutral.
 
 data Function : Term → Set where
-  lamₙ : ∀{A t l} → Function (lam A ▹ t ^ l)
+  lamₙ : ∀{A t l} → Nf t → Function (lam A ▹ t ^ l)
   ne : ∀{n} → Neutral n → Function n
 
--- These views classify only whnfs.
--- Natural, Type, and Function are a subsets of Whnf.
+data IsLambda : Term → Set where
+  lamₙ : ∀{A t l} → IsLambda (lam A ▹ t ^ l)
 
-naturalWhnf : ∀ {n} → Natural n → Whnf n
-naturalWhnf sucₙ = sucₙ
-naturalWhnf zeroₙ = zeroₙ
-naturalWhnf (ne x) = ne x
+data IsNatural : Term → Set where
+  zeroₙ :                     IsNatural zero
+  sucₙ  : ∀ {t}             → IsNatural (suc t)
 
-typeWhnf : ∀ {A} → Type A → Whnf A
-typeWhnf Πₙ = Πₙ
-typeWhnf ℕₙ = ℕₙ
-typeWhnf Uₙ  = Uₙ
-typeWhnf Idₙ = Idₙ
-typeWhnf Emptyₙ = Emptyₙ
-typeWhnf (ne x) = ne x
+data IsType : Term → Set where
+  Πₙ : ∀ {A r lA B lB l r'} → IsType (Π A ^ r ° lA ▹ B ° lB ° l ^ r')
+  ℕₙ : IsType ℕ
+  Uₙ : ∀ {r l} → IsType (Univ r l)
+  Emptyₙ : ∀ {l} → IsType (Empty l)
+  Idₙ : ∀ {A t u} → IsType (Id A t u)
 
-functionWhnf : ∀ {f} → Function f → Whnf f
-functionWhnf lamₙ = lamₙ
-functionWhnf (ne x) = ne x
+-- These views classify only nfs.
+-- Natural, Type, and Function are a subsets of Nf.
+
+naturalNf : ∀ {n} → Natural n → Nf n
+naturalNf (sucₙ t) = sucₙ (naturalNf t)
+naturalNf zeroₙ = zeroₙ
+naturalNf (ne x) = ne x
+
+typeNf : ∀ {A} → Type A → Nf A
+typeNf (Πₙ A B) = Πₙ A B
+typeNf ℕₙ = ℕₙ
+typeNf Uₙ  = Uₙ
+typeNf (Idₙ A t u) = Idₙ A t u
+typeNf Emptyₙ = Emptyₙ
+typeNf (ne x) = ne x
+
+functionNf : ∀ {f} → Function f → Nf f
+functionNf (lamₙ t) = lamₙ t
+functionNf (ne x) = ne x
 
 ------------------------------------------------------------------------
 -- Weakening
@@ -470,51 +485,52 @@ wk1d = wk (lift (step id))
 
 -- Weakening of a neutral term.
 
-wkNeutral : ∀ {t} ρ → Neutral t → Neutral (wk ρ t)
-wkNeutral ρ (var n)    = var (wkVar ρ n)
-wkNeutral ρ (∘ₙ n)    = ∘ₙ (wkNeutral ρ n)
-wkNeutral ρ (natrecₙ n) = natrecₙ (wkNeutral ρ n)
-wkNeutral ρ Emptyrecₙ = Emptyrecₙ
-wkNeutral ρ (castₙ A B t) = castₙ (wkNeutral ρ A) (wkNeutral ρ B) (wkNeutral ρ t)
-wkNeutral ρ (castnℕₙ A) = castnℕₙ (wkNeutral ρ A)
-wkNeutral ρ (castnΠₙ A) = castnΠₙ (wkNeutral ρ A)
-wkNeutral ρ (castℕₙ A) = castℕₙ (wkNeutral ρ A)
-wkNeutral ρ (castΠₙ A) = castΠₙ (wkNeutral ρ A)
-wkNeutral ρ (castℕℕₙ t) = castℕℕₙ (wkNeutral ρ t)
-wkNeutral ρ castℕΠₙ = castℕΠₙ
-wkNeutral ρ castΠℕₙ = castΠℕₙ
-wkNeutral ρ castΠΠ%!ₙ = castΠΠ%!ₙ
-wkNeutral ρ castΠΠ!%ₙ = castΠΠ!%ₙ
+mutual 
+  wkNeutral : ∀ {t} ρ → Neutral t → Neutral (wk ρ t)
+  wkNeutral ρ (var n)    = var (wkVar ρ n)
+  wkNeutral ρ (∘ₙ n u)    = ∘ₙ (wkNeutral ρ n) (wkNf ρ u)
+  wkNeutral ρ (natrecₙ n F z s) = natrecₙ (wkNeutral ρ n) (wkNf (lift ρ) F) (wkNf ρ z) (wkNf ρ s)
+  wkNeutral ρ (Emptyrecₙ A) = Emptyrecₙ (wkNf ρ A) 
+  wkNeutral ρ (castₙ A B t) = castₙ (wkNeutral ρ A) (wkNeutral ρ B) (wkNeutral ρ t)
+  wkNeutral ρ (castnℕₙ A t) = castnℕₙ (wkNeutral ρ A) (wkNf ρ t)
+  wkNeutral ρ (castnΠₙ A A' P t) = castnΠₙ (wkNeutral ρ A) (wkNf ρ A') (wkNf (lift ρ) P) (wkNf ρ t)
+  wkNeutral ρ (castℕₙ A t) = castℕₙ (wkNeutral ρ A) (wkNf ρ t)
+  wkNeutral ρ (castΠₙ A A' P t) = castΠₙ (wkNeutral ρ A) (wkNf ρ A') (wkNf (lift ρ) P) (wkNf ρ t)
+  wkNeutral ρ (castℕℕₙ t) = castℕℕₙ (wkNeutral ρ t)
+  wkNeutral ρ (castℕΠₙ A P t) = castℕΠₙ (wkNf ρ A) (wkNf (lift ρ) P) (wkNf ρ t)
+  wkNeutral ρ (castΠℕₙ A P t) = castΠℕₙ (wkNf ρ A) (wkNf (lift ρ) P) (wkNf ρ t)
+  wkNeutral ρ (castΠΠ%!ₙ A P A' P' t) = castΠΠ%!ₙ (wkNf ρ A) (wkNf (lift ρ) P) (wkNf ρ A') (wkNf (lift ρ) P') (wkNf ρ t)
+  wkNeutral ρ (castΠΠ!%ₙ A P A' P' t) = castΠΠ!%ₙ (wkNf ρ A) (wkNf (lift ρ) P) (wkNf ρ A') (wkNf (lift ρ) P') (wkNf ρ t)
+  
+  wkNf : ∀ {t} ρ → Nf t → Nf (wk ρ t)
+  wkNf ρ Uₙ          = Uₙ
+  wkNf ρ (Πₙ A B)    = Πₙ (wkNf ρ A) (wkNf (lift ρ) B)
+  wkNf ρ (Idₙ A t u) = Idₙ (wkNf ρ A) (wkNf ρ t) (wkNf ρ u)
+  wkNf ρ ℕₙ          = ℕₙ
+  wkNf ρ Emptyₙ      = Emptyₙ
+  wkNf ρ (lamₙ t)    = lamₙ (wkNf (lift ρ) t)
+  wkNf ρ zeroₙ   = zeroₙ
+  wkNf ρ (sucₙ t)   = sucₙ (wkNf ρ t)
+  wkNf ρ (ne x) = ne (wkNeutral ρ x)
 
--- Weakening can be applied to our whnf views.
+-- Weakening can be applied to our nf views.
 
 wkNatural : ∀ {t} ρ → Natural t → Natural (wk ρ t)
-wkNatural ρ sucₙ    = sucₙ
+wkNatural ρ (sucₙ t)    = sucₙ (wkNatural ρ t)
 wkNatural ρ zeroₙ   = zeroₙ
 wkNatural ρ (ne x) = ne (wkNeutral ρ x)
 
 wkType : ∀ {t} ρ → Type t → Type (wk ρ t)
-wkType ρ Πₙ      = Πₙ
+wkType ρ (Πₙ A B)      = Πₙ (wkNf ρ A) (wkNf (lift ρ) B)
 wkType ρ ℕₙ      = ℕₙ
 wkType ρ Uₙ      = Uₙ
-wkType ρ Idₙ      = Idₙ
+wkType ρ (Idₙ A t u)      = Idₙ (wkNf ρ A) (wkNf ρ t) (wkNf ρ u)
 wkType ρ Emptyₙ  = Emptyₙ
 wkType ρ (ne x) = ne (wkNeutral ρ x)
 
 wkFunction : ∀ {t} ρ → Function t → Function (wk ρ t)
-wkFunction ρ lamₙ    = lamₙ
+wkFunction ρ (lamₙ t)   = lamₙ (wkNf (lift ρ) t)
 wkFunction ρ (ne x) = ne (wkNeutral ρ x)
-
-wkWhnf : ∀ {t} ρ → Whnf t → Whnf (wk ρ t)
-wkWhnf ρ Uₙ      = Uₙ
-wkWhnf ρ Πₙ      = Πₙ
-wkWhnf ρ Idₙ      = Idₙ
-wkWhnf ρ ℕₙ      = ℕₙ
-wkWhnf ρ Emptyₙ  = Emptyₙ
-wkWhnf ρ lamₙ    = lamₙ
-wkWhnf ρ zeroₙ   = zeroₙ
-wkWhnf ρ sucₙ    = sucₙ
-wkWhnf ρ (ne x) = ne (wkNeutral ρ x)
 
 -- Non-dependent version of Π.
 

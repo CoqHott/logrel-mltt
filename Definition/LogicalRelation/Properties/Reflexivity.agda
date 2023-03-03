@@ -23,23 +23,21 @@ reflEq (ℕᵣ D) = red D
 reflEq (Emptyᵣ D) = red D
 reflEq (ne′ K [[ ⊢A , ⊢B , D ]] neK K≡K) =
   ne₌ _ [[ ⊢A , ⊢B , D ]] neK K≡K
-reflEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) = 
-  Π₌ _ _ D A≡A
+reflEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , D ]] nf ⊢F ⊢G A≡A [F] [G] G-ext) = 
+  Π₌ _ _ D nf A≡A
      (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
      (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a]))
-reflEq (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A) =
-  Πirr₌ _ _ D A≡A
-reflEq (Idᵣ′ F G _ _ [[ ⊢A , ⊢B , D ]] ⊢F ⊢G _ A≡A) =
-  Id₌ _ _ _ D A≡A
+reflEq (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢B , D ]] nf ⊢F ⊢G A≡A) =
+  Πirr₌ _ _ D nf A≡A
+reflEq (Idᵣ′ F G _ _ [[ ⊢A , ⊢B , D ]] nf ⊢F ⊢G _ A≡A) =
+  Id₌ _ _ _ D nf A≡A
 reflEq {ι ¹} (emb X [A]) = reflEq [A]
 reflEq {∞} (emb X [A]) = reflEq [A]
 
 reflNatural-prop : ∀ {Γ n}
                  → Natural-prop Γ n
                  → [Natural]-prop Γ n n
-reflNatural-prop (sucᵣ (ℕₜ n d t≡t prop)) =
-  sucᵣ (ℕₜ₌ n n d d t≡t
-            (reflNatural-prop prop))
+reflNatural-prop (sucᵣ x) = sucᵣ (reflNatural-prop x)
 reflNatural-prop zeroᵣ = zeroᵣ
 reflNatural-prop (ne (neNfₜ neK ⊢k k≡k)) = ne (neNfₜ₌ neK neK k≡k)
 
@@ -62,13 +60,13 @@ reflEqTerm⁰ (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
 reflEqTerm⁰ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
   neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
 reflEqTerm⁰ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
-reflEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+reflEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D _ ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
   Πₜ₌ f f d d funcF funcF f≡f
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm⁰ ([F] ρ ⊢Δ) [a]))
-reflEqTerm⁰ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
-reflEqTerm⁰ (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A) X = X , X
+reflEqTerm⁰ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D _ ⊢F ⊢G A≡A) X = X , X
+reflEqTerm⁰ (Idᵣ′ F G _ _ D _ ⊢F ⊢G _ A≡A) X = X , X
 
 reflEqTerm¹ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
            → Γ ⊩⟨ ι ¹ ⟩ t ∷ A ^ r / [A]
@@ -84,13 +82,13 @@ reflEqTerm¹ (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
 reflEqTerm¹ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
   neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
 reflEqTerm¹ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
-reflEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+reflEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D _ ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
   Πₜ₌ f f d d funcF funcF f≡f
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm¹ ([F] ρ ⊢Δ) [a]))
-reflEqTerm¹ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
-reflEqTerm¹ (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A) X = X , X
+reflEqTerm¹ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D _ ⊢F ⊢G A≡A) X = X , X
+reflEqTerm¹ (Idᵣ′ F G _ _ D _ ⊢F ⊢G _ A≡A) X = X , X
 reflEqTerm¹ (emb X [A]) = reflEqTerm⁰ [A]
 
 reflEqTerm∞ : ∀ {Γ A t r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
@@ -107,13 +105,13 @@ reflEqTerm∞ (Emptyᵣ D) (Emptyₜ (ne x)) = Emptyₜ₌ (ne x x)
 reflEqTerm∞ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) =
   neₜ₌ k k d d (neNfₜ₌ neK₁ neK₁ k≡k)
 reflEqTerm∞ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ d) = neₜ₌ d d
-reflEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
+reflEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D _ ⊢F ⊢G A≡A [F] [G] G-ext) (Πₜ f d funcF f≡f [f] [f]₁) =
   Πₜ₌ f f d d funcF funcF f≡f
       (Πₜ f d funcF f≡f [f] [f]₁)
       (Πₜ f d funcF f≡f [f] [f]₁)
       (λ ρ ⊢Δ [a] → [f] ρ ⊢Δ [a] [a] (reflEqTerm∞ ([F] ρ ⊢Δ) [a]))
-reflEqTerm∞ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) X = X , X
-reflEqTerm∞ (Idᵣ′ F G _ _ D ⊢F ⊢G _ A≡A) X = X , X
+reflEqTerm∞ {r = [ % , l ]} (Πirrᵣ′ rF lF F G D _ ⊢F ⊢G A≡A) X = X , X
+reflEqTerm∞ (Idᵣ′ F G _ _ D _ ⊢F ⊢G _ A≡A) X = X , X
 reflEqTerm∞ (emb X [A]) = reflEqTerm¹ [A]
 
 reflEqTerm : ∀ {l Γ A t r} ([A] : Γ ⊩⟨ l ⟩ A ^ r)

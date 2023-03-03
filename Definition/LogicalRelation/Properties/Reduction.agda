@@ -43,19 +43,19 @@ redSubst* D (ne′ K [[ ⊢B , ⊢K , D′ ]] neK K≡K) =
   let ⊢A = redFirst* D
   in  (ne′ K [[ ⊢A , ⊢K , D ⇨* D′ ]] neK K≡K)
   ,   (ne₌ _ [[ ⊢B , ⊢K , D′ ]] neK K≡K)
-redSubst* D (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext) =
+redSubst* D (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢B , ⊢ΠFG , D′ ]] nf ⊢F ⊢G A≡A [F] [G] G-ext) =
   let ⊢A = redFirst* D
-  in  (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
-  ,   (Π₌ _ _ D′ A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
+  in  (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] nf ⊢F ⊢G A≡A [F] [G] G-ext)
+  ,   (Π₌ _ _ D′ nf A≡A (λ ρ ⊢Δ → reflEq ([F] ρ ⊢Δ))
         (λ ρ ⊢Δ [a] → reflEq ([G] ρ ⊢Δ [a])))
-redSubst* D (Πirrᵣ′ rF lF F G [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢G A≡A) =
+redSubst* D (Πirrᵣ′ rF lF F G [[ ⊢B , ⊢ΠFG , D′ ]] nf ⊢F ⊢G A≡A) =
   let ⊢A = redFirst* D
-  in  (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢G A≡A)
-  ,   (Πirr₌ _ _ D′ A≡A)
-redSubst* D (Idᵣ′ F t u l [[ ⊢B , ⊢ΠFG , D′ ]] ⊢F ⊢t ⊢u A≡A) =
+  in  (Πirrᵣ′ rF lF F G [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] nf ⊢F ⊢G A≡A)
+  ,   (Πirr₌ _ _ D′ nf A≡A)
+redSubst* D (Idᵣ′ F t u l [[ ⊢B , ⊢ΠFG , D′ ]] nf ⊢F ⊢t ⊢u A≡A) =
   let ⊢A = redFirst* D
-  in  (Idᵣ′ F t u l [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] ⊢F ⊢t ⊢u A≡A)
-  ,   (Id₌ _ _ _ D′ A≡A)
+  in  (Idᵣ′ F t u l [[ ⊢A , ⊢ΠFG , D ⇨* D′ ]] nf ⊢F ⊢t ⊢u A≡A)
+  ,   (Id₌ _ _ _ D′ nf A≡A)
 redSubst* {l = ι ¹} D (emb l< X) with redSubst* D X
 redSubst* {l = ι ¹} D (emb l< X) | y , y₁ = emb l< y , y₁
 redSubst* {l = ∞} D (emb l< X) with redSubst* D X
@@ -80,7 +80,7 @@ redSubst*Term⁰ t⇒u (ne′ K D neK K≡K) (neₜ k [[ ⊢t , ⊢u , d ]] (neN
       [d]  = [[ ⊢t , ⊢u , d ]]
       [d′] = [[ conv (redFirst*Term t⇒u) A≡K , ⊢u , conv* t⇒u A≡K ⇨∷* d ]]
   in  neₜ k [d′] (neNfₜ neK₁ ⊢k k≡k) , neₜ₌ k k [d′] [d] (neNfₜ₌ neK₁ neK₁ k≡k)
-redSubst*Term⁰ {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+redSubst*Term⁰ {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF lF lG _ _ F G D nf ⊢F ⊢G A≡A [F] [G] G-ext)
                   (Πₜ f [[ ⊢t , ⊢u , d ]] funcF f≡f [f] [f]₁) =
   let A≡ΠFG = subset* (red D)
       t⇒u′  = conv* t⇒u A≡ΠFG
@@ -104,8 +104,8 @@ redSubst*Term {t = t} {l = ι ¹} {Γ = Γ} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ 
     A≡U  = subset* (red D)
     ⊢t   = conv (redFirst*Term t⇒u) A≡U
     t⇒u′ = conv* t⇒u A≡U
-    [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ⇒* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ⇒* t⇒u′)) ([u] [ρ] ⊢Δ))
     [[t]] = Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
   in
   ([[t]] , Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) A≡A [t≡u])
@@ -114,8 +114,8 @@ redSubst*Term {t = t} {l = ∞} {Γ = Γ} t⇒u (Uᵣ′ A .(next ¹) rU ¹ l< P
     A≡U  = subset* (red D)
     ⊢t   = conv (redFirst*Term t⇒u) A≡U
     t⇒u′ = conv* t⇒u A≡U
-    [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ⇒* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ⇒* t⇒u′)) ([u] [ρ] ⊢Δ))
     [[t]] = Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
   in
   ([[t]] , Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) A≡A [t≡u])
@@ -131,7 +131,7 @@ redSubst*Term t⇒u (ne′ K D neK K≡K) (neₜ k [[ ⊢t , ⊢u , d ]] (neNf�
       [d]  = [[ ⊢t , ⊢u , d ]]
       [d′] = [[ conv (redFirst*Term t⇒u) A≡K , ⊢u , conv* t⇒u A≡K ⇨∷* d ]]
   in  neₜ k [d′] (neNfₜ neK₁ ⊢k k≡k) , neₜ₌ k k [d′] [d] (neNfₜ₌ neK₁ neK₁ k≡k)
-redSubst*Term {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+redSubst*Term {A} {t} {u} {l} {Γ} t⇒u (Πᵣ′ rF lF lG _ _ F G D _ ⊢F ⊢G A≡A [F] [G] G-ext)
                   (Πₜ f [[ ⊢t , ⊢u , d ]] funcF f≡f [f] [f]₁) =
   let A≡ΠFG = subset* (red D)
       t⇒u′  = conv* t⇒u A≡ΠFG
