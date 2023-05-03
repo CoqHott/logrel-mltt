@@ -4,7 +4,8 @@ module Definition.Typed.NonParanoidTyping where
 
 open import Definition.Untyped
 open import Definition.Typed
-open import Definition.Typed.Properties
+open import Definition.Typed.Properties as T hiding (wf ; wfTerm)
+open import Definition.Typed.Weakening
 open import Definition.Typed.Consequences.Injectivity
 open import Definition.Typed.Consequences.Inversion
 open import Definition.Typed.Consequences.Syntactic
@@ -210,17 +211,47 @@ mutual
                       cast l (B [ a ]↑) B' ((snd (wk1 e)) ∘ (var 0) ^ ⁰) ((wk1 f) ∘ a ^ l))
                       ^ l)
                    ∷ Π A' ^ rA ° lA ▹ B' ° lB ° l  ^ ! ^ [ ! , ι l ]
-    cast-ℕ-0 : ∀ {e}
-               → Γ ⊢⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ]
-               → Γ ⊢⊢ cast ⁰ ℕ ℕ e zero
-                   ≡ zero
-                   ∷ ℕ ^ [ ! , ι ⁰ ]
-    cast-ℕ-S : ∀ {e n}
+
+mutual 
+  wfTerm : ∀ {Γ A t r} → Γ ⊢⊢ t ∷ A ^ r → ⊢⊢ Γ
+  wfTerm (univ <l ⊢⊢Γ) = ⊢⊢Γ
+  wfTerm (ℕⱼ ⊢⊢Γ) = ⊢⊢Γ
+  wfTerm (Emptyⱼ ⊢⊢Γ) = ⊢⊢Γ
+  wfTerm (Πⱼ <l ▹ <l' ▹ G) with wf G
+  ... | ⊢Γ ∙ F = ⊢Γ
+  wfTerm (var ⊢⊢Γ x₁) = ⊢⊢Γ
+  wfTerm (lamⱼ _ _ t) with wfTerm t
+  wfTerm (lamⱼ _ _ t) | ⊢⊢Γ ∙ F′ = ⊢⊢Γ
+  wfTerm (g ∘ⱼ a) = wfTerm a
+  wfTerm (fstⱼ e) = wfTerm e
+  wfTerm (sndⱼ e) = wfTerm e
+  wfTerm (zeroⱼ ⊢⊢Γ) = ⊢⊢Γ
+  wfTerm (sucⱼ n) = wfTerm n
+  wfTerm (natrecⱼ z s n) = wfTerm z
+  wfTerm (Emptyrecⱼ A e) = wfTerm e
+  wfTerm (Idⱼ t u) = wfTerm t
+  wfTerm (Idreflⱼ t) = wfTerm t
+  wfTerm (transpⱼ P t s u e) = wfTerm t
+  wfTerm (castⱼ e t) = wfTerm t
+  wfTerm (conv t A≡B) = wfTerm t
+
+  wf : ∀ {Γ A r} → Γ ⊢⊢ A ^ r → ⊢⊢ Γ
+  wf (Uⱼ ⊢⊢Γ) = ⊢⊢Γ
+  wf (univ A) = wfTerm A
+
+adm-cast-ℕ-0 : ∀ {Γ e}
+         → Γ ⊢⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ]
+         → Γ ⊢⊢ cast ⁰ ℕ ℕ e zero ≡ zero ∷ ℕ ^ [ ! , ι ⁰ ]
+adm-cast-ℕ-0 ⊢⊢e = let ⊢⊢Γ = wfTerm ⊢⊢e
+                   in cast-refl (refl (univ (ℕⱼ ⊢⊢Γ))) ⊢⊢e (zeroⱼ ⊢⊢Γ)
+
+adm-cast-ℕ-S : ∀ {Γ e n}
                → Γ ⊢⊢ e ∷ Id (U ⁰) ℕ ℕ ^ [ % , ι ⁰ ]
                → Γ ⊢⊢ n ∷ ℕ ^ [ ! , ι ⁰ ]
-               → Γ ⊢⊢ cast ⁰ ℕ ℕ e (suc n)
-                   ≡ suc (cast ⁰ ℕ ℕ e n)
-                   ∷ ℕ ^ [ ! , ι ⁰ ]
+               → Γ ⊢⊢ cast ⁰ ℕ ℕ e (suc n) ≡ suc (cast ⁰ ℕ ℕ e n) ∷ ℕ ^ [ ! , ι ⁰ ]
+adm-cast-ℕ-S ⊢⊢e ⊢⊢n = let ⊢⊢Γ = wfTerm ⊢⊢e
+                       in trans (cast-refl (refl (univ (ℕⱼ ⊢⊢Γ))) ⊢⊢e (sucⱼ ⊢⊢n)) (suc-cong (sym (cast-refl (refl (univ (ℕⱼ ⊢⊢Γ))) ⊢⊢e ⊢⊢n)))
+
 
 mutual
   ⊢is⊢⊢ctx : ∀ {Γ} → ⊢ Γ → ⊢⊢ Γ
@@ -277,8 +308,8 @@ mutual
   ⊢is⊢⊢eqterm (cast-refl X x x₁) = cast-refl (univ (⊢is⊢⊢eqterm X)) (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
   ⊢is⊢⊢eqterm (cast-cong X X₁ X₂ x x₁) = cast-cong (univ (⊢is⊢⊢eqterm X)) (univ (⊢is⊢⊢eqterm X₁)) (⊢is⊢⊢eqterm X₂) (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
   ⊢is⊢⊢eqterm (cast-Π x x₁ x₂ x₃ x₄ x₅) = cast-Π (⊢is⊢⊢term x₄) (⊢is⊢⊢term x₅)
-  ⊢is⊢⊢eqterm (cast-ℕ-0 x) = cast-ℕ-0 (⊢is⊢⊢term x)
-  ⊢is⊢⊢eqterm (cast-ℕ-S x x₁) = cast-ℕ-S (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
+  ⊢is⊢⊢eqterm (cast-ℕ-0 x) = adm-cast-ℕ-0 (⊢is⊢⊢term x)
+  ⊢is⊢⊢eqterm (cast-ℕ-S x x₁) = adm-cast-ℕ-S (⊢is⊢⊢term x) (⊢is⊢⊢term x₁)
 
 
 mutual
@@ -304,10 +335,10 @@ mutual
   ⊢⊢is⊢term (Emptyⱼ ⊢Γ) = Emptyⱼ (⊢⊢is⊢ctx ⊢Γ)
   ⊢⊢is⊢term (Πⱼ x ▹ x₁ ▹ X₁) =
     let ⊢G = ⊢⊢is⊢ X₁
-        ⊢Γ , ⊢F = inversion-ctx (wf ⊢G)
+        ⊢Γ , ⊢F = inversion-ctx (T.wf ⊢G)
     in Πⱼ x ▹ x₁ ▹ un-univ ⊢F ▹ un-univ ⊢G
   ⊢⊢is⊢term (var ⊢Γ x) = var (⊢⊢is⊢ctx ⊢Γ) x
-  ⊢⊢is⊢term (lamⱼ x x₁ X) = let XX = ⊢⊢is⊢term X in lamⱼ x x₁ (let ⊢Γ , ⊢F = inversion-ctx (wfTerm XX) in ⊢F) XX
+  ⊢⊢is⊢term (lamⱼ x x₁ X) = let XX = ⊢⊢is⊢term X in lamⱼ x x₁ (let ⊢Γ , ⊢F = inversion-ctx (T.wfTerm XX) in ⊢F) XX
   ⊢⊢is⊢term (X₂ ∘ⱼ X₃) =
     let ⊢g = ⊢⊢is⊢term X₂ 
         ⊢a = ⊢⊢is⊢term X₃
@@ -363,7 +394,7 @@ mutual
   ⊢⊢is⊢eqterm (app-cong X X₁) = app-cong (⊢⊢is⊢eqterm X) (⊢⊢is⊢eqterm X₁)
   ⊢⊢is⊢eqterm (β-red x x₁ x₃ x₄) =
     let ⊢t = ⊢⊢is⊢term x₃
-    in β-red x x₁ (let ⊢Γ , ⊢F = inversion-ctx (wfTerm ⊢t) in ⊢F) ⊢t (⊢⊢is⊢term x₄)
+    in β-red x x₁ (let ⊢Γ , ⊢F = inversion-ctx (T.wfTerm ⊢t) in ⊢F) ⊢t (⊢⊢is⊢term x₄)
   ⊢⊢is⊢eqterm (η-eq x₃ x₄ X) =
     let ⊢t = ⊢⊢is⊢term x₃
         ⊢Π = un-univ (syntacticTerm ⊢t)
@@ -394,6 +425,4 @@ mutual
         _ , _ , ⊢Π , ⊢Π' , _ = inversion-Id ⊢Id
         _ , _ , _ , ⊢F , ⊢G , _ , req , _ = inversion-Π ⊢Π
         _ , _ , _ , ⊢F' , ⊢G' , _ , req' , _ = inversion-Π ⊢Π'
-    in cast-Π ⊢F (PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ [ ! , _ ]) req ⊢G) ⊢F' (PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ [ ! , _ ]) req' ⊢G') ⊢e (⊢⊢is⊢term x₅) 
-  ⊢⊢is⊢eqterm (cast-ℕ-0 x) = cast-ℕ-0 (⊢⊢is⊢term x)
-  ⊢⊢is⊢eqterm (cast-ℕ-S x x₁) = cast-ℕ-S (⊢⊢is⊢term x) (⊢⊢is⊢term x₁)
+    in cast-Π ⊢F (PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ [ ! , _ ]) req ⊢G) ⊢F' (PE.subst (λ rr → _ ⊢ _ ∷ Univ rr _ ^ [ ! , _ ]) req' ⊢G') ⊢e (⊢⊢is⊢term x₅)
