@@ -110,25 +110,6 @@ mutual
               → Γ ⊢ u ∷ A ^ [ ! , l ]
               → Γ ⊢ e ∷ (Id A t u) ^ [ % , ι ⁰ ]
               → Γ ⊢ transp A P t s u e ∷ P [ u ] ^ [ % , ι ⁰ ]
-{-
-     Id-Π : ∀ {A rA lA lB l B t u}
-           → lA ≤ l
-           → lB ≤ l
-           → Γ ⊢ A ∷ Univ rA lA ^ [ ! , next lA ]
-           → Γ ∙ A ^ [ rA , ι lA ] ⊢ B  ∷ Univ ! lB ^ [ ! , next lB ]
-           → Γ ⊢ t ∷ (Π A ^ rA ° lA ▹ B ° lB ° l ^ !) ^ [ ! , ι l ]
-           → Γ ⊢ u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l ^ !) ^ [ ! , ι l ]
-           → Γ ⊢ IdΠ A B t u ∷
-                   (Π A ^ rA ° lA ▹ (Id B ((wk1 t) ∘ (var 0) ^ l) ((wk1 u) ∘ (var 0) ^ l)) ° ⁰ ° ⁰ ^ %)
-                    ^ % ° ⁰ ▹▹ (Id (Π A ^ rA ° lA ▹ B ° lB ° l ^ !) t u) ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
-    Id-SProp : ∀ {A B}
-               → Γ ⊢ A ∷ SProp ^ [ ! , next ⁰ ]
-               → Γ ⊢ B ∷ SProp ^ [ ! , next ⁰ ]
-               → Γ ⊢ IdSProp A B ∷
-                       (A ^ % ° ⁰ ▹▹ B ° ⁰ ° ⁰ ^ %) ^ % ° ⁰ ▹▹
-                       ((B ^ % ° ⁰ ▹▹ A ° ⁰ ° ⁰ ^ %) ^ % ° ⁰ ▹▹
-                        Id SProp A B ° ⁰ ° ⁰ ^ %) ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
--}
     castⱼ : ∀ {A B r e t}
             → Γ ⊢ A ∷ Univ r ⁰ ^ [ ! , next ⁰ ]
             → Γ ⊢ B ∷ Univ r ⁰ ^ [ ! , next ⁰ ]

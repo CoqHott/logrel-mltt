@@ -1,10 +1,12 @@
-# A Logical Relation for Impredicative Observational Equality in Agda #
+# A Logical Relation for Observational Equality Meets CIC #
 
 This is a formalized proof of the decidability of conversion for an
 extension of the calculus of inductive constructions (CIC)
-with an equality satisfying UIP, function extensionality, and propositional extensionality. 
+with an equality satisfying UIP, function extensionality, and
+propositional extensionality and the computation rule of Martin-Löf 
+identity type. 
 
-The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/impredicativity-SProp-POPL/html/README.html).
+The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/impredicativity-cast-compute-refl/html/README.html).
 
 ### Impredicative Observational Equality ###
 
@@ -47,8 +49,10 @@ typing inversion results, etc.
 
 This first part lays the foundation necessary to the definition of an algorithmic equality relation
 on types and terms. We can prove that this algorithmic equality is decidable, and, using the
-fundamental lemma, that it coincides with the judgmental equality. It follows that the judgmental
-equality of terms and types is decidable.
+fundamental lemma, that it coincides with the judgmental equality. 
+
+Then, the main remaining part is to prove that algorithmic equality is
+decidable.
 
 Note that because there is no computation in the impredicative logical
 layer, canonicity follows from consistency, which has to be proven
