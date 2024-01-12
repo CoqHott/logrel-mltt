@@ -30,8 +30,6 @@ open import Tools.Nat
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
-import Data.Nat as Nat
-
 -- Application of valid terms.
 appᵛ : ∀ {F G rF lF lG lΠ t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
@@ -97,8 +95,8 @@ appᵛ↑ : ∀ {F F' G rF rF' lF lF' lG lΠ t u Γ l}
        ([Γ] : ⊩ᵛ Γ)
        ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
        ([F'] : Γ ⊩ᵛ⟨ l ⟩ F' ^ [ rF' , ι lF' ] / [Γ])
-       ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F]) 
-       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])  
+       ([G] : Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ ! , ι lG ] / [Γ] ∙ [F])
+       ([ΠFG] : Γ ⊩ᵛ⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] / [Γ])
        ([t] : Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ t ∷ wk1 (Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !) ^ [ ! , ι lΠ ] / [Γ] ∙ [F'] / wk1ᵛ {A = Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ !} {F = F'} [Γ] [F'] [ΠFG])
        ([u] : Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ u ∷ wk1 F ^ [ rF , ι lF ] / [Γ] ∙ [F'] / wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F])
          → Γ ∙ F' ^ [ rF' , ι lF' ] ⊩ᵛ⟨ l ⟩ t ∘ u ^ lΠ ∷ G [ u ]↑ ^ [ ! , ι lG ] / [Γ] ∙ [F'] / subst↑S {F'} {G} {u} {F' = F} [Γ] [F'] [F] [G] [u]
@@ -119,8 +117,8 @@ appᵛ↑ {F} {F'} {G} {rF} {rF'} {lF} {lF'} {lG} {lΠ} {t} {u} lF≤ lG≤ [Γ]
 GappGen' : ∀ {F G Γ rF lF lG rΠ l Δ σ}
          ([Γ] : ⊩ᵛ Γ)
          ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ [ rF , ι lF ] / [Γ])
-         → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F]  
-         → ∀ ⊢Δ [σ] a 
+         → Γ ∙ F ^ [ rF , ι lF ] ⊩ᵛ⟨ l ⟩ G ^ [ rΠ , ι lG ] / [Γ] ∙ [F]
+         → ∀ ⊢Δ [σ] a
          ([a] : Δ ⊩⟨ l ⟩ a ∷ subst σ F ^ [ rF , ι lF ]
                 / proj₁ ([F] ⊢Δ [σ]))
          → Σ (Δ ⊩⟨ l ⟩ subst (consSubst σ a) G ^ [ rΠ , ι lG ])
@@ -155,7 +153,7 @@ appirrᵛ {F} {G} {rF} {lF} {t} {u} [Γ] [F] [G] [ΠFG] [t] [u] {Δ = Δ} {σ = 
       [σt] = proj₁ ([t] ⊢Δ [σ])
       [σu] = proj₁ ([u] ⊢Δ [σ])
       [liftσ] = liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
-      [σG]  = proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ]) 
+      [σG]  = proj₁ ([G] (⊢Δ ∙ ⊢F) [liftσ])
       [σG[u]]  = proj₁ ([G[u]] ⊢Δ [σ])
       [σG[u]]′ = irrelevance′ (singleSubstLift G u) [σG[u]]
   in  irrelevanceTerm′ (PE.sym (singleSubstLift G u)) PE.refl PE.refl
@@ -177,4 +175,3 @@ appirrᵛ {F} {G} {rF} {lF} {t} {u} [Γ] [F] [G] [ΠFG] [t] [u] {Δ = Δ} {σ = 
                                               (irrelevanceEq″ (PE.sym (singleSubstComp (subst σ u) σ G)) (PE.sym (singleSubstComp (subst σ′ u) σ G))
                                                               PE.refl PE.refl (proj₁ [Gapp]) irr [Gapp]₂)
                                               (un-univ (escape [σG]))))
-

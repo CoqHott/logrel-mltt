@@ -21,9 +21,6 @@ open import Tools.Product
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
 -- Weak head expansion of reducible types.
 redSubst* : ∀ {A B r l Γ}
           → Γ ⊢ A ⇒* B ^ r

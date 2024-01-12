@@ -22,10 +22,7 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 open import Tools.Empty using (⊥; ⊥-elim)
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
-Ugen : ∀ {Γ rU l} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ next l ⟩ Univ rU l ^ [ ! , next l ] 
+Ugen : ∀ {Γ rU l} → (⊢Γ : ⊢ Γ) →  Γ ⊩⟨ next l ⟩ Univ rU l ^ [ ! , next l ]
 Ugen {Γ} {rU} {⁰} ⊢Γ = Uᵣ′ (Univ rU ⁰) (ι ¹) rU ⁰ emb< PE.refl ((idRed:*: (Ugenⱼ ⊢Γ)))
 Ugen {Γ} {rU} {¹} ⊢Γ = Uᵣ′ (Univ rU ¹) ∞ rU ¹ ∞< PE.refl (idRed:*: (Uⱼ ⊢Γ))
 
@@ -86,12 +83,12 @@ univEqGen {Γ} {UA} {A} {l′} [UA] [A] =
       [UA]' , [UAeq] = redSubst* (PE.subst (λ X →  Γ ⊢ UA ⇒* Univ r X ^ [ ! , next X ]) (next-inj e) D) [U]
   in univEq [U] (convTerm₁ {t = A} [UA]' [U] [UAeq] (irrelevanceTerm (Uᵣ [UA]) [UA]' [A]))
 
-univ⊩ : ∀ {A Γ rU lU lU' l} 
+univ⊩ : ∀ {A Γ rU lU lU' l}
         ([U] : Γ ⊩⟨ l ⟩ Univ rU lU ^ [ ! , lU' ])
       → Γ ⊩⟨ l ⟩ A ∷ Univ rU lU ^ [ ! , lU' ] / [U]
-      → Γ ⊩⟨ ι lU ⟩ A ^ [ rU , ι lU ] 
+      → Γ ⊩⟨ ι lU ⟩ A ^ [ rU , ι lU ]
 univ⊩ {lU = lU} {l = l} [U] [A] = irrelevance-≤ (≡is≤ PE.refl) (univEq [U] [A])
-  
+
 univEqTerm : ∀ {Γ A t r l′ ll′}
        → ([U] : Γ ⊩⟨ ∞ ⟩ Univ r l′ ^ [ ! , ll′ ] )
        → ([A] : Γ ⊩⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U])
@@ -120,7 +117,7 @@ UnivNotℕ : ∀ {Γ r ll} →  Γ ⊩ℕ Univ r ll → ⊥
 UnivNotℕ {ll = ⁰} [[ ⊢A , ⊢B , D ]] = U≢ℕ (whrDet* (id (univ (univ 0<1 (wf ⊢A))) , Uₙ) (D , ℕₙ))
 UnivNotℕ {ll = ¹} [[ ⊢A , ⊢B , D ]] = U≢ℕ (whrDet* (id (Uⱼ (wf ⊢A)) , Uₙ) (D , ℕₙ))
 
-UnivNotΠ : ∀ {Γ r lΠ l ll} → (l LogRel.⊩¹Π logRelRec l ^[ Γ ]) (Univ r ll) lΠ → ⊥ 
+UnivNotΠ : ∀ {Γ r lΠ l ll} → (l LogRel.⊩¹Π logRelRec l ^[ Γ ]) (Univ r ll) lΠ → ⊥
 UnivNotΠ {ll = ⁰} (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (univ (univ 0<1 (wf ⊢F))) , Uₙ) (red D , Πₙ))
 UnivNotΠ {ll = ¹} (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (Uⱼ (wf ⊢F)) , Uₙ) (red D , Πₙ))
 
@@ -185,7 +182,7 @@ un-univEq {⁰}  {Γ} {A} {.%} (Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A) =
 un-univEq {¹} {Γ} {A} {.!} (Uᵣ (Uᵣ r .⁰ emb< eq [[ ⊢A , ⊢B , D ]])) = Uₜ (Univ r ⁰) (un-univ:⇒*: [[ ⊢A , ⊢B , D ]]) Uₙ (≅-U⁰refl (wf ⊢A))
                                                                               (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ emb< eq [[ ⊢A , ⊢B , D ]] )))
 un-univEq {¹} {Γ} {A} {r} (ne′ K D neK K≡K) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
-un-univEq {¹} {Γ} {A} {r} (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext) = 
+un-univEq {¹} {Γ} {A} {r} (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
   Uₜ (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
 un-univEq {¹} {Γ} {A} {r} (emb emb< (ne′ K D neK K≡K)) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
 un-univEq {¹} {Γ} {A} {r} (emb emb< (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) =

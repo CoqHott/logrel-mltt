@@ -20,9 +20,6 @@ open import Tools.Product
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
 
 mutual
   -- Helper function for symmetry of type equality using shape views.
@@ -110,7 +107,7 @@ symNatural-prop (ne prop) = ne (symNeutralTerm prop)
 
 symEmpty-prop : ∀ {Γ k k′}
                 → [Empty]-prop Γ k k′
-                → [Empty]-prop Γ k′ k 
+                → [Empty]-prop Γ k′ k
 symEmpty-prop (ne t u ) = ne u t
 
 
@@ -145,7 +142,7 @@ symEqTerm¹ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ [A] [B] A≡B 
       → Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ t ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ)
     u_to_t = λ [ρ] ⊢Δ [a] → convTerm₂ (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ) [a]
   in
-  Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A] 
+  Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A]
 symEqTerm¹ (ℕᵣ D) (ℕₜ₌ k k′ d d′ t≡u prop) =
   ℕₜ₌ k′ k d′ d (≅ₜ-sym t≡u) (symNatural-prop prop)
 symEqTerm¹ (Emptyᵣ D) (Emptyₜ₌ prop) = Emptyₜ₌ (symEmpty-prop prop)
@@ -171,7 +168,7 @@ symEqTerm∞ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ [A] [B] A≡B
     [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
       symEq (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ)
   in
-  Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A] 
+  Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A]
 symEqTerm∞ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ¹ l< el D)) (Uₜ₌ [A] [B] A≡B [A≡B]) =
   let
     [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →

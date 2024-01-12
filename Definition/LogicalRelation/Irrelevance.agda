@@ -16,9 +16,6 @@ open import Definition.LogicalRelation.ShapeView
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
 -- Irrelevance for propositionally equal types
 irrelevance′ : ∀ {A A′ Γ r l}
              → A PE.≡ A′
@@ -31,7 +28,7 @@ irrelevance′′ : ∀ {A A′ Γ r r' ll ll' l}
              → r PE.≡ r'
              → ll PE.≡ ll'
              → Γ ⊩⟨ l ⟩ A ^ [ r , ll ]
-             → Γ ⊩⟨ l ⟩ A′ ^ [ r' , ll' ] 
+             → Γ ⊩⟨ l ⟩ A′ ^ [ r' , ll' ]
 irrelevance′′ PE.refl PE.refl PE.refl [A] = [A]
 
 -- Irrelevance for propositionally equal types and contexts
@@ -120,13 +117,13 @@ mutual
                                          ([F] [ρ] ⊢Δ)
                                          [a]₁
               in  irrelevanceEq′ (PE.cong (λ y → wk (lift ρ) y [ _ ]) G≡G₁) PE.refl (PE.cong ι lG≡lG₁)
-                                 ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([G≡G′] [ρ] ⊢Δ [a])) 
+                                 ([G] [ρ] ⊢Δ [a]) ([G]₁ [ρ] ⊢Δ [a]₁) ([G≡G′] [ρ] ⊢Δ [a]))
   irrelevanceEqT {Γ} {r = r} (Πirrᵥ (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A)
                          (Πirrᵣ rF₁ lF₁ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁))
                  (Πirr₌ F′ G′ D′ A≡B) =
     let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
         F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ , _ = Π-PE-injectivity ΠFG≡ΠF₁G₁
-    in  Πirr₌ F′ G′ (PE.subst₂ _ rF≡rF₁ lF≡lF₁ D′) 
+    in  Πirr₌ F′ G′ (PE.subst₂ _ rF≡rF₁ lF≡lF₁ D′)
         (PE.subst5 (λ x rx lx lx' lx'' → Γ ⊢ x ≅ Π F′ ^ rx ° lx ▹ G′ ° lx' ° lx'' ^ % ^ r) ΠFG≡ΠF₁G₁ rF≡rF₁ lF≡lF₁ lG≡lG₁ lΠ≡lΠ₁ A≡B)
   irrelevanceEqT {Γ} {r = r} (Idᵥ (Idᵣ F t u _ D ⊢F ⊢t ⊢u A≡A)
                          (Idᵣ F₁ t' u' _ D₁ ⊢F₁ ⊢t' ⊢u' A≡A₁))
@@ -159,7 +156,7 @@ mutual
                                                                                  (G-ext [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a])
                                                                                                       (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [b])
                                                                                                       (irrelevanceEqTerm (irrelevance-level l< ([F] [ρ] ⊢Δ )) ([F] [ρ] ⊢Δ) x))
-  irrelevance-level l< (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) = Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A 
+  irrelevance-level l< (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) = Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A
   irrelevance-level l< (Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A) = Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A
   irrelevance-level {r = [ .! , ll ]} ∞< (Uᵣ (Uᵣ r .⁰ emb< eq d)) = emb ∞< (Uᵣ (Uᵣ r _ emb< eq d))
   irrelevance-level ∞< (emb emb< [A]) = emb ∞< (emb emb< [A])

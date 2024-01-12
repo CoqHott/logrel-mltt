@@ -20,8 +20,6 @@ open import Tools.Product
 open import Tools.Empty
 import Tools.PropositionalEquality as PE
 
-import Data.Nat as Nat
-
 mutual
   -- Helper function for transitivity of type equality using shape views.
   transEqT : ∀ {Γ A B C r l l′ l″}
@@ -65,7 +63,7 @@ mutual
                                       ([F]₁ [ρ] ⊢Δ) ([F′] [ρ] ⊢Δ) ([F≡F′]₁ [ρ] ⊢Δ)
         [G′] : ∀ {ρ Δ a} [ρ] ⊢Δ
              → Δ ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ
-             → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′ [ a ] ^ [ r , ι lG₁ ] 
+             → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′ [ a ] ^ [ r , ι lG₁ ]
         [G′] {ρ} [ρ] ⊢Δ [a] =
              let [a′] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₁≡F′)) PE.refl PE.refl
                                       ([F′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ) [a]
@@ -90,9 +88,9 @@ mutual
                              -- Γ ⊢ .C ⇒* Π F″ ^ rF ▹ G″ ^ r
     in  Π₌ F″ G″ (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ D″) (PE.subst₃ _ rF₁≡rF′ lF₁≡lF′ lG₁≡lG′ (≅-trans A≡B (PE.subst (λ x → Γ ⊢ x ≅ Π F″ ^ rF₁ ° lF₁ ▹ G″ ° lG₁ ° lΠ ^ r ^ [ r , ι lΠ ]) ΠF₁G₁≡ΠF′G′ A≡B₁)))
            (λ ρ ⊢Δ → transEq′ PE.refl PE.refl (PE.sym rF₁≡rF′) (PE.sym rF₂≡rF′) (PE.cong ι (PE.sym lF₁≡lF′)) (PE.cong ι (PE.sym lF₂≡lF′))
-           ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ) 
+           ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ)
            ([F≡F′] ρ ⊢Δ) ([F′≡F″] ρ ⊢Δ))
-           (λ ρ ⊢Δ [a] → 
+           (λ ρ ⊢Δ [a] →
               let [a′] = convTerm₁′ (PE.sym rF₁≡rF′) (PE.cong ι (PE.sym lF₁≡lF′)) ([F] ρ ⊢Δ) ([F′] ρ ⊢Δ) ([F≡F′] ρ ⊢Δ) [a]
                   [a″] = convTerm₁′ (PE.sym rF₂≡rF′) (PE.cong ι (PE.sym lF₂≡lF′)) ([F′] ρ ⊢Δ) ([F″] ρ ⊢Δ) ([F′≡F″] ρ ⊢Δ) [a′]
               in transEq′ PE.refl PE.refl PE.refl PE.refl (PE.cong ι (PE.sym lG₁≡lG′)) (PE.cong ι (PE.sym lG₂≡lG″))
@@ -181,7 +179,7 @@ mutual
 -- Empty
 transEmpty-prop : ∀ {Γ k k′ k″}
   → [Empty]-prop Γ k k′
-  → [Empty]-prop Γ k′ k″ 
+  → [Empty]-prop Γ k′ k″
   → [Empty]-prop Γ k k″
 transEmpty-prop (ne a b) (ne c d) = ne a d
 

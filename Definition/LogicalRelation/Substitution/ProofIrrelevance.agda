@@ -21,7 +21,6 @@ open import Tools.Empty
 open import Tools.Nat
 
 import Tools.PropositionalEquality as PE
-import Data.Nat as Nat
 
 ~-quasirefl : ∀ {Γ n n′ A r} → Γ ⊢ n ~ n′ ∷ A ^ r → Γ ⊢ n ~ n ∷ A ^ r
 ~-quasirefl p = ~-trans p (~-sym p)

@@ -9,9 +9,6 @@ open import Tools.Product
 open import Tools.List
 import Tools.PropositionalEquality as PE
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
 infixl 30 _∙_^_
 infix 30 Π_^_°_▹_°_°_^_
 infixr 22 _^_°_▹▹_°_°_^_

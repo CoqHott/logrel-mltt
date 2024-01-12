@@ -17,9 +17,6 @@ open import Tools.Product
 open import Tools.Empty using (⊥; ⊥-elim)
 import Tools.PropositionalEquality as PE
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
 -- Type for maybe embeddings of reducible types
 data MaybeEmb (l : TypeLevel) (⊩⟨_⟩ : TypeLevel → Set) : Set where
   noemb : ⊩⟨ l ⟩ → MaybeEmb l ⊩⟨_⟩
@@ -91,7 +88,7 @@ Id-intr {l = ∞}  (emb ∞< x) = emb ∞< (Id-intr x)
 U-elim′ : ∀ {l Γ A r l′ ll} → Γ ⊢ A ⇒* Univ r l′ ^ [ ! , ll ] → Γ ⊩⟨ l ⟩ A ^ [ ! , ll ] → Γ ⊩⟨ l ⟩U A ^ ll
 U-elim′ D (Uᵣ′ A ll r l l< e D') = noemb (Uᵣ r l l< e D')
 U-elim′ D (ℕᵣ D') =  ⊥-elim (U≢ℕ (whrDet* (D ,  Uₙ) (red D' , ℕₙ)))
-U-elim′ D (ne′ K D' neK K≡K) =  ⊥-elim (U≢ne neK (whrDet* (D ,  Uₙ) (red D' , ne neK))) 
+U-elim′ D (ne′ K D' neK K≡K) =  ⊥-elim (U≢ne neK (whrDet* (D ,  Uₙ) (red D' , ne neK)))
 U-elim′ D (Πᵣ′ rF lF lG _ _ F G D' ⊢F ⊢G A≡A [F] [G] G-ext) = ⊥-elim (U≢Π (whrDet* (D , Uₙ) (red D' , Πₙ)))
 U-elim′ {ι ¹} D (emb emb< x) with U-elim′ D x
 U-elim′ {ι ¹} D (emb emb< x) | noemb x₁ = emb emb< (noemb x₁)
@@ -142,7 +139,7 @@ Empty-elim [Empty] = Empty-elim′ (id (escape [Empty])) [Empty]
 ne-elim′ : ∀ {l A Γ K r ll ll'} → Γ ⊢ A ⇒* K ^ [ r , ι ll ] → Neutral K → Γ ⊩⟨ l ⟩ A ^ [ r , ll' ] → ι ll PE.≡  ll' → Γ ⊩⟨ l ⟩ne A ^[ r , ll ]
 ne-elim′ D neK (Uᵣ′ _ _ _ _ l< PE.refl [[ _ , _ , d ]]) e = ⊥-elim (U≢ne neK (whrDet* (d , Uₙ) (D , ne neK)))
 ne-elim′ D neK (ℕᵣ D′) e = ⊥-elim (ℕ≢ne neK (whrDet* (red D′ , ℕₙ) (D , ne neK)))
-ne-elim′ D neK (ne (ne K D′ neK′ K≡K)) PE.refl = noemb (ne K D′ neK′ K≡K) 
+ne-elim′ D neK (ne (ne K D′ neK′ K≡K)) PE.refl = noemb (ne K D′ neK′ K≡K)
 ne-elim′ D neK (Πᵣ′ rF lF lG _ _ F G D′ ⊢F ⊢G A≡A [F] [G] G-ext) e =
   ⊥-elim (Π≢ne neK (whrDet* (red D′ , Πₙ) (D , ne neK)))
 ne-elim′ D neK (Πirrᵣ′ rF lF F G D′ ⊢F ⊢G A≡A) e =
@@ -153,7 +150,7 @@ ne-elim′ D neK (Emptyᵣ D′) e = ⊥-elim (Empty≢ne neK (whrDet* (red D′
 ne-elim′ {ι ¹} D neK (emb emb< x) e with ne-elim′ D neK x e
 ne-elim′ {ι ¹} D neK (emb emb< x) e | noemb x₁ = emb emb< (noemb x₁)
 ne-elim′ {ι ¹} D neK (emb emb< x) e | emb () x₁
-ne-elim′ {∞} D neK (emb ∞< x) e with ne-elim′ D neK x e 
+ne-elim′ {∞} D neK (emb ∞< x) e with ne-elim′ D neK x e
 ne-elim′ {∞} D _ (emb ∞< x) e | noemb x₁ = emb ∞< (noemb x₁)
 ne-elim′ {∞} D _ (emb ∞< x) e | emb <l x₁ = emb {l′ = ι ¹} ∞< (emb <l x₁)
 
@@ -177,7 +174,7 @@ ne-elim neK [K] = ne-elim′ (id (escape [K])) neK [K] PE.refl
 Π-elim : ∀ {Γ F G rF lF lG lΠ l} → Γ ⊩⟨ l ⟩ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ] → Γ ⊩⟨ l ⟩Π Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^[ lΠ ]
 Π-elim [Π] = Π-elim′ (id (escape [Π])) [Π]
 
-Πirr-elim′ : ∀ {l A Γ F G rF lF} → Γ ⊢ A ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰  ^ % ^ [ % , ι ⁰ ] → Γ ⊩⟨ l ⟩ A ^ [ % , ι ⁰ ]  → Γ ⊩⟨ l ⟩Πirr A 
+Πirr-elim′ : ∀ {l A Γ F G rF lF} → Γ ⊢ A ⇒* Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰  ^ % ^ [ % , ι ⁰ ] → Γ ⊩⟨ l ⟩ A ^ [ % , ι ⁰ ]  → Γ ⊩⟨ l ⟩Πirr A
 Πirr-elim′ D (Emptyᵣ D′) = ⊥-elim (Empty≢Π (whrDet* (red D′ , Emptyₙ) (D , Πₙ)))
 Πirr-elim′ D (ne′ K D′ neK K≡K) =
   ⊥-elim (Π≢ne neK (whrDet* (D , Πₙ) (red D′ , ne neK)))
@@ -236,13 +233,13 @@ data ShapeView Γ : ∀ l l′ A B r r' (p : Γ ⊩⟨ l ⟩ A ^ r) (q : Γ ⊩�
     → ShapeView Γ l l′ A B [ % , ι ⁰ ] [ % , ι ⁰ ] (Πirrᵣ ΠA) (Πirrᵣ ΠB)
   Idᵥ : ∀ {A B l l′} IdA IdB
     → ShapeView Γ l l′ A B [ % , ι ⁰ ] [ % , ι ⁰ ] (Idᵣ IdA) (Idᵣ IdB)
-  emb⁰¹ : ∀ {A B r r' l p q} 
+  emb⁰¹ : ∀ {A B r r' l p q}
         → ShapeView Γ (ι ⁰) l A B r r' p q
         → ShapeView Γ (ι ¹) l A B r r' (emb emb< p) q
   emb¹⁰ : ∀ {A B r r' l p q}
         → ShapeView Γ l (ι ⁰) A B r r' p q
         → ShapeView Γ l (ι ¹) A B r r' p (emb emb< q)
-  emb¹∞ : ∀ {A B r r' l p q} 
+  emb¹∞ : ∀ {A B r r' l p q}
         → ShapeView Γ (ι ¹) l A B r r' p q
         → ShapeView Γ ∞ l A B r r' (emb ∞< p) q
   emb∞¹ : ∀ {A B r r' l p q}
@@ -256,7 +253,7 @@ goodCases : ∀ {l l′ Γ A B r r'} ([A] : Γ ⊩⟨ l ⟩ A ^ r) ([B] : Γ ⊩
 goodCases (Uᵣ UA) (Uᵣ UB) A≡B = Uᵥ UA UB
 goodCases (Uᵣ′ _ _ _ _ _ _ ⊢Γ) (ℕᵣ D) D' = ⊥-elim (U≢ℕ (whrDet* (D' ,  Uₙ) (red D , ℕₙ)))
 goodCases (Uᵣ′ _ _ _ _ _ _ ⊢Γ) (Emptyᵣ D) D' =  ⊥-elim (U≢Empty (whrDet* (D' ,  Uₙ) (red D , Emptyₙ)))
-goodCases (Uᵣ′ _ _ _ _ _ _ ⊢Γ) (ne′ K D neK K≡K) D' = ⊥-elim (U≢ne neK (whrDet* (D' ,  Uₙ) (red D , ne neK))) 
+goodCases (Uᵣ′ _ _ _ _ _ _ ⊢Γ) (ne′ K D neK K≡K) D' = ⊥-elim (U≢ne neK (whrDet* (D' ,  Uₙ) (red D , ne neK)))
 goodCases (Uᵣ′ _ _ _ _ _ _ ⊢Γ) (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) D' =
   ⊥-elim (U≢Π (whrDet* (D' , Uₙ) (red D , Πₙ)))
 goodCases (Uᵣ′ _ _ _ _ _ _ ⊢Γ) (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) D' =
@@ -426,24 +423,24 @@ combine : ∀ {Γ l l′ l″ l‴ A B C r1 r2 r2' r3 [A] [B] [B]′ [C]}
         → ShapeView Γ l″ l‴ B C r2' r3 [B]′ [C]
         → ShapeView₃ Γ l l′ l‴ A B C r1 r2 r3 [A] [B] [C]
 combine (Uᵥ UA UB) (Uᵥ UB' UC) = Uᵥ UA UB UC
-combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (ℕᵥ ℕA ℕB) = 
- ⊥-elim (U≢ℕ (whrDet* (red D ,  Uₙ) (red  ℕA , ℕₙ))) 
+combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (ℕᵥ ℕA ℕB) =
+ ⊥-elim (U≢ℕ (whrDet* (red D ,  Uₙ) (red  ℕA , ℕₙ)))
 combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (Emptyᵥ EmptyA EmptyB) =
- ⊥-elim (U≢Empty (whrDet* (red D ,  Uₙ) (red  EmptyA , Emptyₙ))) 
-combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (ne (ne K D' neK K≡K) neB) = 
+ ⊥-elim (U≢Empty (whrDet* (red D ,  Uₙ) (red  EmptyA , Emptyₙ)))
+combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (ne (ne K D' neK K≡K) neB) =
   ⊥-elim (U≢ne neK (whrDet* (red D ,  Uₙ) (red  D' , ne neK)))
 combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (Πᵥ (Πᵣ rF lF lG _ _ F G D' ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (ΠΠirrᵥ (Πᵣ rF lF lG _ _ F G D' ⊢F ⊢G A≡A [F] [G] G-ext) ΠB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (ΠirrΠᵥ (Πirrᵣ rF lF F G D' ⊢F ⊢G A≡A) ΠB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (Πirrᵥ (Πirrᵣ rF lF F G D' ⊢F ⊢G A≡A) ΠB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine (Uᵥ UA (Uᵣ r l′ l< PE.refl D)) (Idᵥ (Idᵣ F G _ _ D' ⊢F ⊢G _ A≡A) IdB) =
- ⊥-elim (U≢Id (whrDet* (red D ,  Uₙ) (red  D' , Idₙ))) 
-combine  (ℕᵥ ℕA ℕB) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) = 
- ⊥-elim (U≢ℕ (whrDet* (red D ,  Uₙ) (red  ℕB , ℕₙ))) 
+ ⊥-elim (U≢Id (whrDet* (red D ,  Uₙ) (red  D' , Idₙ)))
+combine  (ℕᵥ ℕA ℕB) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) =
+ ⊥-elim (U≢ℕ (whrDet* (red D ,  Uₙ) (red  ℕB , ℕₙ)))
 combine  (ℕᵥ ℕA ℕB) (Emptyᵥ EmptyA EmptyB) =
    ⊥-elim (ℕ≢Empty (whrDet* (red ℕB , ℕₙ) (red EmptyA , Emptyₙ)))
 combine  (ℕᵥ ℕA₁ ℕB₁) (ℕᵥ ℕA ℕB) = ℕᵥ ℕA₁ ℕB₁ ℕB
@@ -459,8 +456,8 @@ combine  (ℕᵥ ℕA ℕB) (ΠirrΠᵥ (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A) �
   ⊥-elim (ℕ≢Π (whrDet* (red ℕB , ℕₙ) (red D , Πₙ)))
 combine  (ℕᵥ ℕA ℕB) (Idᵥ (Idᵣ F G _ _ D ⊢F ⊢G _ A≡A) IdB) =
   ⊥-elim (ℕ≢Id (whrDet* (red ℕB , ℕₙ) (red D , Idₙ)))
-combine  (Emptyᵥ EmptyA EmptyB) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) = 
- ⊥-elim (U≢Empty (whrDet* (red D ,  Uₙ) (red  EmptyB , Emptyₙ))) 
+combine  (Emptyᵥ EmptyA EmptyB) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) =
+ ⊥-elim (U≢Empty (whrDet* (red D ,  Uₙ) (red  EmptyB , Emptyₙ)))
 combine  (Emptyᵥ EmptyA EmptyB) (ℕᵥ ℕA ℕB) =
    ⊥-elim (Empty≢ℕ (whrDet* (red EmptyB , Emptyₙ) (red ℕA , ℕₙ)))
 combine  (Emptyᵥ EmptyA₁ EmptyB₁) (Emptyᵥ EmptyA EmptyB) = Emptyᵥ EmptyA₁ EmptyB₁ EmptyB
@@ -494,7 +491,7 @@ combine  (ne neA (ne K D₁ neK K≡K)) (ΠirrΠᵥ (Πirrᵣ rF lF F G D ⊢F �
 combine  (ne neA (ne K D₁ neK K≡K)) (Idᵥ (Idᵣ F G _ _ D ⊢F ⊢G _ A≡A) IdB) =
   ⊥-elim (Id≢ne neK (whrDet* (red D , Idₙ) (red D₁ , ne neK)))
 combine  (Πᵥ ΠA (Πᵣ rF lF lG _ _ F G D' ⊢F ⊢G A≡A [F] [G] G-ext)) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine  (Πᵥ ΠA (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (ℕᵥ ℕA ℕB) =
   ⊥-elim (ℕ≢Π (whrDet* (red ℕA , ℕₙ) (red D , Πₙ)))
 combine  (Πᵥ ΠA (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (Emptyᵥ EmptyA EmptyB) =
@@ -505,7 +502,7 @@ combine  (Πᵥ ΠA (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext))
         (Idᵥ (Idᵣ F₁ G₁ _ _ D₁ ⊢F₁ ⊢G₁ _ A≡A₁) IdB) =
   ⊥-elim (Π≢Id (whrDet* (red D , Πₙ) (red D₁ , Idₙ)))
 combine  (ΠirrΠᵥ ΠA (Πᵣ rF lF lG _ _ F G D' ⊢F ⊢G A≡A [F] [G] G-ext)) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine  (ΠirrΠᵥ ΠA (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (ℕᵥ ℕA ℕB) =
   ⊥-elim (ℕ≢Π (whrDet* (red ℕA , ℕₙ) (red D , Πₙ)))
 combine  (ΠirrΠᵥ ΠA (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) (Emptyᵥ EmptyA EmptyB) =
@@ -516,7 +513,7 @@ combine  (ΠirrΠᵥ ΠA (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext
         (Idᵥ (Idᵣ F₁ G₁ _ _ D₁ ⊢F₁ ⊢G₁ _ A≡A₁) IdB) =
   ⊥-elim (Π≢Id (whrDet* (red D , Πₙ) (red D₁ , Idₙ)))
 combine  (Πirrᵥ ΠA (Πirrᵣ rF lF F G D' ⊢F ⊢G A≡A)) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine  (Πirrᵥ ΠA (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A)) (ℕᵥ ℕA ℕB) =
   ⊥-elim (ℕ≢Π (whrDet* (red ℕA , ℕₙ) (red D , Πₙ)))
 combine  (Πirrᵥ ΠA (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A)) (Emptyᵥ EmptyA EmptyB) =
@@ -527,7 +524,7 @@ combine  (Πirrᵥ ΠA (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A))
         (Idᵥ (Idᵣ F₁ G₁ _ _ D₁ ⊢F₁ ⊢G₁ _ A≡A₁) IdB) =
   ⊥-elim (Π≢Id (whrDet* (red D , Πₙ) (red D₁ , Idₙ)))
 combine  (ΠΠirrᵥ ΠA (Πirrᵣ rF lF F G D' ⊢F ⊢G A≡A)) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) =
- ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ))) 
+ ⊥-elim (U≢Π (whrDet* (red D ,  Uₙ) (red  D' , Πₙ)))
 combine  (ΠΠirrᵥ ΠA (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A)) (ℕᵥ ℕA ℕB) =
   ⊥-elim (ℕ≢Π (whrDet* (red ℕA , ℕₙ) (red D , Πₙ)))
 combine  (ΠΠirrᵥ ΠA (Πirrᵣ rF lF F G D ⊢F ⊢G A≡A)) (Emptyᵥ EmptyA EmptyB) =
@@ -553,8 +550,8 @@ combine  (Πirrᵥ ΠA₁ ΠB₁) (ΠΠirrᵥ ΠA ΠB) = Πirrᵥ ΠA₁ ΠB₁ 
 combine  (Πirrᵥ ΠA₁ ΠB₁) (Πᵥ ΠA ΠB) = ΠirrΠirrΠᵥ ΠA₁ ΠB₁ ΠB
 combine  (ΠΠirrᵥ ΠA₁ ΠB₁) (Πᵥ ΠA ΠB) = ΠΠirrΠᵥ ΠA₁ ΠB₁ ΠB
 combine  (ΠΠirrᵥ ΠA₁ ΠB₁) (ΠΠirrᵥ ΠA ΠB) = ΠΠirrΠirrᵥ ΠA₁ ΠB₁ ΠB
-combine  (Idᵥ IdA (Idᵣ F G _ _ D' ⊢F ⊢G _ A≡A)) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) = 
- ⊥-elim (U≢Id (whrDet* (red D ,  Uₙ) (red  D' , Idₙ))) 
+combine  (Idᵥ IdA (Idᵣ F G _ _ D' ⊢F ⊢G _ A≡A)) (Uᵥ (Uᵣ r l′ l< PE.refl D) UB) =
+ ⊥-elim (U≢Id (whrDet* (red D ,  Uₙ) (red  D' , Idₙ)))
 combine  (Idᵥ IdA (Idᵣ F G _ _ D ⊢F ⊢G _ A≡A)) (ℕᵥ ℕA ℕB) =
   ⊥-elim (ℕ≢Id (whrDet* (red ℕA , ℕₙ) (red D , Idₙ)))
 combine  (Idᵥ IdA (Idᵣ F G _ _ D ⊢F ⊢G _ A≡A)) (Emptyᵥ EmptyA EmptyB) =
@@ -582,6 +579,3 @@ combine (emb¹∞ [AB]) [BC] = emb¹∞∞ (combine [AB] [BC])
 combine (emb∞¹ [AB]) [BC] = emb∞¹∞ (combine [AB] [BC])
 combine [AB] (emb¹∞ [BC]) = combine [AB] [BC]
 combine [AB] (emb∞¹ [BC]) = emb∞∞¹ (combine [AB] [BC])
-
-
-

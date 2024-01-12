@@ -10,9 +10,6 @@ open import Definition.Typed
 open import Definition.LogicalRelation
 import Tools.PropositionalEquality as PE
 
-import Data.Nat as Nat
-
-
 -- Any level can be embedded into the highest level.
 maybeEmb : ∀ {l A r Γ}
          → Γ ⊩⟨ l ⟩ A ^ r

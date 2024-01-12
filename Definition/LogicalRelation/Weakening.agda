@@ -15,8 +15,6 @@ open import Definition.LogicalRelation.Irrelevance
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
-import Data.Nat as Nat
-
 
 -- Weakening of neutrals in WHNF
 
@@ -69,9 +67,9 @@ wkTermEmpty : ∀ {ρ Γ Δ n} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
 wkTermEmpty {ρ} [ρ] ⊢Δ (Emptyₜ (ne d)) = Emptyₜ (ne (T.wkTerm [ρ] ⊢Δ d))
 
 wk[Empty]-prop : ∀ {ρ Γ Δ n n′} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
-  → [Empty]-prop Γ n n′ 
+  → [Empty]-prop Γ n n′
   → [Empty]-prop Δ (U.wk ρ n) (U.wk ρ n′)
-wk[Empty]-prop {ρ} [ρ] ⊢Δ (ne d d') = ne (T.wkTerm [ρ] ⊢Δ d) (T.wkTerm [ρ] ⊢Δ d') 
+wk[Empty]-prop {ρ} [ρ] ⊢Δ (ne d d') = ne (T.wkTerm [ρ] ⊢Δ d) (T.wkTerm [ρ] ⊢Δ d')
 
 wkEqTermEmpty : ∀ {ρ Γ Δ t u } → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ)
   → Γ ⊩Empty t ≡ u ∷Empty
@@ -139,7 +137,7 @@ wk {ρ} {Γ} {Δ} {A} {rA} {l} [ρ] ⊢Δ (Idᵣ′ F t u ll D ⊢F ⊢t ⊢u A�
            (T.wkTerm [ρ] ⊢Δ ⊢t)
            (T.wkTerm [ρ] ⊢Δ ⊢u)
            (≅-wk [ρ] ⊢Δ A≡A)
-           
+
 wk {l = ι ¹} ρ ⊢Δ (emb l< X) = emb l< (wk ρ ⊢Δ X)
 wk {l = ∞} ρ ⊢Δ (emb l< X) = emb l< (wk ρ ⊢Δ X)
 
@@ -164,11 +162,11 @@ wkEq {ρ} [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G
                                  ([F≡F′] ([ρ₁] •ₜ [ρ]) ⊢Δ₁))
      (λ {ρ₁} [ρ₁] ⊢Δ₁ [a] →
         let [a]′ = irrelevanceTerm′ (wk-comp ρ₁ ρ F) PE.refl PE.refl
-                                    (irrelevance′ (PE.sym (wk-comp ρ₁ ρ F)) 
+                                    (irrelevance′ (PE.sym (wk-comp ρ₁ ρ F))
                                                   ([F] ([ρ₁] •ₜ [ρ]) ⊢Δ₁))
                                     ([F] ([ρ₁] •ₜ [ρ]) ⊢Δ₁) [a]
         in  irrelevanceEq″ (wk-comp-subst ρ₁ ρ G)
-                            (wk-comp-subst ρ₁ ρ G′) PE.refl PE.refl 
+                            (wk-comp-subst ρ₁ ρ G′) PE.refl PE.refl
                             ([G] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′)
                             (irrelevance′ (wk-comp-subst ρ₁ ρ G)
                                           ([G] ([ρ₁] •ₜ [ρ]) ⊢Δ₁ [a]′))
@@ -293,7 +291,7 @@ wkEqTerm {ρ} {Γ} {Δ} {A} {t} {u} {r} {l = ∞} [ρ] ⊢Δ (Uᵣ (Uᵣ ti ¹ l
         ([t≡u] ([ρ′] •ₜ [ρ]) ⊢Δ′)
   in
   Uₜ₌ (wkTerm [ρ] ⊢Δ (Uᵣ (Uᵣ ti ¹ l< eq d)) [t]) (wkTerm [ρ] ⊢Δ (Uᵣ (Uᵣ ti ¹ l< eq d)) [u])
-    (≅ₜ-wk [ρ] ⊢Δ A≡B) [t≡u]′ 
+    (≅ₜ-wk [ρ] ⊢Δ A≡B) [t≡u]′
 wkEqTerm ρ ⊢Δ (ℕᵣ D) [t≡u] = wkEqTermℕ ρ ⊢Δ [t≡u]
 wkEqTerm ρ ⊢Δ (Emptyᵣ D) [t≡u] = wkEqTermEmpty ρ ⊢Δ [t≡u]
 wkEqTerm {ρ} {r = [ ! , l′ ]} [ρ] ⊢Δ (ne′ K D neK K≡K) (neₜ₌ k m d d′ nf) =

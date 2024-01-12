@@ -21,10 +21,6 @@ open import Tools.Product
 import Tools.PropositionalEquality as PE
 open import Tools.Empty using (⊥; ⊥-elim)
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
-
 -- Neutral reflexive types are reducible.
 neu : ∀ {l Γ A r ll} (neA : Neutral A)
     → Γ ⊢ A ^ [ r , ι ll ]
@@ -42,7 +38,7 @@ neuEq′ : ∀ {l Γ A B r ll} ([A] : Γ ⊩⟨ l ⟩ne A ^[ r , ll ])
 neuEq′ (noemb (ne K [[ ⊢A , ⊢B , D ]] neK K≡K)) neA neB A B A~B =
   let A≡K = whnfRed* D (ne neA)
   in  ne₌ _ (idRed:*: B) neB (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) A≡K A~B)
-neuEq′ {ι ¹} (emb emb< X) = neuEq′ X 
+neuEq′ {ι ¹} (emb emb< X) = neuEq′ X
 neuEq′ {∞} (emb ∞< X) = neuEq′ X
 
 -- Neutrally equal types are of reducible equality.
@@ -57,7 +53,7 @@ neuEq [A] neA neB A B A~B =
                 [A]
                 (neuEq′ (ne-elim neA [A]) neA neB A B A~B)
 
-mutual 
+mutual
   neuTerm⁰ : ∀ {Γ A r n} ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ r) (neN : Neutral n)
           → Γ ⊢ n ∷ A ^ r
           → Γ ⊢ n ~ n ∷ A ^ r
@@ -87,7 +83,7 @@ mutual
                   ρn = conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG
                   neN∘a = ∘ₙ (wkNeutral ρ neN)
                   neN∘b = ∘ₙ (wkNeutral ρ neN)
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
               in  neuEqTerm⁰ ([G] [ρ] ⊢Δ [a]) neN∘a neN∘b
                             ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ a)
@@ -97,7 +93,7 @@ mutual
               let ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   a≡a = escapeTermEq ([F] [ρ] ⊢Δ) (reflEqTerm ([F] [ρ] ⊢Δ) [a])
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
               in  neuTerm⁰ ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkNeutral ρ neN))
                           ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG ∘ⱼ a)
@@ -153,7 +149,7 @@ mutual
                                           (reflEqTerm ([F] [ρ] ⊢Δ) [a])
                    neN∙a   = ∘ₙ (wkNeutral ρ neN)
                    neN′∙a′ = ∘ₙ (wkNeutral ρ neN′)
-                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                    ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
                in  neuEqTerm⁰ ([G] [ρ] ⊢Δ [a]) neN∙a neN′∙a′
                              ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv ρn  ρA≡ρΠFG ∘ⱼ a)
@@ -175,7 +171,7 @@ mutual
           → Γ ⊢ n ∷ A ^ r
           → Γ ⊢ n ~ n ∷ A ^ r
           → Γ ⊩⟨ l ⟩ n ∷ A ^ r / [A]
-  neuTerm {ι ¹} (Uᵣ′ A .(next ⁰) r ⁰ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN n n~n = 
+  neuTerm {ι ¹} (Uᵣ′ A .(next ⁰) r ⁰ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN n n~n =
     let n' = (conv n (subset* D))
         n~n' = ~-conv  n~n (subset* D)
         [n] = neu {l = ι ¹} neN (univ n') n~n'
@@ -183,7 +179,7 @@ mutual
             (λ {ρ} [ρ] ⊢Δ → let n'ρ = wkTerm [ρ] ⊢Δ n'
                                 n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
                                 [nρ] = neu (wkNeutral ρ neN) (univ n'ρ) n~n'ρ
-                            in [nρ])             
+                            in [nρ])
   neuTerm {∞} (Uᵣ′ A .(next ¹) r ¹ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN n n~n =
     let n' = (conv n (subset* D))
         n~n' = ~-conv  n~n (subset* D)
@@ -217,7 +213,7 @@ mutual
                   ρn = conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG
                   neN∘a = ∘ₙ (wkNeutral ρ neN)
                   neN∘b = ∘ₙ (wkNeutral ρ neN)
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
               in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∘a neN∘b
                             ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ a)
@@ -227,7 +223,7 @@ mutual
               let ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   a≡a = escapeTermEq ([F] [ρ] ⊢Δ) (reflEqTerm ([F] [ρ] ⊢Δ) [a])
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
               in  neuTerm ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkNeutral ρ neN))
                           ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG ∘ⱼ a)
@@ -252,7 +248,7 @@ mutual
             → Γ ⊩⟨ l ⟩ n ≡ n′ ∷ A ^ r / [A]
   neuEqTerm {ι ¹} (Uᵣ′ A _ r ⁰ l< PE.refl D) neN neN′ n n′ n~n' =
     let n~n = ~-trans n~n' (~-sym n~n')
-        n'~n' = ~-trans (~-sym n~n') n~n' 
+        n'~n' = ~-trans (~-sym n~n') n~n'
         [[n]]   = neuTerm (Uᵣ (Uᵣ r ⁰ l< PE.refl D)) neN n n~n
         [[n']]  = neuTerm (Uᵣ (Uᵣ r ⁰ l< PE.refl D)) neN′ n′ n'~n'
         n' = conv n (subset* (red D))
@@ -264,7 +260,7 @@ mutual
            (λ [ρ] ⊢Δ → W.wkEq [ρ] ⊢Δ [n] ((neuEq [n] neN neN′ (univ n') (univ n′') n~n'U)))
   neuEqTerm {∞} (Uᵣ′ A _ r ¹ l< PE.refl D) neN neN′ n n′ n~n' =
     let n~n = ~-trans n~n' (~-sym n~n')
-        n'~n' = ~-trans (~-sym n~n') n~n' 
+        n'~n' = ~-trans (~-sym n~n') n~n'
         [[n]]   = neuTerm (Uᵣ (Uᵣ r ¹ l< PE.refl D)) neN n n~n
         [[n']]  = neuTerm (Uᵣ (Uᵣ r ¹ l< PE.refl D)) neN′ n′ n'~n'
         n' = conv n (subset* (red D))
@@ -309,7 +305,7 @@ mutual
                                           (reflEqTerm ([F] [ρ] ⊢Δ) [a])
                    neN∙a   = ∘ₙ (wkNeutral ρ neN)
                    neN′∙a′ = ∘ₙ (wkNeutral ρ neN′)
-                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                    ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
                in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∙a neN′∙a′
                              ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv ρn  ρA≡ρΠFG ∘ⱼ a)
@@ -323,7 +319,7 @@ mutual
     in conv n A≡ΠFG , conv n′ A≡ΠFG
   neuEqTerm {ι ¹} (emb l< X) neN n neN′ n:≡:n′ = neuEqTerm X neN n neN′ n:≡:n′
   neuEqTerm {∞} (emb l< X) neN n neN′ n:≡:n′ = neuEqTerm X neN n neN′ n:≡:n′
- 
+
 
 -- Neutral reflexive types are reducible.
 neu:⇒*: : ∀ {l Γ A K r ll} (neK : Neutral K)
@@ -340,10 +336,10 @@ neuEq:⇒*:′ : ∀ {l Γ A B K L r ll} ([A] : Γ ⊩⟨ l ⟩ne A ^[ r , ll ])
        → Γ ⊢ B :⇒*: L ^ [ r , ι ll ]
        → Γ ⊢ K ~ L ∷ Univ r ll ^ [ ! , next ll ]
        → Γ ⊩⟨ l ⟩ A ≡ B ^ [ r , ι ll ] / ne-intr [A]
-neuEq:⇒*:′ (noemb (ne A' [[ ⊢A , ⊢B , D ]] neA A≡A)) neK neL [[ ⊢A' , ⊢K , D' ]] [B] A~B = 
+neuEq:⇒*:′ (noemb (ne A' [[ ⊢A , ⊢B , D ]] neA A≡A)) neK neL [[ ⊢A' , ⊢K , D' ]] [B] A~B =
   let A≡K = whrDet* (D , ne neA) (D' , ne neK) -- (ne neA)
   in ne₌ _ [B] neL (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) (PE.sym A≡K) A~B)
-neuEq:⇒*:′ {ι ¹} (emb emb< X) = neuEq:⇒*:′ X 
+neuEq:⇒*:′ {ι ¹} (emb emb< X) = neuEq:⇒*:′ X
 neuEq:⇒*:′ {∞} (emb ∞< X) = neuEq:⇒*:′ X
 
 
@@ -367,10 +363,10 @@ app:⇒*: : ∀ {Γ a t u A B rA lA lB l}
         (⊢a : Γ ⊢ a ∷ A ^ [ rA , ι lA ])
         (D : Γ ⊢ t :⇒*: u ∷ (Π A ^ rA ° lA ▹ B ° lB ° l ^ !) ^ ι l)
         → Γ ⊢ t ∘ a ^ l :⇒*: u ∘ a ^ l ∷ B [ a ] ^ ι lB
-app:⇒*: ⊢A ⊢B ⊢a [[ ⊢t , ⊢u , D ]] = [[ (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢A ▹ ⊢B ▹ ⊢t ∘ⱼ ⊢a , (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢A ▹ ⊢B ▹ ⊢u ∘ⱼ ⊢a , appRed* ⊢A ⊢B ⊢a D ]]  
+app:⇒*: ⊢A ⊢B ⊢a [[ ⊢t , ⊢u , D ]] = [[ (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢A ▹ ⊢B ▹ ⊢t ∘ⱼ ⊢a , (λ abs → ⊥-elim (!≢% abs)) ▹ ⊢A ▹ ⊢B ▹ ⊢u ∘ⱼ ⊢a , appRed* ⊢A ⊢B ⊢a D ]]
 
 
-mutual 
+mutual
   neuTerm:⇒*:⁰ : ∀ {Γ A ll t n} ([A] : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ ! , ll ]) (neN : Neutral n)
           → Γ ⊢ t :⇒*: n ∷ A ^ ll
           → Γ ⊢ n ~ n ∷ A ^ [ ! , ll ]
@@ -400,15 +396,15 @@ mutual
                   ρn = conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG
                   neN∘a = ∘ₙ (wkNeutral ρ neN)
                   neN∘b = ∘ₙ (wkNeutral ρ neN)
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
-              in  neuEqTerm⁰ ([G] [ρ] ⊢Δ [a]) neN∘a neN∘b ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ a) (conv ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ b) (≅-eq G[a]≡G[b])) 
+              in  neuEqTerm⁰ ([G] [ρ] ⊢Δ [a]) neN∘a neN∘b ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ a) (conv ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ b) (≅-eq G[a]≡G[b]))
                              ((~-app (~-wk [ρ] ⊢Δ (~-conv n~n A≡ΠFG)) a≡b)))
            (λ {ρ} [ρ] ⊢Δ [a] →
               let ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   a≡a = escapeTermEq ([F] [ρ] ⊢Δ) (reflEqTerm ([F] [ρ] ⊢Δ) [a])
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
               in  neuTerm ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkNeutral ρ neN))
                           ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG ∘ⱼ a)
@@ -450,7 +446,7 @@ mutual
                                           (reflEqTerm ([F] [ρ] ⊢Δ) [a])
                    neN∙a   = ∘ₙ (wkNeutral ρ neN)
                    neN′∙a′ = ∘ₙ (wkNeutral ρ neN′)
-                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                    ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
                in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∙a neN′∙a′
                              ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv ρn  ρA≡ρΠFG ∘ⱼ a)
@@ -464,13 +460,13 @@ mutual
           → Γ ⊢ t :⇒*: n ∷ A ^ ll
           → Γ ⊢ n ~ n ∷ A ^ [ ! , ll ]
           → Γ ⊩⟨ l ⟩ t ∷ A ^ [ ! , ll ] / [A]
-  neuTerm:⇒*: {ι ¹} (Uᵣ′ A .(next ⁰) r ⁰ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN [[ ⊢t , n , D' ]] n~n = 
+  neuTerm:⇒*: {ι ¹} (Uᵣ′ A .(next ⁰) r ⁰ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN [[ ⊢t , n , D' ]] n~n =
     let D'' = conv:⇒*: [[ ⊢t , n , D' ]] (subset* D)
         n~n' = ~-conv  n~n (subset* D)
     in Uₜ _ (conv:⇒*: [[ ⊢t , n , D' ]] (subset* D))
             (ne neN) (~-to-≅ₜ n~n')
             (λ {ρ} [ρ] ⊢Δ → let ρD' = wkRed:*:Term [ρ] ⊢Δ D''
-                                n~n'ρ = ~-wk [ρ] ⊢Δ n~n'            
+                                n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
                             in neu:⇒*: (wkNeutral ρ neN) (univ:⇒*: ρD') n~n'ρ)
   neuTerm:⇒*: {∞} (Uᵣ′ A .(next ¹) r ¹ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN  [[ ⊢t , n , D' ]] n~n =
     let D'' = conv:⇒*: [[ ⊢t , n , D' ]] (subset* D)
@@ -478,7 +474,7 @@ mutual
     in Uₜ _ (conv:⇒*: [[ ⊢t , n , D' ]] (subset* D))
             (ne neN) (~-to-≅ₜ n~n')
             (λ {ρ} [ρ] ⊢Δ → let ρD' = wkRed:*:Term [ρ] ⊢Δ D''
-                                n~n'ρ = ~-wk [ρ] ⊢Δ n~n'            
+                                n~n'ρ = ~-wk [ρ] ⊢Δ n~n'
                             in neu:⇒*: (wkNeutral ρ neN) (univ:⇒*: ρD') n~n'ρ)
   neuTerm:⇒*: (ℕᵣ [[ ⊢A , ⊢B , D ]]) neN [[ ⊢t , n , D' ]] n~n =
     let A≡ℕ  = subset* D
@@ -504,15 +500,15 @@ mutual
                   ρn = conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG
                   neN∘a = ∘ₙ (wkNeutral ρ neN)
                   neN∘b = ∘ₙ (wkNeutral ρ neN)
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
-              in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∘a neN∘b ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ a) (conv ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ b) (≅-eq G[a]≡G[b])) 
+              in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∘a neN∘b ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ a) (conv ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ ρn ∘ⱼ b) (≅-eq G[a]≡G[b]))
                             ((~-app (~-wk [ρ] ⊢Δ (~-conv n~n A≡ΠFG)) a≡b)))
            (λ {ρ} [ρ] ⊢Δ [a] →
               let ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   a≡a = escapeTermEq ([F] [ρ] ⊢Δ) (reflEqTerm ([F] [ρ] ⊢Δ) [a])
-                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                  ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                   ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
               in  neuTerm ([G] [ρ] ⊢Δ [a]) (∘ₙ (wkNeutral ρ neN))
                           ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv (wkTerm [ρ] ⊢Δ n) ρA≡ρΠFG ∘ⱼ a)
@@ -529,7 +525,7 @@ mutual
             → Γ ⊩⟨ l ⟩ t ≡ u ∷ A ^ [ ! , ll ] / [A]
   neuEqTerm:⇒*: {ι ¹} (Uᵣ′ A _ r ⁰ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN neN′  [[ ⊢t , n , D' ]] [[ ⊢u , n′ , D′ ]] n~n' =
     let n~n = ~-trans n~n' (~-sym n~n')
-        n'~n' = ~-trans (~-sym n~n') n~n' 
+        n'~n' = ~-trans (~-sym n~n') n~n'
         n~n'U = ~-conv n~n' (subset* D)
         n~nU = ~-conv n~n (subset* D)
         [t] = neuTerm:⇒*: (Uᵣ′ A _ r ⁰ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN [[ ⊢t , n , D' ]] n~n
@@ -547,7 +543,7 @@ mutual
                                        (univ:⇒*: ρD') (univ:⇒*: ρD′) n~n'Uρ
   neuEqTerm:⇒*: {∞} (Uᵣ′ A _ r ¹ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN neN′  [[ ⊢t , n , D' ]] [[ ⊢u , n′ , D′ ]] n~n' =
     let n~n = ~-trans n~n' (~-sym n~n')
-        n'~n' = ~-trans (~-sym n~n') n~n' 
+        n'~n' = ~-trans (~-sym n~n') n~n'
         n~n'U = ~-conv n~n' (subset* D)
         n~nU = ~-conv n~n (subset* D)
         [t] = neuTerm:⇒*: (Uᵣ′ A _ r ¹ l< PE.refl [[ ⊢A , ⊢U , D ]]) neN [[ ⊢t , n , D' ]] n~n
@@ -592,7 +588,7 @@ mutual
                                           (reflEqTerm ([F] [ρ] ⊢Δ) [a])
                    neN∙a   = ∘ₙ (wkNeutral ρ neN)
                    neN′∙a′ = ∘ₙ (wkNeutral ρ neN′)
-                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F 
+                   ⊢ρF = TW.wk [ρ] ⊢Δ ⊢F
                    ⊢ρG =  TW.wk (lift [ρ]) (⊢Δ ∙ ⊢ρF) ⊢G
                in  neuEqTerm ([G] [ρ] ⊢Δ [a]) neN∙a neN′∙a′
                              ((λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢ρF ▹ un-univ ⊢ρG ▹ conv ρn  ρA≡ρΠFG ∘ⱼ a)

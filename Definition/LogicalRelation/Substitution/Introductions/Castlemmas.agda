@@ -33,8 +33,6 @@ open import Tools.Product
 open import Tools.Empty
 import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
-import Data.Nat as Nat
-
 
 module cast-ΠΠ-lemmas
        {Γ rF F F₁}
@@ -195,7 +193,7 @@ module cast-ΠΠ-lemmas-2
         x₁ = Πⱼ (λ abs → ⊥-elim (!≢% (PE.sym abs))) ▹ (λ _ → PE.refl , PE.refl) ▹ Twk.wkTerm (Twk.step Twk.id) (⊢Γ ∙ ⊢IdFF₁) (un-univ ⊢F₁) ▹ x₀
       in univ x₁
 
-   
+
 {-
 ⊢e′ : Γ ⊢ e ∷ ∃ (Id (Univ rF ⁰) F F₁) ▹ (Π (wk1 F₁) ^ rF ° ⁰ ▹ Id (U ⁰) ((wk1d G) [ b ρ₀ (var 1) (var 0) ]↑) (wk1d G₁) ° ⁰ ° ⁰ ^ %) ^ [ % , ι ⁰ ]
     ⊢e′ =

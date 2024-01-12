@@ -13,9 +13,6 @@ open import Definition.Typed.Reduction
 open import Tools.Product
 import Tools.PropositionalEquality as PE
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
 -- The different cases of the logical relation are spread out through out
 -- this file. This is due to them having different dependencies.
 
@@ -183,7 +180,7 @@ record _⊩Πirr_ (Γ : Con Term) (A : Term) : Set where
     ⊢F : Γ ⊢ F ^ [ rF , ι lF ]
     ⊢G : Γ ∙ F ^ [ rF , ι lF ] ⊢ G ^ [ % , ι ⁰ ]
     A≡A : Γ ⊢ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ≅ Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ % ^ [ % , ι ⁰ ]
-          
+
 -- impredicative Π-type equality
 record _⊩Πirr_≡_/_ (Γ : Con Term) (A B : Term) ([A] : Γ ⊩Πirr A ) : Set where
   inductive
@@ -318,7 +315,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
         rF : Relevance
         lF : Level
         lG : Level
-        l≤F : lF ≤ lΠ 
+        l≤F : lF ≤ lΠ
         l≤G : lG ≤ lΠ
         F : Term
         G : Term
@@ -337,7 +334,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
               → ([b] : Δ ⊩¹ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
               → Δ ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
               → Δ ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a]
-    
+
     -- Π-type equality
     record _⊩¹Π_≡_^[_]/_ (Γ : Con Term) (A B : Term) (lΠ : Level) ([A] : Γ ⊩¹Π A ^[ lΠ ]) : Set where
       inductive

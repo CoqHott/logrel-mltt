@@ -14,9 +14,6 @@ open import Definition.LogicalRelation.ShapeView
 
 open import Tools.Product
 
-import Data.Fin as Fin
-import Data.Nat as Nat
-
 
 -- Helper function for successors for specific reducible derivations.
 sucTerm′ : ∀ {l Γ n}

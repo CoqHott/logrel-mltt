@@ -21,7 +21,6 @@ open import Tools.Empty
 
 import Definition.LogicalRelation.Weakening as wkLR
 import Tools.PropositionalEquality as PE
-import Data.Nat as Nat
 
 -- Validity of the universe type.
 U¹ᵛ : ∀ {Γ rU l} → (ι ¹ <∞ l) → ([Γ] : ⊩ᵛ Γ)
@@ -32,7 +31,7 @@ U¹ᵛ {Γ} {rU} ∞< [Γ] ⊢Δ [σ] =
 U⁰ᵛ : ∀ {Γ rU l' l} → (⁰ ≤ l') → (ι l' <∞ l) → ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ l ⟩ Univ rU ⁰ ^ [ ! , ι ¹ ] / [Γ]
 U⁰ᵛ {Γ} {rU} (<is≤ 0<1) ∞< [Γ] ⊢Δ [σ] = emb ∞< (Uᵣ (Uᵣ rU ⁰ emb< PE.refl [[ Ugenⱼ ⊢Δ , Ugenⱼ ⊢Δ , id (Ugenⱼ ⊢Δ) ]])) , (λ [σ′] [σ≡σ′] → id (Ugenⱼ ⊢Δ))
-U⁰ᵛ {Γ} {rU} (≡is≤ PE.refl) l< [Γ] ⊢Δ [σ] = 
+U⁰ᵛ {Γ} {rU} (≡is≤ PE.refl) l< [Γ] ⊢Δ [σ] =
   Uᵣ (Uᵣ rU ⁰ l< PE.refl [[ Ugenⱼ ⊢Δ , Ugenⱼ ⊢Δ , id (Ugenⱼ ⊢Δ) ]])
   , (λ [σ′] [σ≡σ′] → id (Ugenⱼ ⊢Δ))
 
@@ -78,14 +77,14 @@ univEqᵛ {A} [Γ] [U] [A] [t≡u] ⊢Δ [σ] =
 univᵗᵛ : ∀ {Γ A t r l′}  ([Γ] : ⊩ᵛ Γ)
        → ([U] : Γ ⊩ᵛ⟨ ∞ ⟩ Univ r l′ ^ [ ! , next l′ ] / [Γ] )
        → ([A] : Γ ⊩ᵛ⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , next l′ ] / [Γ] / [U])
-       → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / [Γ] / maybeEmbᵛ {A = A} [Γ] (univᵛ {A = A} [Γ] (≡is≤ PE.refl) [U] [A]) 
+       → Γ ⊩ᵛ⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / [Γ] / maybeEmbᵛ {A = A} [Γ] (univᵛ {A = A} [Γ] (≡is≤ PE.refl) [U] [A])
        → Γ ⊩ᵛ⟨ ι l′ ⟩ t ∷ A ^ [ r , ι l′ ] / [Γ] / univᵛ {A = A} [Γ] (≡is≤ PE.refl) [U] [A]
 univᵗᵛ {Γ} {A} {t} {r} {⁰} [Γ] [U] [A] [t] ⊢Δ [σ] =
   univEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) ,
-  λ [σ′] [σ≡σ′] → univEqEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′]) 
+  λ [σ′] [σ≡σ′] → univEqEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
 univᵗᵛ {Γ} {A} {t} {r} {¹} [Γ] [U] [A] [t] ⊢Δ [σ] =
   univEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) ,
-  λ [σ′] [σ≡σ′] → univEqEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′]) 
+  λ [σ′] [σ≡σ′] → univEqEqTerm (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([t] ⊢Δ [σ])) (proj₂ ([t] ⊢Δ [σ]) [σ′] [σ≡σ′])
 
 
 un-univᵛ : ∀ {A Γ r l} ([Γ] : ⊩ᵛ Γ)
@@ -94,7 +93,7 @@ un-univᵛ : ∀ {A Γ r l} ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ next l ⟩ A ∷ Univ r l ^ [ ! , next l ] / [Γ] / [U]
 un-univᵛ {l = l} [Γ] [U] [A] = λ ⊢Δ [σ] →
   irrelevanceTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ])))))  (proj₁ ([U] ⊢Δ [σ])) (un-univEq (proj₁ ([A] ⊢Δ [σ]))) ,
-  λ [σ′] [σ≡σ′] → irrelevanceEqTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ]))))) (proj₁ ([U] ⊢Δ [σ])) (un-univEqEq (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ′])) (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′])) 
+  λ [σ′] [σ≡σ′] → irrelevanceEqTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ]))))) (proj₁ ([U] ⊢Δ [σ])) (un-univEqEq (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ′])) (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
 
 
 un-univEqᵛ : ∀ {A B Γ r l} ([Γ] : ⊩ᵛ Γ)
@@ -102,6 +101,6 @@ un-univEqᵛ : ∀ {A B Γ r l} ([Γ] : ⊩ᵛ Γ)
       → ([A] : Γ ⊩ᵛ⟨ ι l ⟩ A ^ [ r , ι l ] / [Γ])
       → ([B] : Γ ⊩ᵛ⟨ ι l ⟩ B ^ [ r , ι l ] / [Γ])
       → Γ ⊩ᵛ⟨ ι l ⟩ A ≡ B ^ [ r , ι l ] / [Γ] / [A]
-      → Γ ⊩ᵛ⟨ next l ⟩ A ≡ B ∷ Univ r l ^ [ ! , next l ] / [Γ] / [U] 
-un-univEqᵛ {l = l} [Γ] [U] [A] [B] [A≡B] = λ ⊢Δ [σ] → 
+      → Γ ⊩ᵛ⟨ next l ⟩ A ≡ B ∷ Univ r l ^ [ ! , next l ] / [Γ] / [U]
+un-univEqᵛ {l = l} [Γ] [U] [A] [B] [A≡B] = λ ⊢Δ [σ] →
   irrelevanceEqTerm (Ugen (wf (escape (proj₁ ([A] ⊢Δ [σ])))))  (proj₁ ([U] ⊢Δ [σ])) (un-univEqEq (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([B] ⊢Δ [σ])) ([A≡B] ⊢Δ [σ]))

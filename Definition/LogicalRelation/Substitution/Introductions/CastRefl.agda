@@ -36,13 +36,12 @@ open import Tools.Product
 open import Tools.Empty using (⊥; ⊥-elim)
 import Tools.Unit as TU
 import Tools.PropositionalEquality as PE
-import Data.Nat as Nat
 
 
 [castrefl]ℕ : ∀ {A B t e Γ}
              (⊢Γ : ⊢ Γ)
              ([A] : Γ ⊩ℕ A)
-             ([B] : Γ ⊩ℕ B) 
+             ([B] : Γ ⊩ℕ B)
              ([A≡B] : Γ ⊩⟨ ι ⁰ ⟩ A ≡ B ^ [ ! , ι ⁰ ] / ℕᵣ [A])
              (⊢t : Γ ⊢ t ∷ A ^ [ ! , ι ⁰ ])
              ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ℕᵣ [A])
@@ -50,7 +49,7 @@ import Data.Nat as Nat
              → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ ! , ι ⁰ ] / ℕᵣ [B]
 [castrefl]ℕ {e = e} ⊢Γ [[ ⊢A , ⊢ℕA , DA ]] [[ ⊢B , ⊢ℕB , DB ]] [A≡B] ⊢t (ℕₜ .(suc a) d n≡n (sucᵣ {a} (ℕₜ n [[ ⊢a , ⊢u , d₁ ]] n≡n₁ prop))) ⊢e =
   let ⊢eℕℕ = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) )) (un-univ≡ (subset* DA)) (un-univ≡ (subset* DB))))
-      rec = [castrefl]ℕ ⊢Γ (idRed:*: ⊢ℕA) (idRed:*: ⊢ℕA) (reflEq {l = ι ⁰} (ℕᵣ (idRed:*: ⊢ℕA))) 
+      rec = [castrefl]ℕ ⊢Γ (idRed:*: ⊢ℕA) (idRed:*: ⊢ℕA) (reflEq {l = ι ⁰} (ℕᵣ (idRed:*: ⊢ℕA)))
                        ⊢a (ℕₜ n [[ ⊢a , ⊢u , d₁ ]] n≡n₁ prop) ⊢eℕℕ
       cast≅ = escapeTermEq {l = ι ⁰} (ℕᵣ (idRed:*: ⊢ℕA)) rec
   in ℕₜ₌ (suc (cast ⁰ ℕ ℕ e a)) (suc a) (conv:⇒*: (transTerm:⇒:* (CastRed*Term ⊢B ⊢e ⊢t (un-univ:⇒*: [[ ⊢A , ⊢ℕA , DA ]]))
@@ -76,7 +75,7 @@ import Data.Nat as Nat
                                                    (transTerm:⇒:* (CastRed*Termℕ (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))(un-univ≡ (subset* DA))
                                                                   (refl (un-univ ⊢B))))) (conv ⊢t (subset* DA)) [[ ⊢B , ⊢ℕB , DB ]])
                                                                   (conv:⇒*: (CastRed*Termℕℕ ⊢eℕℕ d) (sym (subset* DB)))))
-                   (conv:⇒*: d (sym (subset* DB))) (~-conv (~-castℕ-refl k≡k ⊢k ⊢eℕℕ ) (sym (subset* DB))) 
+                   (conv:⇒*: d (sym (subset* DB))) (~-conv (~-castℕ-refl k≡k ⊢k ⊢eℕℕ ) (sym (subset* DB)))
 
 
 [castrefl]Ne : ∀ {A B Γ}
@@ -87,7 +86,7 @@ import Data.Nat as Nat
        → (∀ {t e} → ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ ! , ι ⁰ ] / ne [A])
                         → (⊢e : Γ ⊢ e ∷ Id (U ⁰) A B ^ [ % , ι ⁰ ])
                         → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ ! , ι ⁰ ] / ne [B])
-[castrefl]Ne {A} {B} ⊢Γ (ne K D neK K≡K) [B] (ne₌ M D′ neM K≡M) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) ⊢e = 
+[castrefl]Ne {A} {B} ⊢Γ (ne K D neK K≡K) [B] (ne₌ M D′ neM K≡M) (neₜ k d (neNfₜ neK₁ ⊢k k≡k)) ⊢e =
   let [A] = ne K D neK K≡K
       [[ ⊢A , ⊢K , DK ]] = D
       [A≡B] = ne₌ M D′ neM K≡M
@@ -97,13 +96,13 @@ import Data.Nat as Nat
       [[ ⊢tk , _ , dk ]] = d
       [t] = neₜ k d (neNfₜ neK₁ ⊢k k≡k)
       ⊢t = escapeTerm {l = ι ⁰} {A = A} (ne [A]) [t]
-      ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A))) (un-univ≡ ⊢A≡K) (un-univ≡ ⊢B≡M))) 
+      ⊢e' = conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢A))) (un-univ≡ ⊢A≡K) (un-univ≡ ⊢B≡M)))
   in neuEqTerm:⇒*: {l = ι ⁰} (ne [B]) (castₙ neK neM neK₁) neK₁
                    (transTerm:⇒:* (CastRed*Term ⊢B ⊢e (escapeTerm {l = ι ⁰} (ne [A]) [t]) (un-univ:⇒*: D))
                    (transTerm:⇒:* (CastRedR*Term ⊢K neK (conv ⊢e (univ (Id-cong (refl (univ 0<1 (wf ⊢B) ))(un-univ≡ (subset* DK)) (refl (un-univ ⊢B))))) ⊢tk (un-univ:⇒*: D′))
                                   (conv:⇒*: (CastRedTerm*Term ⊢K neK ⊢M neM ⊢e' d) (sym ⊢B≡M))))
-                   (conv:⇒*: d (trans (sym ⊢A≡K) (≅-eq (escapeEq {l = ι ⁰} (ne [A]) [A≡B])))) 
-                   (~-conv (~-cast-refl K≡M k≡k ⊢k ⊢e') (sym ⊢B≡M) ) 
+                   (conv:⇒*: d (trans (sym ⊢A≡K) (≅-eq (escapeEq {l = ι ⁰} (ne [A]) [A≡B]))))
+                   (~-conv (~-cast-refl K≡M k≡k ⊢k ⊢e') (sym ⊢B≡M) )
 
 
 [castreflShape] : ∀ {A B t e Γ r}
@@ -115,7 +114,7 @@ import Data.Nat as Nat
          ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
          (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ])
          → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ r , ι ⁰ ] / [B]
-[castreflShape] ⊢Γ .(ℕᵣ ℕA) .(ℕᵣ ℕB) [A≡B] (ℕᵥ ℕA ℕB) [t] ⊢e = [castrefl]ℕ ⊢Γ ℕA ℕB [A≡B] (escapeTerm {l = ι ⁰} (ℕᵣ ℕA) [t]) [t] ⊢e 
+[castreflShape] ⊢Γ .(ℕᵣ ℕA) .(ℕᵣ ℕB) [A≡B] (ℕᵥ ℕA ℕB) [t] ⊢e = [castrefl]ℕ ⊢Γ ℕA ℕB [A≡B] (escapeTerm {l = ι ⁰} (ℕᵣ ℕA) [t]) [t] ⊢e
 [castreflShape] {r = !} ⊢Γ .(ne neA) .(ne neB) [A≡B] (ne neA neB) [t] ⊢e = [castrefl]Ne ⊢Γ neA neB [A≡B] [t] ⊢e
 [castreflShape] {A} {B} {t} {e} {Γ} {.!} ⊢Γ .(Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢Π , DΠ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
                    .(Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢Π₁ , DΠ₁ ]] ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
@@ -123,7 +122,7 @@ import Data.Nat as Nat
                    (Πᵥ (Πᵣ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢Π , DΠ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
                        (Πᵣ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢Π₁ , DΠ₁ ]] ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
                        (Πₜ f [[ ⊢t , ⊢f , dt ]] Funf f≡f [fext] [f]) ⊢e =
-  let D = [[ ⊢A , ⊢Π , DΠ ]] 
+  let D = [[ ⊢A , ⊢Π , DΠ ]]
       D₁ = [[ ⊢B , ⊢Π₁ , DΠ₁ ]]
       [A] = Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext
       [B] = Πᵣ′ ! ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
@@ -148,10 +147,10 @@ import Data.Nat as Nat
                             ([G] [ρ] ⊢Δ [b]′) ([f] [ρ] ⊢Δ [b]′))
                ⊢syme = Idsymⱼ (univ 0<1 ⊢Δ) (un-univ (escape ([F] [ρ] ⊢Δ))) (un-univ (escape ([F]₁ [ρ] ⊢Δ))) (Twk.wkTerm [ρ] ⊢Δ ⊢fste)
                recF = [castreflShape] ⊢Δ ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ)  [F'≡F] (goodCases ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ) [F'≡F]) [a] ⊢syme
-               [ρΠFG] = Lwk.wk [ρ] ⊢Δ  [ΠFG] 
+               [ρΠFG] = Lwk.wk [ρ] ⊢Δ  [ΠFG]
                [ρf] = Lwk.wkTerm [ρ] ⊢Δ [ΠFG] [ff]
                [a'] = convTerm₁ ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ) [F'≡F] [a]
-               [G'] = PE.subst (λ x → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) x [ a ] ^ [ ! , ι ⁰ ]) G≡G′ ([G]₁ [ρ] ⊢Δ [a])          
+               [G'] = PE.subst (λ x → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) x [ a ] ^ [ ! , ι ⁰ ]) G≡G′ ([G]₁ [ρ] ⊢Δ [a])
                [G≡G'] = PE.subst (λ x → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G [ b₁.b ρ (wk ρ (fst e)) a ] ≡ wk (lift ρ) x [ a ] ^ [ ! , ι ⁰ ] / [G] [ρ] ⊢Δ [b]′) (PE.sym G≡G′)
                                  (transEq ([G] [ρ] ⊢Δ [b]′) ([G] [ρ] ⊢Δ [a']) [G'] (G-ext [ρ] ⊢Δ [b]′ [a'] recF) ([G≡G′] [ρ] ⊢Δ [a']))
                recG = [castreflShape] ⊢Δ ([G] [ρ] ⊢Δ [b]′) ([G]₁ [ρ] ⊢Δ [a]) [G≡G']
@@ -189,8 +188,8 @@ import Data.Nat as Nat
                    (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
                    (Πᵥ (Πᵣ % ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G [[ ⊢A , ⊢Π , DΠ ]] ⊢F ⊢G A≡A [F] [G] G-ext)
                        (Πᵣ % ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ [[ ⊢B , ⊢Π₁ , DΠ₁ ]] ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
-                       (Πₜ f [[ ⊢t , ⊢f , dt ]] Funf f≡f [fext] [f]) ⊢e = 
-  let D = [[ ⊢A , ⊢Π , DΠ ]] 
+                       (Πₜ f [[ ⊢t , ⊢f , dt ]] Funf f≡f [fext] [f]) ⊢e =
+  let D = [[ ⊢A , ⊢Π , DΠ ]]
       D₁ = [[ ⊢B , ⊢Π₁ , DΠ₁ ]]
       [A] = Πᵣ′ % ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext
       [B] = Πᵣ′ % ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
@@ -215,10 +214,10 @@ import Data.Nat as Nat
                             ([G] [ρ] ⊢Δ [b]′) ([f] [ρ] ⊢Δ [b]′))
                ⊢syme = Idsymⱼ (univ 0<1 ⊢Δ) (un-univ (escape ([F] [ρ] ⊢Δ))) (un-univ (escape ([F]₁ [ρ] ⊢Δ))) (Twk.wkTerm [ρ] ⊢Δ ⊢fste)
                recF = [castreflShape] ⊢Δ ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ)  [F'≡F] (goodCases ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ) [F'≡F]) [a] ⊢syme
-               [ρΠFG] = Lwk.wk [ρ] ⊢Δ  [ΠFG] 
+               [ρΠFG] = Lwk.wk [ρ] ⊢Δ  [ΠFG]
                [ρf] = Lwk.wkTerm [ρ] ⊢Δ [ΠFG] [ff]
                [a'] = convTerm₁ ([F]₁ [ρ] ⊢Δ) ([F] [ρ] ⊢Δ) [F'≡F] [a]
-               [G'] = PE.subst (λ x → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) x [ a ] ^ [ ! , ι ⁰ ]) G≡G′ ([G]₁ [ρ] ⊢Δ [a])          
+               [G'] = PE.subst (λ x → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) x [ a ] ^ [ ! , ι ⁰ ]) G≡G′ ([G]₁ [ρ] ⊢Δ [a])
                [G≡G'] = PE.subst (λ x → Δ ⊩⟨ ι ⁰ ⟩ wk (lift ρ) G [ b₁.b ρ (wk ρ (fst e)) a ] ≡ wk (lift ρ) x [ a ] ^ [ ! , ι ⁰ ] / [G] [ρ] ⊢Δ [b]′) (PE.sym G≡G′)
                                  (transEq ([G] [ρ] ⊢Δ [b]′) ([G] [ρ] ⊢Δ [a']) [G'] (G-ext [ρ] ⊢Δ [b]′ [a'] recF) ([G≡G′] [ρ] ⊢Δ [a']))
                recG = [castreflShape] ⊢Δ ([G] [ρ] ⊢Δ [b]′) ([G]₁ [ρ] ⊢Δ [a]) [G≡G']
@@ -268,8 +267,8 @@ import Data.Nat as Nat
       _ , rF≡rF′ , _  = Π-PE-injectivity Π≡Π
   in ⊥-elim (!≢% rF≡rF′)
 [castreflShape] {r = %} ⊢Γ [A] [B] [A≡B] _ [t] ⊢e =
-  let ⊢A = escape {l = ι ⁰} [A] 
-      ⊢B = escape {l = ι ⁰} [B] 
+  let ⊢A = escape {l = ι ⁰} [A]
+      ⊢B = escape {l = ι ⁰} [B]
       ⊢t = escapeTerm {l = ι ⁰} [A] [t]
   in logRelIrrEq {l = ι ⁰} [B] (castⱼ (un-univ ⊢A) (un-univ ⊢B) ⊢e ⊢t) (conv ⊢t (≅-eq (escapeEq {l = ι ⁰} [A] [A≡B])))
 
@@ -281,7 +280,7 @@ import Data.Nat as Nat
          ([t] : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A])
          (⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ])
          → Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ r , ι ⁰ ] / [B]
-[castrefl] ⊢Γ [A] [B] [A≡B] [t] ⊢e = [castreflShape] ⊢Γ [A] [B] [A≡B] (goodCases [A] [B] [A≡B]) [t] ⊢e 
+[castrefl] ⊢Γ [A] [B] [A≡B] [t] ⊢e = [castreflShape] ⊢Γ [A] [B] [A≡B] (goodCases [A] [B] [A≡B]) [t] ⊢e
 
 castrefl∞ : ∀ {A B r t e Γ}
          (⊢Γ : ⊢ Γ)
@@ -301,14 +300,14 @@ castrefl∞ {A} {B} {r} {t} {e} {Γ} ⊢Γ [U] [AU] [BU] [UA≡UB] [A] [B] [t] [
     [A]′ = univEq [U] [AU]
     [t]′ : Γ ⊩⟨ ι ⁰ ⟩ t ∷ A ^ [ r , ι ⁰ ] / [A]′
     [t]′ = irrelevanceTerm [A] (emb ∞< (emb emb< [A]′)) [t]
-    [B]′ : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ r , ι ⁰ ] 
+    [B]′ : Γ ⊩⟨ ι ⁰ ⟩ B ^ [ r , ι ⁰ ]
     [B]′ = univEq [U] [BU]
     [A≡B]′ : Γ ⊩⟨ ι ⁰ ⟩ A ≡ B ^ [ r , ι ⁰ ] / [A]′
     [A≡B]′ = univEqEq [U] [A]′ [UA≡UB]
     ⊢e : Γ ⊢ e ∷ Id (Univ r ⁰) A B ^ [ % , ι ⁰ ]
     ⊢e = escapeTerm [Id] [e]
     x : Γ ⊩⟨ ι ⁰ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ r , ι ⁰ ] / [B]′
-    x = [castrefl] ⊢Γ [A]′ [B]′ [A≡B]′ [t]′ ⊢e 
+    x = [castrefl] ⊢Γ [A]′ [B]′ [A≡B]′ [t]′ ⊢e
   in irrelevanceEqTerm (emb ∞< (emb emb< [B]′)) [B] x
 
 abstract
@@ -327,8 +326,7 @@ abstract
               Γ ⊩ᵛ⟨ ∞ ⟩ cast ⁰ A B e t ≡ t ∷ B ^ [ r , ι ⁰ ] / [Γ] / [B]
   cast-reflᵗᵛ [Γ] [U] [AU] [BU] [UA≡UB] [A] [B]
               [t] [Id] [e] ⊢Δ [σ] =
-    castrefl∞ ⊢Δ (proj₁ ([U] ⊢Δ [σ])) 
+    castrefl∞ ⊢Δ (proj₁ ([U] ⊢Δ [σ]))
       (proj₁ ([AU] ⊢Δ [σ])) (proj₁ ([BU] ⊢Δ [σ])) ([UA≡UB] ⊢Δ [σ])
-      (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([B] ⊢Δ [σ])) 
+      (proj₁ ([A] ⊢Δ [σ])) (proj₁ ([B] ⊢Δ [σ]))
       (proj₁ ([t] ⊢Δ [σ])) (proj₁ ([Id] ⊢Δ [σ])) (proj₁ ([e] ⊢Δ [σ]))
-
