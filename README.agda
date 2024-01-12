@@ -2,7 +2,7 @@
 
 module README where
 
--- Formalization for "Decidability of Conversion for Setoid Type Theory"
+-- Formalization of the decidability of conversion for a fragment of CICobs
 -- Git repository: https://github.com/CoqHott/logrel-mltt/
 
 
@@ -18,10 +18,10 @@ import Tools.Empty
 -- The unit type.
 import Tools.Unit
 
--- Sum type.
+-- Disjoint sum type.
 import Tools.Sum
 
--- Product type.
+-- Products and Sigma-types.
 import Tools.Product
 
 -- Identity function and composition.
@@ -38,6 +38,9 @@ import Tools.Nat
 
 -- Lists definition
 import Tools.List
+
+-- Proof by reflection for a subclass of integer inequalities
+import Tools.Inequality
 
 ---------------------------
 -- LANGUAGE INTRODUCTION --

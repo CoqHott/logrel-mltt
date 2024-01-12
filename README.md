@@ -82,7 +82,17 @@ This project is written in Agda. It has been tested to be working with Agda vers
 
 ### Warning ###
 
-The reader who wishes to type-check the entire proof should be warned that the files
-Defintion/LogicalRelations/Substitution/Introductions/Cast.agda and Conversion/Decidable.agda may
-be quite resource-intensive (Type-checking the latter seems to take at least 10 min on a
-higher-end laptop).
+The reader who wishes to type-check the entire proof should be warned that some files may
+be quite resource-intensive (Some will take more than 10 minutes on a higher end laptop).
+The main culprits are the following:
+
+- Typed.Properties (medium)
+- LogicalRelation.Substitution.Introductions.Natrec (medium)
+- LogicalRelation.Substitution.Introductions.CastLemmas (medium)
+- LogicalRelation.Substitution.Introductions.Cast (long)
+- LogicalRelation.Substitution.Introductions.CastRefl (medium)
+- Conversion.TransitivityHelper (long)
+- Conversion.Transitivity (long)
+- Conversion.DecidableLemmas (long)
+- Conversion.DecView (very long)
+- Conversion.Decidable (very long)
