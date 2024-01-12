@@ -82,7 +82,7 @@ This project is written in Agda. It has been tested to be working with Agda vers
 ### Warning ###
 
 The reader who wishes to type-check the entire proof should be warned that some files may
-be quite resource-intensive (Some will take more than 10 minutes on a higher end laptop).
+be quite resource-intensive (Some will take more than 5 minutes on a higher end laptop).
 The main culprits are the following:
 
 - Typed.Properties (medium)
