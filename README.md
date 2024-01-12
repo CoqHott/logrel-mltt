@@ -36,8 +36,8 @@ reflexive equalities:
 ```
 A ≡ B  ⊢  cast A B e t ≡ t   (*)
 ```
-Rule (*) has a convertibility premise, which makes it difficult to incorporate in the reduction
-strategy. Instead, rule (*) is handled in a similar manner to eta-conversion, in that it only
+Rule (\*) has a convertibility premise, which makes it difficult to incorporate in the reduction
+strategy. Instead, rule (\*) is handled in a similar manner to eta-conversion, in that it only
 appears at conversion checking.
 
 Another difference with CC<sup>obs</sup> is that the observational equality does not reduce anymore.
@@ -65,7 +65,7 @@ from consistency, which has to be proven externally using a model.
 This first part lays the foundation necessary to the definition of an algorithmic equality relation
 on types and terms. We can prove that this algorithmic equality is decidable, and, using the
 fundamental lemma, that it coincides with the judgmental equality.
-This algorithmic equality is the main contribution of this work: because of rule (*), the
+This algorithmic equality is the main contribution of this work: because of rule (\*), the
 algorithmic equality must simplify away the typecasts on proofs by reflexivity, which involves
 some amount of backtracking.
 
