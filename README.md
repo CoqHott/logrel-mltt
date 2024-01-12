@@ -77,7 +77,8 @@ A more detailed description of the role of each file can be found in README.agda
 
 ### Dependencies ###
 
-This project is written in Agda. It has been tested to be working with Agda version 2.6.3.
+This project is written in Agda. It has been tested to be working with Agda version 2.6.3, with
+the --safe flag.
 
 ### Warning ###
 
