@@ -35,7 +35,6 @@ Equality" of Pujet and Tabareau, the main difference is a new conversion rule fo
 reflexive equalities:
 ```
 A ≡ B  ⊢  cast A B e t ≡ t   (*)
-
 ```
 Rule (*) has a convertibility premise, which makes it difficult to incorporate in the reduction
 strategy. Instead, rule (*) is handled in a similar manner to eta-conversion, in that it only
