@@ -1,0 +1,9 @@
+In order to typecheck the file, you need an installation of Agda ≥ 2.6.3 (earlier versions might work but have not been tested).
+You do not need an installation of the Agda standard library.
+
+You typecheck the proof with the command
+$ agda --safe --no-libraries Everything.agda
+alternatively, you can use
+$ make
+
+The proof will likely take a fair amount of time to be checked (expect 15 minutes on a higher end laptop).
