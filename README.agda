@@ -3,7 +3,7 @@
 module README where
 
 -- Formalization of the decidability of conversion for a fragment of CICobs
--- Git repository: https://github.com/CoqHott/logrel-mltt/
+-- Git repository: https://github.com/CoqHott/logrel-mltt/tree/impredicativity-cast-compute-refl
 
 
 ------------------
@@ -39,7 +39,9 @@ import Tools.Nat
 -- Lists definition
 import Tools.List
 
--- Proof by reflection for a subclass of integer inequalities
+-- Proof by reflection for a family of integer inequalities
+-- This is used later on to prove that an induction is well-founded:
+-- we need to show that the size of the argument decreases with each recursive call
 import Tools.Inequality
 
 ---------------------------
@@ -51,11 +53,11 @@ import Definition.Untyped
 
 -- Propositional equality properties: Equalities between expressions,
 -- weakenings, substitutions and their combined composition.
--- (These lemmas are not in the paper.)
 import Definition.Untyped.Properties
 
 -- Judgements: Typing rules, conversion, reduction rules
 -- and well-formed substitutions and respective equality.
+-- The conversion rule cast-refl is the main contribution of this development.
 import Definition.Typed
 
 -- Well-formed context extraction and reduction properties.
@@ -218,7 +220,15 @@ import Definition.Typed.Consequences.TypeUnicity
 -- Conversion algorithm definition.
 import Definition.Conversion
 
--- Properties of conversion algorithm:
+-- A size measure for conversion proofs
+-- Because of cast-refl, some proofs cannot be done by structural induction
+-- For these, we will show that they terminate by induction on the size of
+-- the derivation of algorithmic conversion
+import Definition.Conversion.ConvSize
+
+-----------------------------------------
+-- Properties of conversion algorithm: --
+-----------------------------------------
 
 -- Context equality and its properties:
 -- * Context conversion of typing judgements.
@@ -229,33 +239,59 @@ import Definition.Conversion.Stability
 -- Soundness of the conversion algorithm.
 import Definition.Conversion.Soundness
 
--- Results around normalisation of reflexive terms
-import Definition.Conversion.FullReduction
+-- Weakening of the conversion algorithm.
+import Definition.Conversion.Weakening
 
--- Conversion property of algorithmic equality.
+-- The type of the conversion algorithm is stable under definitional equality
 import Definition.Conversion.Conversion
-
--- Decidability of the conversion algorithm.
-import Definition.Conversion.Decidable
-
--- Symmetry of the conversion algorithm.
-import Definition.Conversion.Symmetry
 
 -- Transitivity of the conversion algorithm.
 import Definition.Conversion.Transitivity
 
--- Weakening of the conversion algorithm.
-import Definition.Conversion.Weakening
+-- Symmetry of the conversion algorithm.
+import Definition.Conversion.Symmetry
 
--- WHNF and neutral lifting of the conversion algorithm.
-import Definition.Conversion.Lift
+-- Symmetry does not change the size of the derivation
+import Definition.Conversion.SymmetrySize
 
--- Generic equality relation instance for the conversion algorithm.
+-- Conversion is an instance of the generic equality relation interface
 import Definition.Conversion.EqRelInstance
 
 -- Completeness of conversion algorithm.
 import Definition.Conversion.Consequences.Completeness
 
+-- Results around normalisation of reflexive terms
+import Definition.Conversion.FullReduction
+
+-------------------------------------------
+-- Decidability of conversion algorithm: --
+-------------------------------------------
+
+-- Useful lemmas for the decidability proof
+import Definition.Conversion.HelperDecidable
+import Definition.Conversion.DecidableLemmas
+import Definition.Conversion.DecView
+
+-- Decidability of the conversion algorithm.
+import Definition.Conversion.Decidable
+
+-- Generic equality relation instance for the conversion algorithm.
+import Definition.Conversion.EqRelInstance
+
 -- Decidability of judgemental conversion.
 import Definition.Conversion.HelperDecidable
 import Definition.Typed.Decidable
+
+--------------------------------
+-- BONUS: NON-PARANOID TYPING --
+--------------------------------
+
+-- The typing rules in Definition.Typed have unnecessary premises
+-- Now that we know a lot about the properties of the theory, we can give
+-- an alternative and less verbose presentation of the theory
+import Definition.Typed.NonParanoidTyping
+
+-- Likewise, we can do the same for the algorithmic equality, to simplify
+-- the conversion checking algorithm
+import Definition.ConversionGen
+import Definition.Conversion.ConversionGenEquiv
