@@ -4,6 +4,7 @@ module README where
 
 -- Formalization of the decidability of conversion for a fragment of CICobs
 -- Git repository: https://github.com/CoqHott/logrel-mltt/tree/impredicativity-cast-compute-refl
+-- DOI of this artifact: 10.5281/zenodo.10499152
 
 
 ------------------

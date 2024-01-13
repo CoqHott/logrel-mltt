@@ -4,6 +4,6 @@ You do not need an installation of the Agda standard library.
 You typecheck the proof with the command
 $ agda --safe --no-libraries Everything.agda
 alternatively, you can use
-$ make
+$ make check
 
 The proof will likely take a fair amount of time to be checked (expect 15 minutes on a higher end laptop).

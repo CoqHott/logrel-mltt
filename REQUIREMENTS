@@ -6,7 +6,7 @@ The laptop on which the proof has been run has the following specifications:
 - Memory: 16 Gio DDR5
 - Operating system: Linux Ubuntu
 
-The proof takes approximately 15 minutes to type-check.
+The proof takes approximately 20 minutes to type-check.
 
 The reader who wishes to type-check the entire proof should be warned that some files may
 be quite resource-intensive (Some will take more than 5 minutes on a higher end laptop).
