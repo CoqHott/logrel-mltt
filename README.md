@@ -24,7 +24,7 @@ It features:
 - dependent pairs with proof-irrelevant domain and codomain ("existential types"),
 - proof-irrelevant identity types and type casting along equalities in the universes,
 - natural numbers and a proof-irrelevant empty type.
-- 
+
 However, it is subject to the following restrictions:
 - The universe hierarchies are restricted to two levels,
 - no general inductive types,
