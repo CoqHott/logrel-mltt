@@ -1,8 +1,15 @@
 # A Logical Relation for Impredicative Observational Equality in Agda #
 
-This is a formalized proof of the decidability of conversion for an
-extension of the calculus of inductive constructions (CIC)
-with an equality satisfying UIP, function extensionality, and propositional extensionality. 
+This is a formalized proof of decidability of conversion for an impredicative
+implementation of observational type theory.
+
+Compared to [previous work](https://github.com/CoqHott/logrel-mltt/tree/setoid-universes-hierarchy),
+the hierarchy of universes Prop_i is replaced by a single universe Prop. This universe
+allows *impredicative* quantification, meaning that it is closed under dependent products
+indexed over arbitrarily large types.
+The observational equality is defined in Prop, and supports large elimination through 
+type-casting. This shows that impredicativity is compatible with a definitionally 
+proof-irrelevant equality.
 
 The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/impredicativity-SProp-POPL/html/README.html).
 
@@ -12,7 +19,7 @@ The type theory under scrutiny is a simplified version of CC<sup>obs</sup>, as d
 paper.
 It features:
 - A hierarchy of universes for proof-relevant types
-- An impredicative universe of proof-irrelevant types,
+- An single impredicative universe for proof-irrelevant types,
 - dependent products, with domain and codomain in any universe,
 - dependent pairs with proof-irrelevant domain and codomain ("existential types"),
 - proof-irrelevant identity types and type casting along equalities in the universes,
@@ -36,10 +43,10 @@ that characterizes the computational behaviour of the typing judgments. Some bas
 this logical relation are then established, in order to prove the *fundamental lemma*, which states
 that any derivable judgement satisfies the logical relation.
 
-The main change in the definition compare to the original version of
-Abel et al. and TT<sup>obs</sup> is the fact that the logical relation
-for type in the impredicative universe is defined upfront, because it
-does not have to collect any additional information at the top of typing.
+The main innovation compared to [the normalisation proof of Abel et al.](https://github.com/mr-ohman/logrel-mltt/) 
+and [the normalisation proof for TT<sup>obs</sup>](https://github.com/CoqHott/logrel-mltt/tree/setoid-universes-hierarchy) 
+is the fact that the reducibility predicate for the impredicative universe does not depend on type reducibility, which
+allows us to define it upfront.
 
 Once the fundamental lemma has been proven, it entails several fundamental properties of the type
 theory, such as the termination of the weak-head reduction strategy, the canonicity of the integers,
