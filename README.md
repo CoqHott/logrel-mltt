@@ -1,24 +1,24 @@
-# A Logical Relation for Setoid Type Theory in Agda #
+# A Logical Relation for Observational Type Theory in Agda #
 
 This is a formalized proof of the decidability of conversion for an
-extension of Martin Löf type theory with an equality satisfying UIP,
+extension of Martin Löf type theory with an equality that satisfies UIP,
 function extensionality, and propositional extensionality.
 
 The source code can be browsed in HTML [here](https://htmlpreview.github.io/?https://github.com/CoqHott/logrel-mltt/blob/setoid-universes-hierarchy/html/README.html).
 
 The companion paper can be found [here](https://hal.inria.fr/hal-03367052)
 
-### Setoid Type Theory ###
+### Observational Type Theory ###
 
 The type theory under scrutiny is a simplified version of TT<sup>obs</sup>, as described in the companion
 paper.
-It features:
+The formalisation features:
 - A hierarchy of universes for proof-relevant types, and one for proof-irrelevant types,
 - dependent products, with domain and codomain in any universe,
 - dependent pairs with proof-irrelevant domain and codomain ("existential types"),
 - proof-irrelevant identity types and type casting along equalities in the universes,
 - natural numbers and a proof-irrelevant empty type.
-However, it is subject to the following restrictions:
+Compared to the full version of TT<sup>obs</sup>, it is subject to the following restrictions:
 - The universe hierarchies are restricted to two levels,
 - no general inductive types,
 - no equality types à la Swan,
