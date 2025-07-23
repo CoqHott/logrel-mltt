@@ -104,8 +104,8 @@ redSubst*Term {t = t} {l = ι ¹} {Γ = Γ} t⇒u (Uᵣ′ A .(next ⁰) rU ⁰ 
     A≡U  = subset* (red D)
     ⊢t   = conv (redFirst*Term t⇒u) A≡U
     t⇒u′ = conv* t⇒u A≡U
-    [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t≡u] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ⁰} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
     [[t]] = Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
   in
   ([[t]] , Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) A≡A [t≡u])
@@ -114,8 +114,8 @@ redSubst*Term {t = t} {l = ∞} {Γ = Γ} t⇒u (Uᵣ′ A .(next ¹) rU ¹ l< P
     A≡U  = subset* (red D)
     ⊢t   = conv (redFirst*Term t⇒u) A≡U
     t⇒u′ = conv* t⇒u A≡U
-    [t] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
-    [t≡u] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ → proj₁ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
+    [t≡u] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ → proj₂ (redSubst* {l = ι ¹} (wkRed* [ρ] ⊢Δ (univ* t⇒u′)) ([u] [ρ] ⊢Δ))
     [[t]] = Uₜ K [[ ⊢t , ⊢K , t⇒u′ ⇨∷* d ]] typeA A≡A [t]
   in
   ([[t]] , Uₜ₌ [[t]] (Uₜ K [[ ⊢u , ⊢K , d ]] typeA A≡A [u]) A≡A [t≡u])

@@ -16,7 +16,6 @@ data _∷_⊆_ : Wk → Con Term → Con Term → Set where
   step : ∀ {Γ Δ A r ρ} → ρ  ∷ Δ ⊆ Γ → step ρ ∷ Δ ∙ A ^ r ⊆ Γ
   lift : ∀ {Γ Δ A r ρ} → ρ  ∷ Δ ⊆ Γ → lift ρ ∷ Δ ∙ U.wk ρ A ^ r ⊆ Γ ∙ A ^ r
 
-
 -- -- Weakening composition
 
 _•ₜ_ : ∀ {ρ ρ′ Γ Δ Δ′} → ρ ∷ Γ ⊆ Δ → ρ′ ∷ Δ ⊆ Δ′ → ρ • ρ′ ∷ Γ ⊆ Δ′

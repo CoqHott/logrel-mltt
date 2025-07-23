@@ -292,7 +292,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       d     : Γ ⊢ t :⇒*: K ∷ Univ r l′ ^ next l′
       typeK : Type K
       K≡K   : Γ ⊢ K ≅ K ∷ Univ r l′ ^ [ ! , next l′ ]
-      [t]   : ∀ {ρ} → ρ ∷ ε ⊆ Γ → (⊢Δ : ⊢ ε) → ε ⊩ U.wk ρ t ^ [ r , ι l′ ]
+      [t]   : ∀ {ρ Δ} → ρ ∷ Δ ⊆ Γ → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ^ [ r , ι l′ ]
 
   -- Universe term equality
   record _⊩¹U_≡_∷_^_/_ (Γ : Con Term) (t u : Term) (X : Term) (ll : TypeLevel) ([X] : Γ ⊩¹U X ^ ll) : Set where
@@ -303,7 +303,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
       [t]   : Γ ⊩¹U t ∷ X ^ ll / [X]
       [u]   : Γ ⊩¹U u ∷ X ^ ll / [X]
       A≡B   : Γ ⊢ _⊩¹U_∷_^_/_.K [t] ≅ _⊩¹U_∷_^_/_.K [u] ∷ Univ r l′ ^ [ ! , next l′ ]
-      [t≡u] : ∀ {ρ} → ([ρ] : ρ ∷ ε ⊆ Γ) → (⊢Δ : ⊢ ε) → ε ⊩ U.wk ρ t ≡ U.wk ρ u ^ [ r , ι l′ ] / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ
+      [t≡u] : ∀ {ρ Δ} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ) → Δ ⊩ U.wk ρ t ≡ U.wk ρ u ^ [ r , ι l′ ] / _⊩¹U_∷_^_/_.[t] [t] [ρ] ⊢Δ
 
   mutual
 

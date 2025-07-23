@@ -17,11 +17,11 @@ import Tools.PropositionalEquality as PE
 
 
 -- Irrelevance of valid substitutions with different derivations of contexts
-irrelevanceSubst : ∀ {σ Γ Δ}
+irrelevanceSubst : ∀ {σ Γ}
                    ([Γ] [Γ]′ : ⊩ᵛ Γ)
-                   (⊢Δ ⊢Δ′ : ⊢ Δ)
-                 → Δ ⊩ˢ σ ∷ Γ / [Γ]  / ⊢Δ
-                 → Δ ⊩ˢ σ ∷ Γ / [Γ]′ / ⊢Δ′
+                   (⊢Δ ⊢Δ′ : ⊢ ε)
+                 → ⊩ˢ σ ∷ Γ / [Γ]  / ⊢Δ
+                 → ⊩ˢ σ ∷ Γ / [Γ]′ / ⊢Δ′
 irrelevanceSubst ε ε ⊢Δ ⊢Δ′ [σ] = tt
 irrelevanceSubst ([Γ] ∙ [A]) ([Γ]′ ∙ [A]′) ⊢Δ ⊢Δ′ ([tailσ] , [headσ]) =
   let [tailσ]′ = irrelevanceSubst [Γ] [Γ]′ ⊢Δ ⊢Δ′ [tailσ]
@@ -32,24 +32,23 @@ irrelevanceSubst ([Γ] ∙ [A]) ([Γ]′ ∙ [A]′) ⊢Δ ⊢Δ′ ([tailσ] , 
 
 -- Irrelevance of valid substitutions with different contexts
 -- that are propositionally equal
-irrelevanceSubst′ : ∀ {σ Γ Δ Δ′}
-                    (eq : Δ PE.≡ Δ′)
+irrelevanceSubst′ : ∀ {σ Γ}
                     ([Γ] [Γ]′ : ⊩ᵛ Γ)
-                    (⊢Δ  : ⊢ Δ)
-                    (⊢Δ′ : ⊢ Δ′)
-                  → Δ  ⊩ˢ σ ∷ Γ / [Γ]  / ⊢Δ
-                  → Δ′ ⊩ˢ σ ∷ Γ / [Γ]′ / ⊢Δ′
-irrelevanceSubst′ PE.refl [Γ] [Γ]′ ⊢Δ ⊢Δ′ [σ] = irrelevanceSubst [Γ] [Γ]′ ⊢Δ ⊢Δ′ [σ]
+                    (⊢Δ  : ⊢ ε)
+                    (⊢Δ′ : ⊢ ε)
+                  → ⊩ˢ σ ∷ Γ / [Γ]  / ⊢Δ
+                  → ⊩ˢ σ ∷ Γ / [Γ]′ / ⊢Δ′
+irrelevanceSubst′ [Γ] [Γ]′ ⊢Δ ⊢Δ′ [σ] = irrelevanceSubst [Γ] [Γ]′ ⊢Δ ⊢Δ′ [σ]
 
 -- Irrelevance of valid substitution equality
 -- with different derivations of contexts
-irrelevanceSubstEq : ∀ {σ σ′ Γ Δ}
+irrelevanceSubstEq : ∀ {σ σ′ Γ}
                      ([Γ] [Γ]′ : ⊩ᵛ Γ)
-                     (⊢Δ ⊢Δ′ : ⊢ Δ)
-                     ([σ]  : Δ ⊩ˢ σ ∷ Γ / [Γ]  / ⊢Δ)
-                     ([σ]′ : Δ ⊩ˢ σ ∷ Γ / [Γ]′ / ⊢Δ′)
-                   → Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ]  / ⊢Δ  / [σ]
-                   → Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ]′ / ⊢Δ′ / [σ]′
+                     (⊢Δ ⊢Δ′ : ⊢ ε)
+                     ([σ]  : ⊩ˢ σ ∷ Γ / [Γ]  / ⊢Δ)
+                     ([σ]′ : ⊩ˢ σ ∷ Γ / [Γ]′ / ⊢Δ′)
+                   → ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ]  / ⊢Δ  / [σ]
+                   → ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ]′ / ⊢Δ′ / [σ]′
 irrelevanceSubstEq ε ε ⊢Δ ⊢Δ′ [σ] [σ]′ [σ≡σ′] = tt
 irrelevanceSubstEq ([Γ] ∙ [A]) ([Γ]′ ∙ [A]′) ⊢Δ ⊢Δ′ [σ] [σ]′ [σ≡σ′] =
   irrelevanceSubstEq [Γ] [Γ]′ ⊢Δ ⊢Δ′ (proj₁ [σ]) (proj₁ [σ]′) (proj₁ [σ≡σ′])

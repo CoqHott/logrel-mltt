@@ -61,7 +61,7 @@ univᵛ : ∀ {A Γ rU lU lU' l} ([Γ] : ⊩ᵛ Γ)
       → Γ ⊩ᵛ⟨ ι lU' ⟩ A ^ [ rU , ι lU ] / [Γ]
 univᵛ {lU = lU} {l = l} [Γ] lU< [U] [A] ⊢Δ [σ] =
   let [A]₁ = irrelevance-≤ lU< (univEq (proj₁ ([U] ⊢Δ [σ])) (proj₁ ([A] ⊢Δ [σ]))) in
-  [A]₁ , λ [σ′] [σ≡σ′] → univEqEq (proj₁ ([U] ⊢Δ [σ])) [A]₁
+  [A]₁ , λ [σ′] [σ≡σ′] →  univEqEq (proj₁ ([U] ⊢Δ [σ])) [A]₁
                                   ((proj₂ ([A] ⊢Δ [σ])) [σ′] [σ≡σ′])
 
 

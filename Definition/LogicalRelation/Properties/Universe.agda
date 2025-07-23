@@ -8,7 +8,7 @@ open EqRelSet {{...}}
 open import Definition.Untyped
 open import Definition.Untyped.Properties
 open import Definition.Typed
-open import Definition.Typed.Weakening
+open import Definition.Typed.Weakening as Twk
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Weakening as Lwk
 open import Definition.LogicalRelation.ShapeView
@@ -46,29 +46,29 @@ univRed* (id x) = PE.refl , PE.refl
 univRed* (univ x ⇨ D) = ⊥-elim (univRedTerm x)
 
 -- Reducible terms of type U are reducible types.
-univEq : ∀ {l Γ A r l′ ll′}
-       → ([U] : Γ ⊩⟨ l ⟩ Univ r l′ ^ [ ! , ll′ ] )
-       → Γ ⊩⟨ l ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U]
-       → Γ ⊩⟨ ι l′ ⟩ A ^ [ r , ι l′ ]
-univEq {ι ⁰} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ l′₁ () eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t])
-univEq {ι ¹} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ emb< eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t]) =
+univEq : ∀ {l A r l′ ll′}
+       → ([U] : ε ⊩⟨ l ⟩ Univ r l′ ^ [ ! , ll′ ] )
+       → ε ⊩⟨ l ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U]
+       → ε ⊩⟨ ι l′ ⟩ A ^ [ r , ι l′ ]
+univEq {ι ⁰} {A} {r} {l′} (Uᵣ (Uᵣ r₁ l′₁ () eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t])
+univEq {ι ¹} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ⁰ emb< eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t]) =
   let
     ⊢Γ = wf ⊢A
     r≡r₁ , l′≡l′₁ = univRed* D
-    [t]′ : Γ ⊩⟨ ι ⁰ ⟩ A ^ [ r₁ , ι ⁰ ]
-    [t]′ = PE.subst (λ X → Γ ⊩⟨ _ ⟩ X ^ [ _ , _ ])
-      (Definition.Untyped.Properties.wk-id A) ([t] Definition.Typed.Weakening.id ⊢Γ)
+    [t]′ : ε ⊩⟨ ι ⁰ ⟩ A ^ [ r₁ , ι ⁰ ]
+    [t]′ = PE.subst (λ X → ε ⊩⟨ _ ⟩ X ^ [ _ , _ ])
+                    (Definition.Untyped.Properties.wk-id A) ([t] Twk.id ⊢Γ)
   in
-  PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
-univEq {∞} {Γ} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ _ eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t]) =
+  PE.subst₂ (λ X Y → ε ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
+univEq {∞} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ _ eq [[ ⊢A , ⊢B , D ]])) (Uₜ K d₁ typeK K≡K [t]) =
   let
     ⊢Γ = wf ⊢A
     r≡r₁ , l′≡l′₁ = univRed* D
-    [t]′ : Γ ⊩⟨ ι ¹ ⟩ A ^ [ r₁ , ι ¹ ]
-    [t]′ = PE.subst (λ X → Γ ⊩⟨ _ ⟩ X ^ [ _ , _ ])
-      (Definition.Untyped.Properties.wk-id A) ([t] Definition.Typed.Weakening.id ⊢Γ)
+    [t]′ : ε ⊩⟨ ι ¹ ⟩ A ^ [ r₁ , ι ¹ ]
+    [t]′ = PE.subst (λ X → ε ⊩⟨ _ ⟩ X ^ [ _ , _ ])
+                    (Definition.Untyped.Properties.wk-id A) ([t] Twk.id ⊢Γ)
   in
-  PE.subst₂ (λ X Y → Γ ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
+  PE.subst₂ (λ X Y → ε ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
 univEq (ℕᵣ [[ ⊢A , ⊢B , univ x ⇨ D ]]) [A] = ⊥-elim (univRedTerm x)
 univEq (ne′ K [[ ⊢A , ⊢B , univ x ⇨ D ]] neK K≡K) [A] = ⊥-elim (univRedTerm x)
 univEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A≡A [F] [G] G-ext) [A] =
@@ -76,43 +76,43 @@ univEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A�
 univEq {ι ¹} (emb _ [U]′) [A] = univEq [U]′ [A]
 univEq {∞} (emb _ [U]′) [A] = univEq [U]′ [A]
 
-univEqGen : ∀ {Γ UA A l′}
-       → ([U] : ((next l′) LogRel.⊩¹U logRelRec (next l′) ^ Γ) UA (next l′))
-       → Γ ⊩⟨ next l′ ⟩ A ∷ UA ^ [ ! , next l′ ] / Uᵣ [U]
-       → Γ ⊩⟨ ι l′ ⟩ A ^ [ LogRel._⊩¹U_^_.r [U] , ι l′ ]
-univEqGen {Γ} {UA} {A} {l′} [UA] [A] =
+univEqGen : ∀ {UA A l′}
+       → ([U] : ((next l′) LogRel.⊩¹U logRelRec (next l′) ^ ε) UA (next l′))
+       → ε ⊩⟨ next l′ ⟩ A ∷ UA ^ [ ! , next l′ ] / Uᵣ [U]
+       → ε ⊩⟨ ι l′ ⟩ A ^ [ LogRel._⊩¹U_^_.r [U] , ι l′ ]
+univEqGen {UA} {A} {l′} [UA] [A] =
   let (Uᵣ r l′₁ l< e [[ ⊢A , ⊢B , D ]]) = [UA]
       [U] = Ugen {l = l′} (wf ⊢A)
-      [UA]' , [UAeq] = redSubst* (PE.subst (λ X →  Γ ⊢ UA ⇒* Univ r X ^ [ ! , next X ]) (next-inj e) D) [U]
+      [UA]' , [UAeq] = redSubst* (PE.subst (λ X → ε ⊢ UA ⇒* Univ r X ^ [ ! , next X ]) (next-inj e) D) [U]
   in univEq [U] (convTerm₁ {t = A} [UA]' [U] [UAeq] (irrelevanceTerm (Uᵣ [UA]) [UA]' [A]))
 
-univ⊩ : ∀ {A Γ rU lU lU' l} 
-        ([U] : Γ ⊩⟨ l ⟩ Univ rU lU ^ [ ! , lU' ])
-      → Γ ⊩⟨ l ⟩ A ∷ Univ rU lU ^ [ ! , lU' ] / [U]
-      → Γ ⊩⟨ ι lU ⟩ A ^ [ rU , ι lU ] 
+univ⊩ : ∀ {A rU lU lU' l} 
+        ([U] : ε ⊩⟨ l ⟩ Univ rU lU ^ [ ! , lU' ])
+      → ε ⊩⟨ l ⟩ A ∷ Univ rU lU ^ [ ! , lU' ] / [U]
+      → ε ⊩⟨ ι lU ⟩ A ^ [ rU , ι lU ] 
 univ⊩ {lU = lU} {l = l} [U] [A] = irrelevance-≤ (≡is≤ PE.refl) (univEq [U] [A])
-  
-univEqTerm : ∀ {Γ A t r l′ ll′}
-       → ([U] : Γ ⊩⟨ ∞ ⟩ Univ r l′ ^ [ ! , ll′ ] )
-       → ([A] : Γ ⊩⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U])
-       → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
-       → Γ ⊩⟨ ι l′ ⟩ t ∷ A ^ [ r , ι l′ ] / univEq [U] [A]
-univEqTerm {Γ} {A} {t} {r} {⁰} [U] [A] [t] = [t]
-univEqTerm {Γ} {A} {t} {r} {¹} [U] [A] [t] = [t]
+
+univEqTerm : ∀ {A t r l′ ll′}
+       → ([U] : ε ⊩⟨ ∞ ⟩ Univ r l′ ^ [ ! , ll′ ] )
+       → ([A] : ε ⊩⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , ll′ ] / [U])
+       → ε ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
+       → ε ⊩⟨ ι l′ ⟩ t ∷ A ^ [ r , ι l′ ] / univEq [U] [A]
+univEqTerm {A} {t} {r} {⁰} [U] [A] [t] = [t]
+univEqTerm {A} {t} {r} {¹} [U] [A] [t] = [t]
 
 -- Helper function for reducible term equality of type U for specific type derivations.
-univEqEq′ : ∀ {l ll l′ Γ X A B} ([U] : Γ ⊩⟨ l ⟩U X ^ ll) →
+univEqEq′ : ∀ {l ll l′ X A B} ([U] : ε ⊩⟨ l ⟩U X ^ ll) →
             let r = toTypeInfo (U-Relevance-Level [U])
             in
-              ([A] : Γ ⊩⟨ l′ ⟩ A ^ r)
-              → Γ ⊩⟨ l ⟩ A ≡ B ∷ X ^ [ ! , ll ] / U-intr [U]
-              → Γ ⊩⟨ l′ ⟩ A ≡ B  ^ r / [A]
-univEqEq′ {l} {ll} {l″} {Γ} {X} {A} {B} (noemb (Uᵣ r l′ l< eq [[ ⊢A , ⊢B , D ]])) [A]
-          (Uₜ₌ (Uₜ K d typeK K≡K [t]) [u] A≡B [t≡u]) =
+              ([A] : ε ⊩⟨ l′ ⟩ A ^ r)
+              → ε ⊩⟨ l ⟩ A ≡ B ∷ X ^ [ ! , ll ] / U-intr [U]
+              → ε ⊩⟨ l′ ⟩ A ≡ B  ^ r / [A]
+univEqEq′ {l} {ll} {l″} {X} {A} {B} (noemb (Uᵣ r l′ l< eq [[ ⊢A , ⊢B , D ]])) [A]
+          (Uₜ₌ (Uₜ K d typeK K≡K [t]) [u] A≡B [t≡u]) = 
   let ⊢Γ = wf ⊢A in
   irrelevanceEq″ (Definition.Untyped.Properties.wk-id A) (Definition.Untyped.Properties.wk-id B) PE.refl PE.refl
-    (emb l< ([t] Definition.Typed.Weakening.id ⊢Γ)) [A]
-    ([t≡u] Definition.Typed.Weakening.id ⊢Γ)
+    (emb l< ([t] Twk.id ⊢Γ)) [A]
+    ([t≡u] Twk.id ⊢Γ)
 univEqEq′ (emb emb< X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
 univEqEq′ (emb ∞< X) [A] [A≡B] = univEqEq′ X [A] [A≡B]
 
@@ -148,23 +148,22 @@ helper-eq : ∀ {l Γ A B r r'} {[A] : Γ ⊩⟨ l ⟩ A ^ r} (e : r PE.≡ r' )
 helper-eq PE.refl X = X
 
 -- Reducible term equality of type U is reducible type equality.
-univEqEq : ∀ {l l′ Γ A B r ll} ([U] : Γ ⊩⟨ l ⟩ Univ r ll ^ [ ! , next ll ]) ([A] : Γ ⊩⟨ l′ ⟩ A ^ [ r , ι ll ])
-         → Γ ⊩⟨ l ⟩ A ≡ B ∷ Univ r ll ^ [ ! , next ll ] / [U]
-         → Γ ⊩⟨ l′ ⟩ A ≡ B ^ [ r , ι ll ] / [A]
-univEqEq {l} {l′} {Γ} {A} {B} {r} {ll} [U] [A] [A≡B] =
+univEqEq : ∀ {l l′ A B r ll} ([U] : ε ⊩⟨ l ⟩ Univ r ll ^ [ ! , next ll ]) ([A] : ε ⊩⟨ l′ ⟩ A ^ [ r , ι ll ])
+         → ε ⊩⟨ l ⟩ A ≡ B ∷ Univ r ll ^ [ ! , next ll ] / [U]
+         → ε ⊩⟨ l′ ⟩ A ≡ B ^ [ r , ι ll ] / [A]
+univEqEq {l} {l′} {A} {B} {r} {ll} [U] [A] [A≡B] =
   let [A≡B]′ = irrelevanceEqTerm [U] (U-intr (U-elim [U])) [A≡B]
-      X = univEqEq′ (U-elim [U]) (PE.subst (λ r → Γ ⊩⟨ l′ ⟩ A ^ r) (PE.sym (PE.cong toTypeInfo (U-Relevance-Level-eq [U]))) [A]) [A≡B]′
+      X = univEqEq′ (U-elim [U]) (PE.subst (λ r → ε ⊩⟨ l′ ⟩ A ^ r) (PE.sym (PE.cong toTypeInfo (U-Relevance-Level-eq [U]))) [A]) [A≡B]′
   in helper-eq (PE.sym (PE.cong toTypeInfo (U-Relevance-Level-eq [U]))) X
 
-univEqEqTerm : ∀ {Γ A t u r l′ ll}
-             → ([U] : Γ ⊩⟨ ∞ ⟩ Univ r l′ ^ [ ! , ll ] )
-             → ([A] : Γ ⊩⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , ll ] / [U])
-             → Γ ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
-             → Γ ⊩⟨ ∞ ⟩ t ≡ u ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
-             → Γ ⊩⟨ ι l′ ⟩ t ≡ u ∷ A ^ [ r , ι l′ ] / univEq [U] [A]
-univEqEqTerm {Γ} {A} {t} {u} {r} {⁰} [U] [A] [t] [t≡u] = [t≡u]
-univEqEqTerm {Γ} {A} {t} {u} {r} {¹} [U] [A] [t] [t≡u] = [t≡u]
-
+univEqEqTerm : ∀ {A t u r l′ ll}
+             → ([U] : ε ⊩⟨ ∞ ⟩ Univ r l′ ^ [ ! , ll ] )
+             → ([A] : ε ⊩⟨ ∞ ⟩ A ∷ Univ r l′ ^ [ ! , ll ] / [U])
+             → ε ⊩⟨ ∞ ⟩ t ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
+             → ε ⊩⟨ ∞ ⟩ t ≡ u ∷ A ^ [ r , ι l′ ] / maybeEmb (univ⊩ [U] [A])
+             → ε ⊩⟨ ι l′ ⟩ t ≡ u ∷ A ^ [ r , ι l′ ] / univEq [U] [A]
+univEqEqTerm {A} {t} {u} {r} {⁰} [U] [A] [t] [t≡u] = [t≡u]
+univEqEqTerm {A} {t} {u} {r} {¹} [U] [A] [t] [t≡u] = [t≡u]
 
 
 un-univEq : ∀ {l Γ A r }

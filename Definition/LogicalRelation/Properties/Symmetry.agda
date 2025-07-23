@@ -41,11 +41,11 @@ mutual
          (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
     let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
         F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , lΠ≡lΠ₁ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
-        [F₁≡F] : ∀ {Δ} {ρ} [ρ] ⊢Δ → _
-        [F₁≡F] {Δ} {ρ} [ρ] ⊢Δ =
+        [F₁≡F] : ∀ {ρ} [ρ] ⊢Δ → _
+        [F₁≡F] {ρ} [ρ] ⊢Δ =
           let ρF′≡ρF₁ ρ = PE.cong (wk ρ) (PE.sym F₁≡F′)
-              [ρF′] {ρ} [ρ] ⊢Δ = PE.subst (λ x → Δ ⊩⟨ _ ⟩ wk ρ x ^ _) F₁≡F′ ([F]₁ [ρ] ⊢Δ)
-          in  irrelevanceEq′ {Δ} (ρF′≡ρF₁ ρ) PE.refl PE.refl
+              [ρF′] {ρ} [ρ] ⊢Δ = PE.subst (λ x → ε ⊩⟨ _ ⟩ wk ρ x ^ _) F₁≡F′ ([F]₁ [ρ] ⊢Δ)
+          in  irrelevanceEq′ (ρF′≡ρF₁ ρ) PE.refl PE.refl
                              ([ρF′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ)
                              (symEq′ (PE.sym rF₁≡rF′) (PE.cong ι (PE.sym lF₁≡lF′)) ([F] [ρ] ⊢Δ) ([ρF′] [ρ] ⊢Δ)
                                     ([F≡F′] [ρ] ⊢Δ))
@@ -138,11 +138,11 @@ symEqTerm¹ : ∀ {Γ A t u r} ([A] : Γ ⊩⟨ ι ¹ ⟩ A ^ r)
           → Γ ⊩⟨ ι ¹ ⟩ u ≡ t ∷ A ^ r / [A]
 symEqTerm¹ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ [A] [B] A≡B [A≡B]) =
   let
-    [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+    [B≡A] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ →
       symEq (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ)
-    u_to_t : ∀ {ρ Δ a} → ([ρ] : ρ ∷ Δ ⊆ Γ) → (⊢Δ : ⊢ Δ)
-      → ([a] : Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
-      → Δ ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ t ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ)
+    u_to_t : ∀ {ρ a} → ([ρ] : ρ ∷ ε ⊆ Γ) → (⊢Δ : ⊢ ε)
+      → ([a] : ε ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ u ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ))
+      → ε ⊩⟨ ι ⁰ ⟩ a ∷ wk ρ t ^ [ r , ι ⁰ ] / (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ)
     u_to_t = λ [ρ] ⊢Δ [a] → convTerm₂ (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ) [a]
   in
   Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A] 
@@ -168,13 +168,13 @@ symEqTerm∞ : ∀ {Γ A t u r} ([A] : Γ ⊩⟨ ∞ ⟩ A ^ r)
           → Γ ⊩⟨ ∞ ⟩ u ≡ t ∷ A ^ r / [A]
 symEqTerm∞ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ⁰ l< el D)) (Uₜ₌ [A] [B] A≡B [A≡B]) =
   let
-    [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+    [B≡A] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ →
       symEq (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ)
   in
   Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A] 
 symEqTerm∞ {Γ} {A} {t} {u} (Uᵣ (Uᵣ r ¹ l< el D)) (Uₜ₌ [A] [B] A≡B [A≡B]) =
   let
-    [B≡A] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+    [B≡A] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ →
       symEq (LogRel._⊩¹U_∷_^_/_.[t] [A] [ρ] ⊢Δ) (LogRel._⊩¹U_∷_^_/_.[t] [B] [ρ] ⊢Δ) ([A≡B] [ρ] ⊢Δ)
   in
   Uₜ₌ [B] [A] (≅ₜ-sym A≡B) [B≡A]

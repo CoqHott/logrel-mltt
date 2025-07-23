@@ -56,30 +56,30 @@ mutual
         F₁≡F′ , rF₁≡rF′ , lF₁≡lF′ , G₁≡G′ , lG₁≡lG′ , _ = Π-PE-injectivity ΠF₁G₁≡ΠF′G′
         F₂≡F″ , rF₂≡rF′ , lF₂≡lF′ , G₂≡G″ , lG₂≡lG″  , _ = Π-PE-injectivity (whrDet* (red D₂ , Πₙ) (D″ , Πₙ))
         substLift {Δ} {l} {a} {r} ρ x = Δ ⊩⟨ l ⟩ wk (lift ρ) x [ a ] ^ r
-        [F′] : ∀ {ρ Δ} [ρ] ⊢Δ → Δ ⊩⟨ l′ ⟩ wk ρ F′ ^ [ rF₁ , ι lF₁ ]
+        [F′] : ∀ {ρ} [ρ] ⊢Δ → ε ⊩⟨ l′ ⟩ wk ρ F′ ^ [ rF₁ , ι lF₁ ]
         [F′] {ρ} [ρ] ⊢Δ = PE.subst (λ x → _ ⊩⟨ _ ⟩ wk ρ x ^ _) F₁≡F′ ([F]₁ [ρ] ⊢Δ)
-        [F″] : ∀ {ρ} {Δ} [ρ] ⊢Δ → Δ ⊩⟨ l″ ⟩ wk ρ F″ ^ [ rF₂ , ι lF₂ ]
+        [F″] : ∀ {ρ} [ρ] ⊢Δ → ε ⊩⟨ l″ ⟩ wk ρ F″ ^ [ rF₂ , ι lF₂ ]
         [F″] {ρ} [ρ] ⊢Δ = PE.subst (λ x → _ ⊩⟨ _ ⟩ wk ρ x ^ _) F₂≡F″ ([F]₂ [ρ] ⊢Δ)
-        [F′≡F″] : ∀ {ρ} {Δ} [ρ] ⊢Δ → Δ ⊩⟨ l′ ⟩ wk ρ F′ ≡ wk ρ F″ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ
+        [F′≡F″] : ∀ {ρ} [ρ] ⊢Δ → ε ⊩⟨ l′ ⟩ wk ρ F′ ≡ wk ρ F″ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ
         [F′≡F″] {ρ} [ρ] ⊢Δ = irrelevanceEq′ (PE.cong (wk ρ) F₁≡F′) PE.refl PE.refl
                                       ([F]₁ [ρ] ⊢Δ) ([F′] [ρ] ⊢Δ) ([F≡F′]₁ [ρ] ⊢Δ)
-        [G′] : ∀ {ρ Δ a} [ρ] ⊢Δ
-             → Δ ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ
-             → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′ [ a ] ^ [ r , ι lG₁ ] 
+        [G′] : ∀ {ρ a} [ρ] ⊢Δ
+             → ε ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ
+             → ε ⊩⟨ l′ ⟩ wk (lift ρ) G′ [ a ] ^ [ r , ι lG₁ ] 
         [G′] {ρ} [ρ] ⊢Δ [a] =
              let [a′] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₁≡F′)) PE.refl PE.refl
                                       ([F′] [ρ] ⊢Δ) ([F]₁ [ρ] ⊢Δ) [a]
              in  PE.subst (substLift ρ) G₁≡G′ ([G]₁ [ρ] ⊢Δ [a′])
-        [G″] : ∀ {ρ Δ a} [ρ] ⊢Δ
-             → Δ ⊩⟨ l″ ⟩ a ∷ wk ρ F″ ^ [ rF₂ , ι lF₂ ] / [F″] [ρ] ⊢Δ
-             → Δ ⊩⟨ l″ ⟩ wk (lift ρ) G″ [ a ] ^ [ r , ι lG₂ ]
+        [G″] : ∀ {ρ a} [ρ] ⊢Δ
+             → ε ⊩⟨ l″ ⟩ a ∷ wk ρ F″ ^ [ rF₂ , ι lF₂ ] / [F″] [ρ] ⊢Δ
+             → ε ⊩⟨ l″ ⟩ wk (lift ρ) G″ [ a ] ^ [ r , ι lG₂ ]
         [G″] {ρ} [ρ] ⊢Δ [a] =
           let [a″] = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₂≡F″)) PE.refl PE.refl
                                       ([F″] [ρ] ⊢Δ) ([F]₂ [ρ] ⊢Δ) [a]
           in  PE.subst (substLift ρ) G₂≡G″ ([G]₂ [ρ] ⊢Δ [a″])
-        [G′≡G″] : ∀ {ρ Δ a} [ρ] ⊢Δ
-                  ([a] : Δ ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ)
-                → Δ ⊩⟨ l′ ⟩ wk (lift ρ) G′  [ a ]
+        [G′≡G″] : ∀ {ρ a} [ρ] ⊢Δ
+                  ([a] : ε ⊩⟨ l′ ⟩ a ∷ wk ρ F′ ^ [ rF₁ , ι lF₁ ] / [F′] [ρ] ⊢Δ)
+                → ε ⊩⟨ l′ ⟩ wk (lift ρ) G′  [ a ]
                           ≡ wk (lift ρ) G″ [ a ] ^ [ r , ι lG₁ ] / [G′] [ρ] ⊢Δ [a]
         [G′≡G″] {ρ} [ρ] ⊢Δ [a′] =
           let [a]₁ = irrelevanceTerm′ (PE.cong (wk ρ) (PE.sym F₁≡F′)) PE.refl PE.refl
@@ -237,7 +237,7 @@ transEqTerm¹ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t]
     B≡B′ = whrDet*Term (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]))
       (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]′) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]′))
     A≡C = ≅ₜ-trans (PE.subst (λ X → EqRelSet._⊢_≅_∷_^_ eqrel Γ (LogRel._⊩¹U_∷_^_/_.K [t]) X (Univ rU ⁰) ([ ! , ι ¹ ])) B≡B′ A≡B) B′≡C
-    [t≡v] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+    [t≡v] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ →
       transEq (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)
         (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
   in
@@ -282,7 +282,7 @@ transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ⁰ l< eq d)) (Uₜ₌ [t
     B≡B′ = whrDet*Term (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]))
       (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]′) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]′))
     A≡C = ≅ₜ-trans (PE.subst (λ X → EqRelSet._⊢_≅_∷_^_ eqrel Γ (LogRel._⊩¹U_∷_^_/_.K [t]) X (Univ rU ⁰) ([ ! , ι ¹ ])) B≡B′ A≡B) B′≡C
-    [t≡v] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+    [t≡v] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ →
       transEq (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)
         (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
   in
@@ -295,7 +295,7 @@ transEqTerm∞ {Γ} {A} {t} {u} {v} {r} (Uᵣ (Uᵣ rU ¹ l< eq d)) (Uₜ₌ [t]
     B≡B′ = whrDet*Term (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]))
       (_⊢_:⇒*:_∷_^_.d (LogRel._⊩¹U_∷_^_/_.d [u]′) , typeWhnf (LogRel._⊩¹U_∷_^_/_.typeK [u]′))
     A≡C = ≅ₜ-trans (PE.subst (λ X → EqRelSet._⊢_≅_∷_^_ eqrel Γ (LogRel._⊩¹U_∷_^_/_.K [t]) X (Univ rU ¹) ([ ! , ∞ ])) B≡B′ A≡B) B′≡C
-    [t≡v] = λ {ρ} {Δ} ([ρ] : ρ ∷ Δ ⊆ Γ) ⊢Δ →
+    [t≡v] = λ {ρ} ([ρ] : ρ ∷ ε ⊆ Γ) ⊢Δ →
       transEq (ti [t] [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) (ti [v] [ρ] ⊢Δ) ([t≡u] [ρ] ⊢Δ)
         (irrelevanceEq (ti [u]′ [ρ] ⊢Δ) (ti [u] [ρ] ⊢Δ) ([u≡v] [ρ] ⊢Δ))
   in

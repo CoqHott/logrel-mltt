@@ -23,48 +23,48 @@ import Tools.PropositionalEquality as PE
 
 
 -- Valid substitutions are well-formed
-wellformedSubst : ∀ {Γ Δ σ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-      → Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ
-      → Δ ⊢ˢ σ ∷ Γ
+wellformedSubst : ∀ {Γ σ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
+      → ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ
+      → ε ⊢ˢ σ ∷ Γ
 wellformedSubst ε ⊢Δ [σ] = id
 wellformedSubst ([Γ] ∙ [A]) ⊢Δ ([tailσ] , [headσ]) =
   wellformedSubst [Γ] ⊢Δ [tailσ]
   , escapeTerm (proj₁ ([A] ⊢Δ [tailσ])) [headσ]
 
 -- Valid substitution equality is well-formed
-wellformedSubstEq : ∀ {Γ Δ σ σ′} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-      ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-      → Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ]
-      → Δ ⊢ˢ σ ≡ σ′ ∷ Γ
+wellformedSubstEq : ∀ {Γ σ σ′} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
+      ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+      → ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ]
+      → ε ⊢ˢ σ ≡ σ′ ∷ Γ
 wellformedSubstEq ε ⊢Δ [σ] [σ≡σ′] = id
 wellformedSubstEq ([Γ] ∙ [A]) ⊢Δ ([tailσ] , [headσ]) ([tailσ≡σ′] , [headσ≡σ′]) =
   wellformedSubstEq [Γ] ⊢Δ [tailσ] [tailσ≡σ′]
   , ≅ₜ-eq (escapeTermEq (proj₁ ([A] ⊢Δ [tailσ])) [headσ≡σ′])
 
 -- Extend a valid substitution with a term
-consSubstS : ∀ {l σ t A rA Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-           ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+consSubstS : ∀ {l σ t A rA Γ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
+           ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
            ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ])
-           ([t] : Δ ⊩⟨ l ⟩ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ]))
-         → Δ ⊩ˢ consSubst σ t ∷ Γ ∙ A ^ rA / [Γ] ∙ [A] / ⊢Δ
+           ([t] : ε ⊩⟨ l ⟩ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ]))
+         → ⊩ˢ consSubst σ t ∷ Γ ∙ A ^ rA / [Γ] ∙ [A] / ⊢Δ
 consSubstS [Γ] ⊢Δ [σ] [A] [t] = [σ] , [t]
 
 -- Extend a valid substitution equality with a term
-consSubstSEq : ∀ {l σ σ′ t A rA Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-             ([σ]    : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-             ([σ≡σ′] : Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
+consSubstSEq : ∀ {l σ σ′ t A rA Γ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
+             ([σ]    : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+             ([σ≡σ′] : ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
              ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ])
-             ([t] : Δ ⊩⟨ l ⟩ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ]))
-           → Δ ⊩ˢ consSubst σ t ≡ consSubst σ′ t ∷ Γ ∙ A ^ rA / [Γ] ∙ [A] / ⊢Δ
+             ([t] : ε ⊩⟨ l ⟩ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ]))
+           → ⊩ˢ consSubst σ t ≡ consSubst σ′ t ∷ Γ ∙ A ^ rA / [Γ] ∙ [A] / ⊢Δ
                / consSubstS {t = t} {A = A} [Γ] ⊢Δ [σ] [A] [t]
 consSubstSEq [Γ] ⊢Δ [σ] [σ≡σ′] [A] [t] =
   [σ≡σ′] , reflEqTerm (proj₁ ([A] ⊢Δ [σ])) [t]
 
 -- Weakening of valid substitutions
-wkSubstS : ∀ {ρ σ Γ Δ Δ′} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ) (⊢Δ′ : ⊢ Δ′)
-           ([ρ] : ρ ∷ Δ′ ⊆ Δ)
-           ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-         → Δ′ ⊩ˢ ρ •ₛ σ ∷ Γ / [Γ] / ⊢Δ′
+wkSubstS : ∀ {ρ σ Γ } ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε) (⊢Δ′ : ⊢ ε)
+           ([ρ] : ρ ∷ ε ⊆ ε)
+           ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+         → ⊩ˢ ρ •ₛ σ ∷ Γ / [Γ] / ⊢Δ′
 wkSubstS ε ⊢Δ ⊢Δ′ ρ [σ] = tt
 wkSubstS {σ = σ} {Γ = Γ ∙ A ^ rA} ([Γ] ∙ x) ⊢Δ ⊢Δ′ ρ [σ] =
   let [tailσ] = wkSubstS [Γ] ⊢Δ ⊢Δ′ ρ (proj₁ [σ])
@@ -75,11 +75,11 @@ wkSubstS {σ = σ} {Γ = Γ ∙ A ^ rA} ([Γ] ∙ x) ⊢Δ ⊢Δ′ ρ [σ] =
         (LR.wkTerm ρ ⊢Δ′ (proj₁ (x ⊢Δ (proj₁ [σ]))) (proj₂ [σ]))
 
 -- Weakening of valid substitution equality
-wkSubstSEq : ∀ {ρ σ σ′ Γ Δ Δ′} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ) (⊢Δ′ : ⊢ Δ′)
-             ([ρ] : ρ ∷ Δ′ ⊆ Δ)
-             ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-             ([σ≡σ′] : Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
-           → Δ′ ⊩ˢ ρ •ₛ σ ≡ ρ •ₛ σ′ ∷ Γ / [Γ]
+wkSubstSEq : ∀ {ρ σ σ′ Γ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε) (⊢Δ′ : ⊢ ε)
+             ([ρ] : ρ ∷ ε ⊆ ε)
+             ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+             ([σ≡σ′] : ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
+           → ⊩ˢ ρ •ₛ σ ≡ ρ •ₛ σ′ ∷ Γ / [Γ]
                 / ⊢Δ′ / wkSubstS [Γ] ⊢Δ ⊢Δ′ [ρ] [σ]
 wkSubstSEq ε ⊢Δ ⊢Δ′ ρ [σ] [σ≡σ′] = tt
 wkSubstSEq {Γ = Γ ∙ A ^ rA} ([Γ] ∙ x) ⊢Δ ⊢Δ′ ρ [σ] [σ≡σ′] =
@@ -88,55 +88,7 @@ wkSubstSEq {Γ = Γ ∙ A ^ rA} ([Γ] ∙ x) ⊢Δ ⊢Δ′ ρ [σ] [σ≡σ′]
                             (proj₁ (x ⊢Δ′ (wkSubstS [Γ] ⊢Δ ⊢Δ′ ρ (proj₁ [σ]))))
                             (LR.wkEqTerm ρ ⊢Δ′ (proj₁ (x ⊢Δ (proj₁ [σ]))) (proj₂ [σ≡σ′]))
 
--- Weaken a valid substitution by one type
-wk1SubstS : ∀ {F σ rF Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-            (⊢F : Δ ⊢ F ^ rF)
-            ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-          → (Δ ∙ F ^ rF) ⊩ˢ wk1Subst σ ∷ Γ / [Γ]
-                            / (⊢Δ ∙ ⊢F)
-wk1SubstS {F} {σ} {Γ} {Δ} [Γ] ⊢Δ ⊢F [σ] =
-  wkSubstS [Γ] ⊢Δ (⊢Δ ∙ ⊢F) (step id) [σ]
-
--- Weaken a valid substitution equality by one type
-wk1SubstSEq : ∀ {F rF σ σ′ Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-              (⊢F : Δ ⊢ F ^ rF)
-              ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-              ([σ≡σ′] : Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
-            → (Δ ∙ F ^ rF) ⊩ˢ wk1Subst σ ≡ wk1Subst σ′ ∷ Γ / [Γ]
-                            / (⊢Δ ∙ ⊢F) / wk1SubstS [Γ] ⊢Δ ⊢F [σ]
-wk1SubstSEq {l} {F} {σ} {Γ} {Δ} [Γ] ⊢Δ ⊢F [σ] [σ≡σ′] =
-  wkSubstSEq [Γ] ⊢Δ (⊢Δ ∙ ⊢F) (step id) [σ] [σ≡σ′]
-
--- Lift a valid substitution
-liftSubstS : ∀ {l F rF σ Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-             ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-             ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-           → (Δ ∙ subst σ F ^ rF) ⊩ˢ liftSubst σ ∷ Γ ∙ F ^ rF / [Γ] ∙ [F]
-                             / (⊢Δ ∙ escape (proj₁ ([F] ⊢Δ [σ])))
-liftSubstS {F = F} {rF = rF} {σ = σ} {Δ = Δ} [Γ] ⊢Δ [F] [σ] =
-  let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
-      [tailσ] = wk1SubstS {F = subst σ F} [Γ] ⊢Δ (escape (proj₁ ([F] ⊢Δ [σ]))) [σ]
-      var0 = var (⊢Δ ∙ ⊢F) (PE.subst (λ x → 0 ∷ x ^ rF ∈ (Δ ∙ subst σ F ^ rF))
-                                     (wk-subst F) here)
-  in  [tailσ] , neuTerm (proj₁ ([F] (⊢Δ ∙ ⊢F) [tailσ])) (var 0)
-                        var0 (~-var var0)
-
--- Lift a valid substitution equality
-liftSubstSEq : ∀ {l F rF σ σ′ Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-             ([F] : Γ ⊩ᵛ⟨ l ⟩ F ^ rF / [Γ])
-             ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-             ([σ≡σ′] : Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
-           → (Δ ∙ subst σ F ^ rF) ⊩ˢ liftSubst σ ≡ liftSubst σ′ ∷ Γ ∙ F ^ rF / [Γ] ∙ [F]
-                             / (⊢Δ ∙ escape (proj₁ ([F] ⊢Δ [σ])))
-                             / liftSubstS {F = F} [Γ] ⊢Δ [F] [σ]
-liftSubstSEq {F = F} {rF = rF} {σ = σ} {σ′ = σ′} {Δ = Δ} [Γ] ⊢Δ [F] [σ] [σ≡σ′] =
-  let ⊢F = escape (proj₁ ([F] ⊢Δ [σ]))
-      [tailσ] = wk1SubstS {F = subst σ F} [Γ] ⊢Δ (escape (proj₁ ([F] ⊢Δ [σ]))) [σ]
-      [tailσ≡σ′] = wk1SubstSEq [Γ] ⊢Δ (escape (proj₁ ([F] ⊢Δ [σ]))) [σ] [σ≡σ′]
-      var0 = var (⊢Δ ∙ ⊢F) (PE.subst (λ x → 0 ∷ x ^ rF ∈ (Δ ∙ subst σ F ^ rF)) (wk-subst F) here)
-  in  [tailσ≡σ′] , neuEqTerm (proj₁ ([F] (⊢Δ ∙ ⊢F) [tailσ])) (var 0) (var 0)
-                         var0 var0 (~-var var0)
-
+{-
 mutual
   -- Valid contexts are well-formed
   soundContext : ∀ {Γ} → ⊩ᵛ Γ → ⊢ Γ
@@ -147,7 +99,7 @@ mutual
                                                         (idSubstS x))))
 
   -- From a valid context we can constuct a valid identity substitution
-  idSubstS : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → Γ ⊩ˢ idSubst ∷ Γ / [Γ] / soundContext [Γ]
+  idSubstS : ∀ {Γ} ([Γ] : ⊩ᵛ Γ) → ⊩ˢ idSubst ∷ Γ / [Γ] / soundContext [Γ]
   idSubstS ε = tt
   idSubstS {Γ = Γ ∙ A ^ rA} ([Γ] ∙ [A]) =
     let ⊢Γ = soundContext [Γ]
@@ -168,26 +120,27 @@ mutual
     ,   neuTerm (proj₁ ([A] ⊢Γ∙A [tailσ]))
                 (var 0)
                 var0 (~-var var0)
+-}
 
 -- Reflexivity valid substitutions
-reflSubst : ∀ {σ Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-            ([σ] : Δ ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
-          → Δ ⊩ˢ σ ≡ σ ∷ Γ / [Γ] / ⊢Δ / [σ]
+reflSubst : ∀ {σ Γ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
+            ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
+          → ⊩ˢ σ ≡ σ ∷ Γ / [Γ] / ⊢Δ / [σ]
 reflSubst ε ⊢Δ [σ] = tt
 reflSubst ([Γ] ∙ x) ⊢Δ [σ] =
   reflSubst [Γ] ⊢Δ (proj₁ [σ]) , reflEqTerm (proj₁ (x ⊢Δ (proj₁ [σ]))) (proj₂ [σ])
 
 -- Reflexivity of valid identity substitution
-reflIdSubst : ∀ {Γ} ([Γ] : ⊩ᵛ Γ)
-            → Γ ⊩ˢ idSubst ≡ idSubst ∷ Γ / [Γ] / soundContext [Γ] / idSubstS [Γ]
-reflIdSubst [Γ] = reflSubst [Γ] (soundContext [Γ]) (idSubstS [Γ])
+-- reflIdSubst : ∀ {Γ} ([Γ] : ⊩ᵛ Γ)
+--             → Γ ⊩ˢ idSubst ≡ idSubst ∷ Γ / [Γ] / soundContext [Γ] / idSubstS [Γ]
+-- reflIdSubst [Γ] = reflSubst [Γ] (soundContext [Γ]) (idSubstS [Γ])
 
 -- Symmetry of valid substitution
-symS : ∀ {σ σ′ Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-       ([σ]  : Δ ⊩ˢ σ  ∷ Γ / [Γ] / ⊢Δ)
-       ([σ′] : Δ ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ)
-     → Δ ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ]
-     → Δ ⊩ˢ σ′ ≡ σ ∷ Γ / [Γ] / ⊢Δ / [σ′]
+symS : ∀ {σ σ′ Γ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
+       ([σ]  : ⊩ˢ σ  ∷ Γ / [Γ] / ⊢Δ)
+       ([σ′] : ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ)
+     → ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ]
+     → ⊩ˢ σ′ ≡ σ ∷ Γ / [Γ] / ⊢Δ / [σ′]
 symS ε ⊢Δ [σ] [σ′] [σ≡σ′] = tt
 symS ([Γ] ∙ x) ⊢Δ [σ] [σ′] [σ≡σ′] =
   symS [Γ] ⊢Δ (proj₁ [σ]) (proj₁ [σ′]) (proj₁ [σ≡σ′])
@@ -198,13 +151,13 @@ symS ([Γ] ∙ x) ⊢Δ [σ] [σ′] [σ≡σ′] =
     in  convEqTerm₁ [σA] [σ′A] [σA≡σ′A] [headσ′≡headσ]
 
 -- Transitivity of valid substitution
-transS : ∀ {σ σ′ σ″ Γ Δ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ Δ)
-         ([σ]   : Δ ⊩ˢ σ   ∷ Γ / [Γ] / ⊢Δ)
-         ([σ′]  : Δ ⊩ˢ σ′  ∷ Γ / [Γ] / ⊢Δ)
-         ([σ″] : Δ ⊩ˢ σ″ ∷ Γ / [Γ] / ⊢Δ)
-       → Δ ⊩ˢ σ  ≡ σ′  ∷ Γ / [Γ] / ⊢Δ / [σ]
-       → Δ ⊩ˢ σ′ ≡ σ″ ∷ Γ / [Γ] / ⊢Δ / [σ′]
-       → Δ ⊩ˢ σ  ≡ σ″ ∷ Γ / [Γ] / ⊢Δ / [σ]
+transS : ∀ {σ σ′ σ″ Γ} ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
+         ([σ]   : ⊩ˢ σ   ∷ Γ / [Γ] / ⊢Δ)
+         ([σ′]  : ⊩ˢ σ′  ∷ Γ / [Γ] / ⊢Δ)
+         ([σ″] : ⊩ˢ σ″ ∷ Γ / [Γ] / ⊢Δ)
+       → ⊩ˢ σ  ≡ σ′  ∷ Γ / [Γ] / ⊢Δ / [σ]
+       → ⊩ˢ σ′ ≡ σ″ ∷ Γ / [Γ] / ⊢Δ / [σ′]
+       → ⊩ˢ σ  ≡ σ″ ∷ Γ / [Γ] / ⊢Δ / [σ]
 transS ε ⊢Δ [σ] [σ′] [σ″] [σ≡σ′] [σ′≡σ″] = tt
 transS ([Γ] ∙ x) ⊢Δ [σ] [σ′] [σ″] [σ≡σ′] [σ′≡σ″] =
   transS [Γ] ⊢Δ (proj₁ [σ]) (proj₁ [σ′]) (proj₁ [σ″])

@@ -393,7 +393,9 @@ wk-β-natrec ρ G rG lG =
                     (subst (consSubst (wk1Subst var) (suc (var 0))) G))
        (trans (wk-subst G) (sym (trans (wk-subst (wk (lift ρ) G))
          (trans (subst-wk G)
-                (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)))))) refl refl refl) refl refl refl
+                (substVar-to-subst (λ { 0 → refl ; (1+ x) → refl}) G)
+                )))))
+                refl refl refl) refl refl refl
 
 -- Composing a singleton substitution and a lifted substitution.
 -- sg u ∘ lift σ = cons id u ∘ lift σ = cons σ u
@@ -760,4 +762,32 @@ subst-Univ-either a (gen (Emptyreckind l ll) c) ()
 
 castNeutralInv : ∀ {l A B e t} → Neutral A → Neutral B → Neutral (cast l A B e t) → Neutral t 
 castNeutralInv neA neB (castₙ _ _ net) = net
+
+
+subst-wk1 : ∀ ρ t → subst ρ (wk1 t) ≡ subst (tail ρ) t 
+subst-wk1 ρ t = trans (cong (subst ρ) (wk1-tailId t)) (substCompEq t)
+
+
+liftsubst-wk1 : ∀ ρ t →  wk1 (subst ρ t) ≡ subst (tail (liftSubst ρ)) t
+liftsubst-wk1 ρ t = trans (sym (Idsym-subst-lemma ρ t)) (subst-wk1 (liftSubst ρ) t)
+
+
+subst-β-natrec : ∀ ρ G rG lG → subst ρ
+    (Π ℕ ^ ! ° ⁰ ▹ G ^ rG ° lG ▹▹ G [ suc (var 0) ]↑ ° lG ° lG ^ rG ° lG ° lG ^ rG)
+    ≡
+    Π ℕ ^ ! ° ⁰ ▹ subst (liftSubst ρ) G ^ rG ° lG ▹▹ subst (liftSubst ρ) G [ suc (var 0) ]↑ ° lG ° lG ^ rG ° lG ° lG ^ rG
+subst-β-natrec ρ G rG lG =
+
+  cong7 Π_^_°_▹_°_°_^_ refl refl refl (cong7 Π_^_°_▹_°_°_^_ refl refl refl
+       (trans (trans (subst-wk1 (liftSubst (liftSubst ρ)) (G [ suc (var 0) ]↑))
+        (trans (trans (sym (liftsubst-wk1 (liftSubst ρ) (G [ suc (var 0) ]↑)))
+         (trans (cong wk1 (trans (substCompEq G) (trans (substVar-to-subst aux G) (sym (substCompEq G)))))
+         (liftsubst-wk1 (consSubst (wk1Subst idSubst) (suc (var 0))) (subst (liftSubst ρ) G)))) 
+        (sym (subst-wk1 (liftSubst (consSubst (wk1Subst idSubst) (suc (var 0)))) (subst (liftSubst ρ) G)))))
+        (Idsym-subst-lemma _ (subst (liftSubst ρ) G)))
+                refl refl refl) refl refl refl
+  where aux : (x : Nat) → (liftSubst ρ ₛ•ₛ consSubst (wk1Subst idSubst) (suc (var 0))) x ≡
+              (consSubst (wk1Subst idSubst) (suc (var 0)) ₛ•ₛ liftSubst ρ) x
+        aux Nat.zero = refl
+        aux (1+ n) = trans (wk≡subst _ (ρ n)) (sym (subst-wk (ρ n)))
 
