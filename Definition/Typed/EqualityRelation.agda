@@ -67,6 +67,10 @@ record EqRelSet : Set₁ where
     ≅-conv : ∀ {t u A B r Γ} → Γ ⊢ t ≅ u ∷ A ^ r → Γ ⊢ A ≡ B ^ r → Γ ⊢ t ≅ u ∷ B ^ r
     ~-conv : ∀ {k l A B r Γ} → Γ ⊢ k ~ l ∷ A ^ r → Γ ⊢ A ≡ B ^ r → Γ ⊢ k ~ l ∷ B ^ r
 
+    -- From Conversion
+    ≅-≡  : ∀ {A B Γ r} → Γ ⊢ A ≡ B ^ r → Γ ⊢ A ≅ B ^ r
+    ≅ₜ-≡ : ∀ {t u A r Γ} → Γ ⊢ t ≡ u ∷ A ^ r → Γ ⊢ t ≅ u ∷ A ^ r
+
     -- Weakening
     ≅-wk  : ∀ {A B r ρ Γ Δ}
           → ρ ∷ Δ ⊆ Γ
