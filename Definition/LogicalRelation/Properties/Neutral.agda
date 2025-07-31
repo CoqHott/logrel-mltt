@@ -72,15 +72,13 @@ mutual
     let A≡K = subset* D
     in  neₜ _ (idRedTerm:*: (conv n A≡K)) (neNfₜ neN (conv n A≡K)
             (~-conv n~n A≡K))
-  neuTerm⁰ {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n =
+  neuTerm⁰ {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]) neN n n~n =
     let A≡ΠFG = subset* (red D)
     in  Πₜ _ (idRedTerm:*: (conv n A≡ΠFG)) (ne neN) (~-to-≅ₜ (~-conv n~n A≡ΠFG))
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
               let A≡ΠFG = subset* (red D)
                   ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
-                  G[a]≡G[b] = escapeEq ([G] [ρ] ⊢Δ [b])
-                                          (symEq ([G] [ρ] ⊢Δ [a]) ([G] [ρ] ⊢Δ [b])
-                                                 (G-ext [ρ] ⊢Δ [a] [b] [a≡b]))
+                  G[a]≡G[b] = ?                                           
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   b = escapeTerm ([F] [ρ] ⊢Δ) [b]
                   a≡b = escapeTermEq ([F] [ρ] ⊢Δ) [a≡b]
@@ -134,8 +132,8 @@ mutual
   neuEqTerm⁰ {r = [ % , ll ]} (ne (ne K [[ ⊢A , ⊢B , D ]] neK K≡K)) neN neN′ n n′ n~n′ =
     let A≡K = subset* D
     in neₜ₌ n n′
-  neuEqTerm⁰ {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
-    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext
+  neuEqTerm⁰ {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]) neN neN′ n n′ n~n′ =
+    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]
         A≡ΠFG = subset* D
         n~n′₁ = ~-conv n~n′ A≡ΠFG
         n≡n′ = ~-to-≅ₜ n~n′₁
@@ -202,15 +200,13 @@ mutual
     let A≡K = subset* D
     in  neₜ _ (idRedTerm:*: (conv n A≡K)) (neNfₜ neN (conv n A≡K)
             (~-conv n~n A≡K))
-  neuTerm {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN n n~n =
+  neuTerm {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]) neN n n~n =
     let A≡ΠFG = subset* (red D)
     in  Πₜ _ (idRedTerm:*: (conv n A≡ΠFG)) (ne neN) (~-to-≅ₜ (~-conv n~n A≡ΠFG))
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
               let A≡ΠFG = subset* (red D)
                   ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
-                  G[a]≡G[b] = escapeEq ([G] [ρ] ⊢Δ [b])
-                                          (symEq ([G] [ρ] ⊢Δ [a]) ([G] [ρ] ⊢Δ [b])
-                                                 (G-ext [ρ] ⊢Δ [a] [b] [a≡b]))
+                  G[a]≡G[b] = ?
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   b = escapeTerm ([F] [ρ] ⊢Δ) [b]
                   a≡b = escapeTermEq ([F] [ρ] ⊢Δ) [a≡b]
@@ -290,8 +286,8 @@ mutual
   neuEqTerm {r = [ % , ll ]} (ne (ne K [[ ⊢A , ⊢B , D ]] neK K≡K)) neN neN′ n n′ n~n′ =
     let A≡K = subset* D
     in neₜ₌ n n′
-  neuEqTerm {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ n n′ n~n′ =
-    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext
+  neuEqTerm {r = [ ! , ll ]} (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]) neN neN′ n n′ n~n′ =
+    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]
         A≡ΠFG = subset* D
         n~n′₁ = ~-conv n~n′ A≡ΠFG
         n≡n′ = ~-to-≅ₜ n~n′₁
@@ -385,15 +381,13 @@ mutual
     let A≡K = subset* D
     in  neₜ _ (conv:⇒*: [[ ⊢t , n , D' ]] A≡K) (neNfₜ neN (conv n A≡K)
             (~-conv n~n A≡K))
-  neuTerm:⇒*:⁰ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN [[ ⊢t , n , D' ]] n~n =
+  neuTerm:⇒*:⁰ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]) neN [[ ⊢t , n , D' ]] n~n =
     let A≡ΠFG = subset* (red D)
     in  Πₜ _ (conv:⇒*: [[ ⊢t , n , D' ]] A≡ΠFG) (ne neN) (~-to-≅ₜ (~-conv n~n A≡ΠFG))
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
               let A≡ΠFG = subset* (red D)
                   ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
-                  G[a]≡G[b] = escapeEq ([G] [ρ] ⊢Δ [b])
-                                          (symEq ([G] [ρ] ⊢Δ [a]) ([G] [ρ] ⊢Δ [b])
-                                                 (G-ext [ρ] ⊢Δ [a] [b] [a≡b]))
+                  G[a]≡G[b] = ?
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   b = escapeTerm ([F] [ρ] ⊢Δ) [b]
                   a≡b = escapeTermEq ([F] [ρ] ⊢Δ) [a≡b]
@@ -431,8 +425,8 @@ mutual
     let A≡K = subset* D
     in  neₜ₌ _ _ (conv:⇒*: [[ ⊢t , n , D' ]] A≡K) (conv:⇒*: [[ ⊢u , n′ , D′ ]] A≡K)
              (neNfₜ₌ neN neN′ (~-conv n~n′ A≡K))
-  neuEqTerm:⇒*:⁰ (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ [[ ⊢t , n , D' ]] [[ ⊢u , n′ , D′ ]] n~n′ =
-    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext
+  neuEqTerm:⇒*:⁰ (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]) neN neN′ [[ ⊢t , n , D' ]] [[ ⊢u , n′ , D′ ]] n~n′ =
+    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]
         A≡ΠFG = subset* D
         n~n′₁ = ~-conv n~n′ A≡ΠFG
         n≡n′ = ~-to-≅ₜ n~n′₁
@@ -489,15 +483,13 @@ mutual
     let A≡K = subset* D
     in  neₜ _ (conv:⇒*: [[ ⊢t , n , D' ]] A≡K) (neNfₜ neN (conv n A≡K)
             (~-conv n~n A≡K))
-  neuTerm:⇒*: (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) neN [[ ⊢t , n , D' ]] n~n =
+  neuTerm:⇒*: (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]) neN [[ ⊢t , n , D' ]] n~n =
     let A≡ΠFG = subset* (red D)
     in  Πₜ _ (conv:⇒*: [[ ⊢t , n , D' ]] A≡ΠFG) (ne neN) (~-to-≅ₜ (~-conv n~n A≡ΠFG))
            (λ {ρ} [ρ] ⊢Δ [a] [b] [a≡b] →
               let A≡ΠFG = subset* (red D)
                   ρA≡ρΠFG = wkEq [ρ] ⊢Δ (subset* (red D))
-                  G[a]≡G[b] = escapeEq ([G] [ρ] ⊢Δ [b])
-                                          (symEq ([G] [ρ] ⊢Δ [a]) ([G] [ρ] ⊢Δ [b])
-                                                 (G-ext [ρ] ⊢Δ [a] [b] [a≡b]))
+                  G[a]≡G[b] = ?
                   a = escapeTerm ([F] [ρ] ⊢Δ) [a]
                   b = escapeTerm ([F] [ρ] ⊢Δ) [b]
                   a≡b = escapeTermEq ([F] [ρ] ⊢Δ) [a≡b]
@@ -573,8 +565,8 @@ mutual
     let A≡K = subset* D
     in  neₜ₌ _ _ (conv:⇒*: [[ ⊢t , n , D' ]] A≡K) (conv:⇒*: [[ ⊢u , n′ , D′ ]] A≡K)
              (neNfₜ₌ neN neN′ (~-conv n~n′ A≡K))
-  neuEqTerm:⇒*: (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext) neN neN′ [[ ⊢t , n , D' ]] [[ ⊢u , n′ , D′ ]] n~n′ =
-    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G] G-ext
+  neuEqTerm:⇒*: (Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]) neN neN′ [[ ⊢t , n , D' ]] [[ ⊢u , n′ , D′ ]] n~n′ =
+    let [ΠFG] = Πᵣ′ rF lF lG lF≤ lG≤ F G [[ ⊢A , ⊢B , D ]] ⊢F ⊢G A≡A [F] [G]
         A≡ΠFG = subset* D
         n~n′₁ = ~-conv n~n′ A≡ΠFG
         n≡n′ = ~-to-≅ₜ n~n′₁

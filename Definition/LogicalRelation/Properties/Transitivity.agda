@@ -47,9 +47,9 @@ mutual
     ne₌ M₁ D″ neM₁
         (~-trans K≡M K≡M₁)
   transEqT {Γ}  {r = [ r , ι lΠ ]} {l = l} {l′ = l′} {l″ = l″}
-           (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                 (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁)
-                 (Πᵣ rF₂ lF₂ lG₂ _ _ F₂ G₂ D₂ ⊢F₂ ⊢G₂ A≡A₂ [F]₂ [G]₂ G-ext₂))
+           (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
+                 (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁)
+                 (Πᵣ rF₂ lF₂ lG₂ _ _ F₂ G₂ D₂ ⊢F₂ ⊢G₂ A≡A₂ [F]₂ [G]₂))
            (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
            (Π₌ F″ G″ D″ A≡B₁ [F≡F′]₁ [G≡G′]₁) =
     let ΠF₁G₁≡ΠF′G′    = whrDet* (red D₁ , Πₙ) (D′  , Πₙ)
@@ -208,7 +208,7 @@ transEqTerm⁰ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNf�
                    (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
 transEqTerm⁰ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ₌ d d′)
                               (neₜ₌ d₁ d″) = neₜ₌ d d″
-transEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+transEqTerm⁰ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
             (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
             (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
             rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)
@@ -252,7 +252,7 @@ transEqTerm¹ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNf�
                    (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
 transEqTerm¹ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ₌ d d′)
                               (neₜ₌ d₁ d″) = neₜ₌ d d″
-transEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+transEqTerm¹ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
             (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
             (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
             rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)
@@ -310,7 +310,7 @@ transEqTerm∞ {r = [ ! , l ]} (ne′ K D neK K≡K) (neₜ₌ k m d d′ (neNf�
                    (~-trans k≡m (PE.subst (λ x → _ ⊢ x ~ _ ∷ _ ^ _) k₁≡m k≡m₁)))
 transEqTerm∞ {r = [ % , l ]} (ne′ K D neK K≡K) (neₜ₌ d d′)
                               (neₜ₌ d₁ d″) = neₜ₌ d d″
-transEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+transEqTerm∞ {r = [ ! , l ]} (Πᵣ′ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
             (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g])
             (Πₜ₌ f₁ g₁ d₁ d₁′ funcF₁ funcG₁ f≡g₁ [f]₁ [g]₁ [f≡g]₁)
             rewrite whrDet*Term (redₜ d′ , functionWhnf funcG)

@@ -220,6 +220,9 @@ subst-lifts-id 0 x = refl
 subst-lifts-id (1+ n) 0 = refl
 subst-lifts-id (1+ n) (1+ x) = cong wk1 (subst-lifts-id n x)
 
+tail-sgsubst-id : ∀ {a} → (x : Nat) →  tail (sgSubst a) x ≡ idSubst x
+tail-sgsubst-id x = refl
+
 -- Identity substitution.
 
 mutual
@@ -233,7 +236,6 @@ mutual
     cong₂ _∷_ (cong (⟦_,_⟧ l) (trans (substVar-to-subst (subst-lifts-id l) t)
                                      (subst-id t)))
               (substGen-id g)
-
 
 -- Correctness of composition of weakening and substitution.
 

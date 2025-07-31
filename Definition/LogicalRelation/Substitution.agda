@@ -26,9 +26,7 @@ mutual
   _⊩ᵛ⟨_⟩_^_/_ : (Γ : Con Term) (l : TypeLevel) (A : Term) → TypeInfo → ⊩ᵛ Γ → Set
   Γ ⊩ᵛ⟨ l ⟩ A ^ r / [Γ] = ∀ {σ} (⊢Δ : ⊢ ε) ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ)
                    → Σ (ε ⊩⟨ l ⟩ subst σ A ^ r)
-                       (λ [Aσ] → ∀ {σ′} ([σ′] : ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ)
-                               → ([σ≡σ′] : ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ])
-                               → ε ⊩⟨ l ⟩ subst σ A ≡ subst σ′ A ^ r / [Aσ])
+                       (λ [Aσ] → ⊤)
 
   -- Logical relation for substitutions from a valid context
   ⊩ˢ_∷_/_/_ : (σ : Subst) (Γ : Con Term) ([Γ] : ⊩ᵛ Γ) (⊢Δ : ⊢ ε)
@@ -39,12 +37,12 @@ mutual
     (ε ⊩⟨ l ⟩ head σ ∷ subst (tail σ) A ^ rA / proj₁ ([A] ⊢Δ [tailσ]))
 
   -- Logical relation for equality of substitutions from a valid context
-  ⊩ˢ_≡_∷_/_/_/_ : (σ σ′ : Subst) (Γ : Con Term) ([Γ] : ⊩ᵛ Γ)
-                    (⊢Δ : ⊢ ε) ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ) → Set
-  ⊩ˢ σ ≡ σ′ ∷ .ε       / ε       / ⊢Δ              / [σ] = ⊤
-  ⊩ˢ σ ≡ σ′ ∷ .(Γ ∙ A ^ rA) / (_∙_ {Γ} {A} {rA} {l} [Γ] [A]) / ⊢Δ / [σ] =
-    (⊩ˢ tail σ ≡ tail σ′ ∷ Γ / [Γ] / ⊢Δ / proj₁ [σ]) ×
-    (ε ⊩⟨ l ⟩ head σ ≡ head σ′ ∷ subst (tail σ) A ^ rA / proj₁ ([A] ⊢Δ (proj₁ [σ])))
+  -- ⊩ˢ_≡_∷_/_/_/_ : (σ σ′ : Subst) (Γ : Con Term) ([Γ] : ⊩ᵛ Γ)
+  --                   (⊢Δ : ⊢ ε) ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ) → Set
+  -- ⊩ˢ σ ≡ σ′ ∷ .ε       / ε       / ⊢Δ              / [σ] = ⊤
+  -- ⊩ˢ σ ≡ σ′ ∷ .(Γ ∙ A ^ rA) / (_∙_ {Γ} {A} {rA} {l} [Γ] [A]) / ⊢Δ / [σ] =
+  --   (⊩ˢ tail σ ≡ tail σ′ ∷ Γ / [Γ] / ⊢Δ / proj₁ [σ]) ×
+  --   (ε ⊩⟨ l ⟩ head σ ≡ head σ′ ∷ subst (tail σ) A ^ rA / proj₁ ([A] ⊢Δ (proj₁ [σ])))
 
 
 -- Validity of terms
@@ -52,9 +50,7 @@ _⊩ᵛ⟨_⟩_∷_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (t A : Term) (rA : T
                  ([A] : Γ ⊩ᵛ⟨ l ⟩ A ^ rA / [Γ]) → Set
 Γ ⊩ᵛ⟨ l ⟩ t ∷ A ^ rA / [Γ] / [A] =
   ∀ {σ} (⊢Δ : ⊢ ε) ([σ] : ⊩ˢ σ ∷ Γ / [Γ] / ⊢Δ) →
-  Σ (ε ⊩⟨ l ⟩ subst σ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ])) λ [tσ] →
-  ∀ {σ′} → ⊩ˢ σ′ ∷ Γ / [Γ] / ⊢Δ → ⊩ˢ σ ≡ σ′ ∷ Γ / [Γ] / ⊢Δ / [σ]
-    → ε ⊩⟨ l ⟩ subst σ t ≡ subst σ′ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ])
+  Σ (ε ⊩⟨ l ⟩ subst σ t ∷ subst σ A ^ rA / proj₁ ([A] ⊢Δ [σ])) λ [tσ] → ⊤
 
 -- Validity of type equality
 _⊩ᵛ⟨_⟩_≡_^_/_/_ : (Γ : Con Term) (l : TypeLevel) (A B : Term) (rA : TypeInfo) ([Γ] : ⊩ᵛ Γ)

@@ -331,12 +331,6 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
             → ([ρ] : ρ ∷ ε ⊆ Γ) (⊢Δ : ⊢ ε)
             → ε ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
             → ε ⊩¹ U.wk (lift ρ) G [ a ] ^ [ ! , ι lG ]
-        G-ext : ∀ {ρ a b}
-              → ([ρ] : ρ ∷ ε ⊆ Γ) (⊢Δ : ⊢ ε)
-              → ([a] : ε ⊩¹ a ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-              → ([b] : ε ⊩¹ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ)
-              → ε ⊩¹ a ≡ b ∷ U.wk ρ F ^ [ rF , ι lF ] / [F] [ρ] ⊢Δ
-              → ε ⊩¹ U.wk (lift ρ) G [ a ] ≡ U.wk (lift ρ) G [ b ] ^ [ ! , ι lG ] / [G] [ρ] ⊢Δ [a]
     
     -- Π-type equality
     record _⊩¹Π_≡_^[_]/_ (Γ : Con Term) (A B : Term) (lΠ : Level) ([A] : Γ ⊩¹Π A ^[ lΠ ]) : Set where
@@ -359,7 +353,7 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
 
     -- relevant Term of Π-type
     _⊩¹Π_∷_^_/_ : (Γ : Con Term) (t A : Term) (lΠ : Level) ([A] : Γ ⊩¹Π A ^[ lΠ ]) → Set
-    Γ ⊩¹Π t ∷ A ^ lΠ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
+    Γ ⊩¹Π t ∷ A ^ lΠ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] =
       ∃ λ f → Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ ι lΠ
             × Function f
             × Γ ⊢ f ≅ f ∷ Π F ^ rF ° lF ▹ G ° lG ° lΠ ^ ! ^ [ ! , ι lΠ ]
@@ -377,8 +371,8 @@ module LogRel (l : TypeLevel) (rec : ∀ {l′} → l′ <∞ l → LogRelKit) w
 
     -- Term equality of Π-type
     _⊩¹Π_≡_∷_^_/_ : (Γ : Con Term) (t u A : Term) (l′ : Level) ([A] : Γ ⊩¹Π A ^[ l′ ]) → Set
-    Γ ⊩¹Π t ≡ u ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext =
-      let [A] = Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext
+    Γ ⊩¹Π t ≡ u ∷ A ^ l′ / Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] =
+      let [A] = Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] 
       in  ∃₂ λ f g →
           ( Γ ⊢ t :⇒*: f ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ! ^ ι l′ )
       ×   ( Γ ⊢ u :⇒*: g ∷ Π F ^ rF ° lF ▹ G ° lG ° l′ ^ ! ^ ι l′ )
@@ -451,7 +445,7 @@ pattern Πₜ₌ a b c d e f g h i j = a , b , c , d , e , f , g , h , i , j
 
 pattern Uᵣ′ A ll r l a e d = Uᵣ {A = A} {ll = ll} (Uᵣ r l a e d)
 pattern ne′ b c d e = ne (ne b c d e)
-pattern Πᵣ′  a a' a'' lf lg b c d e f g h i j = Πᵣ (Πᵣ a a' a'' lf lg b c d e f g h i j)
+pattern Πᵣ′  a a' a'' lf lg b c d e f g h i = Πᵣ (Πᵣ a a' a'' lf lg b c d e f g h i)
 pattern Πirrᵣ′ a b c d e f g h = Πirrᵣ (Πirrᵣ a b c d e f g h)
 pattern Idᵣ′ a b c d e f g h i = Idᵣ (Idᵣ a b c d e f g h i)
 

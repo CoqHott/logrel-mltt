@@ -68,8 +68,8 @@ mutual
                                           (whrDet* (red D′ , ne neM) (red D₁ , ne neK₁))
                                           (≅-eq (~-to-≅ K≡M))
                        in neₜ (conv d (reduction  (red D) (red D₁) (ne neK) (ne neK₁) K≡K₁))
-  convTermT₁ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                         (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+  convTermT₁ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
+                         (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁))
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
              (Πₜ f d funcF f≡f [f] [f]₁) =
     let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
@@ -143,8 +143,8 @@ mutual
                                            (whrDet* (red D′ , ne neM) (red D₁ , ne neK₁))
                                            (sym (≅-eq (~-to-≅ K≡M)))
                        in neₜ (conv d (reduction  (red D₁) (red D) (ne neK₁) (ne neK) K₁≡K))
-  convTermT₂ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                         (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+  convTermT₂ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
+                         (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁))
              (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
              (Πₜ f d funcF f≡f [f] [f]₁) =
     let ΠF₁G₁≡ΠF′G′   = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
@@ -255,12 +255,12 @@ mutual
                         (≅-eq (~-to-≅ K≡M))
     in neₜ₌ (conv d (reduction  (red D) (red D₁) (ne neK) (ne neK₁) K≡K₁))
             (conv d′ (reduction  (red D) (red D₁) (ne neK) (ne neK₁) K≡K₁))
-  convEqTermT₁ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG lF≤ lG≤  F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                           (Πᵣ rF₁ lF₁ lG₁ lF₁≤ lG₁≤  F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+  convEqTermT₁ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG lF≤ lG≤  F G D ⊢F ⊢G A≡A [F] [G])
+                           (Πᵣ rF₁ lF₁ lG₁ lF₁≤ lG₁≤  F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁))
                (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
                (Πₜ₌ f g d d′ funcF funcG t≡u [t] [u] [t≡u]) =
-    let [A] = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext
-        [B] = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
+    let [A] = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] 
+        [B] = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁
         [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
         ΠF₁G₁≡ΠF′G′ = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
         ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ≡ x ^ [ ! , ι ll ])
@@ -325,12 +325,12 @@ mutual
                         (sym (≅-eq (~-to-≅ K≡M)))
     in neₜ₌ (conv d (reduction  (red D₁) (red D) (ne neK₁) (ne neK) K₁≡K))
             (conv d′ (reduction  (red D₁) (red D) (ne neK₁) (ne neK) K₁≡K))
-  convEqTermT₂ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                           (Πᵣ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+  convEqTermT₂ {Γ = Γ} {r = [ ! , ι ll ]} (Πᵥ (Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G])
+                           (Πᵣ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁))
                (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′])
                (Πₜ₌ f g d d′ funcF funcG t≡u [t] [u] [t≡u]) =
-    let [A] = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext
-        [B] = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
+    let [A] = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]
+        [B] = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ 
         [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
         ΠF₁G₁≡ΠF′G′ = whrDet* (red D₁ , Πₙ) (D′ , Πₙ)
         ΠFG≡ΠF₁G₁ = PE.subst (λ x → Γ ⊢ Π F ^ rF ° lF ▹ G ° lG ° ll ^ ! ≡ x ^ [ ! , ι ll ])

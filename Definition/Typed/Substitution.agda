@@ -2,12 +2,16 @@
 
 module Definition.Typed.Substitution where
 
-open import Definition.Untyped as U hiding (subst)
+open import Definition.Untyped as U hiding (wk;subst)
 open import Definition.Untyped.Properties
 open import Definition.Typed
 open import Definition.Typed.Weakening
+open import Definition.Typed.Properties
 
+open import Tools.Empty using (⊥; ⊥-elim)
 import Tools.PropositionalEquality as PE
+open import Tools.Product
+open import Tools.Nat
 
 
 -- Weakening of judgements
@@ -19,6 +23,13 @@ substIndex : ∀ {Γ Δ n A r ρ} → Δ ⊢ˢ ρ ∷ Γ →
 substIndex {ρ = ρ} (_,_ {A = A} ρ' x) here =  PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (PE.sym (subst-wk1 ρ A)) x
 substIndex (ρ' , x) (there {A = A} i) = let x' = substIndex ρ' i in PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (PE.sym (subst-wk1 _ A)) x'
 
+substIndexEq : ∀ {Γ Δ n A r ρ ρ′} → Δ ⊢ˢ ρ ≡ ρ′ ∷ Γ →
+        let ρA = U.subst ρ A
+            ρn = substVar ρ n
+            ρn′ = substVar ρ′ n
+        in n ∷ A ^ r ∈ Γ → Δ ⊢ ρn ≡ ρn′ ∷ ρA ^ r
+substIndexEq {ρ = ρ} (_,_ {A = A} ρ' x) here = PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _) (PE.sym (subst-wk1 ρ A)) x
+substIndexEq (ρ' , x) (there {A = A} i) = let x' = substIndexEq ρ' i in PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _) (PE.sym (subst-wk1 _ A)) x'
 
 tailLiftSubst : ∀ {Γ Δ A r ρ} → ⊢ Δ → Δ ⊢ˢ ρ ∷ Γ → Δ ⊢ A ^ r → (Δ ∙ A ^ r) ⊢ˢ tail (liftSubst ρ) ∷ Γ
 tailLiftSubst {ρ = ρ} ⊢Δ id ⊢A = id
@@ -138,13 +149,13 @@ mutual
     PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
              (PE.sym (singleSubstLift G _))
              (app-cong (substEqTerm ρ ⊢Δ f≡g) (substEqTerm ρ ⊢Δ a≡b))
-  substEqTerm ρ ⊢Δ (β-red {a = a} {t = t} {F = F} {G = G} l< l<' ⊢F ⊢t ⊢a) =
+  substEqTerm ρ ⊢Δ (β-red {a = a} {t = t} {F = F} {G = G} l< l<' ⊢F ⊢G ⊢t ⊢a) =
     let ρF = subst ρ ⊢Δ ⊢F
     in  PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
                  (PE.sym (singleSubstLift G _))
                  (PE.subst (λ x → _ ⊢ U.subst _ ((lam F ▹ t ^ _) ∘ a ^ _) ≡ x ∷ _ ^ _)
                            (PE.sym (singleSubstLift t _))
-                           (β-red l< l<' ρF (substTerm (substLift ⊢Δ ρF ρ) (⊢Δ ∙ ρF) ⊢t)
+                           (β-red l< l<' ρF (substTerm (substLift ⊢Δ ρF ρ) (⊢Δ ∙ ρF) ⊢G) (substTerm (substLift ⊢Δ ρF ρ) (⊢Δ ∙ ρF) ⊢t)
                                      (substTerm ρ ⊢Δ ⊢a)))
   substEqTerm {ρ = ρ} [ρ] ⊢Δ (η-eq {f = t} {g = u} lF lG F f g f0≡g0) =
     let ρF = subst [ρ] ⊢Δ F
@@ -215,114 +226,276 @@ mutual
   substEqTerm ρ ⊢Δ (cast-ℕ-0 e) = cast-ℕ-0 (substTerm ρ ⊢Δ e)
   substEqTerm ρ ⊢Δ (cast-ℕ-S e n) = cast-ℕ-S (substTerm ρ ⊢Δ e) (substTerm ρ ⊢Δ n)
 
-{-
-mutual
-  substRed : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
-           let ρA = U.subst ρ A
-               ρB = U.subst ρ B
-           in ⊢ Δ → Γ ⊢ A ⇒ B ^ r → Δ ⊢ ρA ⇒ ρB ^ r
-  substRed ρ ⊢Δ (univ A⇒B) = univ (substRedTerm ρ ⊢Δ A⇒B)
 
-  substRedTerm : ∀ {Γ Δ A l t u ρ} → ρ ∷ Δ ⊆ Γ →
-           let ρA = U.subst ρ A
-               ρt = U.subst ρ t
-               ρu = U.subst ρ u
-           in ⊢ Δ → Γ ⊢ t ⇒ u ∷ A ^ l → Δ ⊢ ρt ⇒ ρu ∷ ρA ^ l
-  substRedTerm ρ ⊢Δ (conv t⇒u A≡B) = conv (substRedTerm ρ ⊢Δ t⇒u) (substEq ρ ⊢Δ A≡B)
-  substRedTerm ρ ⊢Δ (app-subst {B = B} ⊢F ⊢G t⇒u a) =
-    let ρF = substTerm ρ ⊢Δ ⊢F
-    in PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (subst-β B))
-             (app-subst  (substTerm ρ ⊢Δ ⊢F) (substTerm (liftSubst ρ) (⊢Δ ∙ univ ρF) ⊢G) (substRedTerm ρ ⊢Δ t⇒u) (substTerm ρ ⊢Δ a))
-  substRedTerm ρ ⊢Δ (β-red {A} {B} {lF} {lG} {a} {t} l< l<' ⊢A ⊢B ⊢t ⊢a) =
-    let ⊢ρA = subst ρ ⊢Δ ⊢A
-    in  PE.subst (λ x → _ ⊢ _ ⇒ _ ∷ x ^ _) (PE.sym (subst-β B))
-                 (PE.subst (λ x → _ ⊢ U.subst _ ((lam _ ▹ t ^ _) ∘ a ^ _) ⇒ x ∷ _ ^ _)
-                           (PE.sym (subst-β t))
-                           (β-red l< l<' ⊢ρA (substTerm (liftSubst ρ) (⊢Δ ∙ ⊢ρA) ⊢B) (substTerm (liftSubst ρ) (⊢Δ ∙ ⊢ρA) ⊢t)
-                                      (substTerm ρ ⊢Δ ⊢a)))
-  substRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-subst {s = s} {F = F} {l = l} ⊢F ⊢z ⊢s n⇒n′) =
-    PE.subst (λ x → _ ⊢ natrec _ _ _ _ _ ⇒ _ ∷ x ^ _) (PE.sym (subst-β F))
-             (natrec-subst (subst (lift [ρ]) (⊢Δ ∙ univ (ℕⱼ ⊢Δ)) ⊢F)
-                           (PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (subst-β F)
-                                     (substTerm [ρ] ⊢Δ ⊢z))
-                           (PE.subst (λ x → Δ ⊢ U.subst ρ s ∷ x ^ [ ! , ι l ])
-                                     (subst-β-natrec _ F ! l)
-                                     (substTerm [ρ] ⊢Δ ⊢s))
-                           (substRedTerm [ρ] ⊢Δ n⇒n′))
-  substRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-zero {s = s} {F = F} {l = l} ⊢F ⊢z ⊢s) =
-    PE.subst (λ x → _ ⊢ natrec _ (U.subst (liftSubst ρ) F) _ _ _ ⇒ _ ∷ x ^ _)
-             (PE.sym (subst-β F))
-             (natrec-zero (subst (lift [ρ]) (⊢Δ ∙ univ (ℕⱼ ⊢Δ)) ⊢F)
-                          (PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
-                                    (subst-β F)
-                                    (substTerm [ρ] ⊢Δ ⊢z))
-                          (PE.subst (λ x → Δ ⊢ U.subst ρ s ∷ x ^ [ ! , ι l ])
-                                    (subst-β-natrec ρ F ! l)
-                                    (substTerm [ρ] ⊢Δ ⊢s)))
-  substRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (natrec-suc {s = s} {F = F} {l = l} ⊢n ⊢F ⊢z ⊢s) =
-    PE.subst (λ x → _ ⊢ natrec _ _ _ _ _ ⇒ _ ∘ natrec _ _ _ _ _ ^ _ ∷ x  ^ _)
-             (PE.sym (subst-β F))
-             (natrec-suc (substTerm [ρ] ⊢Δ ⊢n)
-                         (subst (lift [ρ]) (⊢Δ ∙ univ (ℕⱼ ⊢Δ)) ⊢F)
-                         (PE.subst (λ x → _ ⊢ _ ∷ x ^ _)
-                                   (subst-β F)
-                                   (substTerm [ρ] ⊢Δ ⊢z))
-                         (PE.subst (λ x → Δ ⊢ U.subst ρ s ∷ x ^ [ ! , ι l ])
-                                   (subst-β-natrec ρ F ! l)
-                                   (substTerm [ρ] ⊢Δ ⊢s)))
-  substRedTerm ρ ⊢Δ  (cast-subst A B e t) = cast-subst (substRedTerm ρ ⊢Δ A) (substTerm ρ ⊢Δ  B) (substTerm ρ ⊢Δ e) (substTerm ρ ⊢Δ t)
-  substRedTerm {Γ} {Δ} {A} {l} {t'} {u} {ρ₁} ρ ⊢Δ  (cast-ne-subst K neK B e t) = cast-ne-subst (substTerm ρ ⊢Δ K) (substNeutral ρ₁ neK) (substRedTerm ρ ⊢Δ  B) (substTerm ρ ⊢Δ e) (substTerm ρ ⊢Δ t)
-  substRedTerm ρ ⊢Δ  (cast-ℕ-subst B e t) = cast-ℕ-subst (substRedTerm ρ ⊢Δ B) (substTerm ρ ⊢Δ e) (substTerm ρ ⊢Δ t)
-  substRedTerm ρ ⊢Δ  (cast-Π-subst A P B e t) = let ρA = substTerm ρ ⊢Δ A in cast-Π-subst ρA (substTerm (liftSubst ρ) (⊢Δ ∙ (univ ρA)) P) (substRedTerm ρ ⊢Δ B) (substTerm ρ ⊢Δ e) (substTerm ρ ⊢Δ t)
-  substRedTerm {Δ = Δ} {ρ = ρ} [ρ] ⊢Δ (cast-Π {A = A} {A' = A'} {rA = rA} {B = B} {B' = B'} {e = e} {f = f} Aⱼ Bⱼ A'ⱼ B'ⱼ eⱼ fⱼ) = let l = ⁰ in let lA = ⁰ in let lB = ⁰ in
-    let ρA = substTerm [ρ] ⊢Δ Aⱼ in
-    let ρA' = substTerm [ρ] ⊢Δ A'ⱼ in
-    let ρB = substTerm (lift [ρ]) (⊢Δ ∙ (univ ρA)) Bⱼ in
-    let ρB' = substTerm (lift [ρ]) (⊢Δ ∙ (univ ρA')) B'ⱼ in
-    let ρe = substTerm [ρ] ⊢Δ eⱼ in
-    let ρf = substTerm [ρ] ⊢Δ fⱼ in
-    let pred = λ A1 A1' e1 f1 → Δ ⊢ U.subst ρ (cast l (Π A ^ rA ° lA ▹ B ° lB ° l ^ _) (Π A' ^ rA ° lA ▹ B' ° lB ° l ^ _) e f) ⇒ (lam (U.subst ρ A') ▹ (let a = cast l A1' A1 (Idsym (Univ rA l) A1 A1' (fst e1)) (var 0) in cast l ((U.subst (liftSubst ρ) B) [ a ]↑) (U.subst (liftSubst ρ) B') ((snd e1) ∘ (var 0) ^ ⁰) (f1 ∘ a ^ l))  ^ l) ∷ U.subst ρ (Π A' ^ rA ° lA ▹ B' ° lB ° l ^ _) ^ _ in
-    let j0 : pred (wk1 (U.subst ρ A)) (wk1 (U.subst ρ A')) (wk1 (U.subst ρ e)) (wk1 (U.subst ρ f))
-        j0 = cast-Π ρA ρB ρA' ρB' ρe ρf
-    in
-    let j1 = PE.subst (λ x → pred x (wk1 (U.subst ρ A')) (wk1 (U.subst ρ e)) (wk1 (U.subst ρ f))) (wk1-subst≡lift-wk1 ρ A) j0 in
-    let j2 = PE.subst (λ x → pred (U.subst (liftSubst ρ) (wk1 A)) x (wk1 (U.subst ρ e)) (wk1 (U.subst ρ f))) (wk1-subst≡lift-wk1 ρ A') j1 in
-    let j3 = PE.subst (λ x → pred (U.subst (liftSubst ρ) (wk1 A)) (U.subst (liftSubst ρ) (wk1 A')) x (wk1 (U.subst ρ f))) (wk1-subst≡lift-wk1 ρ e) j2 in
-    let j4 = PE.subst (λ x → pred (U.subst (liftSubst ρ) (wk1 A)) (U.subst (liftSubst ρ) (wk1 A')) (U.subst (liftSubst ρ) (wk1 e)) x) (wk1-subst≡lift-wk1 ρ f) j3 in
-    let j5 = PE.subst (λ x → Δ ⊢ U.subst ρ (cast l (Π A ^ rA ° lA ▹ B ° lB ° l ^ !) (Π A' ^ rA ° lA ▹ B' ° lB ° l ^ !) e f) ⇒ (lam (U.subst ρ A') ▹ (let a = cast l (U.subst (liftSubst ρ) (wk1 A')) (U.subst (liftSubst ρ) (wk1 A)) x (var 0) in cast l ((U.subst (liftSubst ρ) B) [ a ]↑) (U.subst (liftSubst ρ) B') ((snd (U.subst (liftSubst ρ) (wk1 e))) ∘ (var 0) ^ ⁰) ((U.subst (liftSubst ρ) (wk1 f)) ∘ a ^ l)) ^ l) ∷ U.subst ρ (Π A' ^ rA ° lA ▹ B' ° lB ° l ^ !) ^ ι l) (PE.sym (subst-Idsym (liftSubst ρ) (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e)))) j4 in
-   PE.subst (λ x → Δ ⊢ U.subst ρ (cast l (Π A ^ rA ° lA ▹ B ° lB ° l ^ _) (Π A' ^ rA ° lA ▹ B' ° lB ° l ^ _) e f) ⇒ (lam (U.subst ρ A') ▹ (let a = U.subst (liftSubst ρ) (cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0)) in cast l x (U.subst (liftSubst ρ) B') ((snd (U.subst (liftSubst ρ) (wk1 e))) ∘ (var 0) ^ ⁰) ((U.subst (liftSubst ρ) (wk1 f)) ∘ a ^ l)) ^ l) ∷ U.subst ρ (Π A' ^ rA ° lA ▹ B' ° lB ° l ^ _) ^ ι l) (PE.sym (subst-β↑ {ρ = ρ} {a = (cast l (wk1 A') (wk1 A) (Idsym (Univ rA l) (wk1 A) (wk1 A') (fst (wk1 e))) (var 0))} B)) j5
-  substRedTerm ρ ⊢Δ (cast-ℕ-0 e) = cast-ℕ-0 (substTerm ρ ⊢Δ e)
-  substRedTerm ρ ⊢Δ (cast-ℕ-S e n) = cast-ℕ-S (substTerm ρ ⊢Δ e) (substTerm ρ ⊢Δ n)
-  substRedTerm ρ ⊢Δ (cast-ℕ-cong e n) = cast-ℕ-cong (substTerm ρ ⊢Δ e) (substRedTerm ρ ⊢Δ n)
-  substRedTerm {ρ = ρ₁} ρ ⊢Δ (cast-ne-cong K neK L neL e n) = cast-ne-cong (substTerm ρ ⊢Δ K) (substNeutral ρ₁ neK) (substTerm ρ ⊢Δ L) (substNeutral ρ₁ neL) (substTerm ρ ⊢Δ e) (substRedTerm ρ ⊢Δ n)
-  
-substRed* : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
-           let ρA = U.subst ρ A
-               ρB = U.subst ρ B
-           in ⊢ Δ → Γ ⊢ A ⇒* B ^ r → Δ ⊢ ρA ⇒* ρB ^ r
-substRed* ρ ⊢Δ (id A) = id (subst ρ ⊢Δ A)
-substRed* ρ ⊢Δ (A⇒A′ ⇨ A′⇒*B) = substRed ρ ⊢Δ A⇒A′ ⇨ substRed* ρ ⊢Δ A′⇒*B
 
-substRed*Term : ∀ {Γ Δ A l t u ρ} → ρ ∷ Δ ⊆ Γ →
-           let ρA = U.subst ρ A
-               ρt = U.subst ρ t
-               ρu = U.subst ρ u
-           in ⊢ Δ → Γ ⊢ t ⇒* u ∷ A ^ l → Δ ⊢ ρt ⇒* ρu ∷ ρA ^ l
-substRed*Term ρ ⊢Δ (id t) = id (substTerm ρ ⊢Δ t)
-substRed*Term ρ ⊢Δ (t⇒t′ ⇨ t′⇒*u) = substRedTerm ρ ⊢Δ t⇒t′ ⇨ substRed*Term ρ ⊢Δ t′⇒*u
+-- Reflexivity of well-formed substitution.
 
-substRed:*: : ∀ {Γ Δ A B r ρ} → ρ ∷ Δ ⊆ Γ →
+substRefl : ∀ {σ Γ Δ}
+          → Δ ⊢ˢ σ ∷ Γ
+          → Δ ⊢ˢ σ ≡ σ ∷ Γ
+substRefl id = id
+substRefl (σ , x) = substRefl σ , genRefl x
+
+Wk-step : ∀ {Γ Δ ρ A r} → ⊢ Γ ∙ A ^ r → Γ ⊢ˢ ρ ∷ Δ → (Γ ∙ A ^ r) ⊢ˢ tail (liftSubst ρ) ∷ Δ
+Wk-step ⊢ΓA id = id
+Wk-step {ρ = ρ} ⊢ΓA (_,_ {A = A} ⊢Γ x) = Wk-step ⊢ΓA ⊢Γ ,
+  PE.subst (λ A →  _  ⊢ _ ∷ A ^ _) (liftsubst-wk1 (tail ρ) A) (wkTerm (step id) ⊢ΓA x)
+
+Wk-valid : ∀ {Γ Δ ρ} → ρ ∷ Γ ⊆ Δ → ⊢ Γ → Γ ⊢ˢ (toSubst ρ) ∷ Δ
+Wk-valid {Γ} {ε} {ρ} [ρ] ⊢Γ = id
+Wk-valid {.(Δ ∙ x ^ x₁)} {Δ ∙ x ^ x₁} {.id} id (_∙_ {Γ} {A} {r} ⊢Γ ⊢x) =  Wk-valid (step id) (⊢Γ ∙ ⊢x) , var (⊢Γ ∙ ⊢x) (PE.subst (λ x →  _ ∷ x ^ _ ∈ (Γ ∙ A ^ r )) (PE.trans (PE.sym (subst-id (wk1 A))) (subst-wk1 idSubst A)) here)
+Wk-valid {.(_ ∙ _ ^ _)} {Δ ∙ x ^ x₁} {.(step _)} (step [ρ]) (_∙_ {Γ} {A} {r} ⊢Γ ⊢x) = let wkρ = Wk-valid [ρ] ⊢Γ in Wk-step (⊢Γ ∙ ⊢x) wkρ
+Wk-valid {.(_ ∙ U.wk _ x ^ x₁)} {Δ ∙ x ^ x₁} {.(lift _)} (lift {ρ = ρ} [ρ]) (_∙_ {Γ} {A} {r} ⊢Γ ⊢x) = Wk-valid (step [ρ]) (⊢Γ ∙ ⊢x) , var (⊢Γ ∙ ⊢x) (PE.subst (λ x →  _ ∷ x ^ _ ∈ (Γ ∙ A ^ r ))
+  (PE.trans (PE.cong wk1 (wk≡subst ρ x)) (liftsubst-wk1 (toSubst _) x)) here)
+
+idSubst-valid : ∀ {Γ} → ⊢ Γ → Γ ⊢ˢ idSubst ∷ Γ
+idSubst-valid ⊢Γ = Wk-valid id ⊢Γ
+
+
+-- Weakening of well-formed substitution.
+wkSubst′ : ∀ {ρ σ Γ Δ Δ′} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ) (⊢Δ′ : ⊢ Δ′)
+           ([ρ] : ρ ∷ Δ′ ⊆ Δ)
+           ([σ] : Δ ⊢ˢ σ ∷ Γ)
+         → Δ′ ⊢ˢ ρ •ₛ σ ∷ Γ
+wkSubst′ ε ⊢Δ ⊢Δ′ ρ id = id
+wkSubst′ (_∙_ {Γ} {A} ⊢Γ ⊢A) ⊢Δ ⊢Δ′ ρ (tailσ , headσ) =
+  wkSubst′ ⊢Γ ⊢Δ ⊢Δ′ ρ tailσ
+  , PE.subst (λ x → _ ⊢ _ ∷ x ^ _) (wk-subst A) (wkTerm ρ ⊢Δ′ headσ)
+
+wkSubstEq′ : ∀ {ρ σ σ' Γ Δ Δ′} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ) (⊢Δ′ : ⊢ Δ′)
+           ([ρ] : ρ ∷ Δ′ ⊆ Δ)
+           ([σ] : Δ ⊢ˢ σ ≡ σ' ∷ Γ)
+         → Δ′ ⊢ˢ ρ •ₛ σ ≡ ρ •ₛ σ' ∷ Γ
+wkSubstEq′ ⊢Γ ⊢Δ ⊢Δ′ ρ id = id
+wkSubstEq′ (_∙_ {Γ} {A} ⊢Γ ⊢A) ⊢Δ ⊢Δ′ ρ (tailσ , headσ) = wkSubstEq′ ⊢Γ ⊢Δ ⊢Δ′ ρ tailσ ,
+           PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _) (wk-subst A) (wkEqTerm ρ ⊢Δ′ headσ)
+
+-- Weakening of well-formed substitution by one.
+wk1Subst′ : ∀ {F rF σ Γ Δ} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ)
+            (⊢F : Δ ⊢ F ^ rF)
+            ([σ] : Δ ⊢ˢ σ ∷ Γ)
+          → (Δ ∙ F ^ rF) ⊢ˢ wk1Subst σ ∷ Γ
+wk1Subst′ ⊢Γ ⊢Δ ⊢F [σ] =
+  wkSubst′ ⊢Γ ⊢Δ (⊢Δ ∙ ⊢F) (step id) [σ]
+
+wk1SubstEq′ : ∀ {F rF σ σ' Γ Δ} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ)
+            (⊢F : Δ ⊢ F ^ rF)
+            ([σ] : Δ ⊢ˢ σ ≡ σ' ∷ Γ)
+          → (Δ ∙ F ^ rF) ⊢ˢ wk1Subst σ ≡ wk1Subst σ' ∷ Γ
+wk1SubstEq′ ⊢Γ ⊢Δ ⊢F [σ] =
+  wkSubstEq′ ⊢Γ ⊢Δ (⊢Δ ∙ ⊢F) (step id) [σ]
+
+-- Lifting of well-formed substitution.
+
+liftSubst′ : ∀ {F rF σ Γ Δ} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ)
+             (⊢F  : Γ ⊢ F ^ rF)
+             ([σ] : Δ ⊢ˢ σ ∷ Γ)
+           → (Δ ∙ U.subst σ F ^ rF) ⊢ˢ liftSubst σ ∷ Γ ∙ F ^ rF
+liftSubst′ {F} {rF} {σ} {Γ} {Δ} ⊢Γ ⊢Δ ⊢F [σ] =
+  let ⊢Δ∙F = ⊢Δ ∙ subst [σ] ⊢Δ ⊢F 
+  in  wkSubst′ ⊢Γ ⊢Δ ⊢Δ∙F (step id) [σ]
+  ,   var ⊢Δ∙F (PE.subst (λ x → 0 ∷ x ^ rF ∈ (Δ ∙ U.subst σ F ^ rF))
+                         (wk-subst F) here)
+
+singleSubst : ∀ {A t rA Γ} → Γ ⊢ t ∷ A ^ rA → Γ ⊢ˢ sgSubst t ∷ Γ ∙ A ^ rA
+singleSubst {A} {rA = rA} t =
+  let ⊢Γ = wfTerm t
+  in  idSubst-valid ⊢Γ , PE.subst (λ x → _ ⊢ _ ∷ x ^ rA) (PE.sym (subst-id A)) t
+
+substType : ∀ {t F rF G rG Γ} → Γ ∙ F ^ rF ⊢ G ^ rG → Γ ⊢ t ∷ F ^ rF → Γ ⊢ G [ t ] ^ rG
+substType {t} {F} {G} ⊢G ⊢t =
+  let ⊢Γ = wfTerm ⊢t
+  in  subst (singleSubst ⊢t) ⊢Γ ⊢G 
+
+singleSubst↑ : ∀ {A t rA Γ} → Γ ∙ A ^ rA ⊢ t ∷ wk1 A ^ rA
+             → Γ ∙ A ^ rA ⊢ˢ consSubst (wk1Subst idSubst) t ∷ Γ ∙ A ^ rA
+singleSubst↑ {A} {rA = rA} t with wfTerm t
+... | ⊢Γ ∙ ⊢A = wk1Subst′ ⊢Γ ⊢Γ ⊢A (idSubst-valid ⊢Γ)
+              , PE.subst (λ x → _ ∙ A ^ rA ⊢ _ ∷ x ^ _) (wk1-tailId A) t
+
+subst↑Type : ∀ {t F rF G rG Γ}
+           → Γ ∙ F ^ rF ⊢ G ^ rG
+           → Γ ∙ F ^ rF ⊢ t ∷ wk1 F ^ rF
+           → Γ ∙ F ^ rF ⊢ G [ t ]↑ ^ rG
+subst↑Type ⊢G ⊢t = subst (singleSubst↑ ⊢t) (wfTerm ⊢t) ⊢G
+
+convFirstTerm : ∀ {Γ t u A l } → Γ ⊢ t ≡ u ∷ A ^ l → Γ ⊢ t ∷ A ^ l × Γ ⊢ u ∷ A ^ l
+convFirst : ∀ {Γ A B r} → Γ ⊢ A ≡ B ^ r → Γ ⊢ A ^ r × Γ ⊢ B ^ r
+
+convFirstTerm (refl x) = x , x
+convFirstTerm (sym X) = let res = convFirstTerm X in proj₂ res , proj₁ res
+convFirstTerm (trans X X₁) = proj₁ (convFirstTerm X) , proj₂ (convFirstTerm X₁)
+convFirstTerm (conv X x) = let res = convFirstTerm X in conv (proj₁ res) x , conv (proj₂ res) x
+convFirstTerm (Π-cong x x₁ x₂ X X₁) = {!!}
+convFirstTerm (app-cong X X₁) = {!!}
+convFirstTerm (β-red {F = F} {lF = lA} {lG = lB} lA< lB< ⊢A ⊢B ⊢t ⊢a) = (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ ⊢A ▹ ⊢B ▹ (lamⱼ (λ _ → lA< , lB<) (λ abs → ⊥-elim (!≢% abs)) ⊢A ⊢t) ∘ⱼ ⊢a , substTerm (idSubst-valid (wfTerm ⊢a) , PE.subst (λ x →  _ ⊢ _ ∷ x ^ _) (PE.sym (subst-id F)) ⊢a) (wfTerm ⊢a) ⊢t 
+convFirstTerm (η-eq x x₁ x₂ x₃ x₄ X) = x₃ , x₄
+convFirstTerm (suc-cong X) = sucⱼ (proj₁ (convFirstTerm X)) , sucⱼ (proj₂ (convFirstTerm X))
+convFirstTerm (natrec-cong x X X₁ X₂) = {!!}
+convFirstTerm (natrec-zero x x₁ x₂) = natrecⱼ (λ abs → ⊥-elim (!≢% abs)) x x₁ x₂ (zeroⱼ (wfTerm x₂)) , x₁
+convFirstTerm (natrec-suc n F z s) = natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s (sucⱼ n) ,
+                                     let sn = ((λ x → ⊥-elim (!≢% x)) ▹ (ℕⱼ (wfTerm n)) ▹
+                                                  (▹▹ⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ un-univ F ▹
+                                                    un-univ (subst↑Type F (sucⱼ (var (wf F) here))) ) ▹ s ∘ⱼ n) in
+                                     let snF = (λ abs → ⊥-elim (!≢% abs)) ▹ un-univ (substType F n) ▹
+                                               un-univ (substType {!!} (sucⱼ (wkTerm (step id) (wfTerm n ∙ (substType F n)) n))) ▹
+                                               sn ∘ⱼ (natrecⱼ (λ x → ⊥-elim (!≢% x)) F z s n) in
+                                     {!!}
+convFirstTerm (Emptyrec-cong x x₁ x₂) = Emptyrecⱼ (proj₁ (convFirst x)) x₁ , conv (Emptyrecⱼ (proj₂ (convFirst x)) x₂) (sym x)
+convFirstTerm (proof-irrelevance x x₁) = x , x₁
+convFirstTerm (Id-cong X X₁ X₂) = Idⱼ (proj₁ (convFirstTerm X)) (proj₁ (convFirstTerm X₁)) (proj₁ (convFirstTerm X₂)) ,
+                                  Idⱼ (proj₂ (convFirstTerm X)) (conv (proj₂ (convFirstTerm X₁)) (univ X)) (conv (proj₂ (convFirstTerm X₂)) (univ X))
+convFirstTerm (cast-refl X x x₁) = castⱼ  (proj₁ (convFirstTerm X)) (proj₂ (convFirstTerm X)) x x₁ , conv x₁ (univ X)
+convFirstTerm (cast-cong X X₁ X₂ x x₁) = castⱼ (proj₁ (convFirstTerm X)) (proj₁ (convFirstTerm X₁)) x (proj₁ (convFirstTerm X₂)) ,
+                           conv (castⱼ (proj₂ (convFirstTerm X)) (proj₂ (convFirstTerm X₁)) x₁ (conv (proj₂ (convFirstTerm X₂)) (univ X))) (sym (univ X₁))
+convFirstTerm (cast-Π A B A' B' e f) = castⱼ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ A ▹ B) (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → ⊥-elim (!≢% x)) ▹ A' ▹ B') e f , {!!}
+convFirstTerm (cast-ℕ-0 e) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (zeroⱼ (wfTerm e)) , (zeroⱼ (wfTerm e))
+convFirstTerm (cast-ℕ-S e n) = castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e (sucⱼ n) , sucⱼ (castⱼ (ℕⱼ (wfTerm e)) (ℕⱼ (wfTerm e)) e n)
+
+convFirst (univ A≡B) = univ (proj₁ (convFirstTerm A≡B)) , univ (proj₂ (convFirstTerm A≡B))  
+convFirst (refl A) = A , A
+convFirst (sym A≡B) = let res = convFirst A≡B in proj₂ res , proj₁ res
+convFirst (trans A≡B B≡C) = proj₁ (convFirst A≡B) , proj₂ (convFirst B≡C)
+
+
+validityCon :  ∀ {Γ A x r } → ⊢ Γ → x ∷ A ^ r ∈ Γ → Γ ⊢ A ^ r
+validityCon (⊢Γ ∙ x) here = wk (step id) (⊢Γ ∙ x) x
+validityCon (⊢Γ ∙ x) (there X) = wk (step id) (⊢Γ ∙ x) (validityCon ⊢Γ X)
+
+validity : ∀ {Γ A t r} →
+  Γ ⊢ t ∷ A ^ r → Γ ⊢ A ^ r
+validity (univ 0<1 ⊢Γ) = Uⱼ ⊢Γ
+validity (ℕⱼ ⊢Γ) = univ (univ 0<1 ⊢Γ)
+validity (Emptyⱼ ⊢Γ) = univ (univ 0<1 ⊢Γ)
+validity (Πⱼ_▹_▹_▹_ x x₁ X X₁) = univ-gen (wfTerm X)
+validity (var x x₁) = validityCon x x₁
+validity (lamⱼ <l <l' F t) = univ (Πⱼ <l ▹ <l' ▹ (un-univ F) ▹ (un-univ (validity t)))
+validity (_▹_▹_▹_∘ⱼ_ {F = F} {G = G} r% ⊢F ⊢G g a) = substType (univ ⊢G) a
+validity (fstⱼ X X₁ X₂ X₃ X₄) = univ (Idⱼ (univ 0<1 (wfTerm X)) X X₂)
+validity (sndⱼ X X₁ X₂ X₃ X₄) = univ (Πⱼ (λ x → ≡is≤ PE.refl , ≡is≤ PE.refl) ▹ (λ x → PE.refl , PE.refl) ▹ X₂ ▹
+  (Idⱼ (univ 0<1 (wfTerm X₃)) {!!} -- (un-univ (subst↑Type (univ {!!})  {!!}))
+       X₃))
+validity (zeroⱼ x) = univ (ℕⱼ x)
+validity (sucⱼ X) = univ (ℕⱼ (wfTerm X))
+validity (natrecⱼ x x₁ X X₁ X₂) = substType x₁ X₂
+validity (Emptyrecⱼ x X) = x
+validity (Idⱼ X X₁ X₂) = univ (univ 0<1 (wfTerm X))
+validity (Idreflⱼ X) = univ (Idⱼ (un-univ (validity X)) X X)
+validity (transpⱼ x x₁ X X₁ X₂ X₃) = substType x₁ X₂
+validity (castⱼ X X₁ X₂ X₃) = univ X₁
+validity (conv X x) = proj₂ (convFirst x)
+
+validityEq : ∀ {Γ A t u r} →
+  Γ ⊢ t ≡ u ∷ A ^ r → Γ ⊢ A ^ r
+validityEq ⊢tu = validity (proj₁ (convFirstTerm ⊢tu))
+
+validitySubst : ∀ {Γ Δ σ σ'} → Δ ⊢ˢ σ ≡ σ' ∷ Γ → Δ ⊢ˢ σ ∷ Γ 
+validitySubst id = id 
+validitySubst (ρ , x) = (validitySubst ρ , proj₁ (convFirstTerm x)) 
+
+-- validitySubstSym : ∀ {Γ Δ σ σ'} → Δ ⊢ˢ σ ≡ σ' ∷ Γ → ⊢ Γ → ⊢ Δ → Δ ⊢ˢ σ' ∷ Γ 
+-- validitySubstSym id ⊢Γ ⊢Δ = id
+-- validitySubstSym (ρ , x) (⊢Γ ∙ ⊢A) ⊢Δ = validitySubstSym ρ ⊢Γ ⊢Δ , {!!}
+
+liftSubstEq′ : ∀ {F rF σ ρ Γ Δ} (⊢Γ : ⊢ Γ) (⊢Δ : ⊢ Δ)
+             (⊢F  : Γ ⊢ F ^ rF)
+             ([σ] : Δ ⊢ˢ σ ≡ ρ ∷ Γ)
+           → (Δ ∙ U.subst σ F ^ rF) ⊢ˢ liftSubst σ ≡ liftSubst ρ ∷ Γ ∙ F ^ rF
+liftSubstEq′ {F} {rF} {σ} {ρ} {Γ} {Δ} ⊢Γ ⊢Δ ⊢F [σ] =
+  let ⊢Δ∙F = ⊢Δ ∙ subst (validitySubst [σ]) ⊢Δ ⊢F 
+  in wkSubstEq′ ⊢Γ ⊢Δ ⊢Δ∙F (step id) [σ] , PE.subst (λ x → (Δ ∙ U.subst σ F ^ rF) ⊢ _ ≡ _ ∷ x ^ rF)  (wk-subst F)
+     (genRefl (var ⊢Δ∙F here))
+
+mutual 
+  symSubst : ∀ {Γ Δ ρ ρ′} → Δ ⊢ˢ ρ ≡ ρ′ ∷ Γ → ⊢ Γ → ⊢ Δ → Δ ⊢ˢ ρ′ ≡ ρ ∷ Γ
+  symSubst id ⊢Γ ⊢Δ = id
+  symSubst {Γ} {Δ} {ρ} {ρ′} (_,_ {A = A} {rA = [ ! , l ]} X x) (⊢Γ ∙ [A]) ⊢Δ = symSubst X ⊢Γ ⊢Δ , conv (sym x) (substConv X ⊢Δ [A])
+  symSubst {Γ} {Δ} {ρ} {ρ′} (_,_ {A = A} {rA = [ % , l ]} X x) (⊢Γ ∙ [A]) ⊢Δ = symSubst X ⊢Γ ⊢Δ , 
+    let x , y = convFirstTerm x in proof-irrelevance (conv y (substConv X ⊢Δ [A])) (conv x (substConv X ⊢Δ [A]))
+
+  validitySubstSym : ∀ {Γ Δ σ σ'} → Δ ⊢ˢ σ ≡ σ' ∷ Γ → ⊢ Γ → ⊢ Δ → Δ ⊢ˢ σ' ∷ Γ 
+  validitySubstSym ρ ⊢Γ ⊢Δ = validitySubst (symSubst ρ ⊢Γ ⊢Δ)
+
+  substConv : ∀ {Γ Δ A r ρ ρ′} → Δ ⊢ˢ ρ ≡ ρ′ ∷ Γ →
          let ρA = U.subst ρ A
-             ρB = U.subst ρ B
-         in ⊢ Δ → Γ ⊢ A :⇒*: B ^ r → Δ ⊢ ρA :⇒*: ρB ^ r
-substRed:*: ρ ⊢Δ [[ ⊢A , ⊢B , D ]] = [[ subst ρ ⊢Δ ⊢A , subst ρ ⊢Δ ⊢B , substRed* ρ ⊢Δ D ]]
+             ρA′ = U.subst ρ′ A
+         in ⊢ Δ → Γ ⊢ A ^ r → Δ ⊢ ρA ≡ ρA′ ^ r
+  substConv ρ ⊢Δ (Uⱼ x) = refl (Uⱼ ⊢Δ)
+  substConv ρ ⊢Δ (univ x) = univ (substConvTerm ρ ⊢Δ x)
 
-substRed:*:Term : ∀ {Γ Δ A l t u ρ} → ρ ∷ Δ ⊆ Γ →
-             let ρA = U.subst ρ A
-                 ρt = U.subst ρ t
-                 ρu = U.subst ρ u
-             in ⊢ Δ → Γ ⊢ t :⇒*: u ∷ A ^ l → Δ ⊢ ρt :⇒*: ρu ∷ ρA ^ l
-substRed:*:Term ρ ⊢Δ [[ ⊢t , ⊢u , d ]] =
-  [[ substTerm ρ ⊢Δ ⊢t , substTerm ρ ⊢Δ ⊢u , substRed*Term ρ ⊢Δ d ]]
--}
+  substConvTerm : ∀ {Γ Δ A t r ρ ρ′} → Δ ⊢ˢ ρ ≡ ρ′ ∷ Γ →
+         let ρA = U.subst ρ A
+             ρt = U.subst ρ t
+             ρt′ = U.subst ρ′ t
+         in ⊢ Δ → Γ ⊢ t ∷ A ^ r → Δ ⊢ ρt ≡ ρt′ ∷ ρA ^ r
+  substConvTerm ρ ⊢Δ (univ x x₁) = refl (univ x ⊢Δ)
+  substConvTerm ρ ⊢Δ (ℕⱼ x) = refl (ℕⱼ ⊢Δ)
+  substConvTerm ρ ⊢Δ (Emptyⱼ x) = refl (Emptyⱼ ⊢Δ)
+  substConvTerm ρ ⊢Δ (Πⱼ x ▹ x₁ ▹ X ▹ X₁) = let F = (subst (validitySubst ρ) ⊢Δ (univ X)) in
+                Π-cong x x₁ F (substConvTerm ρ ⊢Δ X) (substConvTerm (liftSubstEq′ (wfTerm X) ⊢Δ (univ X) ρ) (⊢Δ ∙ F) X₁)
+  substConvTerm ρ ⊢Δ (var x x₁) = substIndexEq ρ x₁
+  substConvTerm ρ ⊢Δ (lamⱼ {r = !} <l <l' F t) with <l PE.refl
+  ... | (lF , lG ) = let F' = (subst (validitySubst ρ) ⊢Δ F) in
+                     let F'' = (subst (validitySubstSym ρ (wf F) ⊢Δ) ⊢Δ F) in
+        η-eq lF lG F' (lamⱼ <l <l' F' (substTerm (liftSubst′ (wf F) ⊢Δ F (validitySubst ρ)) (⊢Δ ∙ F') t))
+                      (conv (lamⱼ <l <l' F'' (substTerm (liftSubst′ (wf F) ⊢Δ F (validitySubstSym ρ {!!} ⊢Δ)) (⊢Δ ∙ F'') t)) {!!})
+                      {!!}
+  substConvTerm ρ ⊢Δ (lamⱼ {r = %} <l <l' F t) = proof-irrelevance {!!} {!!}
+  substConvTerm ρ ⊢Δ (x ▹ X ▹ X₁ ▹ X₂ ∘ⱼ X₃) = {!!}
+  substConvTerm ρ ⊢Δ (fstⱼ X X₁ X₂ X₃ X₄) = {!!}
+  substConvTerm ρ ⊢Δ (sndⱼ X X₁ X₂ X₃ X₄) = {!!}
+  substConvTerm ρ ⊢Δ (zeroⱼ x) = {!!}
+  substConvTerm ρ ⊢Δ (sucⱼ X) = {!!}
+  substConvTerm ρ ⊢Δ (natrecⱼ x x₁ X X₁ X₂) = {!!}
+  substConvTerm ρ ⊢Δ (Emptyrecⱼ x X) = {!!}
+  substConvTerm ρ ⊢Δ (Idⱼ X X₁ X₂) = {!!}
+  substConvTerm ρ ⊢Δ (Idreflⱼ X) = {!!}
+  substConvTerm ρ ⊢Δ (transpⱼ x x₁ X X₁ X₂ X₃) = {!!}
+  substConvTerm ρ ⊢Δ (castⱼ X X₁ X₂ X₃) = {!!}
+  substConvTerm ρ ⊢Δ (conv X x) = {!!}
 
+  substConvEqTerm : ∀ {Γ Δ A t u r ρ ρ′} → Δ ⊢ˢ ρ ≡ ρ′ ∷ Γ →
+         let ρA = U.subst ρ A
+             ρt = U.subst ρ t
+             ρu = U.subst ρ′ u
+         in ⊢ Δ → Γ ⊢ t ≡ u ∷ A ^ r → Δ ⊢ ρt ≡ ρu ∷ ρA ^ r
+  substConvEqTerm ρ ⊢Δ (refl x) = substConvTerm ρ ⊢Δ x
+  substConvEqTerm ρ ⊢Δ (sym X) = let ⊢u = proj₁ (convFirstTerm X) in
+   conv (sym (substConvEqTerm (symSubst ρ (wfEqTerm X) ⊢Δ) ⊢Δ X))
+     (substConv (symSubst ρ (wfEqTerm X) ⊢Δ) ⊢Δ (validity ⊢u))
+  substConvEqTerm ρ ⊢Δ (trans X X₁) = trans (substConvEqTerm ρ ⊢Δ X)
+    (conv (substConvEqTerm (substRefl (validitySubstSym ρ (wfEqTerm X) ⊢Δ)) ⊢Δ X₁) (substConv (symSubst ρ (wfEqTerm X) ⊢Δ) ⊢Δ (validityEq X)))
+  substConvEqTerm ρ ⊢Δ (conv X x) = conv (substConvEqTerm ρ ⊢Δ X) (substConvEq (substRefl (validitySubst ρ)) ⊢Δ x)
+  substConvEqTerm ρ ⊢Δ (Π-cong x x₁ x₂ X X₁) = {!!}
+  substConvEqTerm ρ ⊢Δ (app-cong X X₁) = {!!}
+  substConvEqTerm ρ ⊢Δ (β-red x x₁ x₂ X x₃ x₄) = {!!} -- β-red x x₁ ? ? ? {!!}
+  substConvEqTerm ρ ⊢Δ (η-eq x x₁ x₂ x₃ x₄ X) = {!!}
+  substConvEqTerm ρ ⊢Δ (suc-cong X) = suc-cong (substConvEqTerm ρ ⊢Δ X)
+  substConvEqTerm ρ ⊢Δ (natrec-cong {F = F} x X X₁ X₂) = conv (natrec-cong
+                  (substConvEq (liftSubstEq′ (wfEqTerm X) ⊢Δ (univ (ℕⱼ (wfEqTerm X))) ρ) (⊢Δ ∙ (univ (ℕⱼ ⊢Δ))) x)
+                  (PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _) (singleSubstLift F _) (substConvEqTerm ρ ⊢Δ X))
+                  {!!} {!!}) {!!}
+  substConvEqTerm ρ ⊢Δ (natrec-zero x x₁ x₂) = {!!}
+  substConvEqTerm ρ ⊢Δ (natrec-suc x x₁ x₂ x₃) = {!!}
+  substConvEqTerm ρ ⊢Δ (Emptyrec-cong x x₁ x₂) = {!!}
+  substConvEqTerm ρ ⊢Δ (proof-irrelevance x x₁) = proof-irrelevance (substTerm (validitySubst ρ) ⊢Δ x)
+                                                                    (conv (substTerm (validitySubstSym ρ (wfTerm x) ⊢Δ) ⊢Δ x₁)
+                                                                      (substConv (symSubst ρ (wfTerm x) ⊢Δ) ⊢Δ (validity x)))
+  substConvEqTerm ρ ⊢Δ (Id-cong X X₁ X₂) = {!!}
+  substConvEqTerm ρ ⊢Δ (cast-refl X x x₁) = trans (cast-refl (substConvEqTerm (substRefl (validitySubst ρ)) ⊢Δ X)
+                                                             (substTerm (validitySubst ρ) ⊢Δ x)
+                                                             (substTerm (validitySubst ρ) ⊢Δ x₁))
+                  (conv (substConvTerm ρ ⊢Δ x₁) (univ (substConvEqTerm (substRefl (validitySubst ρ)) ⊢Δ X)))
+  substConvEqTerm ρ ⊢Δ (cast-cong X X₁ X₂ x x₁) = {!!}
+  substConvEqTerm ρ ⊢Δ (cast-Π x x₁ x₂ x₃ x₄ x₅) = {!!}
+  substConvEqTerm ρ ⊢Δ (cast-ℕ-0 x) = {!!}
+  substConvEqTerm ρ ⊢Δ (cast-ℕ-S x x₁) = {!!}
+
+  substConvEq : ∀ {Γ Δ A B r ρ ρ′} → Δ ⊢ˢ ρ ≡ ρ′ ∷ Γ →
+         let ρA = U.subst ρ A
+             ρB = U.subst ρ′ B
+         in ⊢ Δ → Γ ⊢ A ≡ B ^ r → Δ ⊢ ρA ≡ ρB ^ r
+  substConvEq ρ ⊢Δ (univ A≡B) = univ (substConvEqTerm ρ ⊢Δ A≡B)
+  substConvEq ρ ⊢Δ (refl A) = substConv ρ ⊢Δ A
+  substConvEq ρ ⊢Δ (sym A≡B) = sym (substConvEq (symSubst ρ (wfEq A≡B) ⊢Δ) ⊢Δ A≡B)
+  substConvEq ρ ⊢Δ (trans A≡B B≡C) = trans (substConvEq (substRefl (validitySubst ρ)) ⊢Δ A≡B) (substConvEq ρ ⊢Δ B≡C)

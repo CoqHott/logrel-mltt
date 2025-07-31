@@ -169,6 +169,7 @@ mutual
                 → lF ≤ l
                 → lG ≤ l
                 → Γ     ⊢ F ^ [ rF , ι lF ]
+                → Γ ∙ F ^ [ rF , ι lF ] ⊢ G ∷ (U lG) ^ [ ! , next lG ]
                 → Γ ∙ F ^ [ rF , ι lF ] ⊢ t ∷ G ^ [ ! , ι lG ]
                 → Γ     ⊢ a ∷ F ^ [ rF , ι lF ]
                 → Γ     ⊢ (lam F ▹ t ^ l) ∘ a ^ l ≡ t [ a ] ∷ G [ a ] ^ [ ! , ι lG ]

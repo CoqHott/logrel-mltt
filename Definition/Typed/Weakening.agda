@@ -171,13 +171,13 @@ wkTerm {ρ = ρ} [ρ] ⊢Δ (Id-Π {rA = rA} {t = t} {u = u} <l <l' Aⱼ Bⱼ t�
     PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
              (PE.sym (wk-β G))
              (app-cong (wkEqTerm ρ ⊢Δ f≡g) (wkEqTerm ρ ⊢Δ a≡b))
-  wkEqTerm ρ ⊢Δ (β-red {a = a} {t = t} {G = G} l< l<' F ⊢t ⊢a) =
+  wkEqTerm ρ ⊢Δ (β-red {a = a} {t = t} {G = G} l< l<' F ⊢G ⊢t ⊢a) =
     let ρF = wk ρ ⊢Δ F
     in  PE.subst (λ x → _ ⊢ _ ≡ _ ∷ x ^ _)
                  (PE.sym (wk-β G))
                  (PE.subst (λ x → _ ⊢ U.wk _ ((lam _ ▹ t ^ _) ∘ a ^ _) ≡ x ∷ _ ^ _)
                            (PE.sym (wk-β t))
-                           (β-red l< l<' ρF (wkTerm (lift ρ) (⊢Δ ∙ ρF) ⊢t)
+                           (β-red l< l<' ρF (wkTerm (lift ρ) (⊢Δ ∙ ρF) ⊢G) (wkTerm (lift ρ) (⊢Δ ∙ ρF) ⊢t)
                                      (wkTerm ρ ⊢Δ ⊢a)))
   wkEqTerm ρ ⊢Δ (η-eq lF lG F f g f0≡g0) =
     let ρF = wk ρ ⊢Δ F

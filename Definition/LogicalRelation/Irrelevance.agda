@@ -104,8 +104,8 @@ mutual
   irrelevanceEqT (ne (ne K D neK _) (ne K₁ D₁ neK₁ K≡K₁)) (ne₌ M D′ neM K≡M)
                  rewrite whrDet* (red D , ne neK) (red D₁ , ne neK₁) =
     ne₌ M D′ neM K≡M
-  irrelevanceEqT {Γ} {r = r} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                         (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+  irrelevanceEqT {Γ} {r = r} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
+                         (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁))
                  (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
     let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
         F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ , rΠ≡rΠ₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
@@ -149,16 +149,10 @@ mutual
   irrelevance-level l< (ℕᵣ x) = ℕᵣ x
   irrelevance-level l< (Emptyᵣ x) = Emptyᵣ x
   irrelevance-level l< (ne x) = ne x
-  irrelevance-level l< (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A (λ x ⊢Δ → irrelevance-level l< ([F] x ⊢Δ ))
+  irrelevance-level l< (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]) = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A (λ x ⊢Δ → irrelevance-level l< ([F] x ⊢Δ ))
                                                                           (λ [ρ] ⊢Δ x → irrelevance-level l< ([G] [ρ] ⊢Δ
                                                                              (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) x)))
-                                                                           λ [ρ] ⊢Δ [a] [b] x →
-                                                                           irrelevanceEq
-                                                                                 ([G] [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a]))
-                                                                                 (irrelevance-level l< ([G] [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a])))
-                                                                                 (G-ext [ρ] ⊢Δ (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [a])
-                                                                                                      (irrelevanceTerm (irrelevance-level l< ([F] [ρ] ⊢Δ)) ([F] [ρ] ⊢Δ) [b])
-                                                                                                      (irrelevanceEqTerm (irrelevance-level l< ([F] [ρ] ⊢Δ )) ([F] [ρ] ⊢Δ) x))
+                                                                           
   irrelevance-level l< (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) = Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A 
   irrelevance-level l< (Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A) = Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A
   irrelevance-level {r = [ .! , ll ]} ∞< (Uᵣ (Uᵣ r .⁰ emb< eq d)) = emb ∞< (Uᵣ (Uᵣ r _ emb< eq d))
@@ -210,8 +204,8 @@ mutual
                    with whrDet* (red D₁ , ne neK₁) (red D , ne neK)
   irrelevanceTermT {r = [ % , ll ]} (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ d)
     | PE.refl = neₜ d
-  irrelevanceTermT {Γ} {t = t} {r = [ ! , ll ]} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                   (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+  irrelevanceTermT {Γ} {t = t} {r = [ ! , ll ]} (Πᵥ (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G])
+                                   (Πᵣ rF₁ lF₁ lG₁ _ _ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁))
                    (Πₜ f d funcF f≡f [f] [f]₁) =
     let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
         F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
@@ -292,13 +286,13 @@ mutual
   irrelevanceEqTermT (ne (ne K D neK K≡K) (ne .K D₁ neK₁ K≡K₁)) (neₜ₌ d d′)
     | PE.refl = neₜ₌ d d′
   irrelevanceEqTermT {Γ} {t = t} {u = u} {r = [ ! , ll ]}
-                     (Πᵥ (Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                         (Πᵣ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁))
+                     (Πᵥ (Πᵣ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G])
+                         (Πᵣ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁))
                      (Πₜ₌ f g d d′ funcF funcG f≡g [f] [g] [f≡g]) =
     let ΠFG≡ΠF₁G₁   = whrDet* (red D , Πₙ) (red D₁ , Πₙ)
         F≡F₁ , rF≡rF₁ , lF≡lF₁ , G≡G₁ , lG≡lG₁ , lΠ≡lΠ₁ = Π-PE-injectivity ΠFG≡ΠF₁G₁
-        [A]         = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext
-        [A]₁        = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁ G-ext₁
+        [A]         = Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]
+        [A]₁        = Πᵣ′ rF₁ lF₁ lG₁ lF₁≤ lG₁≤ F₁ G₁ D₁ ⊢F₁ ⊢G₁ A≡A₁ [F]₁ [G]₁
     in  Πₜ₌ f g (PE.subst (λ x → Γ ⊢ t :⇒*: f ∷ x ^ ll) ΠFG≡ΠF₁G₁ d)
             (PE.subst (λ x → Γ ⊢ u :⇒*: g ∷ x ^ ll) ΠFG≡ΠF₁G₁ d′) funcF funcG
             (PE.subst (λ x → Γ ⊢ f ≅ g ∷ x ^ [ ! , ll ]) ΠFG≡ΠF₁G₁ f≡g)

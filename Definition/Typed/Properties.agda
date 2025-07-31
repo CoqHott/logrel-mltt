@@ -54,7 +54,7 @@ mutual
   wfEqTerm (conv t≡u A≡B) = wfEqTerm t≡u
   wfEqTerm (Π-cong _ _ F F≡H G≡E) = wfEqTerm F≡H
   wfEqTerm (app-cong f≡g a≡b) = wfEqTerm f≡g
-  wfEqTerm (β-red _ _ F t a) = wfTerm a
+  wfEqTerm (β-red _ _ F _ t a) = wfTerm a
   wfEqTerm (η-eq _ _ F f g f0≡g0) = wfTerm f
   wfEqTerm (suc-cong n) = wfEqTerm n
   wfEqTerm (natrec-cong F≡F′ z≡z′ s≡s′ n≡n′) = wfEqTerm z≡z′
@@ -86,7 +86,7 @@ subsetTerm (natrec-zero F z s) = natrec-zero F z s
 subsetTerm (natrec-suc n F z s) = natrec-suc n F z s
 subsetTerm (app-subst {rA = !} ⊢F ⊢G t⇒u a) = app-cong (subsetTerm t⇒u) (refl a)
 subsetTerm (app-subst {rA = %} ⊢F ⊢G t⇒u a) = app-cong (subsetTerm t⇒u) (proof-irrelevance a a)
-subsetTerm (β-red l< l<' A B t a) = β-red l< l<' A t a
+subsetTerm (β-red l< l<' A B t a) = β-red l< l<' A B t a
 subsetTerm (conv t⇒u A≡B) = conv (subsetTerm t⇒u) A≡B
 subsetTerm (cast-subst A B e t) = let ⊢Γ = wfEqTerm (subsetTerm A)
                                   in cast-cong (subsetTerm A) (refl B) (refl t) e (conv e (univ (Id-cong (refl (univ 0<1 ⊢Γ)) (subsetTerm A) (refl B))))

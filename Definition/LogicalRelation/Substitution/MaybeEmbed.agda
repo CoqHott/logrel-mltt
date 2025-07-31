@@ -5,6 +5,7 @@ open import Definition.Typed.EqualityRelation
 module Definition.LogicalRelation.Substitution.MaybeEmbed {{eqrel : EqRelSet}} where
 open EqRelSet {{...}}
 
+open import Tools.Unit
 open import Definition.Untyped
 open import Definition.LogicalRelation
 open import Definition.LogicalRelation.Irrelevance
@@ -23,12 +24,12 @@ maybeEmbᵛ {ι ⁰} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])
       [σA]′ = maybeEmb (proj₁ ([A] ⊢Δ [σ]))
   in  [σA]′
-  ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
+  ,   tt
 maybeEmbᵛ {ι ¹} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])
       [σA]′ = maybeEmb (proj₁ ([A] ⊢Δ [σ]))
   in  [σA]′
-  ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
+  ,   tt 
 maybeEmbᵛ {∞} [Γ] [A] ⊢Δ [σ] = [A] ⊢Δ [σ]
 
 maybeEmbTermᵛ : ∀ {l A t r Γ}
@@ -51,12 +52,12 @@ maybeEmbₛ′ {ι ¹} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])
       [σA]′ = maybeEmb′ (<is≤ 0<1) (proj₁ ([A] ⊢Δ [σ]))
   in  [σA]′
-  ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
+  ,  tt
 maybeEmbₛ′ {∞} [Γ] [A] ⊢Δ [σ] =
   let [σA]  = proj₁ ([A] ⊢Δ [σ])
       [σA]′ = maybeEmb (proj₁ ([A] ⊢Δ [σ]))
   in  [σA]′
-  ,   (λ [σ′] [σ≡σ′] → irrelevanceEq [σA] [σA]′ (proj₂ ([A] ⊢Δ [σ]) [σ′] [σ≡σ′]))
+  ,  tt
 
 maybeEmbEqTermᵛ : ∀ {l A t u r Γ}
          → ([Γ] : ⊩ᵛ Γ)

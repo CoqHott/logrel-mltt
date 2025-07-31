@@ -15,6 +15,7 @@ open import Definition.LogicalRelation.Substitution.Introductions.Universe
 
 open import Tools.Product
 import Tools.PropositionalEquality as PE
+open import Tools.Unit
 
 
 -- Weakening of valid types by one.
@@ -27,12 +28,8 @@ wk1ᵛ {A} [Γ] [F] [A] ⊢Δ [σ] =
   let [σA] = proj₁ ([A] ⊢Δ (proj₁ [σ]))
       [σA]′ = irrelevance′ (PE.sym (subst-wk A)) [σA]
   in  [σA]′
-  ,   (λ [σ′] [σ≡σ′] →
-         irrelevanceEq″ (PE.sym (subst-wk A))
-                        (PE.sym (subst-wk A)) PE.refl PE.refl
-                        [σA] [σA]′
-                        (proj₂ ([A] ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′])))
-
+  ,   tt
+  
 -- Weakening of valid type equality by one.
 wk1Eqᵛ : ∀ {A B F rA rF Γ l l'}
          ([Γ] : ⊩ᵛ Γ)
@@ -65,12 +62,7 @@ wk1ᵗᵛ {F} {G} {rF} {rG} {lG} [Γ] [F] [G]ₜ {σ} ⊢Δ [σ] =
       [Geq] = PE.sym (subst-wk G)
       [σG]′ = irrelevanceTerm″ PE.refl PE.refl PE.refl [Geq] (proj₁ ([UG] ⊢Δ (proj₁ [σ]))) (proj₁ ([wUG] {σ} ⊢Δ [σ])) [σG]
   in  [σG]′
-  ,   (λ [σ′] [σ≡σ′] →
-         irrelevanceEqTerm″ PE.refl PE.refl
-                            (PE.sym (subst-wk G))
-                            (PE.sym (subst-wk G)) PE.refl 
-                            (proj₁ ([UG] ⊢Δ (proj₁ [σ]))) (proj₁ ([wUG] {σ} ⊢Δ [σ]))
-                            (proj₂ ([G]ₜ ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′])))
+  ,   tt
 
 
 wk1Termᵛ : ∀ {F G rF rG t Γ l l'}
@@ -86,10 +78,8 @@ wk1Termᵛ {F} {G} {rF} {rG} {t} [Γ] [F] [G] [t]ₜ {σ} ⊢Δ [σ] =
              [Geq] = PE.sym (subst-wk {step id} {σ} G)
              [σG]' = irrelevance′ [Geq] [σG]
          in irrelevanceTerm″ [Geq] PE.refl PE.refl [teq] [σG] [σG]' [σt] ,
-            λ [σ′] [σ≡σ′] → irrelevanceEqTerm″ PE.refl PE.refl
-                            (PE.sym (subst-wk t)) (PE.sym (subst-wk t)) (PE.sym (subst-wk G))
-                            [σG] [σG]' (proj₂ ([t]ₜ ⊢Δ (proj₁ [σ])) (proj₁ [σ′]) (proj₁ [σ≡σ′]))
-
+            tt
+            
 wk1dᵛ : ∀ {F F' G rF rF' lG rG Γ l l'}
          ([Γ] : ⊩ᵛ Γ)
          ([F] : Γ ⊩ᵛ⟨ l' ⟩ F ^ rF / [Γ]) →
@@ -111,19 +101,7 @@ wk1dᵛ {F} {F'} {G} [Γ] [F] [F'] [G] {σ} ⊢Δ [σ] =
          [Geq] = PE.sym (subst-wk G)
          [σG]′ = irrelevance′ [Geq] [σG]
      in  [σG]′
-         ,   (λ {σ′} [σ′] [σ≡σ′] → let [wσ′] = proj₁ (proj₁ [σ′]) ,
-                                               irrelevanceTerm″ (subst-wk F) PE.refl PE.refl PE.refl
-                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ′])))
-                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ′]))))
-                                                     (proj₂ [σ′]) 
-                                       [wσ≡σ′] = (proj₁ (proj₁ [σ≡σ′])),
-                                                 irrelevanceEqTerm″ PE.refl PE.refl PE.refl PE.refl (subst-wk F)
-                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ])))
-                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ]))))
-                                                     (proj₂  [σ≡σ′])
-                              in irrelevanceEq″ (PE.sym (subst-wk G)) (PE.sym (subst-wk G)) PE.refl PE.refl
-                                                (proj₁ ([G] ⊢Δ [wσ])) [σG]′
-                                                (proj₂ ([G] ⊢Δ [wσ]) [wσ′] [wσ≡σ′]))
+         ,   tt
 
 
 wk1dᵗᵛ : ∀ {F F' G rF rF' rG lG Γ l l'}
@@ -149,18 +127,4 @@ wk1dᵗᵛ {F} {F'} {G} {rF} {rF'} {rG} {lG} [Γ] [F] [F'] [UG] [wUG] [G]ₜ {σ
          [Geq] = PE.sym (subst-wk G)
          [σG]′ = irrelevanceTerm″ PE.refl PE.refl PE.refl [Geq] (proj₁ ([UG] ⊢Δ [wσ])) (proj₁ ([wUG] {σ} ⊢Δ [σ])) [σG]
      in  [σG]′
-         ,   (λ {σ′} [σ′] [σ≡σ′] → let [wσ′] = proj₁ (proj₁ [σ′]) ,
-                                               irrelevanceTerm″ (subst-wk F) PE.refl PE.refl PE.refl
-                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ′])))
-                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ′]))))
-                                                     (proj₂ [σ′]) 
-                                       [wσ≡σ′] = (proj₁ (proj₁ [σ≡σ′])),
-                                                 irrelevanceEqTerm″ PE.refl PE.refl PE.refl PE.refl (subst-wk F)
-                                                     (proj₁ (wk1ᵛ {A = F} {F = F'} [Γ] [F'] [F] ⊢Δ (proj₁ [σ])))
-                                                     (proj₁ ([F] ⊢Δ (proj₁ (proj₁ [σ]))))
-                                                     (proj₂  [σ≡σ′])
-                              in irrelevanceEqTerm″ PE.refl PE.refl
-                                                    (PE.sym (subst-wk G))
-                                                    (PE.sym (subst-wk G)) PE.refl 
-                                                    (proj₁ ([UG] ⊢Δ [wσ])) (proj₁ ([wUG] {σ} ⊢Δ [σ]))
-                                                    (proj₂ ([G]ₜ ⊢Δ [wσ]) [wσ′] [wσ≡σ′]))
+         ,   tt

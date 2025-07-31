@@ -71,7 +71,7 @@ univEq {∞} {A} {r} {l′} (Uᵣ (Uᵣ r₁ ¹ _ eq [[ ⊢A , ⊢B , D ]])) (U�
   PE.subst₂ (λ X Y → ε ⊩⟨ ι Y ⟩ A ^ [ X , ι Y ]) (PE.sym r≡r₁) (PE.sym l′≡l′₁) [t]′
 univEq (ℕᵣ [[ ⊢A , ⊢B , univ x ⇨ D ]]) [A] = ⊥-elim (univRedTerm x)
 univEq (ne′ K [[ ⊢A , ⊢B , univ x ⇨ D ]] neK K≡K) [A] = ⊥-elim (univRedTerm x)
-univEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A≡A [F] [G] G-ext) [A] =
+univEq (Πᵣ′ rF lF lG _ _ F G [[ ⊢A , ⊢B , univ x ⇨ D ]] ⊢F ⊢G A≡A [F] [G]) [A] =
   ⊥-elim (univRedTerm x)
 univEq {ι ¹} (emb _ [U]′) [A] = univEq [U]′ [A]
 univEq {∞} (emb _ [U]′) [A] = univEq [U]′ [A]
@@ -121,8 +121,8 @@ UnivNotℕ {ll = ⁰} [[ ⊢A , ⊢B , D ]] = U≢ℕ (whrDet* (id (univ (univ 0
 UnivNotℕ {ll = ¹} [[ ⊢A , ⊢B , D ]] = U≢ℕ (whrDet* (id (Uⱼ (wf ⊢A)) , Uₙ) (D , ℕₙ))
 
 UnivNotΠ : ∀ {Γ r lΠ l ll} → (l LogRel.⊩¹Π logRelRec l ^[ Γ ]) (Univ r ll) lΠ → ⊥ 
-UnivNotΠ {ll = ⁰} (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (univ (univ 0<1 (wf ⊢F))) , Uₙ) (red D , Πₙ))
-UnivNotΠ {ll = ¹} (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G] G-ext) = U≢Π (whrDet* (id (Uⱼ (wf ⊢F)) , Uₙ) (red D , Πₙ))
+UnivNotΠ {ll = ⁰} (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G]) = U≢Π (whrDet* (id (univ (univ 0<1 (wf ⊢F))) , Uₙ) (red D , Πₙ))
+UnivNotΠ {ll = ¹} (Πᵣ rF lF lG _ _ F G D ⊢F ⊢G A≡A [F] [G]) = U≢Π (whrDet* (id (Uⱼ (wf ⊢F)) , Uₙ) (red D , Πₙ))
 
 U-Relevance-Level-eq : ∀ {l Γ r ll ll'} ([U] : Γ ⊩⟨ l ⟩ Univ r ll ^ [ ! , ll' ]) → U-Relevance-Level (U-elim [U]) PE.≡ (r , ll)
 U-Relevance-Level-eq {ll = ⁰} (Uᵣ (Uᵣ r ⁰ l< eq d)) = ×-eq (Univ-PE-injectivity (whrDet* (red d , Uₙ) (id (univ (univ 0<1 (wf (_⊢_:⇒*:_^_.⊢A d)))) , Uₙ)))
@@ -175,8 +175,8 @@ un-univEq {⁰} {Γ} {A} {.!} (ℕᵣ [[ ⊢A , ⊢ℕ , D ]] ) = Uₜ ℕ (un-u
 un-univEq {⁰} {Γ} {A} {.%} (Emptyᵣ [[ ⊢A , ⊢Empty , D ]]) = Uₜ (Empty ⁰) (un-univ:⇒*: [[ ⊢A , ⊢Empty , D ]]) Emptyₙ (≅ₜ-Emptyrefl (wf ⊢A))
                                                                                 (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Emptyᵣ [[ ⊢A , ⊢Empty , D ]] ))
 un-univEq {⁰} {Γ} {A} {r} (ne′ K D neK K≡K) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
-un-univEq {⁰} {Γ} {A} {r} (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext) =
-  Uₜ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰ ^ !) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+un-univEq {⁰} {Γ} {A} {r} (Πᵣ′ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G]) =
+  Uₜ (Π F ^ rF ° ⁰ ▹ G ° ⁰ ° ⁰ ^ !) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G])
 un-univEq {⁰} {Γ} {A} {r} (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A) =
   Uₜ (Π F ^ rF ° lF ▹ G ° ⁰ ° ⁰ ^ %) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Πirrᵣ′ rF lF F G D ⊢F ⊢G A≡A)
 un-univEq {⁰}  {Γ} {A} {.%} (Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A) =
@@ -184,11 +184,11 @@ un-univEq {⁰}  {Γ} {A} {.%} (Idᵣ′ F t u l D ⊢F ⊢t ⊢u A≡A) =
 un-univEq {¹} {Γ} {A} {.!} (Uᵣ (Uᵣ r .⁰ emb< eq [[ ⊢A , ⊢B , D ]])) = Uₜ (Univ r ⁰) (un-univ:⇒*: [[ ⊢A , ⊢B , D ]]) Uₙ (≅-U⁰refl (wf ⊢A))
                                                                               (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Uᵣ (Uᵣ r ⁰ emb< eq [[ ⊢A , ⊢B , D ]] )))
 un-univEq {¹} {Γ} {A} {r} (ne′ K D neK K≡K) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
-un-univEq {¹} {Γ} {A} {r} (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext) = 
-  Uₜ (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
+un-univEq {¹} {Γ} {A} {r} (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G]) = 
+  Uₜ (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G])
 un-univEq {¹} {Γ} {A} {r} (emb emb< (ne′ K D neK K≡K)) = Uₜ K (un-univ:⇒*: D) (ne neK) (~-to-≅ₜ K≡K) (λ [ρ] ⊢Δ → Lwk.wk [ρ] ⊢Δ (ne′ K D neK K≡K))
-un-univEq {¹} {Γ} {A} {r} (emb emb< (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext)) =
-  Uₜ (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → let X = Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G] G-ext) in maybeEmb′ (<is≤ 0<1) X
+un-univEq {¹} {Γ} {A} {r} (emb emb< (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G])) =
+  Uₜ (Π F ^ rF ° lF ▹ G ° lG ° ¹ ^ !) (un-univ:⇒*: D) Πₙ (≅-un-univ A≡A) λ [ρ] ⊢Δ → let X = Lwk.wk [ρ] ⊢Δ (Πᵣ′ rF lF lG lF≤ lG≤ F G D ⊢F ⊢G A≡A [F] [G]) in maybeEmb′ (<is≤ 0<1) X
 
 un-univEqEq-Shape : ∀ {l Γ A B r }
           ([A] : Γ ⊩⟨ ι l ⟩ A ^ [ r , ι l ]) ([B] : Γ ⊩⟨ ι l ⟩ B ^ [ r , ι l ])
@@ -213,11 +213,11 @@ un-univEqEq-Shape {⁰} {Γ} {A} {B} {r} _ _  (ne (ne K D neK K≡K) neB) (ne₌
       [A≡B] = ne₌ M D′ neM K≡M
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ⁰} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
          (~-to-≅ₜ K≡M) λ [ρ] ⊢Δ → Lwk.wkEq [ρ] ⊢Δ [A] [A≡B]
-un-univEqEq-Shape {⁰} {Γ} {A} {B} {r} _ _ (Πᵥ (Πᵣ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                        (Πᵣ rF' .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'))
+un-univEqEq-Shape {⁰} {Γ} {A} {B} {r} _ _ (Πᵥ (Πᵣ rF .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G])
+                                        (Πᵣ rF' .⁰ .⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'))
                                     (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
-  let [A] = Πᵣ′ rF ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G] G-ext
-      [B] = Πᵣ′ rF' ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'
+  let [A] = Πᵣ′ rF ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F G D ⊢F ⊢G A≡A [F] [G]
+      [B] = Πᵣ′ rF' ⁰ ⁰ (≡is≤ PE.refl) (≡is≤ PE.refl) F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'
       [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
       F≡F , rF≡rF , _ , G≡G , _ = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (red D' , Whnf.Πₙ))
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ⁰} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
@@ -263,11 +263,11 @@ un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _  (ne (ne K D neK K≡K) neB) (ne₌ 
       [A≡B] = ne₌ M D′ neM K≡M
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
          (~-to-≅ₜ K≡M) λ [ρ] ⊢Δ → Lwk.wkEq [ρ] ⊢Δ [A] [A≡B]
-un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'))
+un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G])
+                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'))
                                     (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
-  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext
-      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'
+  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G]
+      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'
       [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
       F≡F , rF≡rF , lF≡lF , G≡G , lG≡lG , _ = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (red D' , Whnf.Πₙ))
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
@@ -283,11 +283,11 @@ un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb⁰¹ (ne (ne K D neK K≡K) neB
       [A≡B] = ne₌ M D′ neM K≡M
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
          (~-to-≅ₜ K≡M) λ [ρ] ⊢Δ → Lwk.wkEq [ρ] ⊢Δ [A] [A≡B]
-un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb⁰¹ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext')))
+un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb⁰¹ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G])
+                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']')))
                                     (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
-  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext
-      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'
+  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G]
+      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'
       [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
       F≡F , rF≡rF , lF≡lF , G≡G , lG≡lG , _ = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (red D' , Whnf.Πₙ))
   in Uₜ₌ (un-univEq (maybeEmb′ (<is≤ 0<1) [A])) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
@@ -303,11 +303,11 @@ un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb⁰¹ (emb¹⁰ (ne (ne K D neK 
       [A≡B] = ne₌ M D′ neM K≡M
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
          (~-to-≅ₜ K≡M) λ [ρ] ⊢Δ → Lwk.wkEq [ρ] ⊢Δ [A] [A≡B]
-un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb⁰¹ (emb¹⁰ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'))))
+un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb⁰¹ (emb¹⁰ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G])
+                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'))))
                                     (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
-  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext
-      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'
+  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G]
+      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'
       [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
       F≡F , rF≡rF , lF≡lF , G≡G , lG≡lG , _ = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (red D' , Whnf.Πₙ))
   in Uₜ₌ (un-univEq (maybeEmb′ (<is≤ 0<1) [A])) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq (maybeEmb′ (<is≤ 0<1) [B])))
@@ -323,11 +323,11 @@ un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb¹⁰ (ne (ne K D neK K≡K) neB
       [A≡B] = ne₌ M D′ neM K≡M
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
          (~-to-≅ₜ K≡M) λ [ρ] ⊢Δ → Lwk.wkEq [ρ] ⊢Δ [A] [A≡B]
-un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb¹⁰ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext')))
+un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb¹⁰ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G])
+                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']')))
                                     (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
-  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext
-      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'
+  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G]
+      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'
       [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
       F≡F , rF≡rF , lF≡lF , G≡G , lG≡lG , _ = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (red D' , Whnf.Πₙ))
   in Uₜ₌ (un-univEq [A] ) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq (maybeEmb′ (<is≤ 0<1) [B])))
@@ -343,11 +343,11 @@ un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb¹⁰ (emb⁰¹ (ne (ne K D neK 
       [A≡B] = ne₌ M D′ neM K≡M
   in Uₜ₌ (un-univEq [A]) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq [B]))
          (~-to-≅ₜ K≡M) λ [ρ] ⊢Δ → Lwk.wkEq [ρ] ⊢Δ [A] [A≡B]
-un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb¹⁰ (emb⁰¹ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext)
-                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'))))
+un-univEqEq-Shape {¹} {Γ} {A} {B} {r} _ _ (emb¹⁰ (emb⁰¹ (Πᵥ (Πᵣ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G])
+                                        (Πᵣ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'))))
                                     (Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]) =
-  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G] G-ext
-      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G'] G-ext'
+  let [A] = Πᵣ′ rF lF lG lF< lG< F G D ⊢F ⊢G A≡A [F] [G]
+      [B] = Πᵣ′ rF' lF' lG' lF<' lG<' F' G' D' ⊢F' ⊢G' A≡A' [F'] [G']'
       [A≡B] = Π₌ F′ G′ D′ A≡B [F≡F′] [G≡G′]
       F≡F , rF≡rF , lF≡lF , G≡G , lG≡lG , _ = Π-PE-injectivity (whrDet* (D′ , Whnf.Πₙ) (red D' , Whnf.Πₙ))
   in Uₜ₌ (un-univEq (maybeEmb′ (<is≤ 0<1) [A])) (irrelevanceTerm {l = next ¹} (Ugen (wf (escape [B]))) (Ugen (wf (escape [A]))) (un-univEq (maybeEmb′ (<is≤ 0<1) [B])))
